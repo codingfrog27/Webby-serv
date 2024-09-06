@@ -6,11 +6,12 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 18:13:28 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/05 18:21:22 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/06 17:15:21 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.hpp"
+void telnet_send_receive_loop(int client_fd);
 
 //system is little endian so need to change address and IP
 
@@ -48,58 +49,50 @@ int main(int argc, char const *argv[])
 {
 	(void)argc;
 	(void)argv;
-	
-	//1 make socket
+	Telnet_server();
+	return 0;
+}
+
+
+
+
+int	Telnet_server()
+{
+
 	int server_fd = socket(AF_INET, SOCK_STREAM, 0); //making socket
 	if (server_fd == -1)
-	{
-		std::cerr << "Failed to create socket!" << std::endl;
-		return 1;
-	}
-
-	//2 binding to IP and port
+		return (std::cerr << "Failed to create socket!" << std::endl, -1);
 
 	sockaddr_in	server_addr; //contains IP and port
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = manual_htons(8080);  // Telnet default port, converted to little endian
+	server_addr.sin_port = manual_htons(8080);  // converted to little endian
 	server_addr.sin_addr.s_addr = INADDR_ANY; //any interface
+	if (bind(server_fd, (sockaddr*)&server_addr, sizeof(server_addr)) == -1) //binded
+		return (std::cerr << "Failed to bind socket!" << std::endl, -1);
 
-	//could just put this all in a constructor?
-
-	if (bind(server_fd, (sockaddr*)&server_addr, sizeof(server_addr)) == -1) { 
-	std::cerr << "Failed to bind socket!" << std::endl;
-	return 1;
-	}
-	//think we can just put these first exceptions in a throw block? think we wanna exit if either call fails
-
-
-	//3 listen for connections
-	// Step 3: Listen for incoming connections
-	if (listen(server_fd, 5) == -1) {
-	std::cerr << "Failed to listen!" << std::endl;
-	   return 1;
-	}
-
-
-	// Step 4: Accept incoming connections
+	if (listen(server_fd, 5) == -1) 	// listen for connections
+		return (std::cerr << "Failed to listen!" << std::endl, -1);
    	std::cout << "Listening for connections on port 8080..." << std::endl;
 
-	// Step 4: Accept incoming connections
+
 	sockaddr_in client_addr;
 	socklen_t client_size = sizeof(client_addr);
-	int client_fd = accept(server_fd, (sockaddr*)&client_addr, &client_size);
+	int client_fd = accept(server_fd, (sockaddr*)&client_addr, &client_size); //accept connection (blocks here)
 
-	if (client_fd == -1) {
-	std::cerr << "Failed to accept client connection!" << std::endl;
-	return 1;
-	}
+	if (client_fd == -1)
+		return (std::cerr << "Failed to accept client connection!" << std::endl, -1);
 
-	// Step 5: Communicate with the client
-	// Step 5: Communicate with the client
 	const char *welcome_msg = "Welcome to the Telnet Server!\r\n";
 	send(client_fd, welcome_msg, strlen(welcome_msg), 0);
+	telnet_send_receive_loop(client_fd);
+	close(client_fd);
+	close(server_fd);
+}
 
+void telnet_send_receive_loop(int client_fd)
+{
 	char buffer[256];
+
 	while (true) 
 	{
 		memset(buffer, 0, 256);
@@ -109,16 +102,9 @@ int main(int argc, char const *argv[])
 			std::cout << "Client disconnected." << std::endl;
 			break;
 		}
-	   // Echo the received message back to the client
-		send(client_fd, "msg received :)", 16, 0);
+		send(client_fd, "msg received :)\n you send to me: ", 34, 0); // Echo the received message back to the client
 		send(client_fd, buffer, bytes_received, 0);
 	}
-
-
-	  // Step 6: Clean up
-	close(client_fd);
-	close(server_fd);
-	return 0;
 }
 
 //subject mentions poll() but can use select kque or epoll as well
