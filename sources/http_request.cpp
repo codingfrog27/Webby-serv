@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/10 17:28:05 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/10 20:08:23 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,3 +84,35 @@ void	Http_request::socket_to_string(int client_fd)
 // ************************************************************************** //
 
 
+//1 start with /
+//2 skip ..
+// 
+
+
+// std::string Http_request::urlToFilePath(const std::string& url) {
+//     // Ensure the URL starts with a '/'
+//     if (url.empty() || url[0] != '/') {
+//         throw std::invalid_argument("Invalid URL");
+//     }
+
+//     // Sanitize the URL to prevent directory traversal attacks
+//     std::string sanitized_url;
+//     for (size_t i = 0; i < url.size(); ++i) {
+//         if (url[i] == '.' && i + 1 < url.size() && url[i + 1] == '.') {
+//             // Skip ".." to prevent directory traversal
+//             i++;
+//         } else {
+//             sanitized_url += url[i];
+//         }
+//     }
+
+//     // Combine document root and sanitized URL
+//     std::string file_path = document_root + sanitized_url;
+
+//     // Check if the file path is within the document root
+//     if (file_path.find(document_root) != 0) {
+//         throw std::invalid_argument("Invalid file path");
+//     }
+
+//     return file_path;
+// }
