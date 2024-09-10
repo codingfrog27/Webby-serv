@@ -1,23 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ft_memchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/10 17:25:10 by mde-cloe         ###   ########.fr       */
+/*   Created: 2021/12/13 18:00:40 by mde-cloe          #+#    #+#             */
+/*   Updated: 2021/12/13 21:46:42 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 
-#include "http_request.hpp"
-
-int main()
+void	*ft_memchr(const void	*s, int c, size_t	n)
 {
-	int test_fd = open("test.txt", 0);
-	if (test_fd <= 0)
-		std::cerr << "open failed" << std::endl;
-	Http_request request(test_fd);
-	return 0;
+	size_t			i;
+
+	i = 0;
+	while (i < n)
+	{
+		if (((unsigned char *)s)[i] == (unsigned char )c)
+			return ((unsigned char *)s + i);
+		i++;
+	}
+	return (NULL);
 }

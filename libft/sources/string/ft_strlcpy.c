@@ -1,23 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/10 17:25:10 by mde-cloe         ###   ########.fr       */
+/*   Created: 2021/12/13 18:00:40 by mde-cloe          #+#    #+#             */
+/*   Updated: 2021/12/13 18:10:53 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 
-#include "http_request.hpp"
-
-int main()
+size_t	ft_strlcpy(char	*dst, const char	*src, size_t	maxlen)
 {
-	int test_fd = open("test.txt", 0);
-	if (test_fd <= 0)
-		std::cerr << "open failed" << std::endl;
-	Http_request request(test_fd);
-	return 0;
+	size_t	srclen;
+
+	srclen = ft_strlen(src);
+	if (srclen + 1 < maxlen)
+		ft_memcpy(dst, src, srclen + 1);
+	else if (maxlen != 0)
+	{
+		ft_memcpy(dst, src, maxlen - 1);
+		dst[maxlen - 1] = '\0';
+	}
+	return (srclen);
 }

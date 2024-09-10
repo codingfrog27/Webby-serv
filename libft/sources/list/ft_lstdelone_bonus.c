@@ -1,23 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ft_lstdelone.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/10 17:25:10 by mde-cloe         ###   ########.fr       */
+/*   Created: 2021/12/14 22:30:43 by mde-cloe          #+#    #+#             */
+/*   Updated: 2021/12/14 22:33:08 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 
-#include "http_request.hpp"
-
-int main()
+void	ft_lstdelone(t_list *lst, void (*del)(void *))
 {
-	int test_fd = open("test.txt", 0);
-	if (test_fd <= 0)
-		std::cerr << "open failed" << std::endl;
-	Http_request request(test_fd);
-	return 0;
+	del(lst->content);
+	free(lst);
 }

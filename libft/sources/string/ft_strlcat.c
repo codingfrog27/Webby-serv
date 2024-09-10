@@ -1,23 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ft_strlcat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/10 17:25:10 by mde-cloe         ###   ########.fr       */
+/*   Created: 2021/12/13 18:00:40 by mde-cloe          #+#    #+#             */
+/*   Updated: 2021/12/13 18:10:47 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 
-#include "http_request.hpp"
-
-int main()
+size_t	ft_strlcat(char	*dst, const char	*src, size_t	dstsize)
 {
-	int test_fd = open("test.txt", 0);
-	if (test_fd <= 0)
-		std::cerr << "open failed" << std::endl;
-	Http_request request(test_fd);
-	return 0;
+	size_t	i;
+	size_t	j;
+	size_t	destlen;
+	size_t	srclen;
+
+	destlen = ft_strlen(dst);
+	srclen = ft_strlen(src);
+	i = destlen;
+	j = 0;
+	if (destlen >= dstsize)
+		return (dstsize + srclen);
+	while (src[j] && i + 1 < dstsize)
+	{
+		dst[i] = src[j];
+		i++;
+		j++;
+	}
+	dst[i] = '\0';
+	return (destlen + srclen);
 }

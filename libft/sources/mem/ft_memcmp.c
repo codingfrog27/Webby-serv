@@ -1,23 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ft_memcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/10 17:25:10 by mde-cloe         ###   ########.fr       */
+/*   Created: 2021/12/13 18:00:40 by mde-cloe          #+#    #+#             */
+/*   Updated: 2021/12/13 21:49:25 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 
-#include "http_request.hpp"
-
-int main()
+int	ft_memcmp(const void	*s1, const void	*s2, size_t	n)
 {
-	int test_fd = open("test.txt", 0);
-	if (test_fd <= 0)
-		std::cerr << "open failed" << std::endl;
-	Http_request request(test_fd);
-	return 0;
+	int					i;
+	const unsigned char	*cs1;
+	const unsigned char	*cs2;
+
+	i = 0;
+	cs1 = (const unsigned char *)s1;
+	cs2 = (const unsigned char *)s2;
+	while (n > 0)
+	{
+		if (cs1[i] != cs2[i])
+			return (cs1[i] - cs2[i]);
+		i++;
+		n--;
+	}
+	return (0);
 }
