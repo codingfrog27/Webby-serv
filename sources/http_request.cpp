@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/10 20:08:23 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/12 18:59:40 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ Http_request::Http_request(int client_fd)
 		std::cerr << e.what() << std::endl;
 		//handle reading error?
 	}
-	std::cout << this->unsorted_string;
+	std::cout << this->unsorted_string; //print request for testing
+
+	
 	
 
 }
