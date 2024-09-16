@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #31c16a;
+    color: #ffffff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 10px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+main {
+    padding: 20px;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+/*
+ body:			Sets the font, margin, padding, and background color for the entire document.
+header:			Styles the header with a background color, text color, padding, and center alignment.
+nav ul:			Removes the default list styling and padding for the navigation list.
+nav ul li:		Displays list items inline with some margin.
+nav ul li a:	Styles the anchor tags within the list items, setting the text color and removing the underline.
+main:			Adds padding to the main content area.
+footer:			Styles the footer with a background color, text color, padding, and fixes it to the bottom of the pag
+ */
