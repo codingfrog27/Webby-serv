@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <arpa/inet.h>
 #include <iostream>
 #include <cstring>
 #include <fstream>
