@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/17 18:09:13 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/17 19:04:14 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ Http_method Http_request::which_method_type(std::string &str)
 	throw std::invalid_argument("Unsupported HTTP method: " + str);
 }
 
-void	Http_request::read_from_socket(int client_fd)
+int	Http_request::read_from_socket(int client_fd)
 {
 	char buffer[BUFFER_SIZE] = {0};
 	int	bytes_read;
@@ -127,15 +127,25 @@ void	Http_request::read_from_socket(int client_fd)
 		throw (std::ios_base::failure("reading fail when reading from client socket"));
 	
 	raw_request_data.insert(raw_request_data.end(), buffer, buffer + bytes_read);
-	if (bytes_read < BUFFER_SIZE - 1)
-		reading_mode = FINISHED;
+	return (bytes_read);
 }
 
 
 void	Http_request::main_reader(int client_fd)
 {
-	read_from_socket(client_fd);
+	if (reading_mode == READING_BODY)
+	{
+		_bytes_read = read_from_socket(client_fd);
+
+
+		if (body_bytes_read > _max_body_size)
+			throw (std::length_error("Request size exceeds the allowed limit"));
+	}
+
 	reading_mode = look_for_body();
+
+	if (reading_mode = )
+	if (reading_mode = )
 
 
 	if (reading_mode != READING_HEADERS)
@@ -147,8 +157,6 @@ void	Http_request::main_reader(int client_fd)
 	// else look_for_body();
 
 		
-	if (body_bytes_read > _max_body_size)
-		throw (std::length_error("Request size exceeds the allowed limit"));
 }
 
 
@@ -156,6 +164,9 @@ void	Http_request::main_reader(int client_fd)
 // if body not found and finished == FINISHED (no body)
 // if body not found and not finished == READING_HEADERS
 // if body found and not finished == reading body
+	unsorted_headers = std::string(raw_request_data.begin(), it);
+	raw_request_data.erase(raw_request_data.begin(), it + body_start.size());
+	body_bytes_read = raw_request_data.size();
 
 reading_status Http_request::look_for_body(void)
 {
@@ -163,19 +174,21 @@ reading_status Http_request::look_for_body(void)
 
 	it = std::search(raw_request_data.begin(), raw_request_data.end(),\
 	body_start.begin(), body_start.end());
-	
-	if (it == raw_request_data.end())
+
+	if (_bytes_read < BUFFER_SIZE - 1)
 	{
-		if (reading_mode == FINISHED)
-			return (FINISHED_NO_BODY);
+		if (it == raw_request_data.end())
+			return (FINISHED_NO_BODY); //everything in header string
 		else
-			return (READING_HEADERS);
+			return (FINISHED); //split
 	}
-	unsorted_headers = std::string(raw_request_data.begin(), it);
-	raw_request_data.erase(raw_request_data.begin(), it + body_start.size());
-	body_bytes_read = raw_request_data.size();
-	if (reading_mode != FINISHED)
-		return (READING_BODY);
+	else
+	{
+		if (it == raw_request_data.end())
+			return (READING_HEADERS); //nothing
+		else
+			return (READING_BODY);	//split
+	}
 }
 
 // std::string Http_request::urlToFilePath(const std::string& url) {
