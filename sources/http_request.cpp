@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/16 20:34:13 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/17 18:09:13 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,14 @@
 //                        Constructors and Destructors                        //
 // ************************************************************************** //
 
-Http_request::Http_request(int client_fd): _is_cgi(false), _more_to_read(false),\
-		_method_type(NOT_PARSED_YET), _total_bytes_read(0) //add max bytes read from
+Http_request::Http_request(int client_fd): _is_cgi(false), _has_body(true), \
+		_method_type(NOT_PARSED_YET), body_bytes_read(0), reading_mode(NOT_STARTED) //add max bytes read from
 {
 	std::cout << GREEN << "Http_request parsing started" << RESET << std::endl;
 	try
 	{
-		socket_to_string(client_fd);
-		parse_first_read();
+		read_from_socket(client_fd);
+		parse_headers();
 	}
 	catch(const std::ios_base::failure &e)
 	{
@@ -31,8 +31,8 @@ Http_request::Http_request(int client_fd): _is_cgi(false), _more_to_read(false),
 	}
 	catch(std::length_error &e)
 	{
-		std::cerr << e.what() << "\nbytes read sofar = "<< _total_bytes_read\
-		<< "\nwhile allowed amount = "<< _max_bytes_to_read << std::endl;
+		std::cerr << e.what() << "\nbytes read sofar = "<< body_bytes_read\
+		<< "\nwhile allowed amount = "<< _max_body_size << std::endl;
 		// also catches too long req error, split up?
 		//and stof?
 	}
@@ -41,7 +41,7 @@ Http_request::Http_request(int client_fd): _is_cgi(false), _more_to_read(false),
 		std::cerr << e.what() << std::endl;
 	}
 	//handle  errors
-	std::cout << this->unsorted_string; //print request for testing
+	std::cout << this->raw_request_data; //print request for testing
 
 	
 	
@@ -76,22 +76,22 @@ Http_request::~Http_request(void)
 	std::cout << RED << "http_request: Destructor called" << RESET << std::endl;
 }
 
-void	Http_request::parse_first_read(void)
+void	Http_request::parse_headers(std::string str)
 {
 
 	std::string method, url, http_version;
 
-	int	newline = unsorted_string.find('\n');
+	int	newline = raw_request_data.find('\n');
 	if (newline == std::string::npos)
 		throw (std::length_error("Request line is too long!")); //set up right now so that it erros if req line is longer than 1024
-	std::istringstream request_stream(unsorted_string.substr(0, newline));
+	std::istringstream request_stream(raw_request_data.substr(0, newline));
 	request_stream >> method >> url >> http_version;
 	// First line splitting from chatgpt, not sure if safe yet
 
 
 
 	_method_type = which_method_type(method);
-	filepath = urlToFilePath(url);
+	// filepath = urlToFilePath(url);
 	_http_version = 
 	
 	
@@ -117,46 +117,86 @@ Http_method Http_request::which_method_type(std::string &str)
 	throw std::invalid_argument("Unsupported HTTP method: " + str);
 }
 
-void	Http_request::socket_to_string(int client_fd)
+void	Http_request::read_from_socket(int client_fd)
 {
 	char buffer[BUFFER_SIZE] = {0};
 	int	bytes_read;
-		bytes_read = read(client_fd, buffer, BUFFER_SIZE - 1);
-		if (bytes_read < BUFFER_SIZE - 1)
-		{
-			if (bytes_read < 0)
-				throw (std::ios_base::failure("reading fail when reading from client socket"));
-			_more_to_read = false;
-		}
+	
+	bytes_read = read(client_fd, buffer, BUFFER_SIZE - 1);
+	if (bytes_read < 0)
+		throw (std::ios_base::failure("reading fail when reading from client socket"));
+	
+	raw_request_data.insert(raw_request_data.end(), buffer, buffer + bytes_read);
+	if (bytes_read < BUFFER_SIZE - 1)
+		reading_mode = FINISHED;
+}
+
+
+void	Http_request::main_reader(int client_fd)
+{
+	read_from_socket(client_fd);
+	reading_mode = look_for_body();
+
+
+	if (reading_mode != READING_HEADERS)
+		parse_headers(unsorted_headers);
+	if (reading_mode == READING_BODY)
+
+	// if (reading_mode == READING_BODY)
+	// 	body_bytes_read += bytes_read;
+	// else look_for_body();
+
+		
+	if (body_bytes_read > _max_body_size)
+		throw (std::length_error("Request size exceeds the allowed limit"));
+}
+
+
+// if body found and finished == FINISHED
+// if body not found and finished == FINISHED (no body)
+// if body not found and not finished == READING_HEADERS
+// if body found and not finished == reading body
+
+reading_status Http_request::look_for_body(void)
+{
+	std::vector<char>::iterator it;
+
+	it = std::search(raw_request_data.begin(), raw_request_data.end(),\
+	body_start.begin(), body_start.end());
+	
+	if (it == raw_request_data.end())
+	{
+		if (reading_mode == FINISHED)
+			return (FINISHED_NO_BODY);
 		else
-			_more_to_read = true;
-		_total_bytes_read += bytes_read;
-		if (_total_bytes_read > _max_bytes_to_read)
-			throw (std::length_error("Request size exceeds the allowed limit"));
-		buffer[bytes_read] = '\0';
-		this->unsorted_string += buffer;
-	//for the multiple reads I think I need either a read before bool to save bytes read and 
+			return (READING_HEADERS);
+	}
+	unsorted_headers = std::string(raw_request_data.begin(), it);
+	raw_request_data.erase(raw_request_data.begin(), it + body_start.size());
+	body_bytes_read = raw_request_data.size();
+	if (reading_mode != FINISHED)
+		return (READING_BODY);
 }
 
-std::string Http_request::urlToFilePath(const std::string& url) {
-    // Ensure the URL starts with a '/'
-    if (url.empty() || url[0] != '/') {
-        throw std::invalid_argument("Invalid URL");
-    }
+// std::string Http_request::urlToFilePath(const std::string& url) {
+//     // Ensure the URL starts with a '/'
+//     if (url.empty() || url[0] != '/') {
+//         throw std::invalid_argument("Invalid URL");
+//     }
 
-    // Sanitize the URL to prevent directory traversal attacks
-    std::string sanitized_url;
-    for (size_t i = 0; i < url.size(); ++i) {
-        if (url[i] == '.' && i + 1 < url.size() && url[i + 1] == '.') {
-            // Skip ".." to prevent directory traversal
-            i++;
-        } else {
-            sanitized_url += url[i];
-        }
-    }
+//     // Sanitize the URL to prevent directory traversal attacks
+//     std::string sanitized_url;
+//     for (size_t i = 0; i < url.size(); ++i) {
+//         if (url[i] == '.' && i + 1 < url.size() && url[i + 1] == '.') {
+//             // Skip ".." to prevent directory traversal
+//             i++;
+//         } else {
+//             sanitized_url += url[i];
+//         }
+//     }
 
-    return file_path;
-}
+//     return file_path;
+// }
 // ************************************************************************** //
 //                                Public methods                              //
 // ************************************************************************** //
@@ -180,3 +220,13 @@ std::string Http_request::urlToFilePath(const std::string& url) {
 // CONSIDERATIONS
 // Methods array could be static, a vector and the for loop condition shouldnt be hardcoded
 //set up right now so that it erros if req line is longer than 1024
+
+
+
+// KNOWLEDGEEEEEE
+
+// CHAR VECTOR
+// dont worry about how u parse headers too much? map/save importo
+// look for delimiter within body called somehting =
+// 
+// 

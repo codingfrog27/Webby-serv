@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/16 20:34:46 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/17 18:07:33 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,10 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 #include <fcntl.h>
 #include <unistd.h>
+#include <algorithm>
 #include "libft.h"
 
 #define GREEN "\033[32m"
@@ -40,21 +42,29 @@ enum reading_status
 	READING_HEADERS,
 	READING_BODY,
 	FINISHED,
+	FINISHED_NO_BODY,
 };
 
 class Http_request
 {
 	private:
-		Http_method	_method_type; //should mb be public else i can make getters
-		bool		_is_cgi;
-		bool		_more_to_read; //change to reading status
-		int			_total_bytes_read;
-		const int	_max_bytes_to_read = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER (mb rename to _max_size)
-		float		_http_version;
+		Http_method				_method_type; //should mb be public else i can make getters
+		reading_status			reading_mode;
+		bool					_is_cgi;
+		int						body_bytes_read;
+		const int				_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER (mb rename to _max_size)
+		float					_http_version;
+		size_t					_content_length;
+		std::string				_boundary;
+		const std::vector<char> body_start = {'\r', '\n', '\r', '\n'};
+		// bool					_has_body;
 
-		void		socket_to_string(int client_fd);
-		void		parse_first_read(void);
-		Http_method	which_method_type(std::string &str);
+
+		void				read_from_socket(int client_fd);
+		void				parse_headers(std::string str);
+		Http_method			which_method_type(std::string &str);
+		reading_status		look_for_body(void);
+		void				main_reader(int client_fd);
 
 	public:
 		// Constructors and Destructors
@@ -65,8 +75,9 @@ class Http_request
 		~Http_request(void);
 
 		// Public Methods
-		std::string	unsorted_string;
-		std::string	request_line;
+		std::vector<char>	raw_request_data;
+		std::string			unsorted_headers;
+		std::string			request_line;
 		std::string filepath; //rename to URI ?
 } ;
 
