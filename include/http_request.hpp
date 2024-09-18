@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/18 15:09:32 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/18 18:45:48 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,11 @@ class Http_request
 		Http_method			which_method_type(std::string &str);
 		void				look_for_body(int bytes_read);
 		void				main_reader(int client_fd);
+		void				parse_req_line(std::string req_line);
 
 	public:
+		std::unordered_map<std::string, std::string> _headers;
+
 		// Constructors and Destructors
 		Http_request(void) = delete;
 		Http_request(int client_fd);

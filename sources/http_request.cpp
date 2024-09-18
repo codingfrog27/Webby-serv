@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/18 15:36:23 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/18 18:47:25 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ Http_request::Http_request(int client_fd): _is_cgi(false), _has_body(true), _bod
 		std::cerr << e.what() << std::endl;
 	}
 	//handle  errors
-	std::cout << this->raw_request_data; //print request for testing
+	// std::cout << this->raw_request_data; //print request for testing
 
 	
 	
@@ -125,37 +125,43 @@ void	Http_request::look_for_body(int bytes_read)
 		reading_mode = READING_HEADERS;
 }
 
-void	Http_request::parse_headers(std::string str)
+void	Http_request::parse_headers(std::string header_str)
 {
-	std::unordered_map<std::string, std::string> headers;
+	std::vector<std::string> header_vec;
+	size_t					start;
 
 
+	//req line parse
+	start = header_str.find("\r\n", 0);
+	if (start != std::string::npos)
+		throw (std::invalid_argument("no request line found"));
+	parse_req_line(header_str.substr(0, start));
+	for (size_t i = 0; i != std::string::npos;)
+	{
+		i = header_str.find("\r\n", start + 2);
+		if (i != std::string::npos)
+		{
+			header_vec.push_back(header_str.substr(start, i));
+			start += i + 2;
+		}
+	}
 
+		//put into map
+	// 	 for (const auto &line : lines)
+    // {
+    //     std::string::size_type delimiter = line.find(':');
+    //     if (delimiter != std::string::npos)
+    //     {
+    //         std::string key = trim(line.substr(0, delimiter));
+    //         std::string value = trim(line.substr(delimiter + 1));
+    //         header_map[key] = value;
+    //     }
+    // }
+}
 
+void	Http_request::parse_req_line(std::string req_line)
+{
 
-
-
-
-
-
-
-
-
-
-	std::string method, url, http_version;
-
-	int	newline = unsorted_headers.find('\n');
-	if (newline == std::string::npos)
-		throw (std::length_error("Request line is too long!")); //set up right now so that it erros if req line is longer than 1024
-	std::istringstream request_stream(unsorted_headers.substr(0, newline));
-	request_stream >> method >> url >> http_version;
-	// First line splitting from chatgpt, not sure if safe yet
-
-
-
-	_method_type = which_method_type(method);
-	// filepath = urlToFilePath(url);
-	// _http_version =
 }
 
 Http_method Http_request::which_method_type(std::string &str)
