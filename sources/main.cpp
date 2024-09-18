@@ -1,19 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/16 18:17:13 by asimone          ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   main.cpp                                           :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/08/16 15:06:45 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2024/09/17 18:47:55 by antoniosimo   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "Location.hpp"
-
-#define PORT 8080 // common used port for web servers
 
 int main(int argc, char const *argv[])
 {
