@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/17 19:04:29 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/18 15:09:32 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <algorithm>
+#include <unordered_map>
 #include "libft.h"
 
 #define GREEN "\033[32m"
@@ -51,21 +52,19 @@ class Http_request
 	private:
 		Http_method				_method_type; //should mb be public else i can make getters
 		reading_status			reading_mode;
-		bool					_is_cgi;
+		bool					_body_found;
 		int						body_bytes_read;
-		int						_bytes_read;
 		const int				_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER (mb rename to _max_size)
-		float					_http_version;
-		size_t					_content_length;
+		std::string				unsorted_headers;
 		std::string				_boundary;
-		const std::vector<char> body_start = {'\r', '\n', '\r', '\n'};
-		// bool					_has_body;
+		std::vector<char>		raw_request_data;
+		
 
 
 		int					read_from_socket(int client_fd);
 		void				parse_headers(std::string str);
 		Http_method			which_method_type(std::string &str);
-		reading_status		look_for_body(void);
+		void				look_for_body(int bytes_read);
 		void				main_reader(int client_fd);
 
 	public:
@@ -76,10 +75,10 @@ class Http_request
 		Http_request &operator=(const Http_request &rhs);
 		~Http_request(void);
 
-		// Public Methods
-		std::vector<char>	raw_request_data;
-		std::string			unsorted_headers;
+	float					_http_version;
+		bool				_is_cgi;
 		std::string			request_line;
+	size_t					_content_length;
 		std::string filepath; //rename to URI ?
 } ;
 

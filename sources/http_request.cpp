@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/17 19:04:14 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/18 15:36:23 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 //                        Constructors and Destructors                        //
 // ************************************************************************** //
 
-Http_request::Http_request(int client_fd): _is_cgi(false), _has_body(true), \
+Http_request::Http_request(int client_fd): _is_cgi(false), _has_body(true), _body_found(false), \
 		_method_type(NOT_PARSED_YET), body_bytes_read(0), reading_mode(NOT_STARTED) //add max bytes read from
 {
 	std::cout << GREEN << "Http_request parsing started" << RESET << std::endl;
@@ -76,15 +76,78 @@ Http_request::~Http_request(void)
 	std::cout << RED << "http_request: Destructor called" << RESET << std::endl;
 }
 
+void	Http_request::main_reader(int client_fd)
+{
+	int bytes_read = read_from_socket(client_fd);
+	if (!_body_found)
+		look_for_body(bytes_read);
+	if (body_bytes_read > _max_body_size)
+		throw (std::length_error("Request size exceeds the allowed limit"));
+	if (reading_mode != READING_HEADERS) //&& headers_not_parsed_yet bool or check one of the values it sets)
+		parse_headers(unsorted_headers);
+		
+}
+
+int	Http_request::read_from_socket(int client_fd)
+{
+	static char buffer[BUFFER_SIZE] = {0};
+	int	bytes_read;
+	
+	bytes_read = read(client_fd, buffer, BUFFER_SIZE - 1);
+	if (bytes_read < 0)
+		throw (std::ios_base::failure("reading fail when reading from client socket"));
+	raw_request_data.insert(raw_request_data.end(), buffer, buffer + bytes_read);
+	if (reading_mode == READING_BODY)
+		body_bytes_read += bytes_read;
+	return (bytes_read);
+}
+
+void	Http_request::look_for_body(int bytes_read)
+{
+	static const std::vector<char> body_delim = {'\r', '\n', '\r', '\n'};
+	std::vector<char>::iterator it = std::search(raw_request_data.begin(), raw_request_data.end(),\
+	body_delim.begin(), body_delim.end()); //is search allowed?
+	
+	if (it != raw_request_data.end())
+	{
+		_body_found = true;
+		unsorted_headers = std::string(raw_request_data.begin(), it); //cut of the rnrn?
+		raw_request_data.erase(raw_request_data.begin(), it + body_delim.size());
+		body_bytes_read = raw_request_data.size();
+		if (bytes_read < BUFFER_SIZE - 1)
+			reading_mode = FINISHED;
+		else
+			reading_mode = READING_BODY;
+	}
+	else if (bytes_read < BUFFER_SIZE - 1)
+		reading_mode = FINISHED_NO_BODY; //could also just be finished and look at the bool for body found
+	else
+		reading_mode = READING_HEADERS;
+}
+
 void	Http_request::parse_headers(std::string str)
 {
+	std::unordered_map<std::string, std::string> headers;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	std::string method, url, http_version;
 
-	int	newline = raw_request_data.find('\n');
+	int	newline = unsorted_headers.find('\n');
 	if (newline == std::string::npos)
 		throw (std::length_error("Request line is too long!")); //set up right now so that it erros if req line is longer than 1024
-	std::istringstream request_stream(raw_request_data.substr(0, newline));
+	std::istringstream request_stream(unsorted_headers.substr(0, newline));
 	request_stream >> method >> url >> http_version;
 	// First line splitting from chatgpt, not sure if safe yet
 
@@ -92,17 +155,7 @@ void	Http_request::parse_headers(std::string str)
 
 	_method_type = which_method_type(method);
 	// filepath = urlToFilePath(url);
-	_http_version = 
-	
-	
-	
-}
-
-float http_version(std::string &version)
-{
-	if (version.compare(0, 5, "HTTP/") != 0 || version.size() > 8)
-		throw std::invalid_argument("Unsupported HTTP version: " + version);
-	return (std::stof(version.substr(5)));
+	// _http_version =
 }
 
 Http_method Http_request::which_method_type(std::string &str)
@@ -117,78 +170,11 @@ Http_method Http_request::which_method_type(std::string &str)
 	throw std::invalid_argument("Unsupported HTTP method: " + str);
 }
 
-int	Http_request::read_from_socket(int client_fd)
+float http_version(std::string &version)
 {
-	char buffer[BUFFER_SIZE] = {0};
-	int	bytes_read;
-	
-	bytes_read = read(client_fd, buffer, BUFFER_SIZE - 1);
-	if (bytes_read < 0)
-		throw (std::ios_base::failure("reading fail when reading from client socket"));
-	
-	raw_request_data.insert(raw_request_data.end(), buffer, buffer + bytes_read);
-	return (bytes_read);
-}
-
-
-void	Http_request::main_reader(int client_fd)
-{
-	if (reading_mode == READING_BODY)
-	{
-		_bytes_read = read_from_socket(client_fd);
-
-
-		if (body_bytes_read > _max_body_size)
-			throw (std::length_error("Request size exceeds the allowed limit"));
-	}
-
-	reading_mode = look_for_body();
-
-	if (reading_mode = )
-	if (reading_mode = )
-
-
-	if (reading_mode != READING_HEADERS)
-		parse_headers(unsorted_headers);
-	if (reading_mode == READING_BODY)
-
-	// if (reading_mode == READING_BODY)
-	// 	body_bytes_read += bytes_read;
-	// else look_for_body();
-
-		
-}
-
-
-// if body found and finished == FINISHED
-// if body not found and finished == FINISHED (no body)
-// if body not found and not finished == READING_HEADERS
-// if body found and not finished == reading body
-	unsorted_headers = std::string(raw_request_data.begin(), it);
-	raw_request_data.erase(raw_request_data.begin(), it + body_start.size());
-	body_bytes_read = raw_request_data.size();
-
-reading_status Http_request::look_for_body(void)
-{
-	std::vector<char>::iterator it;
-
-	it = std::search(raw_request_data.begin(), raw_request_data.end(),\
-	body_start.begin(), body_start.end());
-
-	if (_bytes_read < BUFFER_SIZE - 1)
-	{
-		if (it == raw_request_data.end())
-			return (FINISHED_NO_BODY); //everything in header string
-		else
-			return (FINISHED); //split
-	}
-	else
-	{
-		if (it == raw_request_data.end())
-			return (READING_HEADERS); //nothing
-		else
-			return (READING_BODY);	//split
-	}
+	if (version.compare(0, 5, "HTTP/") != 0 || version.size() > 8)
+		throw std::invalid_argument("Unsupported HTTP version: " + version);
+	return (std::stof(version.substr(5)));
 }
 
 // std::string Http_request::urlToFilePath(const std::string& url) {
