@@ -34,38 +34,39 @@
 #define YELLOW	"\033[33m"
 #define RESET	"\033[0m"
 
-#define PORT 8080 // common used port for web servers
-
-class Server
+class Socket
 {
-private:
+// private:
+// 	std::string	 				_clientMaxBodySize; //Maximum size of the client request body that the server will accept 
+// 	std::map<int, std::string>	_errorPages; //HTTP status codes to custom error page files
+// 	std::string 				_index; //Default index file(s) to be served when a directory is requested 
+// 	std::vector<Location>		_locations; //Location object defines how requests matching a particular URL path should be handled
+// 	std::string					_root; //Root directory from which files are served
+// 	std::string					_socketName; //Server’s name or hostname for matching requests;
 
-	struct sockaddr_in 			m_address;
-	int							m_addressFamily;
-	std::string	 				m_clientMaxBodySize; //Maximum size of the client request body that the server will accept 
-	std::map<int, std::string>	m_errorPages; //HTTP status codes to custom error page files
-	u_long						m_host;
-	std::string 				m_index; //Default index file(s) to be served when a directory is requested 
-	std::vector<Location>		m_locations; //Location object defines how requests matching a particular URL path should be handled
-	int							m_port; //Port number on which the server listens for incoming connections
-	int							m_protocol;
-	std::string					m_root; //Root directory from which files are served
-	int							m_serverFd;
-	std::string					m_serverName; //Server’s name or hostname for matching requests;
-	int							m_type;
+protected:
+	struct sockaddr_in 			_address;
+	int							_addressFamily;
+	int 						_connection;
+	u_long						_host;
+	int							_port; //Port number on which the server listens for incoming connections
+	int							_protocol;
+	int							_SocketFd;
+	int							_type;
 
-	//std::string					m_accessLog; //Path to the file where access logs are written
-	//bool						m_autoIndex; //Directory indexing is enabled for the server
-	//std::string 				m_errorLog; //Path to the file where error logs are written	 
-	//std::string					m_redirect; //URL to which all requests to the server should be redirected 
+
+	//std::string				_accessLog; //Path to the file where access logs are written
+	//bool						_autoIndex; //Directory indexing is enabled for the server
+	//std::string 				_errorLog; //Path to the file where error logs are written	 
+	//std::string				_redirect; //URL to which all requests to the server should be redirected 
 
 public:
 	//ORTHODOX CANONICAL CLASS FORM//
 	//Server();
 	//Server(const Server &obj);
 	//Server& operator=(const Server& obj);
-	Server(int t_addressFamily, std::string t_clientMaxBodySize, std::map<int, std::string> t_errorPages, u_long t_host, std::string t_index, std::vector<Location>	t_locations, int t_port, int t_protocol, std::string t_root, std::string t_serverName, int t_type);
-	~Server();
+	Socket(int t_addressFamily, u_long t_host, int t_port, int t_protocol, int t_type);
+	~Socket();
 
 	//GET FUNTIONS//
 	//const std::string &getAccessLog();
@@ -78,7 +79,7 @@ public:
 	//const int &getPort();
 	//const std::string &getRedirect();
 	//const std::string &getRoot();
-	//const std::string &getServerName();
+	//const std::string &getSocketName();
 
 	//SET FUNCTIONS//
 	//void setAccessLog(const std::string &t_accessLog);
@@ -98,4 +99,18 @@ public:
 	//void searchValue(std::string& fileToRead); //, std::string valueToParse, std::string buffer);
 	//void webServer(std::string fileToParse);
 	//void keyAnalisize();
+
+
+	//Virtual function to connect to a network
+	virtual int connectToNetwork(int socketFd, struct sockaddr_in address) = 0;
+	//Function to test sockets and connection
+	void test_connection(int test);
+
+	//SETTER FUNCTION
+	void setConnection(int connect);
+
+	//GETTER FUNCTION
+	const struct sockaddr_in& getaddress();
+	const int &getconnection();
+	const int &getsocketFd();
 };
