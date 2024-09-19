@@ -15,8 +15,10 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <cstring>
+#include <fcntl.h>
 #include <fstream>
 #include <map>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <string>
 #include <stdexcept>
