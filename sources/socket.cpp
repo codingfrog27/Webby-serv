@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/19 16:15:04 by asimone          ###   ########.fr       */
+/*   Updated: 2024/09/19 16:19:56 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,9 @@ Socket::Socket(const std::string &t_hostname, const std::string &t_port) : _host
         std::cerr << RED << "getaddrinfo error: " << gai_strerror(status) << RESET << std::endl;
         return;
     }
-    
+    //getaddrinfo might return multiple address structures because there could be multiple valid ways to connect to the desired host
+    //The loop breaks as soon as a socket is successfully created and bound, 
+    //or it continues until the end of the list if none of the address structures work
     for(p = servinfo; p != NULL; p = p->ai_next)
     {
         //Create a new socket for network communication
