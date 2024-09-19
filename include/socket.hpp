@@ -35,21 +35,21 @@
 
 #define PORT 8080 // common used port for web servers
 
-class Server
+class Socket
 {
 private:
 	struct sockaddr_in			_address;
 	int							_domain;
 	int							_protocol;
-	int							_serverFd;
+	int							_socketFd;
 	int							_type;
 
 public:
 	//ORTHODOX CANONICAL CLASS FORM//
-	Server(int t_domain, int t_type, int t_protocol);
-	// Server(const Server &obj);
-	// Server& operator=(const Server& obj);
-	~Server();
+	Socket(int t_domain, int t_type, int t_protocol);
+	// Socket(const Socket &obj);
+	// Socket& operator=(const Socket& obj);
+	~Socket();
 
 	void	createConnection(std::string t_filePath);
 };
