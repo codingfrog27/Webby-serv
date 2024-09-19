@@ -40,15 +40,14 @@
 class Socket
 {
 private:
-	struct sockaddr_in			_address;
-	int							_domain;
-	int							_protocol;
-	int							_socketFd;
-	int							_type;
+	struct sockaddr_in	_address;
+	std::string			_hostname; 
+	std::string			_port;
+	int					_socketFd;
 
 public:
 	//ORTHODOX CANONICAL CLASS FORM//
-	Socket(int t_domain, int t_type, int t_protocol);
+	Socket(const std::string &t_hostname, const std::string &t_port);
 	// Socket(const Socket &obj);
 	// Socket& operator=(const Socket& obj);
 	~Socket();

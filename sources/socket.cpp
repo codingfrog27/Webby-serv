@@ -6,30 +6,25 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/19 14:58:32 by asimone          ###   ########.fr       */
+/*   Updated: 2024/09/19 16:15:04 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket.hpp"
 
-Socket::Socket(int t_domain, int t_type, int t_protocol) : _domain(t_domain), _protocol(t_protocol), _type(t_type)
+Socket::Socket(const std::string &t_hostname, const std::string &t_port) : _hostname(t_hostname), _port(t_port)
 {
     struct addrinfo hints, *p, *servinfo;
     
-    // Initialize hints
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = _domain; //don't care IPv4 or IPv6
-    hints.ai_socktype = _type; //TCP stream sockets
-    hints.ai_flags = AI_PASSIVE; //fill in my IP for me
-    hints.ai_protocol = _protocol;
-    
-    //Identify (name) a socket
-    _address.sin_family = AF_INET;					 
-	_address.sin_addr.s_addr = htonl(INADDR_ANY); //Fill the struct sockaddr_in
-	_address.sin_port = htons(PORT);
+    //Initialize hints. Hold information about address and port details
+    memset(&hints, 0, sizeof(hints)); //Clear the struct first
+    hints.ai_family = AF_UNSPEC; //Specifies the address family. AF_UNSPEC = don't care IPv4 or IPv6
+    hints.ai_flags = AI_PASSIVE; //Provides additional options (AI_PASSIVE for binding to all network interfaces)
+    hints.ai_protocol = IPPROTO_TCP; //Specifies the protocol
+    hints.ai_socktype = SOCK_STREAM; //Specifies the socket type (SOCK_STREAM for TCP)
  
-    // Get address information
-    int status = getaddrinfo(NULL, "8080", &hints, &servinfo);
+    //Used to obtain address information for a given hostname and/or service
+    int status = getaddrinfo(_hostname.c_str(), _port.c_str(), &hints, &servinfo); 
     if (status != 0)
     {
         std::cerr << RED << "getaddrinfo error: " << gai_strerror(status) << RESET << std::endl;
@@ -38,11 +33,11 @@ Socket::Socket(int t_domain, int t_type, int t_protocol) : _domain(t_domain), _p
     
     for(p = servinfo; p != NULL; p = p->ai_next)
     {
-        //Create a socket
+        //Create a new socket for network communication
         _socketFd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
         if(_socketFd < 0)
         {
-            std::cerr << RED << "Fail to create a Socket..." << RESET << std::endl;
+            std::cerr << RED << "Fail to create a Socket." << RESET << std::endl;
             continue;
         }
 
@@ -67,9 +62,9 @@ Socket::Socket(int t_domain, int t_type, int t_protocol) : _domain(t_domain), _p
     }
 
     if (p == NULL)
-        std::cerr << RED << "Fail to bind the Socket..." << RESET << std::endl;
+        std::cerr << RED << "Fail to bind the Socket." << RESET << std::endl;
 
-    freeaddrinfo(servinfo); //Free the linked list
+    freeaddrinfo(servinfo); //Free the linked list servinfo to avoid memory leaks
     
     std::cout << GREEN << "Parameterized Constructor socket has been called." << RESET << std::endl;
 }
