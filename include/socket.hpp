@@ -35,6 +35,7 @@
 #define YELLOW	"\033[33m"
 #define RESET	"\033[0m"
 
+#define BACKLOG 10 // how many pending connections queue will hold
 #define PORT 8080 // common used port for web servers
 
 class Socket

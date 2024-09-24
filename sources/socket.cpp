@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/19 16:19:56 by asimone          ###   ########.fr       */
+/*   Updated: 2024/09/24 15:58:18 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,14 @@ Socket::Socket(const std::string &t_hostname, const std::string &t_port) : _host
         //     continue;
         // }
         
+        int yes = 1;
+        //It allows to configure specific behaviors for a socket and avoid the bind function fails, claiming “Address already in use.”
+        if (setsockopt(_socketFd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof yes) == -1)
+        {
+            std::cerr << RED << "Setsockopt failed with error: " << strerror(errno) << RESET << std::endl;
+            continue;
+        } 
+
         //This function associates a socket with a local address and port number. 
         //It tells the operating system that the socket should be used for communication at the specified address and port
         if (bind(_socketFd, p->ai_addr, p->ai_addrlen) == -1)
@@ -59,7 +67,7 @@ Socket::Socket(const std::string &t_hostname, const std::string &t_port) : _host
             std::cerr << RED << "Bind failed with error: " << strerror(errno) << RESET << std::endl;
             continue;
         }
-
+        
         break; //Successfully bound, exit the loop
     }
 
@@ -89,7 +97,7 @@ void    Socket::createConnection(std::string t_filePath)
 
     //This function configures a socket to listen for incoming connection requests from clients. 
     //After binding a socket to an address and port, we use listen() to indicate that the socket is ready to accept incoming connections.
-    if (listen(_socketFd, 3) < 0)
+    if (listen(_socketFd, BACKLOG) < 0)
     {
         std::cerr << RED << "Listen failed with error: " << strerror(errno) << RESET << std::endl;
     }
