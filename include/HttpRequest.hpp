@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/24 15:29:23 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/24 17:22:46 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,9 +72,6 @@ class HttpRequest
 		void				parseBody();
 
 	public:
-		Http_method				_method_type; //should mb be public else i can make getters
-		std::unordered_map<std::string, std::string> _headers;
-
 		// Constructors and Destructors
 		HttpRequest(void) = delete;
 		HttpRequest(int client_fd);
@@ -82,11 +79,13 @@ class HttpRequest
 		HttpRequest &operator=(const HttpRequest &rhs);
 		~HttpRequest(void);
 
-	float				_http_version;
-	bool				_is_cgi;
-	std::string			request_line;
-	size_t				_content_length;
-	std::string 		_URI; //rename to URI ?
+
+	Http_method									_method_type; //should mb be public else i can make getters
+	std::unordered_map<std::string, std::string> _headers;
+	float											_http_version;
+	std::string										request_line;
+	size_t											_content_length;
+	std::string 									_URI; //rename to URI ?
 };
 
 //     std::string document_root = "/var/www/html"; // Example document root

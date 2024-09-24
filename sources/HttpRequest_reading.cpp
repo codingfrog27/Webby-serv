@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/24 15:43:06 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/24 17:36:44 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,8 +135,25 @@ void	HttpRequest::look_for_body()
 }
 
 
+void HttpRequest::checkRequiredHeaders()
+{
+	std::unordered_map<std::string, std::string> requiredHeaders = {
+		{"Host", ""},
+		{"User-Agent", ""},
+		{"Accept", ""},
+		{"Accept-Language", ""},
+		{"Accept-Encoding", ""},
+		{"Connection", ""}
+	};
 
-
+	for (const auto& header : requiredHeaders)
+	{
+		if (_headers.find(header.first) == _headers.end())
+		{
+			throw std::runtime_error("Missing required header: " + header.first);
+		}
+	}
+}
 
 
 
