@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   http_request.hpp                                   :+:      :+:    :+:   */
+/*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/23 16:39:31 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/24 15:27:35 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,10 @@ enum reading_status
 	READING_HEADERS,
 	
 	READING_BODY,
-	FINISHED,
-	FINISHED_NO_BODY,
+	FINISHED
 };
 
-class Http_request 
+class HttpRequest 
 {
 	// things to pass/inheret from config
 	// max body size
@@ -60,28 +59,29 @@ class Http_request
 		std::string				_boundary;
 		bool					_bodyFound;
 		bool					_dataIsChunked;
-		const int				_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER (mb rename to _max_size)
-		
+		bool					_headerAreParsed;
+		const int				_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
 
 
-		int					read_from_socket(int client_fd);
+		void				read_from_socket(int client_fd);
 		void				parse_headers(std::string str);
 		Http_method			which_method_type(std::string str);
-		void				look_for_body(int bytes_read);
+		void				look_for_body();
 		void				main_reader(int client_fd);
 		size_t				parse_req_line(std::string req_line);
 		void				dechunkBody();
+		void				parseBody();
 
 	public:
 		Http_method				_method_type; //should mb be public else i can make getters
 		std::unordered_map<std::string, std::string> _headers;
 
 		// Constructors and Destructors
-		Http_request(void) = delete;
-		Http_request(int client_fd);
-		Http_request(const Http_request &rhs);
-		Http_request &operator=(const Http_request &rhs);
-		~Http_request(void);
+		HttpRequest(void) = delete;
+		HttpRequest(int client_fd);
+		HttpRequest(const HttpRequest &rhs);
+		HttpRequest &operator=(const HttpRequest &rhs);
+		~HttpRequest(void);
 
 	float				_http_version;
 	bool				_is_cgi;
