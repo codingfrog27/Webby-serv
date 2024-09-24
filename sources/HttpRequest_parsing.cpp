@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:11:35 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/24 15:29:01 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/24 15:58:22 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ Http_method HttpRequest::which_method_type(std::string str) //will be updated af
 
 void HttpRequest::dechunkBody()
 {
-	
+	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
 }
 
 float http_version(std::string version)
@@ -85,5 +85,33 @@ void	HttpRequest::parseBody()
 {
 	if (_method_type == GET)
 		throw (std::invalid_argument("GET requests should not have a body"));
+	if (_headers["Transfer-Encoding"] == "chunked")
+		dechunkBody();
+	
 	
 }
+
+void	HttpRequest::checkHeaders()
+{
+	//required headers
+	// host //400 Bad Request
+	//content-type (content-length || transfer-encoding) if theres a body
+	// 411 Length Required or 415 Unsupported Media if type is missing
+
+	//not sure but Authorization if thats in scope for protected resources
+	//accept
+	//not mandated but could return 406 Not Acceptable
+
+
+	//check for content length == body bytes read
+}
+
+bool	find()
+{
+	auto it = _headers.find("Transfer-Encoding");
+}it != _headers.end() && it->second == "chunked")
+
+
+// look into expext, mb range, if-modified-since/if-none-match (could contain misuse but else return 304) header
+// connection
+// 

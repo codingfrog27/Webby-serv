@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/24 15:28:20 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/24 15:43:06 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void	HttpRequest::main_reader(int client_fd)
 			parse_headers(_unsortedHeaders);
 		if (reading_mode == FINISHED && _bodyFound)
 			parseBody();
-		
+		//timeout check here?
 	}
 	catch(const std::ios_base::failure &e)
 	{

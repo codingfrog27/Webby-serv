@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/24 15:27:35 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/24 15:29:23 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ enum reading_status
 {
 	NOT_STARTED,
 	READING_HEADERS,
-	
 	READING_BODY,
 	FINISHED
 };
