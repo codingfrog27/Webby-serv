@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/24 15:58:18 by asimone          ###   ########.fr       */
+/*   Updated: 2024/09/25 17:37:15 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ Socket::Socket(const std::string &t_hostname, const std::string &t_port) : _host
             std::cerr << RED << "Fail to create a Socket." << RESET << std::endl;
             continue;
         }
+        // fcntl(_socketFd, F_SETFL, O_NONBLOCK);
 
         // Set socket to non-blocking
         // if (fcntl(_socketFd, F_SETFL, O_NONBLOCK) < 0)
@@ -79,33 +80,67 @@ Socket::Socket(const std::string &t_hostname, const std::string &t_port) : _host
     std::cout << GREEN << "Parameterized Constructor socket has been called." << RESET << std::endl;
 }
 
+void *get_in_addr(struct sockaddr *sa)
+{
+    if (sa->sa_family == AF_INET)
+        return &(((struct sockaddr_in*)sa)->sin_addr);
+    return &(((struct sockaddr_in6*)sa)->sin6_addr);
+}
+
 Socket::~Socket()
 {
     std::cout << RED << "Destructor socket has been called." << RESET << std::endl;
 }
 
+void sendHTMLPage(int client_socket, const std::string& file_path) 
+{
+    //Open the HTML file
+    std::ifstream file(file_path);
+    if (!file) 
+    {
+        std::cerr << RED << "Error opening file: " << file_path << RESET << std::endl;
+        return;
+    }
+
+    //Read the file content, store it in buffer and covert it into a string
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string html_content = buffer.str();
+
+    //HTTP Response Headers
+    std::string http_response = "HTTP/1.1 200 OK\r\n";
+    http_response += "Content-Type: text/html\r\n";
+    http_response += "Content-Length: " + std::to_string(html_content.size()) + "\r\n";
+    http_response += "Connection: close\r\n";
+    http_response += "\r\n";
+
+    //Send the HTTP header
+    send(client_socket, http_response.c_str(), http_response.size(), 0);
+    //Send the client file content
+    send(client_socket, html_content.c_str(), html_content.size(), 0);
+    std::cout << YELLOW << "--------- HTML message sent ----------" << RESET << std::endl;
+
+    file.close();
+}
+
 void    Socket::createConnection(std::string t_filePath)
 {   
-    std::string http_header =	"HTTP/1.1 200 OK\r\n"
-                            	"Content-Type: text/html\r\n"
-                                "Connection: close\r\n"
-                                "\r\n";
-    
-    int addrlen = sizeof(_address); //Is used to store the size of the address structure when dealing with socket operations in networking. This ensures that the function accept() operates correctly and does not overwrite memory
-    long valread; 
-    int  new_socket; //Socket prepared to accept the connections
+    socklen_t   addrlen = sizeof(_address); //Is used to store the size of the address structure when dealing with socket operations in networking. This ensures that the function accept() operates correctly and does not overwrite memory
+    int         new_socket; //Socket prepared to accept the connections
+    int         pollin_happened;
 
     //This function configures a socket to listen for incoming connection requests from clients. 
     //After binding a socket to an address and port, we use listen() to indicate that the socket is ready to accept incoming connections.
     if (listen(_socketFd, BACKLOG) < 0)
-    {
         std::cerr << RED << "Listen failed with error: " << strerror(errno) << RESET << std::endl;
-    }
 
     while (1)
     {
         std::cout << YELLOW << "--------- Waiting for new connection ----------" << RESET << std::endl;
-        // This function is called to accept an incoming connection request on a socket that has been set up to listen for connections. 
+        //Monitoring a socket for incoming events using poll()
+        if ((pollin_happened = manageConnection(_socketFd)) == -1)
+            break;
+        //This function is called to accept an incoming connection request on a socket that has been set up to listen for connections. 
         //When a client attempts to connect to the server, accept() creates a new socket for that connection and establishes the communication channel.
         if ((new_socket = accept(_socketFd, (struct sockaddr *)&_address, (socklen_t *)&addrlen)) < 0)
 		{
@@ -114,30 +149,49 @@ void    Socket::createConnection(std::string t_filePath)
 		}
 
         //Send and receive messages
-		char buffer[1024] = {0};
+		char buffer[INET6_ADDRSTRLEN] = {0};
 
-        //Store the number of bytes read from the read() function call
-		valread = read(new_socket, buffer, 1024);
-		if (valread < 0)
-		{
-			std::cerr << RED << "No bytes are there to read" << RESET << std::endl;
-		}
+        //It convert the IPv4 or IPv6 from binary to string
+        inet_ntop(_address.ss_family, get_in_addr((struct sockaddr *)&_address), buffer, sizeof buffer);
+        std::cout << CYAN << "server: got connection from " << buffer << RESET << std::endl;
+
+        if (!fork()) 
+        {
+            close(_socketFd); //Close the listener socket
+            sendHTMLPage(new_socket, t_filePath); //Send the HTML page with the new socket
+            close(new_socket);
+            exit(0); //Exit from the child process
+        }
         
-        std::ifstream 	file(t_filePath);
-		if (file.is_open())
-		{
-			std::string file_content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-			file.close();
-			
-			//Send the HTTP header
-			write(new_socket, http_header.c_str(), http_header.size());
-			//Send the client file content
-			write(new_socket, file_content.c_str(), file_content.size());
-			std::cout << YELLOW << "--------- HTML message sent ----------" << RESET << std::endl;
-		}
-		else
-			std::cerr << RED << "Could not open file!" << RESET << std::endl;
-
 		close(new_socket);
     }
+}
+
+
+int    Socket::manageConnection(int socketFd)
+{
+    //initialize the poll struct to store the socket file descriptor. Ex. 1 socket
+    struct pollfd pfds[1];
+    
+    pfds[0].fd = socketFd; //socket to monitor
+    pfds[0].events = POLLIN; //Alert me when data is ready to recv() on this socket
+
+    //This system call monitors multiple file descriptors (in this case, just one) to see if any of them have events that need to be handled
+    int num_events = poll(pfds, 1, 2500);
+    
+    if (num_events < 0) 
+    {
+        std::cerr << RED << "Poll failed with error: " << strerror(errno) << RESET << std::endl;
+        return (-1);
+    }
+
+    if (num_events == 0) 
+    {
+        std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
+        return (0);
+    }
+    
+    if (pfds[0].revents & POLLIN)
+        return (1); 
+    return (0);
 }

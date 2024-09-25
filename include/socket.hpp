@@ -20,6 +20,7 @@
 #include <map>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <poll.h>
 #include <string>
 #include <stdexcept>
 #include <sys/types.h>
@@ -41,10 +42,10 @@
 class Socket
 {
 private:
-	struct sockaddr_in	_address;
-	std::string			_hostname; 
-	std::string			_port;
-	int					_socketFd;
+	struct sockaddr_storage _address; //Cover IPv4 and IPv6
+	std::string				_hostname; 
+	std::string				_port;
+	int						_socketFd;
 
 public:
 	//ORTHODOX CANONICAL CLASS FORM//
@@ -54,4 +55,5 @@ public:
 	~Socket();
 
 	void	createConnection(std::string t_filePath);
+	int		manageConnection(int socketFd);
 };
