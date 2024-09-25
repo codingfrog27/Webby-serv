@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:11:35 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/25 13:54:50 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/25 16:06:54 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,22 @@
 // some irl servers do allow it though.. so might add later?
 void	HttpRequest::parse_headers(std::string header_str)
 {
-	size_t						start, colon_pos;
+	size_t						start, colon_pos, line_end;
 	std::string					key, value;
 
 	start = parse_req_line(header_str);
-	for (size_t line_end = header_str.find("\r\n", start); line_end != std::string::npos;)
+	line_end = header_str.find("\r\n", start);
+	while (line_end != std::string::npos)
 	{
-		colon_pos = header_str.find(':');
+		colon_pos = header_str.find(':', start);
 		if (colon_pos == std::string::npos)
 			throw (std::invalid_argument("colon missing in header"));
 		key = header_str.substr(start, colon_pos - start);
-		value = header_str.substr(colon_pos + 1, line_end - colon_pos + 1);
+		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2));
 		_headers[key] = value;
-		start += line_end + 2;
+		start = line_end + 2;
+		line_end = header_str.find("\r\n", start);
+		std::cout << key << ": " << value << std::endl;
 	}
 
 	
@@ -52,13 +55,13 @@ size_t	HttpRequest::parse_req_line(std::string req_line)
 
 	_method_type = which_method_type(req_line.substr(0, method_end));
 	_URI = req_line.substr(method_end + 1, uri_end - method_end - 1);
-	_http_version = http_version(&req_line[uri_end + 1]); //mb a bit overkill
+	_http_version = http_version(&req_line[uri_end + 1]);
 	return (line_end + 2);
 }
 
 Http_method HttpRequest::which_method_type(std::string str) //will be updated after conig parsing
 {
-	const char *Methods[] = {"GET ", "POST ", "DELETE "}; 
+	const char *Methods[] = {"GET", "POST", "DELETE"}; 
 
 	for (size_t i = 0; i < 3; i++)
 	{
@@ -76,9 +79,10 @@ void HttpRequest::dechunkBody()
 
 float HttpRequest::http_version(std::string version) //throw error if not 1 or 1.1
 {
-	if (version.compare(0, 5, "HTTP/") != 0 || version.size() > 8)
+	if (version.compare(0, 6, "HTTP/1") != 0 && version.compare(0, 8, "HTTP/1.1") != 0)
 		throw std::invalid_argument("Unsupported HTTP version: " + version);
-	return (std::stof(version.substr(5))); //catch potential exceptions from stof?
+	// return (std::stof(version.substr(5))); //catch potential exceptions from stof?
+	return (1); 
 }
 
 void	HttpRequest::parseBody()

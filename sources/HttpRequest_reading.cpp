@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/25 14:04:59 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/25 16:16:29 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ HttpRequest::HttpRequest(int client_fd):
 	  _bodyFound(false), _headerAreParsed(false), _method_type(NOT_PARSED_YET)
 {
 	std::cout << GREEN << "Http_request parsing started" << RESET << std::endl;
-	// main_reader(client_fd);
+	main_reader(_clientFD);
+	std::cout << "" << std::endl;
 }
 
 HttpRequest::HttpRequest(const HttpRequest &rhs)
@@ -81,7 +82,7 @@ void	HttpRequest::main_reader(int client_fd)
 			parse_headers(_unsortedHeaders);
 		if (reading_mode == FINISHED && _bodyFound)
 			parseBody();
-		//timeout check here?
+		// timeout check here?
 	}
 	catch(const std::ios_base::failure &e)
 	{
@@ -125,8 +126,8 @@ void	HttpRequest::look_for_body()
 	else
 	{
 		_bodyFound = true;
-		_unsortedHeaders = std::string(_rawRequestData.begin(), it + 2); //cut of the rnrn?
-		_rawRequestData.erase(_rawRequestData.begin(), it + body_delim.size());
+		_unsortedHeaders = std::string(_rawRequestData.begin(), it); //cut of the rnrn?
+		_rawRequestData.erase(_rawRequestData.begin(), it);
 		body_bytes_read = _rawRequestData.size();
 		if (reading_mode != FINISHED)
 			reading_mode = READING_BODY;
