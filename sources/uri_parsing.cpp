@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 15:54:31 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/23 15:59:11 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/25 14:05:46 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,5 @@ std::string urlToFilePath(const std::string url)
         }
     }
 
-    return ;
+    return sanitized_url;
 }

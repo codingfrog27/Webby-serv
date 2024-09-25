@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:11:35 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/24 18:05:02 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/25 13:54:50 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void HttpRequest::dechunkBody()
 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
 }
 
-float http_version(std::string version) //throw error if not 1 or 1.1
+float HttpRequest::http_version(std::string version) //throw error if not 1 or 1.1
 {
 	if (version.compare(0, 5, "HTTP/") != 0 || version.size() > 8)
 		throw std::invalid_argument("Unsupported HTTP version: " + version);
@@ -106,10 +106,10 @@ void	HttpRequest::checkHeaders()
 	//check for content length == body bytes read
 }
 
-bool	find()
-{
-	auto it = _headers.find("Transfer-Encoding");
-}it != _headers.end() && it->second == "chunked")
+// bool	find()
+// {
+// 	auto it = _headers.find("Transfer-Encoding");
+// }it != _headers.end() && it->second == "chunked")
 
 
 // look into expext, mb range, if-modified-since/if-none-match (could contain misuse but else return 304) header

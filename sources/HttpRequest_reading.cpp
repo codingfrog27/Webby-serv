@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/24 17:36:44 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/25 14:04:59 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 // ************************************************************************** //
 
 
-HttpRequest::HttpRequest(int client_fd): _is_cgi(false), _bodyFound(false), \
-		_method_type(NOT_PARSED_YET), body_bytes_read(0), reading_mode(NOT_STARTED), \
-		_headerAreParsed(false)
+HttpRequest::HttpRequest(int client_fd):
+	 _clientFD(client_fd), reading_mode(NOT_STARTED), body_bytes_read(0), \
+	  _bodyFound(false), _headerAreParsed(false), _method_type(NOT_PARSED_YET)
 {
 	std::cout << GREEN << "Http_request parsing started" << RESET << std::endl;
 	// main_reader(client_fd);
@@ -46,7 +46,6 @@ HttpRequest::operator=(const HttpRequest &rhs)
 		_rawRequestData = rhs._rawRequestData;
 		_unsortedHeaders = rhs._unsortedHeaders;
 		_bodyFound = rhs._bodyFound;
-		_is_cgi = rhs._is_cgi;
 		body_bytes_read = rhs.body_bytes_read;
 		reading_mode = rhs.reading_mode;
 	}
@@ -133,33 +132,3 @@ void	HttpRequest::look_for_body()
 			reading_mode = READING_BODY;
 	}
 }
-
-
-void HttpRequest::checkRequiredHeaders()
-{
-	std::unordered_map<std::string, std::string> requiredHeaders = {
-		{"Host", ""},
-		{"User-Agent", ""},
-		{"Accept", ""},
-		{"Accept-Language", ""},
-		{"Accept-Encoding", ""},
-		{"Connection", ""}
-	};
-
-	for (const auto& header : requiredHeaders)
-	{
-		if (_headers.find(header.first) == _headers.end())
-		{
-			throw std::runtime_error("Missing required header: " + header.first);
-		}
-	}
-}
-
-
-
-
-
-
-
-
-

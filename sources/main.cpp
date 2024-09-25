@@ -6,12 +6,12 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/24 14:10:33 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/25 14:05:21 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#include "http_request.hpp"
+#include "HttpRequest.hpp"
 
 int main()
 {

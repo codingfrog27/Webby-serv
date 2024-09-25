@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/24 17:22:46 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/25 14:02:35 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,12 @@ class HttpRequest
 	// max body size
 	// allowed methods
 	private:
+		int						_clientFD;
 		std::vector<char>		_rawRequestData;
 		std::string				_unsortedHeaders;
 		reading_status			reading_mode;
-		int						body_bytes_read;
 		std::string				_boundary;
+		int						body_bytes_read;
 		bool					_bodyFound;
 		bool					_dataIsChunked;
 		bool					_headerAreParsed;
@@ -70,6 +71,8 @@ class HttpRequest
 		size_t				parse_req_line(std::string req_line);
 		void				dechunkBody();
 		void				parseBody();
+		float				http_version(std::string version);
+		void				checkHeaders();
 
 	public:
 		// Constructors and Destructors
@@ -80,8 +83,8 @@ class HttpRequest
 		~HttpRequest(void);
 
 
-	Http_method									_method_type; //should mb be public else i can make getters
-	std::unordered_map<std::string, std::string> _headers;
+	Http_method										_method_type; //should mb be public else i can make getters
+	std::unordered_map<std::string, std::string> 	_headers;
 	float											_http_version;
 	std::string										request_line;
 	size_t											_content_length;
