@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/26 16:25:03 by asimone          ###   ########.fr       */
+/*   Updated: 2024/09/26 16:57:17 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,16 +152,9 @@ void    Socket::createConnection(std::string t_filePath)
             //It convert the IPv4 or IPv6 from binary to string
             inet_ntop(_address.ss_family, get_in_addr((struct sockaddr *)&_address), buffer, sizeof buffer);
             std::cout << CYAN << "server: got connection from " << buffer << RESET << std::endl;
-
-            if (!fork()) 
-            {
-                close(_socketFd); //Close the listener socket
-                sendHTMLPage(new_socket, t_filePath); //Send the HTML page with the new socket
-                close(new_socket);
-                exit(0); //Exit from the child process
-            }
-        }//manage the accept() return error
-        else if (errno == EAGAIN || errno == EWOULDBLOCK)
+            sendHTMLPage(new_socket, t_filePath); //Send the HTML page with the new socket
+        }
+        else if (errno == EAGAIN || errno == EWOULDBLOCK) //manage the accept() return error
         {
             pollin_happened = manageConnection(new_socket);
             std::cerr << CYAN << "No connections available, retrying..." << RESET << std::endl;
