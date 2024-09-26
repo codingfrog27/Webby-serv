@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/25 14:02:35 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/26 17:23:57 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,36 +51,38 @@ class HttpRequest
 	// max body size
 	// allowed methods
 	private:
-		int						_clientFD;
-		std::vector<char>		_rawRequestData;
-		std::string				_unsortedHeaders;
-		reading_status			reading_mode;
-		std::string				_boundary;
-		int						body_bytes_read;
-		bool					_bodyFound;
-		bool					_dataIsChunked;
-		bool					_headerAreParsed;
-		const int				_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
+	int						_clientFD;
+	std::vector<char>		_rawRequestData;
+	std::string				_unsortedHeaders;
+	reading_status			reading_mode;
+	std::string				_boundary;
+	int						body_bytes_read;
+	bool					_bodyFound;
+	bool					_dataIsChunked;
+	bool					_headerAreParsed;
+	const int				_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
 
 
-		void				read_from_socket(int client_fd);
-		void				parse_headers(std::string str);
-		Http_method			which_method_type(std::string str);
-		void				look_for_body();
-		void				main_reader(int client_fd);
-		size_t				parse_req_line(std::string req_line);
-		void				dechunkBody();
-		void				parseBody();
-		float				http_version(std::string version);
-		void				checkHeaders();
+	void				read_from_socket(int client_fd);
+	void				parse_headers(std::string str);
+	Http_method			which_method_type(std::string str);
+	void				look_for_body();
+	void				main_reader(int client_fd);
+	size_t				parse_req_line(std::string req_line);
+	void				dechunkBody();
+	void				parseBody();
+	float				http_version(std::string version);
+	void				checkHeaders();
 
 	public:
-		// Constructors and Destructors
-		HttpRequest(void) = delete;
-		HttpRequest(int client_fd);
-		HttpRequest(const HttpRequest &rhs);
-		HttpRequest &operator=(const HttpRequest &rhs);
-		~HttpRequest(void);
+	// Constructors and Destructors
+	HttpRequest(void) = delete;
+	HttpRequest(int client_fd);
+	HttpRequest(const HttpRequest &rhs);
+	HttpRequest &operator=(const HttpRequest &rhs);
+	~HttpRequest(void);
+	std::string	getHeaderValue(std::string key);
+	bool	headerExists(std::string key);
 
 
 	Http_method										_method_type; //should mb be public else i can make getters

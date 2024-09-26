@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:11:35 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/25 16:06:54 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/26 17:25:36 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,13 @@ void	HttpRequest::parse_headers(std::string header_str)
 		if (colon_pos == std::string::npos)
 			throw (std::invalid_argument("colon missing in header"));
 		key = header_str.substr(start, colon_pos - start);
-		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2));
+		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2)); //check for empty values?
 		_headers[key] = value;
 		start = line_end + 2;
 		line_end = header_str.find("\r\n", start);
 		std::cout << key << ": " << value << std::endl;
 	}
-
-	
-
-	//done? just check for potential required headers
+	checkHeaders();
 }
 
 size_t	HttpRequest::parse_req_line(std::string req_line)
@@ -44,12 +41,19 @@ size_t	HttpRequest::parse_req_line(std::string req_line)
 	size_t	line_end, method_end, uri_end;
 	
 	line_end = req_line.find("\r\n");
+	if (line_end == 0)
+	{
+		while (req_line[line_end] == '\r' || req_line[line_end] == '\n')
+			line_end++;
+		line_end = req_line.find("\r\n");
+	}
 	if (line_end == std::string::npos)
 		throw (std::invalid_argument("no CRLF found"));
+
 	method_end = req_line.find(' ');
 	if (method_end == std::string::npos)
 		throw (std::invalid_argument("no space found after method"));
-	uri_end = req_line.find(' ', method_end + 1);
+	uri_end = req_line.find(' ', method_end + 1); //could check on single space
 	if (uri_end == std::string::npos)
 		throw (std::invalid_argument("no space found after uri"));
 
@@ -59,9 +63,9 @@ size_t	HttpRequest::parse_req_line(std::string req_line)
 	return (line_end + 2);
 }
 
-Http_method HttpRequest::which_method_type(std::string str) //will be updated after conig parsing
+Http_method HttpRequest::which_method_type(std::string str) 
 {
-	const char *Methods[] = {"GET", "POST", "DELETE"}; 
+	const char *Methods[] = {"GET", "POST", "DELETE"}; //will be updated after config parsing
 
 	for (size_t i = 0; i < 3; i++)
 	{
@@ -81,19 +85,20 @@ float HttpRequest::http_version(std::string version) //throw error if not 1 or 1
 {
 	if (version.compare(0, 6, "HTTP/1") != 0 && version.compare(0, 8, "HTTP/1.1") != 0)
 		throw std::invalid_argument("Unsupported HTTP version: " + version);
-	// return (std::stof(version.substr(5))); //catch potential exceptions from stof?
-	return (1); 
+	return (std::stof(version.substr(5))); 
 }
 
 void	HttpRequest::parseBody()
 {
 	if (_method_type == GET)
 		throw (std::invalid_argument("GET requests should not have a body"));
-	if (_headers["Transfer-Encoding"] == "chunked")
+	if (getHeaderValue("transfer encoding") == "chunked") //unsafe? 
 		dechunkBody();
 	
+
 	
 }
+
 
 void	HttpRequest::checkHeaders()
 {
@@ -108,12 +113,15 @@ void	HttpRequest::checkHeaders()
 
 
 	//check for content length == body bytes read
+
+
+	//for 1.0 moet of keep alive staan
+	//
 }
 
 // bool	find()
 // {
-// 	auto it = _headers.find("Transfer-Encoding");
-// }it != _headers.end() && it->second == "chunked")
+
 
 
 // look into expext, mb range, if-modified-since/if-none-match (could contain misuse but else return 304) header
