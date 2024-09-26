@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/25 17:37:15 by asimone          ###   ########.fr       */
+/*   Updated: 2024/09/26 15:45:30 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,14 @@ Socket::Socket(const std::string &t_hostname, const std::string &t_port) : _host
             std::cerr << RED << "Fail to create a Socket." << RESET << std::endl;
             continue;
         }
-        // fcntl(_socketFd, F_SETFL, O_NONBLOCK);
 
         // Set socket to non-blocking
-        // if (fcntl(_socketFd, F_SETFL, O_NONBLOCK) < 0)
-        // {
-        //     std::cerr << RED << "Failed to set socket to non-blocking..." << RESET << std::endl;  //TO BE FIX!!!!
-        //     close(_socketFd);
-        //     continue;
-        // }
+        if (fcntl(_socketFd, F_SETFL, O_NONBLOCK) < 0)
+        {
+            std::cerr << RED << "Failed to set socket to non-blocking..." << RESET << std::endl;  //TO BE FIX!!!!
+            close(_socketFd);
+            continue;
+        }
         
         int yes = 1;
         //It allows to configure specific behaviors for a socket and avoid the bind function fails, claiming “Address already in use.”
@@ -142,28 +141,37 @@ void    Socket::createConnection(std::string t_filePath)
             break;
         //This function is called to accept an incoming connection request on a socket that has been set up to listen for connections. 
         //When a client attempts to connect to the server, accept() creates a new socket for that connection and establishes the communication channel.
-        if ((new_socket = accept(_socketFd, (struct sockaddr *)&_address, (socklen_t *)&addrlen)) < 0)
-		{
+        new_socket = accept(_socketFd, (struct sockaddr *)&_address, (socklen_t *)&addrlen);
+       
+        if (new_socket >= 0)
+        {
+            std::cout << GREEN << "New connection accepted" << RESET << std::endl;
+            //Send and receive messages
+		    char buffer[INET6_ADDRSTRLEN] = {0};
+
+            //It convert the IPv4 or IPv6 from binary to string
+            inet_ntop(_address.ss_family, get_in_addr((struct sockaddr *)&_address), buffer, sizeof buffer);
+            std::cout << CYAN << "server: got connection from " << buffer << RESET << std::endl;
+
+            if (!fork()) 
+            {
+                close(_socketFd); //Close the listener socket
+                sendHTMLPage(new_socket, t_filePath); //Send the HTML page with the new socket
+                close(new_socket);
+                exit(0); //Exit from the child process
+            }
+            close(new_socket);
+        }//manage the accept() return error
+        else if (errno == EAGAIN || errno == EWOULDBLOCK)
+        {
+            pollin_happened = manageConnection(new_socket);
+            std::cerr << CYAN << "No connections available, retrying..." << RESET << std::endl;
+        }
+        else
+        {
             std::cerr << RED << "Accept failed with error: " << strerror(errno) << RESET << std::endl;
             break;
-		}
-
-        //Send and receive messages
-		char buffer[INET6_ADDRSTRLEN] = {0};
-
-        //It convert the IPv4 or IPv6 from binary to string
-        inet_ntop(_address.ss_family, get_in_addr((struct sockaddr *)&_address), buffer, sizeof buffer);
-        std::cout << CYAN << "server: got connection from " << buffer << RESET << std::endl;
-
-        if (!fork()) 
-        {
-            close(_socketFd); //Close the listener socket
-            sendHTMLPage(new_socket, t_filePath); //Send the HTML page with the new socket
-            close(new_socket);
-            exit(0); //Exit from the child process
         }
-        
-		close(new_socket);
     }
 }
 
