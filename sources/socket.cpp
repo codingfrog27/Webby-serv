@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/26 15:45:30 by asimone          ###   ########.fr       */
+/*   Updated: 2024/09/26 16:25:03 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,6 @@ void    Socket::createConnection(std::string t_filePath)
                 close(new_socket);
                 exit(0); //Exit from the child process
             }
-            close(new_socket);
         }//manage the accept() return error
         else if (errno == EAGAIN || errno == EWOULDBLOCK)
         {
@@ -172,6 +171,7 @@ void    Socket::createConnection(std::string t_filePath)
             std::cerr << RED << "Accept failed with error: " << strerror(errno) << RESET << std::endl;
             break;
         }
+        close(new_socket);
     }
 }
 
