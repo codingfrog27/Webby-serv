@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/25 16:20:33 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/09/27 15:29:11 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@
 
 HttpRequest::HttpRequest(int client_fd):
 	 _clientFD(client_fd), reading_mode(NOT_STARTED), body_bytes_read(0), \
-	  _bodyFound(false), _headerAreParsed(false), _method_type(NOT_PARSED_YET)
+	  _bodyFound(false), _headerAreParsed(false), _method_type(NOT_PARSED_YET), \
+	  _response_code(0), _keepOpen(true)
 {
 	std::cout << GREEN << "Http_request parsing started" << RESET << std::endl;
 	main_reader(_clientFD);
@@ -77,12 +78,14 @@ void	HttpRequest::main_reader(int client_fd)
 		if (!_bodyFound)
 			look_for_body();
 		if (body_bytes_read > _max_body_size)
-			throw (std::length_error("Request size exceeds the allowed limit"));
+			throw (std::length_error("413 Payload too large"));
 		if (reading_mode != READING_HEADERS && !_headerAreParsed)
 			parse_headers(_unsortedHeaders);
 		if (reading_mode == FINISHED && _bodyFound)
 			parseBody();
 		// timeout check here?
+		if (_response_code == 0) // or others?
+			_response_code = 102;
 	}
 	catch(const std::ios_base::failure &e)
 	{
