@@ -1,56 +1,57 @@
 #include "Response.hpp"
 #include <fstream>
 
-// decide repsonse based on request
-
-/* extract Filepath from URI*/
-std::string resolveFilePath(HttpRequest* request){
-	std::string uri = request->_URI;
-	std::string host = request->_headers["Host"];
-	std::string file = uri.erase(0, host.length()); ///host length + 8 if http:// or 9 if https:// with request target in absolute form
-	std::string path = request->_headers["Root"] + file;
-	return path;
-}
-
-/* check file exists*/
-bool fileExists(std::string path, Response* response){
-	std::ifstream file(path);
-	if (file.is_open()){
-		file.close();
-		response->setStatus("200 OK");
-		return true;
-	}
-	else{
-		response->setStatus("404 Not Found");
-		return false;
-	}
-	return;
-}
-
-// Response::generateResponse(httpRequest);
-
-Response* responseHandler(HttpRequest* request)
-{
-	Response Response = Response(request);
+static Response*	getMethod(HttpRequest* request, Response* response){
 	std::string path = resolveFilePath(request);
-	if (fileExists(path, &Response)){
-		std::ifstream file(path);
-		if (file.is_open())
-		{
-			std::string line;
-			while (std::getline(file, line)) // best way for images?
-			{
-				Response.setBody() //+= line;
+	std::ifstream file;
+	size_t size = 0;
+
+	if (fileExists(path, response)){
+		if (getReadingMode(*response) == BINARY)
+			file.open(path, std::ios::binary);
+		else
+			file.open(path);
+		if (file.is_open()){
+			size = file.tellg();
+			file.seekg(0, std::ios::beg);
+			char buffer[size];
+			if (file.read(buffer, size)){
+				response->setBody(buffer);
+				response->setHeaders("Content-Length", std::to_string(size));
 			}
 			file.close();
 		}
 	}
-	else
-	{
-		// Response = "HTTP/1.1 404 Not Found\r\n";
-		// Response += "Content-Type: text/html\r\n";
-		// Response += "\r\n";
-		// Response += "<html><body><h1>404 Not Found</h1></body></html>";
+	else{
+		response->setStatus("404 Not Found");
+		response->setHeaders("Content-Type", "text/html");
+		response->setHeaders("Content-Length", "14");
+		response->setBody("404 Not Found");
 	}
-	return &Response;
+}
+
+static Response*	postMethod(HttpRequest* request, Response* response){
+}
+
+static Response*	deleteMethod(HttpRequest* request, Response* response){
+}
+
+void	responseHandler(HttpRequest* request)
+{
+	Response *response = new Response(request);
+	if (request->_method_type == GET)
+		response = getMethod(request, response);
+	else if (request->_method_type == POST)
+		response = postMethod(request, response);
+	else if (request->_method_type == DELETE)
+		response = deleteMethod(request, response);
+	else{
+		response->setStatus("405 Method Not Allowed");
+		response->setHeaders("Allow", "GET, POST, DELETE");
+		response->setHeaders("Content-Type", "text/html");
+		response->setHeaders("Content-Length", "19");
+		response->setBody("Method Not Allowed");
+	}
+	response->generateResponse();
+	return;
 }

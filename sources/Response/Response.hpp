@@ -1,6 +1,11 @@
 #pragma once
 #include "../../include/HttpRequest.hpp"
 
+enum readingMode{
+	TEXT,
+	BINARY
+};
+
 class Response{
 	public:
 		Response() = delete;
@@ -9,14 +14,23 @@ class Response{
 		Response& operator=(const Response& obj) = delete;
 		~Response();
 
-		std::string		generateResponse();
+		std::string										generateResponse() const;
 
-		void			setStatus(std::string status);
-		void			setHeaders(std::string headers);
-		void			setBody(std::string body);
+		void											setStatus(std::string status);
+		void											setHeaders(std::string header, std::string value);
+		void											setBody(std::string body);
+		void											setContentType(std::string path, Response* response);
+
+		std::string										getHeader(std::string key) const;
 
 	private:
-		std::string		_status;
-		std::string		_headers;
-		std::string		_body;
+		const Http_method								_method_type;
+		const float										_http_version;
+		std::string										_status;
+		std::unordered_map<std::string, std::string>	_headers;
+		std::string										_body;
 };
+
+std::string	resolveFilePath(HttpRequest* request);
+bool		fileExists(std::string path, Response* response);
+readingMode	getReadingMode(Response & response);
