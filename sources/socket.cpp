@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/26 16:57:17 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/01 14:12:00 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,11 +147,11 @@ void    Socket::createConnection(std::string t_filePath)
         {
             std::cout << GREEN << "New connection accepted" << RESET << std::endl;
             //Send and receive messages
-		    char buffer[INET6_ADDRSTRLEN] = {0};
+		    char ip_address[INET6_ADDRSTRLEN] = {0};
 
             //It convert the IPv4 or IPv6 from binary to string
-            inet_ntop(_address.ss_family, get_in_addr((struct sockaddr *)&_address), buffer, sizeof buffer);
-            std::cout << CYAN << "server: got connection from " << buffer << RESET << std::endl;
+            inet_ntop(_address.ss_family, get_in_addr((struct sockaddr *)&_address), ip_address, sizeof ip_address);
+            std::cout << CYAN << "server: got connection from " << ip_address << RESET << std::endl;
             sendHTMLPage(new_socket, t_filePath); //Send the HTML page with the new socket
         }
         else if (errno == EAGAIN || errno == EWOULDBLOCK) //manage the accept() return error
