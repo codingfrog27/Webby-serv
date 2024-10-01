@@ -6,11 +6,12 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/01 15:52:33 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/01 16:02:02 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket.hpp"
+#include "Client.hpp"
 
 Socket::Socket(const std::string &t_hostname, const std::string &t_port) : _hostname(t_hostname), _port(t_port)
 {
@@ -178,7 +179,7 @@ int    Socket::manageConnection(int socketFd)
 	// 
 	
 	std::vector <struct pollfd> pfds(ACTIVE_CONNECTS);
-	std::vector <struct HttpRequest *> requests(ACTIVE_CONNECTS); //change con
+	std::vector <struct Client> Clients(ACTIVE_CONNECTS); //change con
     
     pfds[0].fd = socketFd; //socket to monitor
     pfds[0].events = POLLIN | POLLOUT; //Alert me when data is ready to recv() on this socket
@@ -201,13 +202,13 @@ int    Socket::manageConnection(int socketFd)
 			std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
 			return (0);
 		}
-		for (//go through all poll data i = 0; i < count; i++)
+		for (size_t i = 0; i < pfds.size(); ++i)
 		{
-			if (pfds.revents & POLLIN) //expand to all importo revents
-				requests[i].main_reader(pfds[i].fd);
+			if (pfds[i].revents & POLLIN) //expand to all importo revents
+				Clients[i].req->main_reader(pfds[i].fd);
 			if (pfds.revents & POLLOUT) //what if ready to post to server but not reday for response
-				requests[i].write_response();
-			if (!requests[i].keep_open)
+				Clients[i].write_response();
+			// if (!requests[i].keep_open)
 				// close connection and remove from vectors
 			
 			
