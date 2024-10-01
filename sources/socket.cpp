@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/01 14:12:00 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/01 15:52:33 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,28 +169,56 @@ void    Socket::createConnection(std::string t_filePath)
 }
 
 
+#define ACTIVE_CONNECTS 1
+
 int    Socket::manageConnection(int socketFd)
 {
     //initialize the poll struct to store the socket file descriptor. Ex. 1 socket
-    struct pollfd pfds[1];
+    
+	// 
+	
+	std::vector <struct pollfd> pfds(ACTIVE_CONNECTS);
+	std::vector <struct HttpRequest *> requests(ACTIVE_CONNECTS); //change con
     
     pfds[0].fd = socketFd; //socket to monitor
-    pfds[0].events = POLLIN; //Alert me when data is ready to recv() on this socket
+    pfds[0].events = POLLIN | POLLOUT; //Alert me when data is ready to recv() on this socket
 
     //This system call monitors multiple file descriptors (in this case, just one) to see if any of them have events that need to be handled
-    int num_events = poll(pfds, 1, 2500);
     
-    if (num_events < 0) 
-    {
-        std::cerr << RED << "Poll failed with error: " << strerror(errno) << RESET << std::endl;
-        return (-1);
-    }
+	int num_events;
 
-    if (num_events == 0) 
-    {
-        std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
-        return (0);
-    }
+	while (1)
+	{
+		// check for new connects, if yes expand our vectors
+		num_events = poll(pfds.data(), pfds.size(), 2500);
+		if (num_events < 0) 
+		{
+			std::cerr << RED << "Poll failed with error: " << strerror(errno) << RESET << std::endl;
+			return (-1);
+		}
+		if (num_events == 0) 
+		{
+			std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
+			return (0);
+		}
+		for (//go through all poll data i = 0; i < count; i++)
+		{
+			if (pfds.revents & POLLIN) //expand to all importo revents
+				requests[i].main_reader(pfds[i].fd);
+			if (pfds.revents & POLLOUT) //what if ready to post to server but not reday for response
+				requests[i].write_response();
+			if (!requests[i].keep_open)
+				// close connection and remove from vectors
+			
+			
+		}
+		
+		/* code */
+	}
+	
+	
+    
+
     
     if (pfds[0].revents & POLLIN)
         return (1); 
