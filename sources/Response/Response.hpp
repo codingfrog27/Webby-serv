@@ -34,6 +34,7 @@ class Response{
 		std::vector<char>								_body;
 };
 
+void		responseHandler(HttpRequest* request);
 std::string	resolveFilePath(HttpRequest* request);
 bool		fileExists(std::string path, Response* response);
 readingMode	getReadingMode(Response & response);
