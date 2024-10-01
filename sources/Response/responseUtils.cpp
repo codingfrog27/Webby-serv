@@ -13,13 +13,9 @@ bool	fileExists(std::string path, Response* response){
 	std::ifstream file(path);
 	if (file.is_open()){
 		file.close();
-		response->setStatus("200 OK");
 		return true;
 	}
-	else{
-		response->setStatus("404 Not Found");
-		return false;
-	}
+	return false;
 }
 
 /* anything that's not text has to be handled as raw bits*/

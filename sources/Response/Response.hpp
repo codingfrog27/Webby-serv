@@ -1,5 +1,6 @@
 #pragma once
 #include "../../include/HttpRequest.hpp"
+#include <fstream>
 
 enum readingMode{
 	TEXT,
@@ -14,12 +15,14 @@ class Response{
 		Response& operator=(const Response& obj) = delete;
 		~Response();
 
+		void											autoFillResponse(std::string status);
 		std::string										generateResponse() const;
 
 		void											setStatus(std::string status);
-		void											setHeaders(std::string header, std::string value);
+		void											setContentType(std::string path);
+		void											setHeaders(std::string key, std::string value);
 		void											setBody(std::string body);
-		void											setContentType(std::string path, Response* response);
+		void											setBody(std::vector<char>);
 
 		std::string										getHeader(std::string key) const;
 
@@ -28,7 +31,7 @@ class Response{
 		const float										_http_version;
 		std::string										_status;
 		std::unordered_map<std::string, std::string>	_headers;
-		std::string										_body;
+		std::vector<char>								_body;
 };
 
 std::string	resolveFilePath(HttpRequest* request);

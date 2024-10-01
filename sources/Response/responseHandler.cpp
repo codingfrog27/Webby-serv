@@ -1,5 +1,4 @@
 #include "Response.hpp"
-#include <fstream>
 
 static Response*	getMethod(HttpRequest* request, Response* response){
 	std::string path = resolveFilePath(request);
@@ -17,19 +16,18 @@ static Response*	getMethod(HttpRequest* request, Response* response){
 			file.seekg(0, std::ios::beg);
 			std::vector<char> buffer(size);
 			if (file.read(buffer.data(), size)){
-				response->setBody(buffer.data());
+				response->setStatus("200 OK");
+				response->setContentType(path);
 				response->setHeaders("Content-Length", std::to_string(size));
+				response->setBody(buffer);
 			}
-			// else throw 500;
 			file.close();
 		}
+		else
+			response->autoFillResponse("500 Internal Server Error");
 	}
-	else{
-		response->setStatus("404 Not Found");
-		response->setHeaders("Content-Type", "text/html");
-		response->setHeaders("Content-Length", "14");
-		response->setBody("404 Not Found");
-	}
+	else
+		response->autoFillResponse("404 Not Found");
 }
 
 static Response*	postMethod(HttpRequest* request, Response* response){
@@ -44,42 +42,23 @@ static Response*	postMethod(HttpRequest* request, Response* response){
 	if (file.is_open()){
 		file << request->getRawRequestData; //get body
 		file.close();
-		response->setStatus("201 Created");
-		response->setHeaders("Content-Type", "text/html");
-		response->setHeaders("Content-Length", "13");
-		response->setBody("201 Created");
+		response->autoFillResponse("201 Created");
 	}
-	else{
-		response->setStatus("500 Internal Server Error");
-		response->setHeaders("Content-Type", "text/html");
-		response->setHeaders("Content-Length", "24");
-		response->setBody("Internal Server Error");
-	}
+	else
+		response->autoFillResponse("500 Internal Server Error");
 }
 
 static Response*	deleteMethod(HttpRequest* request, Response* response){
 	std::string path = resolveFilePath(request);
 
 	if (fileExists(path, response)){
-		if (std::remove(path.c_str()) == 0){
-			response->setStatus("200 OK");
-			response->setHeaders("Content-Type", "text/html");
-			response->setHeaders("Content-Length", "9");
-			response->setBody("200 OK");
-		}
-		else{
-			response->setStatus("500 Internal Server Error");
-			response->setHeaders("Content-Type", "text/html");
-			response->setHeaders("Content-Length", "24");
-			response->setBody("Internal Server Error");
-		}
+		if (std::remove(path.c_str()) == 0)
+			response->autoFillResponse("200 OK");
+		else
+			response->autoFillResponse("500 Internal Server Error");
 	}
-	else{
-		response->setStatus("404 Not Found");
-		response->setHeaders("Content-Type", "text/html");
-		response->setHeaders("Content-Length", "14");
-		response->setBody("404 Not Found");
-	}
+	else
+		response->autoFillResponse("404 Not Found");
 }
 
 void	responseHandler(HttpRequest* request)
@@ -93,11 +72,8 @@ void	responseHandler(HttpRequest* request)
 	else if (request->_method_type == DELETE)
 		response = deleteMethod(request, response);
 	else{
-		response->setStatus("405 Method Not Allowed");
+		response->autoFillResponse("405 Method Not Allowed");
 		response->setHeaders("Allow", "GET, POST, DELETE");
-		response->setHeaders("Content-Type", "text/html");
-		response->setHeaders("Content-Length", "19");
-		response->setBody("Method Not Allowed");
 	}
 	response->generateResponse();
 	return;
