@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/01 16:06:19 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/01 17:44:34 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,7 +207,7 @@ int    Socket::manageConnection(int socketFd)
 			if (pfds[i].revents & POLLIN) //expand to all importo revents
 				Clients[i].req->main_reader(pfds[i].fd);
 			if ((pfds[i].revents & POLLOUT) && Clients[i].doneReading) //what if ready to post to server but not reday for response
-				Clients[i].write_response();
+				Clients[i].response->generateResponse();
 			if (!Clients[i].keep_open)
 				// close connection and remove from vectors	
 		}

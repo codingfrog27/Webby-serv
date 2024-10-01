@@ -6,12 +6,12 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 15:14:24 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/01 16:00:59 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/01 17:51:37 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
-#include "Http_response.hpp"
+#include "Response.hpp"
 
 
 #pragma once
@@ -26,7 +26,7 @@ class Client
 
 
 		HttpRequest		*req;
-		Http_response	*response;
+		Response		*response;
 		bool			doneReading;
 		bool			doneSending;
 		bool			keep_open;
