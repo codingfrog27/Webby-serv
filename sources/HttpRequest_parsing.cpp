@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:11:35 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/27 18:24:55 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/01 14:18:03 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,37 +78,37 @@ Http_method HttpRequest::which_method_type(std::string str)
 
 void HttpRequest::dechunkBody() //from copilot will check next week
 {
-	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
-	  // Implementation for dechunking the body
-    std::vector<char> body = _rawRequestData; // Assuming you have a method to get the body content as a vector of chars
-    std::vector<char> dechunked_body;
-    size_t pos = 0;
+// 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
+// 	  // Implementation for dechunking the body
+//     std::vector<char> body = _rawRequestData; // Assuming you have a method to get the body content as a vector of chars
+//     std::vector<char> dechunked_body;
+//     size_t pos = 0;
 
-    while (pos < body.size()) {
-        auto chunk_size_end = std::search(body.begin() + pos, body.end(), "\r\n", "\r\n" + 2);
-        if (chunk_size_end == body.end()) {
-            throw std::invalid_argument("400 Bad Request: Invalid chunked encoding");
-        }
+//     while (pos < body.size()) {
+//         auto chunk_size_end = std::search(body.begin() + pos, body.end(), "\r\n", "\r\n" + 2);
+//         if (chunk_size_end == body.end()) {
+//             throw std::invalid_argument("400 Bad Request: Invalid chunked encoding");
+//         }
 
-        std::string chunk_size_str(body.begin() + pos, chunk_size_end);
-        size_t chunk_size = std::stoul(chunk_size_str, nullptr, 16);
-        pos = chunk_size_end - body.begin() + 2;
+//         std::string chunk_size_str(body.begin() + pos, chunk_size_end);
+//         size_t chunk_size = std::stoul(chunk_size_str, nullptr, 16);
+//         pos = chunk_size_end - body.begin() + 2;
 
-        if (chunk_size == 0) {
-            break; // End of chunks
-        }
+//         if (chunk_size == 0) {
+//             break; // End of chunks
+//         }
 
-        if (pos + chunk_size > body.size()) {
-            throw std::invalid_argument("400 Bad Request: Incomplete chunked encoding");
-        }
+//         if (pos + chunk_size > body.size()) {
+//             throw std::invalid_argument("400 Bad Request: Incomplete chunked encoding");
+//         }
 
-        dechunked_body.insert(dechunked_body.end(), body.begin() + pos, body.begin() + pos + chunk_size);
-        pos += chunk_size + 2; // Skip chunk data and CRLF
-    }
+//         dechunked_body.insert(dechunked_body.end(), body.begin() + pos, body.begin() + pos + chunk_size);
+//         pos += chunk_size + 2; // Skip chunk data and CRLF
+//     }
 
 	
-	//think maybe i just stoul() the size given (tho its hex should remember)
-	// and then throw the data inbetween in a new buffer?
+// 	//think maybe i just stoul() the size given (tho its hex should remember)
+// 	// and then throw the data inbetween in a new buffer?
 }
 
 float HttpRequest::http_version(std::string version) //throw error if not 1 or 1.1
@@ -172,7 +172,7 @@ void	HttpRequest::checkHeaders()
 			throw (std::invalid_argument("415 Bad request. Unsupported Media Type"));
 		if (!headerExists("content-length") && getHeaderValue("Transfer-Encoding") != "chunked")
 			throw (std::invalid_argument("411 length required"));
-
+	}
 
 
 }
