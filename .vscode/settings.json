@@ -53,5 +53,8 @@
 		"streambuf": "cpp",
 		"cinttypes": "cpp",
 		"typeinfo": "cpp"
-	}
+	},
+	"editor.renderWhitespace": "all",
+    "editor.renderControlCharacters": true,
+    // "files.eol": "\r\n"
 }
