@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/01 16:06:19 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/02 14:39:53 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,101 +125,101 @@ void sendHTMLPage(int client_socket, const std::string& file_path)
 
 void    Socket::createConnection(std::string t_filePath)
 {   
-    socklen_t   addrlen = sizeof(_address); //Is used to store the size of the address structure when dealing with socket operations in networking. This ensures that the function accept() operates correctly and does not overwrite memory
-    int         new_socket; //Socket prepared to accept the connections
+    socklen_t   addrlen = sizeof(_address);
+    std::vector <struct pollfd> pfds;   
+	std::vector <struct Client> clients;
+    
+    int         new_socket; 
     int         pollin_happened;
+    int         num_events;
 
-    //This function configures a socket to listen for incoming connection requests from clients. 
-    //After binding a socket to an address and port, we use listen() to indicate that the socket is ready to accept incoming connections.
+    pfds[0].fd = _socketFd; 
+    pfds[0].events = POLLIN | POLLOUT;
+
     if (listen(_socketFd, BACKLOG) < 0)
         std::cerr << RED << "Listen failed with error: " << strerror(errno) << RESET << std::endl;
-
+        
     while (1)
     {
         std::cout << YELLOW << "--------- Waiting for new connection ----------" << RESET << std::endl;
-        //Monitoring a socket for incoming events using poll()
-        if ((pollin_happened = manageConnection(_socketFd)) == -1)
-            break;
-        //This function is called to accept an incoming connection request on a socket that has been set up to listen for connections. 
-        //When a client attempts to connect to the server, accept() creates a new socket for that connection and establishes the communication channel.
+        
         new_socket = accept(_socketFd, (struct sockaddr *)&_address, (socklen_t *)&addrlen);
-       
         if (new_socket >= 0)
         {
             std::cout << GREEN << "New connection accepted" << RESET << std::endl;
-            //Send and receive messages
+            
 		    char ip_address[INET6_ADDRSTRLEN] = {0};
-
-            //It convert the IPv4 or IPv6 from binary to string
+            
             inet_ntop(_address.ss_family, get_in_addr((struct sockaddr *)&_address), ip_address, sizeof ip_address);
             std::cout << CYAN << "server: got connection from " << ip_address << RESET << std::endl;
-            sendHTMLPage(new_socket, t_filePath); //Send the HTML page with the new socket
+            
+            pfds.push_back({new_socket, POLLIN | POLLOUT, 0});
+            Clients.push_back((new_socket));
         }
-        else if (errno == EAGAIN || errno == EWOULDBLOCK) //manage the accept() return error
+        else if (errno == EAGAIN || errno == EWOULDBLOCK)
         {
-            pollin_happened = manageConnection(new_socket);
+            // pollin_happened = manageConnection(new_socket);
             std::cerr << CYAN << "No connections available, retrying..." << RESET << std::endl;
+            continue;
         }
         else
         {
             std::cerr << RED << "Accept failed with error: " << strerror(errno) << RESET << std::endl;
-            break;
+            // break; //???
         }
-        close(new_socket);
+        
+        num_events = poll(pfds.data(), pfds.size(), 2500);
+
+        if (num_events < 0) 
+		{
+			std::cerr << RED << "Poll failed with error: " << strerror(errno) << RESET << std::endl;
+			break;
+		}
+		else if (num_events == 0)
+		{
+			std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
+			continue;
+		}
+		for (size_t i = 0; i < pfds.size(); ++i)
+		{
+			if (pfds[i].revents & POLLIN)
+            {
+                Client& client = clients[pfds[i].fd];
+				client.req->main_reader(pfds[i].fd);
+            }
+			if ((pfds[i].revents & POLLOUT) && .doneReading)
+				// Clients[i].write_response();
+                sendHTMLPage(new_socket, t_filePath); //Send the HTML page with the new socket
+			// if (!Clients[i].keep_open)
+                close(new_socket); // close connection and remove from vectors;
+		}
     }
 }
 
 
-#define ACTIVE_CONNECTS 1
 
-int    Socket::manageConnection(int socketFd)
-{
-    //initialize the poll struct to store the socket file descriptor. Ex. 1 socket
-    
-	// 
-	
-	std::vector <struct pollfd> pfds(ACTIVE_CONNECTS);
-	std::vector <struct Client> Clients(ACTIVE_CONNECTS); //change con
-    
-    pfds[0].fd = socketFd; //socket to monitor
-    pfds[0].events = POLLIN | POLLOUT; //Alert me when data is ready to recv() on this socket
 
-    //This system call monitors multiple file descriptors (in this case, just one) to see if any of them have events that need to be handled
+// int    Socket::manageConnection(int socketFd)
+// {
+   
+//  //change con
     
-	int num_events;
 
-	while (1)
-	{
-		// check for new connects, if yes expand our vectors
-		num_events = poll(pfds.data(), pfds.size(), 2500);
-		if (num_events < 0) 
-		{
-			std::cerr << RED << "Poll failed with error: " << strerror(errno) << RESET << std::endl;
-			return (-1);
-		}
-		if (num_events == 0) 
-		{
-			std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
-			return (0);
-		}
-		for (size_t i = 0; i < pfds.size(); ++i)
-		{
-			if (pfds[i].revents & POLLIN) //expand to all importo revents
-				Clients[i].req->main_reader(pfds[i].fd);
-			if ((pfds[i].revents & POLLOUT) && Clients[i].doneReading) //what if ready to post to server but not reday for response
-				Clients[i].write_response();
-			if (!Clients[i].keep_open)
-				// close connection and remove from vectors	
-		}
+
+//     //This system call monitors multiple file descriptors (in this case, just one) to see if any of them have events that need to be handled
+    
+
+
+// 	while (1)
+// 	{
+// 		// check for new connects, if yes expand our vectors
 		
-		/* code */
-	}
-	
-	
-    
+        
 
+// 		/* code */
+// 	}
     
-    if (pfds[0].revents & POLLIN)
-        return (1); 
-    return (0);
-}
+//     if (pfds[0].revents & POLLIN)
+//         return (1); 
+//     return (0);
+// }
