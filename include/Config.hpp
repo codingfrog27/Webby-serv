@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/25 15:51:26 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/02 16:59:47 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,9 @@ class Config
 		~Config(void);
 
 	
-	protected:
-	size_t		server_port;
+	// size_t		server_port;
+	std::string	server_port;
+	std::string	server_name;
 	size_t		max_clients;
 	size_t		timeout; //general timeout waiting for request/respond sending
 	std::string	document_root;
@@ -40,7 +41,6 @@ class Config
 	//these are all REQUIRED
 
 			
-	std::string	server_name;
 	size_t		keep_alive_timeout; //spefically how long to keep an idle connection open before closing
 	bool		directory_listing; //aka autoindex: wether to display list of pages when requested dir isnt found
 	std::string	cgi_script_directory;
