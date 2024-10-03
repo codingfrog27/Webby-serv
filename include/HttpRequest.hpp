@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 17:13:53 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/03 18:08:37 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ class HttpRequest
 	~HttpRequest(void);
 	std::string	getHeaderValue(std::string key);
 	bool	headerExists(std::string key);
+	int		getStatusCode();
 
 
 	std::vector<char>								_rawRequestData;
@@ -89,9 +90,8 @@ class HttpRequest
 	std::unordered_map<std::string, std::string> 	_headers;
 	float											_http_version;
 	std::string										request_line;
-	std::string 									_URI; //rename to URI ?
+	std::string 									_URI; 
 	bool											_keepOpen;
-	// size_t											_content_length;
 	bool											_error_occured;
 	int												_response_code;
 };

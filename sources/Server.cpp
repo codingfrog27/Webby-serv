@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 14:32:11 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 17:52:18 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/03 18:05:40 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,10 +122,8 @@ void	Server::main_server_loop()
 				if (pfds[i].revents & POLLIN) 
 					connections[i]._request->main_reader(pfds[i].fd);
 				if ((pfds[i].revents & POLLOUT) && connections[i].doneReading) //what if ready to post to server but not reday for response
-				{
-					Response newresponse(connections[i]._request);
-					newresponse.autoFillResponse("replace to void");
-				} 
+					responseHandler(connections[i]._request);
+					// responseHandler(connections[i]._request, connections[i]._clientFD);
 					
 					// connections[i].response->generateResponse(); //
 				if (!connections[i]._keepOpen)

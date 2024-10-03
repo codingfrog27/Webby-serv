@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/26 17:24:26 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/26 17:24:59 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 18:08:12 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,3 +34,8 @@ bool	HttpRequest::headerExists(std::string key)
 		return (true);
 	return (false);
 }
+
+	int		HttpRequest::getStatusCode()
+	{
+		return (_response_code);
+	}
