@@ -1,46 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
+/*   Connection.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/01 15:14:24 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/01 17:51:37 by mde-cloe         ###   ########.fr       */
+/*   Created: 2024/10/02 16:24:32 by mde-cloe          #+#    #+#             */
+/*   Updated: 2024/10/03 15:49:42 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "HttpRequest.hpp"
-#include "Response.hpp"
-
-
 #pragma once
-class Client
+
+
+#include "Response.hpp"
+#include "HttpRequest.hpp"
+#include "socket.hpp"
+#include "Config.hpp"
+
+
+class Connection : public HttpRequest
 {
 	private:
 		// Private Attributes
 		
 
 	public:
-		// Constructors and Destructors
-
-
-		HttpRequest		*req;
-		Response		*response;
-		bool			doneReading;
-		bool			doneSending;
-		bool			keep_open;
+		size_t		_socketIndex; //needed
+		int			_serverFD;
+		int			_clientFD;
+		// HttpRequest	_request;
+		// Response	*response;
+		bool		_keepOpen;
+		bool		doneReading;
 		
-		int				status_code;
-		int				FD;
-
-
-
-		Client(void);
-		Client(const Client &rhs);
-		Client &operator=(const Client &rhs);
-		~Client(void);
+		// Constructors and Destructors
+		Connection(Config *config);
+		Connection(const Connection &rhs);
+		Connection &operator=(const Connection &rhs);
+		~Connection(void);
 
 		// Public Methods
-
+		void	copy_clients_fds(Connection connects);
 } ;
