@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 17:36:14 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/03 18:41:43 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 // Socket::Socket(const std::string &t_hostname, const std::string &t_port)
 //  : _hostname(t_hostname), _port(t_port)
 Socket::Socket(Config *config)
- : _hostname(config->server_name), _port(config->server_port)
+ : _hostname(config->_serverName), _port(config->_serverPort)
 {
     struct addrinfo hints, *p, *servinfo;
     

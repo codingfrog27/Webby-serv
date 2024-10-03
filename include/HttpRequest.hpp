@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 18:08:37 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 18:18:36 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ class HttpRequest
 	~HttpRequest(void);
 	std::string	getHeaderValue(std::string key);
 	bool	headerExists(std::string key);
-	int		getStatusCode();
+	std::string		getStatusCode();
 
 
 	std::vector<char>								_rawRequestData;
@@ -93,7 +93,6 @@ class HttpRequest
 	std::string 									_URI; 
 	bool											_keepOpen;
 	bool											_error_occured;
-	int												_response_code;
+	std::string										_statusCode;
 };
-
-//     std::string document_root = "/var/www/html"; // Example document root
+    // std::string document_root = "/var/www/html"; // Example document root
