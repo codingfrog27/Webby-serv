@@ -1,36 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Http_response.hpp                                  :+:      :+:    :+:   */
+/*   Colors.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/18 14:35:00 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/18 14:36:05 by mde-cloe         ###   ########.fr       */
+/*   Created: 2024/10/03 18:12:55 by mde-cloe          #+#    #+#             */
+/*   Updated: 2024/10/03 18:14:17 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-class Http_response
-{
-	private:
-		// Private Attributes
-		
-		
+#include <iostream>
 
-	public:
-		// Constructors and Destructors
-		Http_response(void);
-		Http_response(const Http_response &rhs);
-		Http_response &operator=(const Http_response &rhs);
-		~Http_response(void);
-
-		// Public Methods
-
-} ;
-
-// put in
-// Date
-// Content-Type
-// Server
+#define GREEN "\033[32m"
+#define RED "\033[31m"
+#define RESET "\033[0m"

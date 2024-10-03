@@ -33,7 +33,7 @@ static Response*	getMethod(HttpRequest* request, Response* response){
 	}
 	else
 		response->autoFillResponse("404 Not Found");
-	return response;
+	return (response);
 }
 
 static Response*	postMethod(HttpRequest* request, Response* response){

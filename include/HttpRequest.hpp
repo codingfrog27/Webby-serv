@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/01 16:02:00 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 18:08:37 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ class HttpRequest
 	// allowed methods
 	private:
 	int						_clientFD;
-	std::vector<char>		_rawRequestData;
 	std::string				_unsortedHeaders;
 	reading_status			reading_mode;
 	std::string				_boundary;
@@ -76,23 +75,25 @@ class HttpRequest
 	public:
 	// Constructors and Destructors
 	void				main_reader(int client_fd);
-	HttpRequest(void) = delete;
+	HttpRequest(void);
 	HttpRequest(int client_fd);
 	HttpRequest(const HttpRequest &rhs);
 	HttpRequest &operator=(const HttpRequest &rhs);
 	~HttpRequest(void);
 	std::string	getHeaderValue(std::string key);
 	bool	headerExists(std::string key);
+	int		getStatusCode();
 
 
+	std::vector<char>								_rawRequestData;
 	Http_method										_method_type; //should mb be public else i can make getters
 	std::unordered_map<std::string, std::string> 	_headers;
 	float											_http_version;
 	std::string										request_line;
-	size_t											_content_length;
-	std::string 									_URI; //rename to URI ?
-	int												_response_code;
+	std::string 									_URI; 
 	bool											_keepOpen;
+	bool											_error_occured;
+	int												_response_code;
 };
 
 //     std::string document_root = "/var/www/html"; // Example document root

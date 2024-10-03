@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest_reading.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/09/27 15:29:11 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 17:09:07 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 HttpRequest::HttpRequest(int client_fd):
 	 _clientFD(client_fd), reading_mode(NOT_STARTED), body_bytes_read(0), \
 	  _bodyFound(false), _headerAreParsed(false), _method_type(NOT_PARSED_YET), \
-	  _response_code(0), _keepOpen(true)
+	  _keepOpen(true), _response_code(0)
 {
 	std::cout << GREEN << "Http_request parsing started" << RESET << std::endl;
 	main_reader(_clientFD);

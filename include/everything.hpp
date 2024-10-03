@@ -1,19 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstadd_front_bonus.c                            :+:      :+:    :+:   */
+/*   everything.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/14 22:10:05 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 17:26:28 by asimone          ###   ########.fr       */
+/*   Created: 2024/10/02 17:11:40 by mde-cloe          #+#    #+#             */
+/*   Updated: 2024/10/03 15:21:58 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#pragma once
 
-void	ft_lstadd_front(t_list **lst, t_list *new_node)
-{
-	new_node->next = *lst;
-	*lst = new_node;
-}
+#include "HttpRequest.hpp"
+#include "Response.hpp"
+#include "socket.hpp"
+#include "Config.hpp"
+#include "Connection.hpp"
+#include "Server.hpp"
+
+
+#include <algorithm>

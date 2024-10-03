@@ -1,19 +1,7 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/04/10 18:17:45 by mde-cloe          #+#    #+#              #
-#    Updated: 2024/09/06 17:47:09 by mde-cloe         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 NAME := webserv
 
 CC = c++
-Wflags = -Wall -Wextra -Werror -g -fsanitize=address
+Wflags = -Wall -Wextra
 VERSION_FLAG = -std=c++20
 
 
@@ -23,8 +11,12 @@ LIBFT_A			:=	./libft/libft.a
 
 SRCDIR = sources
 OBJDIR = objects
-SOURCES = $(wildcard $(SRCDIR)/*.cpp) #tmp cuz idk about subfolders and wildcard
-OFILES	:=	$(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
+SOURCES := $(shell find $(SRCDIR) -name '*.cpp')
+OBJECTS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
+
+ifneq (,$(filter debug strict,$(MAKECMDGOALS)))
+    Wflags := -Wall -Wextra-Werror -g -fsanitize=address
+endif
 
 
 #-----colours----
@@ -36,11 +28,12 @@ C_RESET = \033[0m
 
 #-----------------
 
-$(NAME): $(SOURCES) $(OFILES) $(LIBFT_A)
-	@$(CC) $(Wflags) $(INCLUDE) $(VERSION_FLAG) $(OFILES) -o $(NAME)
+$(NAME): $(SOURCES) $(OBJECTS) $(LIBFT_A)
+	@$(CC) $(Wflags) $(INCLUDE) $(VERSION_FLAG) $(OBJECTS) -o $(NAME)
 	@printf "$(C_BLUE)$(NAME) $(C_GREEN) Compiled!\n\n$(C_RESET )"
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.cpp | $(OBJDIR)
+	@mkdir -p $(dir $@)
 	@printf "$(C_GREEN) Compiling $(C_BLUE)$<\n$(C_RESET)"
 	@$(CC) -c $< $(Wflags) $(INCLUDE) $(VERSION_FLAG) -o $@
 
