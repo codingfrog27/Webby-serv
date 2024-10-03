@@ -6,27 +6,19 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 16:26:31 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/02 17:08:48 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 15:46:52 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
 #include "Connection.hpp"
-
-#include "Connection.hpp"
-
-#include <iostream>
 
 
 // ************************************************************************** //
 //                        Constructors and Destructors                        //
 // ************************************************************************** //
 
-Connection::Connection(Config *config) : _socket(config)
+Connection::Connection(Config *config) : _request(_clientFD)
 {
-	_serverFD = _socket._socketFd;
-
 	std::cout << GREEN << "Connection: Default constructor called" << RESET << std::endl;
 }
 

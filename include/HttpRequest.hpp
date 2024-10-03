@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/01 17:58:04 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 15:21:11 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,10 +90,10 @@ class HttpRequest
 	float											_http_version;
 	std::string										request_line;
 	std::string 									_URI; //rename to URI ?
-	int												_response_code;
 	bool											_keepOpen;
 	// size_t											_content_length;
 	bool											_error_occured;
+	int												_response_code;
 };
 
 //     std::string document_root = "/var/www/html"; // Example document root

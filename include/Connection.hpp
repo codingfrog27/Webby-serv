@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 16:24:32 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/02 17:03:54 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 15:49:42 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,20 @@
 #include "Config.hpp"
 
 
-class Connection
+class Connection : public HttpRequest
 {
 	private:
 		// Private Attributes
 		
 
 	public:
-		Socket		_socket;
+		size_t		_socketIndex; //needed
 		int			_serverFD;
 		int			_clientFD;
-		HttpRequest	*_request;
+		// HttpRequest	_request;
+		// Response	*response;
+		bool		_keepOpen;
+		bool		doneReading;
 		
 		// Constructors and Destructors
 		Connection(Config *config);
@@ -38,5 +41,5 @@ class Connection
 		~Connection(void);
 
 		// Public Methods
-
+		void	copy_clients_fds(Connection connects);
 } ;

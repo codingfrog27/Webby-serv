@@ -44,7 +44,7 @@
 
 class Socket
 {
-private:
+protected:
 	struct sockaddr_storage _address; //Cover IPv4 and IPv6
 	std::string				_hostname; 
 	std::string				_port;

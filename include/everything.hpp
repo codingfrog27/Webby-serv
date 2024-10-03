@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 17:11:40 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/02 17:12:29 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 15:21:58 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,3 +17,7 @@
 #include "socket.hpp"
 #include "Config.hpp"
 #include "Connection.hpp"
+#include "Server.hpp"
+
+
+#include <algorithm>

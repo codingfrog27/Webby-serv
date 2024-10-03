@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/02 16:59:47 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 14:09:54 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class Config
 	// size_t		server_port;
 	std::string	server_port;
 	std::string	server_name;
-	size_t		max_clients;
+	static const size_t		max_clients;
 	size_t		timeout; //general timeout waiting for request/respond sending
 	std::string	document_root;
 	std::string	default_index_file;
