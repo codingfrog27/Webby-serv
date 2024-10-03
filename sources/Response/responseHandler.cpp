@@ -72,9 +72,8 @@ static Response*	deleteMethod(HttpRequest* request, Response* response){
 void	responseHandler(HttpRequest* request)
 {
 	Response *response = new Response(request);
-	if (!request->_statusCode.empty()) //might have to be renamed
-		response->autoFillResponse(request->_statusCode);
-	//cgi handler
+	if (!request->getStatusCode().empty()) //might have to be renamed
+		response->autoFillResponse(request->getStatusCode());
 	else if (request->_method_type == GET)
 		response = getMethod(request, response);
 	else if (request->_method_type == POST)
