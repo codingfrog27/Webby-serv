@@ -13,6 +13,11 @@ static Response*	getMethod(HttpRequest* request, Response* response){
 		if (file.is_open()){
 			file.seekg(0, std::ios::end);
 			size = file.tellg();
+			if (size == 0){
+				file.close();
+				response->autoFillResponse("204 No Content");
+				return response;
+			}
 			file.seekg(0, std::ios::beg);
 			std::vector<char> buffer(size);
 			if (file.read(buffer.data(), size)){
