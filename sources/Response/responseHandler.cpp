@@ -36,7 +36,7 @@ static Response*	postMethod(HttpRequest* request, Response* response){
 	std::ofstream file;
 
 	// check for CGI??
-	if(getReadingMode(*response) == TEXT)
+	if(getReadingMode(*response) == BINARY)
 		file.open(path, std::ios::app);
 	else
 		file.open(path);
