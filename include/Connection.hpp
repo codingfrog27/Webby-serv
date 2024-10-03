@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Connection.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 16:24:32 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 15:49:42 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 17:10:44 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "Config.hpp"
 
 
-class Connection : public HttpRequest
+class Connection
 {
 	private:
 		// Private Attributes
@@ -29,7 +29,7 @@ class Connection : public HttpRequest
 		size_t		_socketIndex; //needed
 		int			_serverFD;
 		int			_clientFD;
-		// HttpRequest	_request;
+		HttpRequest	_request;
 		// Response	*response;
 		bool		_keepOpen;
 		bool		doneReading;
@@ -38,7 +38,7 @@ class Connection : public HttpRequest
 		Connection(Config *config);
 		Connection(const Connection &rhs);
 		Connection &operator=(const Connection &rhs);
-		~Connection(void);
+		~Connection();
 
 		// Public Methods
 		void	copy_clients_fds(Connection connects);

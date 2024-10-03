@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 15:21:11 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 17:13:53 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ class HttpRequest
 	public:
 	// Constructors and Destructors
 	void				main_reader(int client_fd);
-	HttpRequest(void) = delete;
+	HttpRequest(void);
 	HttpRequest(int client_fd);
 	HttpRequest(const HttpRequest &rhs);
 	HttpRequest &operator=(const HttpRequest &rhs);

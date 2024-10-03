@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 14:05:06 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 15:37:39 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 17:16:27 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "everything.hpp"
+#include "socket.hpp"
+#include "poll.h"
+#include "Connection.hpp"
 
-
-class Server : public Config
+class Server
 {
 	private:
 		// Private Attributes

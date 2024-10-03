@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Connection.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 16:26:31 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 15:46:52 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 17:13:07 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,10 @@
 //                        Constructors and Destructors                        //
 // ************************************************************************** //
 
-Connection::Connection(Config *config) : _request(_clientFD)
+Connection::Connection(Config *config)
 {
+	config = nullptr;
+
 	std::cout << GREEN << "Connection: Default constructor called" << RESET << std::endl;
 }
 
