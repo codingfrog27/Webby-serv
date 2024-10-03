@@ -28,6 +28,7 @@ static Response*	getMethod(HttpRequest* request, Response* response){
 	}
 	else
 		response->autoFillResponse("404 Not Found");
+	return response;
 }
 
 static Response*	postMethod(HttpRequest* request, Response* response){
@@ -40,12 +41,13 @@ static Response*	postMethod(HttpRequest* request, Response* response){
 	else
 		file.open(path);
 	if (file.is_open()){
-		file << request->getRawRequestData; //get body
+		// file << request->getRawRequestData; //get body
 		file.close();
 		response->autoFillResponse("201 Created");
 	}
 	else
 		response->autoFillResponse("500 Internal Server Error");
+	return response;
 }
 
 static Response*	deleteMethod(HttpRequest* request, Response* response){
@@ -59,6 +61,7 @@ static Response*	deleteMethod(HttpRequest* request, Response* response){
 	}
 	else
 		response->autoFillResponse("404 Not Found");
+	return response;
 }
 
 void	responseHandler(HttpRequest* request)
@@ -75,6 +78,6 @@ void	responseHandler(HttpRequest* request)
 		response->autoFillResponse("405 Method Not Allowed");
 		response->setHeaders("Allow", "GET, POST, DELETE");
 	}
-	response->generateResponse();
+	std::cout << response->generateResponse() << std::endl;
 	return;
 }
