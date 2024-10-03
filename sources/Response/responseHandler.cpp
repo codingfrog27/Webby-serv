@@ -28,6 +28,7 @@ static Response*	getMethod(HttpRequest* request, Response* response){
 	}
 	else
 		response->autoFillResponse("404 Not Found");
+	return (response);
 }
 
 static Response*	postMethod(HttpRequest* request, Response* response){
@@ -40,7 +41,7 @@ static Response*	postMethod(HttpRequest* request, Response* response){
 	else
 		file.open(path);
 	if (file.is_open()){
-		file << request->getRawRequestData; //get body
+		// file << request->getRawRequestData; //get body
 		file.close();
 		response->autoFillResponse("201 Created");
 	}

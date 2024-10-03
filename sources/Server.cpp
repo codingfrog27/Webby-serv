@@ -6,13 +6,15 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 14:32:11 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 17:17:25 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/03 17:52:18 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "everything.hpp"
 
 #include <iostream>
+
+#define MAX_CLIENT 300
 
 
 // ************************************************************************** //
@@ -21,7 +23,7 @@
 
 Server::Server(Config *config) : _sockets()
 {
-	for (size_t i = 0; i < config->max_clients; i++)
+	for (size_t i = 0; i < MAX_CLIENT; i++)
 	{
 		_sockets.emplace_back(config);
 	}
@@ -65,7 +67,7 @@ void Server::accept_loop()
 	int clientFD;
 	for (size_t i = 0; i < _sockets.size(); i++)
 	{
-		clientFD = _sockets[i].manageConnection(_sockets[i]._socketFd);
+		clientFD = _sockets[i].createConnection();
 		if (clientFD > 0)
 		{
 			pollfd newconnect;
@@ -73,7 +75,7 @@ void Server::accept_loop()
 			//add events and revents
 			pfds.push_back(newconnect); //replace w emplace?
 
-			Connection newconnectClass(config, clientFD, );
+			Connection newconnectClass(config);
 			//set stuf
 			connections.push_back(newconnectClass);
 		}
@@ -129,7 +131,6 @@ void	Server::main_server_loop()
 				if (!connections[i]._keepOpen)
 					close_connect(connections[i], i);
 			}
-			
 			/* code */
 		}
 }

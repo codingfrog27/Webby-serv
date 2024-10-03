@@ -58,6 +58,5 @@ public:
 	// Socket& operator=(const Socket& obj);
 	~Socket();
 
-	int		createConnection(std::string t_filePath);
-	int		manageConnection(int socketFd);
+	int		createConnection();
 };
