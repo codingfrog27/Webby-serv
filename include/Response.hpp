@@ -1,5 +1,5 @@
 #pragma once
-#include "../../include/HttpRequest.hpp"
+#include "HttpRequest.hpp"
 #include <fstream>
 
 enum readingMode{
@@ -34,6 +34,7 @@ class Response{
 		std::vector<char>								_body;
 };
 
+void		responseHandler(HttpRequest* request);
 std::string	resolveFilePath(HttpRequest* request);
 bool		fileExists(std::string path, Response* response);
 readingMode	getReadingMode(Response & response);

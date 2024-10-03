@@ -13,6 +13,11 @@ static Response*	getMethod(HttpRequest* request, Response* response){
 		if (file.is_open()){
 			file.seekg(0, std::ios::end);
 			size = file.tellg();
+			if (size == 0){
+				file.close();
+				response->autoFillResponse("204 No Content");
+				return response;
+			}
 			file.seekg(0, std::ios::beg);
 			std::vector<char> buffer(size);
 			if (file.read(buffer.data(), size)){
@@ -36,7 +41,7 @@ static Response*	postMethod(HttpRequest* request, Response* response){
 	std::ofstream file;
 
 	// check for CGI??
-	if(getReadingMode(*response) == TEXT)
+	if(getReadingMode(*response) == BINARY)
 		file.open(path, std::ios::app);
 	else
 		file.open(path);
@@ -47,6 +52,7 @@ static Response*	postMethod(HttpRequest* request, Response* response){
 	}
 	else
 		response->autoFillResponse("500 Internal Server Error");
+	return response;
 }
 
 static Response*	deleteMethod(HttpRequest* request, Response* response){
@@ -60,13 +66,15 @@ static Response*	deleteMethod(HttpRequest* request, Response* response){
 	}
 	else
 		response->autoFillResponse("404 Not Found");
+	return response;
 }
 
 void	responseHandler(HttpRequest* request)
 {
 	Response *response = new Response(request);
-	//cgi handler
-	if (request->_method_type == GET)
+	if (!request->getStatusCode().empty()) //might have to be renamed
+		response->autoFillResponse(request->getStatusCode());
+	else if (request->_method_type == GET)
 		response = getMethod(request, response);
 	else if (request->_method_type == POST)
 		response = postMethod(request, response);
@@ -76,6 +84,6 @@ void	responseHandler(HttpRequest* request)
 		response->autoFillResponse("405 Method Not Allowed");
 		response->setHeaders("Allow", "GET, POST, DELETE");
 	}
-	response->generateResponse();
+	std::cout << response->generateResponse() << std::endl;
 	return;
 }
