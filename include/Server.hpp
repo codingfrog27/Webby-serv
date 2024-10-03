@@ -6,13 +6,11 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 14:05:06 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 17:16:27 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/03 17:17:42 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "socket.hpp"
-#include "poll.h"
-#include "Connection.hpp"
+#include "everything.hpp"
 
 class Server
 {

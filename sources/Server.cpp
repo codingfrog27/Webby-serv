@@ -3,14 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 14:32:11 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 15:50:16 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/03 17:17:25 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
 #include "everything.hpp"
 
 #include <iostream>
