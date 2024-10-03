@@ -36,7 +36,7 @@ static Response*	postMethod(HttpRequest* request, Response* response){
 	std::ofstream file;
 
 	// check for CGI??
-	if(getReadingMode(*response) == TEXT)
+	if(getReadingMode(*response) == BINARY)
 		file.open(path, std::ios::app);
 	else
 		file.open(path);
@@ -67,8 +67,10 @@ static Response*	deleteMethod(HttpRequest* request, Response* response){
 void	responseHandler(HttpRequest* request)
 {
 	Response *response = new Response(request);
+	if (!request->_statusCode.empty()) //might have to be renamed
+		response->autoFillResponse(request->_statusCode);
 	//cgi handler
-	if (request->_method_type == GET)
+	else if (request->_method_type == GET)
 		response = getMethod(request, response);
 	else if (request->_method_type == POST)
 		response = postMethod(request, response);
