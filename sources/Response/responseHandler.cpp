@@ -1,6 +1,6 @@
 #include "Response.hpp"
 
-static Response*	getMethod(HttpRequest* request, Response* response){
+static Response*	getMethod(Request* request, Response* response){
 	std::string path = resolveFilePath(request);
 	std::ifstream file;
 	size_t size = 0;
@@ -36,7 +36,7 @@ static Response*	getMethod(HttpRequest* request, Response* response){
 	return (response);
 }
 
-static Response*	postMethod(HttpRequest* request, Response* response){
+static Response*	postMethod(Request* request, Response* response){
 	std::string path = resolveFilePath(request);
 	std::ofstream file;
 
@@ -55,7 +55,7 @@ static Response*	postMethod(HttpRequest* request, Response* response){
 	return response;
 }
 
-static Response*	deleteMethod(HttpRequest* request, Response* response){
+static Response*	deleteMethod(Request* request, Response* response){
 	std::string path = resolveFilePath(request);
 
 	if (fileExists(path, response)){
@@ -69,7 +69,7 @@ static Response*	deleteMethod(HttpRequest* request, Response* response){
 	return response;
 }
 
-void	responseHandler(HttpRequest* request)
+void	responseHandler(Request* request)
 {
 	Response *response = new Response(request);
 	if (!request->getStatusCode().empty()) //might have to be renamed

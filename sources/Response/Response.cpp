@@ -1,6 +1,6 @@
 #include "Response.hpp"
 
-Response::Response(HttpRequest* request) : _method_type(request->_method_type), _http_version(request->_http_version){
+Response::Response(Request* request) : _method_type(request->_method_type), _http_version(request->_http_version){
 	return ;
 }
 

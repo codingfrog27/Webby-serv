@@ -10,7 +10,7 @@ enum readingMode{
 class Response{
 	public:
 		Response() = delete;
-		Response(HttpRequest* request);
+		Response(Request* request);
 		Response(const Response &obj) = delete;
 		Response& operator=(const Response& obj) = delete;
 		~Response();
@@ -34,8 +34,8 @@ class Response{
 		std::vector<char>								_body;
 };
 
-void		responseHandler(HttpRequest* request);
-std::string	resolveFilePath(HttpRequest* request);
+void		responseHandler(Request* request);
+std::string	resolveFilePath(Request* request);
 bool		fileExists(std::string path, Response* response);
 readingMode	getReadingMode(Response & response);
-void		responseHandler(HttpRequest* request);
+void		responseHandler(Request* request);

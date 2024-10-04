@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Connection.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 16:24:32 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 17:46:26 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/04 17:58:36 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ class Connection
 		size_t		_socketIndex; //needed
 		int			_serverFD;
 		int			_clientFD;
-		HttpRequest	*_request;
+		Request	*_request;
 		Config		*_config;
 		// Response	*response;
 		bool		_keepOpen;

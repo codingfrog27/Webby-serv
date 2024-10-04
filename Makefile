@@ -7,6 +7,7 @@ VERSION_FLAG = -std=c++20
 
 INCLUDE = -I include/ -I libft/include
 LIBFT_A			:=	./libft/libft.a
+# Wflags := -Wall -Wextra -Werror -g -fsanitize=address
 
 
 SRCDIR = sources
@@ -14,9 +15,8 @@ OBJDIR = objects
 SOURCES := $(shell find $(SRCDIR) -name '*.cpp')
 OBJECTS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
 
-ifneq (,$(filter debug strict,$(MAKECMDGOALS)))
-    Wflags := -Wall -Wextra-Werror -g -fsanitize=address
-endif
+# ifneq (,$(filter debug strict,$(MAKECMDGOALS)))
+# endif
 
 
 #-----colours----

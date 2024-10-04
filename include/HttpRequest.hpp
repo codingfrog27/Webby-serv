@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HttpRequest.hpp                                    :+:      :+:    :+:   */
+/*   Request.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -45,7 +45,7 @@ enum reading_status
 	FINISHED
 };
 
-class HttpRequest 
+class Request 
 {
 	// things to pass/inheret from config
 	// max body size
@@ -75,14 +75,15 @@ class HttpRequest
 	public:
 	// Constructors and Destructors
 	void				main_reader(int client_fd);
-	HttpRequest(void);
-	HttpRequest(int client_fd);
-	HttpRequest(const HttpRequest &rhs);
-	HttpRequest &operator=(const HttpRequest &rhs);
-	~HttpRequest(void);
+	Request(void);
+	Request(int client_fd);
+	Request(const Request &rhs);
+	Request &operator=(const Request &rhs);
+	~Request(void);
 	std::string	getHeaderValue(std::string key);
 	bool	headerExists(std::string key);
 	std::string		getStatusCode();
+	void			printHeaders();
 
 
 	std::vector<char>								_rawRequestData;

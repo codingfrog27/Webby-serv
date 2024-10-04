@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpRequest_reading.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:22:52 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 17:09:07 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/04 17:58:36 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,27 +17,27 @@
 // ************************************************************************** //
 
 
-HttpRequest::HttpRequest(int client_fd):
+Request::Request(int client_fd):
 	 _clientFD(client_fd), reading_mode(NOT_STARTED), body_bytes_read(0), \
 	  _bodyFound(false), _headerAreParsed(false), _method_type(NOT_PARSED_YET), \
-	  _keepOpen(true), _response_code(0)
+	  _keepOpen(true), _statusCode("0 Not started yet")
 {
 	std::cout << GREEN << "Http_request parsing started" << RESET << std::endl;
 	main_reader(_clientFD);
 	std::cout << "" << std::endl;
 }
 
-HttpRequest::HttpRequest(const HttpRequest &rhs)
+Request::Request(const Request &rhs)
 {
 	std::cout << GREEN << "Http_request: Copy constructor called" << RESET << std::endl;
 
 	*this = rhs;
 }
 
-HttpRequest &
-HttpRequest::operator=(const HttpRequest &rhs)
+Request &
+Request::operator=(const Request &rhs)
 {
-	std::cout << GREEN << "HttpRequest: Assignment operator called" << RESET << std::endl;
+	std::cout << GREEN << "Request: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
@@ -55,7 +55,7 @@ HttpRequest::operator=(const HttpRequest &rhs)
 	return (*this);
 }
 
-HttpRequest::~HttpRequest(void)
+Request::~Request(void)
 {
 	std::cout << RED << "http_request: Destructor called" << RESET << std::endl;
 }
@@ -70,7 +70,7 @@ HttpRequest::~HttpRequest(void)
 
 
 
-void	HttpRequest::main_reader(int client_fd)
+void	Request::main_reader(int client_fd)
 {
 	try
 	{
@@ -84,8 +84,8 @@ void	HttpRequest::main_reader(int client_fd)
 		if (reading_mode == FINISHED && _bodyFound)
 			parseBody();
 		// timeout check here?
-		if (_response_code == 0) // or others?
-			_response_code = 102;
+		if (_statusCode == "0 Not started yet") // or others?
+			_statusCode = "102 Processing";
 	}
 	catch(const std::ios_base::failure &e)
 	{
@@ -104,7 +104,7 @@ void	HttpRequest::main_reader(int client_fd)
 	}
 }
 
-void	HttpRequest::read_from_socket(int client_fd)
+void	Request::read_from_socket(int client_fd)
 {
 	static char buffer[BUFFER_SIZE] = {0};
 	int	bytes_read = read(client_fd, buffer, BUFFER_SIZE - 1);
@@ -118,7 +118,7 @@ void	HttpRequest::read_from_socket(int client_fd)
 		reading_mode = FINISHED;
 }
 
-void	HttpRequest::look_for_body()
+void	Request::look_for_body()
 {
 	static const std::vector<char> body_delim = {'\r', '\n', '\r', '\n'};
 	std::vector<char>::iterator it = std::search(_rawRequestData.begin(),\

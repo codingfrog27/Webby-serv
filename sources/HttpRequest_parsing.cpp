@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:11:35 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/01 14:18:03 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/04 18:04:40 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 // not trimming any trailing whitespace rn cause RFC 7230 states its not allowed
 // some irl servers do allow it though.. so might add later?
-void	HttpRequest::parse_headers(std::string header_str)
+void	Request::parse_headers(std::string header_str)
 {
 	size_t						start, colon_pos, line_end;
 	std::string					key, value;
@@ -31,12 +31,11 @@ void	HttpRequest::parse_headers(std::string header_str)
 		_headers[key] = value;
 		start = line_end + 2;
 		line_end = header_str.find("\r\n", start);
-		std::cout << key << ": " << value << std::endl;
 	}
 	checkHeaders();
 }
 
-size_t	HttpRequest::parse_req_line(std::string req_line)
+size_t	Request::parse_req_line(std::string req_line)
 {
 	size_t	line_end, method_end, uri_end;
 	
@@ -63,7 +62,7 @@ size_t	HttpRequest::parse_req_line(std::string req_line)
 	return (line_end + 2);
 }
 
-Http_method HttpRequest::which_method_type(std::string str) 
+Http_method Request::which_method_type(std::string str) 
 {
 	const char *Methods[] = {"GET", "POST", "DELETE"}; //will be updated after config parsing
 
@@ -76,7 +75,7 @@ Http_method HttpRequest::which_method_type(std::string str)
 }
 
 
-void HttpRequest::dechunkBody() //from copilot will check next week
+void Request::dechunkBody() //from copilot will check next week
 {
 // 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
 // 	  // Implementation for dechunking the body
@@ -111,14 +110,14 @@ void HttpRequest::dechunkBody() //from copilot will check next week
 // 	// and then throw the data inbetween in a new buffer?
 }
 
-float HttpRequest::http_version(std::string version) //throw error if not 1 or 1.1
+float Request::http_version(std::string version) //throw error if not 1 or 1.1
 {
 	if (version.compare(0, 6, "HTTP/1") != 0 && version.compare(0, 8, "HTTP/1.1") != 0)
 		throw std::invalid_argument("Unsupported HTTP version: " + version);
 	return (std::stof(version.substr(5))); 
 }
 
-void	HttpRequest::parseBody()
+void	Request::parseBody()
 {
 	const std::string	suffix = "--";
 		std::string		content_type = getHeaderValue("Content-Type"); //make ref?
@@ -151,7 +150,7 @@ void	HttpRequest::parseBody()
 	
 //multipart/form data
 
-void	HttpRequest::checkHeaders()
+void	Request::checkHeaders()
 {
 	// static const char *required_headers[] = {"Host", "connection"};
 	// static const char	*required_for_post[] = {"Content-Lenth", "Content-Type"};

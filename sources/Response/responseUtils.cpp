@@ -1,7 +1,7 @@
 #include "Response.hpp"
 #include <fstream>
 
-std::string	resolveFilePath(HttpRequest* request){
+std::string	resolveFilePath(Request* request){
 	std::string uri = request->_URI;
 	std::string host = request->_headers["Host"];
 	std::string file = uri.erase(0, host.length()); ///host length + 8 if http:// or 9 if https:// with request target in absolute form
