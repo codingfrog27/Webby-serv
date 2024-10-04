@@ -40,3 +40,8 @@ void	CGIHandler(HttpRequest* request, Response* response, int fd){
 		CGI* newCGI = new CGI(fd, env);
 	}
 }
+
+//dup stdout to fd
+//raw request data to fd
+//dup stdin to fd
+//close fd
