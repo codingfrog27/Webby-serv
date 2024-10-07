@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 14:05:06 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 17:17:42 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/07 18:08:33 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ class Server
 		
 
 	public:
-		const int	_max_clients = 50;
+		const int	_max_clients;
 		// Constructors and Destructors
 
 		Config *config;
@@ -32,8 +32,8 @@ class Server
 	
 
 		Server(Config *config); //socket init here
-		Server(const Server &rhs);
-		Server &operator=(const Server &rhs);
+		// Server(const Server &rhs);
+		// Server &operator=(const Server &rhs);
 		~Server(void);
 
 		// Public Methods

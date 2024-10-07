@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/04 18:06:19 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/07 17:16:30 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ int main()
 	// Request request(test_fd);
 
 	Config configgy;
-	Server(&configgy); //not constructable enough?
+	Server	server(&configgy); //not constructable enough?
+	server.main_server_loop();
 	close(test_fd);
 
 

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 18:48:41 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/07 18:01:51 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@
 Config::Config(void) //default constructor 
 {
 	_serverPort = "8080"; //idk if this works 
-	_serverName = "funny_serverUWU";
-	_maxConnects = 500;
+	_serverName = "localhost"; //"funny-server";
+	_maxConnects = 1;
 	_timeout = 50000;
-	_rootDir = "website";
+	_rootDir = "website/";
 	_autoIndexFilePath = _rootDir + "index.html"; //do i need slash?
 	
 

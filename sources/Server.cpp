@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 14:32:11 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 18:05:40 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/07 18:32:31 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@
 //                        Constructors and Destructors                        //
 // ************************************************************************** //
 
-Server::Server(Config *config) : _sockets()
-{
+Server::Server(Config *config) : _sockets(), _max_clients(config->_maxConnects)
+{	
 	for (size_t i = 0; i < MAX_CLIENT; i++)
 	{
 		_sockets.emplace_back(config);
@@ -32,25 +32,25 @@ Server::Server(Config *config) : _sockets()
 	std::cout << GREEN << "Server: Default constructor called" << RESET << std::endl;
 }
 
-Server::Server(const Server &rhs)
-{
-	std::cout << GREEN << "Server: Copy constructor called" << RESET << std::endl;
+// Server::Server(const Server &rhs) :  _max_clients(rhs._max_clients)
+// {
+// 	std::cout << GREEN << "Server: Copy constructor called" << RESET << std::endl;
 
-	*this = rhs;
-}
+// 	*this = rhs;
+// }
 
-Server &
-Server::operator=(const Server &rhs)
-{
-	std::cout << GREEN << "Server: Assignment operator called" << RESET << std::endl;
+// Server &
+// Server::operator=(const Server &rhs)
+// {
+// 	std::cout << GREEN << "Server: Assignment operator called" << RESET << std::endl;
 
-	if (this != &rhs)
-	{
-		// Perform deep copy
-	}
+// 	if (this != &rhs)
+// 	{
+// 		// Perform deep copy
+// 	}
 
-	return (*this);
-}
+// 	return (*this);
+// }
 
 Server::~Server(void)
 {
@@ -70,14 +70,8 @@ void Server::accept_loop()
 		clientFD = _sockets[i].createConnection();
 		if (clientFD > 0)
 		{
-			pollfd newconnect;
-			newconnect.fd = clientFD;
-			//add events and revents
-			pfds.push_back(newconnect); //replace w emplace?
-
-			Connection newconnectClass(config);
-			//set stuf
-			connections.push_back(newconnectClass);
+			pfds.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0}); //replace w emplace?
+			connections.emplace_back(config);
 		}
 	}
 	
@@ -119,7 +113,7 @@ void	Server::main_server_loop()
 				std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
 			for (size_t i = 0; i < pfds.size(); ++i)
 			{
-				if (pfds[i].revents & POLLIN) 
+				if (pfds[i].revents & POLLIN) //take other events
 					connections[i]._request->main_reader(pfds[i].fd);
 				if ((pfds[i].revents & POLLOUT) && connections[i].doneReading) //what if ready to post to server but not reday for response
 					responseHandler(connections[i]._request);

@@ -16,6 +16,7 @@ bool	fileExists(std::string path, Response* response){
 		return true;
 	}
 	return false;
+	(void)response; //fix later
 }
 
 /* anything that's not text has to be handled as raw bits*/

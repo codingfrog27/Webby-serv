@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/16 15:06:45 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 18:41:43 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/07 18:29:51 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ Socket::Socket(Config *config)
     }
     //getaddrinfo might return multiple address structures because there could be multiple valid ways to connect to the desired host
     //The loop breaks as soon as a socket is successfully created and bound, 
-    //or it continues until the end of the list if none of the address structures work
+    //or it returns until the end of the list if none of the address structures work
     for(p = servinfo; p != NULL; p = p->ai_next)
     {
         //Create a new socket for network communication
@@ -43,7 +43,7 @@ Socket::Socket(Config *config)
         if(_socketFd < 0)
         {
             std::cerr << RED << "Fail to create a Socket." << RESET << std::endl;
-            continue;
+            return;
         }
 
         // Set socket to non-blocking
@@ -51,24 +51,29 @@ Socket::Socket(Config *config)
         {
             std::cerr << RED << "Failed to set socket to non-blocking..." << RESET << std::endl;  //TO BE FIX!!!!
             close(_socketFd);
-            continue;
+            return;
         }
         
         int yes = 1;
         //It allows to configure specific behaviors for a socket and avoid the bind function fails, claiming “Address already in use.”
-        if (setsockopt(_socketFd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof yes) == -1)
+        if (setsockopt(_socketFd, SOL_SOCKET,SO_REUSEADDR ,&yes, sizeof(yes)) == -1)
         {
             std::cerr << RED << "Setsockopt failed with error: " << strerror(errno) << RESET << std::endl;
-            continue;
+            return;
         } 
-
+		if (setsockopt(_socketFd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes)) == -1)
+		{
+			std::cerr << RED << "Setsockopt SO_REUSEPORT failed with error: " << strerror(errno) << RESET << std::endl;
+			close(_socketFd);
+			return;
+    	}
         //This function associates a socket with a local address and port number. 
         //It tells the operating system that the socket should be used for communication at the specified address and port
         if (bind(_socketFd, p->ai_addr, p->ai_addrlen) == -1)
         {
             close(_socketFd);
             std::cerr << RED << "Bind failed with error: " << strerror(errno) << RESET << std::endl;
-            continue;
+            return;
         }
         
         break; //Successfully bound, exit the loop
@@ -124,6 +129,10 @@ int    Socket::createConnection()
             std::cout << CYAN << "No connections available, retrying..." << RESET << std::endl;
         }
         else
+		{
             std::cerr << RED << "Accept failed with error: " << strerror(errno) << RESET << std::endl;
+			std::cout << "brother ugh\n";
+			usleep(2000);
+		}
 	return (new_socket);
 }
