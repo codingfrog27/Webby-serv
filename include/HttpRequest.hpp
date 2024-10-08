@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Request.hpp                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/06 17:18:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 18:18:36 by mde-cloe         ###   ########.fr       */
-/*                                                                            */
+/*																			*/
+/*														:::	  ::::::::   */
+/*   Request.hpp									:+:	  :+:	:+:   */
+/*													+:+ +:+		 +:+	 */
+/*   By: mde-cloe <mde-cloe@student.42.fr>		  +#+  +:+	   +#+		*/
+/*												+#+#+#+#+#+   +#+		   */
+/*   Created: 2024/09/06 17:18:08 by mde-cloe		  #+#	#+#			 */
+/*   Updated: 2024/10/03 18:18:36 by mde-cloe		 ###   ########.fr	   */
+/*																			*/
 /* ************************************************************************** */
 
 
@@ -96,4 +96,4 @@ class Request
 	bool											_error_occured;
 	std::string										_statusCode;
 };
-    // std::string document_root = "/var/www/html"; // Example document root
+	// std::string document_root = "/var/www/html"; // Example document root

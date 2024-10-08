@@ -55,6 +55,6 @@
 		"typeinfo": "cpp"
 	},
 	"editor.renderWhitespace": "all",
-    "editor.renderControlCharacters": true,
-    // "files.eol": "\r\n"
+	"editor.renderControlCharacters": true,
+	// "files.eol": "\r\n"
 }

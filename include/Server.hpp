@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/03 14:05:06 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/07 18:08:33 by mde-cloe         ###   ########.fr       */
-/*                                                                            */
+/*																			*/
+/*														:::	  ::::::::   */
+/*   Server.hpp										 :+:	  :+:	:+:   */
+/*													+:+ +:+		 +:+	 */
+/*   By: mde-cloe <mde-cloe@student.42.fr>		  +#+  +:+	   +#+		*/
+/*												+#+#+#+#+#+   +#+		   */
+/*   Created: 2024/10/03 14:05:06 by mde-cloe		  #+#	#+#			 */
+/*   Updated: 2024/10/07 18:08:33 by mde-cloe		 ###   ########.fr	   */
+/*																			*/
 /* ************************************************************************** */
 
 #include "everything.hpp"
@@ -16,7 +16,7 @@ class Server
 {
 	private:
 		// Private Attributes
-		
+		void	setupAddrInfo();
 
 	public:
 		const int	_max_clients;
@@ -27,6 +27,7 @@ class Server
 
 		std::vector<pollfd>	pfds;
 		std::vector<Connection>connections;
+		struct	addrinfo		*addrInfo;
 
 		// std::unordered_map<int, Connection> _connections;
 	

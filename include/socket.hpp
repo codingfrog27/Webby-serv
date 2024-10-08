@@ -44,19 +44,27 @@
 
 class Socket
 {
-protected:
+private:
+	int				_setYes;
 	struct sockaddr_storage _address; //Cover IPv4 and IPv6
+
+	const struct addrinfo	*_addrInfo;
 	std::string				_hostname; 
 	std::string				_port;
+	char ip_address[INET6_ADDRSTRLEN];
+
+	void					openSocket();
+	void 					*get_in_addr(struct sockaddr *sa);
+
 
 public:
 	int						_socketFd;
+						Socket(Config *config);
+						~Socket();
+	int					createConnection();
 	//ORTHODOX CANONICAL CLASS FORM//
 	// Socket(const std::string &t_hostname, const std::string &t_port);
-	Socket(Config *config);
 	// Socket(const Socket &obj);
 	// Socket& operator=(const Socket& obj);
-	~Socket();
 
-	int		createConnection();
 };
