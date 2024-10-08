@@ -3,17 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 18:49:37 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/08 15:22:56 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+
+#include <iostream>
+#include <fstream>
 #include <string>
-#include <unordered_map>
+#include <vector>
+#include <ctype.h>
 
 class Config
 {
@@ -29,7 +33,10 @@ class Config
 		~Config(void);
 
 	
+	// std::map<std::string, std::string> _configMap;
+
 	//these are all REQUIRED
+	size_t i = 0;
 	std::string	_serverPort;
 	// size_t		_serverPort;
 	std::string	_serverName;
@@ -37,6 +44,8 @@ class Config
 	size_t		_timeout; //general _timeout waiting for request/respond sending
 	std::string	_rootDir;
 	std::string	_autoIndexFilePath;
+	// std::vector <location> _locations;
+	// std::vector <Socket> _server;
 	// std::string	error_log_file;
 	// std::string	access_log_file;
 
@@ -49,6 +58,9 @@ class Config
 	// size_t		max_keep_alive_requests;
 	// std::unordered_map<std::string, std::string> custom_error_pages;
 	// std::unordered_map<std::string, std::string> access_control;
+	
+	void	parseConfigFile(const std::string filename);
+	void	startParsing(const std::string &line);
 };
 
 

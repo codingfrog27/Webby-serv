@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/04 18:06:19 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/08 12:47:54 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,10 @@
 
 int main()
 {
-	int test_fd = open("test.txt", 0);
-	if (test_fd <= 0)
-		std::cerr << "open failed" << std::endl;
-	// Request request(test_fd);
+	Config webserver;
+	webserver.parseConfigFile("example_config.conf");
 
-	Config configgy;
-	Server(&configgy); //not constructable enough?
-	close(test_fd);
-
-
+	// webserver.startParsing(config);
 
 	return 0;
 }
