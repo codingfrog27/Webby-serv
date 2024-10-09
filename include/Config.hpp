@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/08 15:22:56 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/09 14:30:48 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ class Config
 	// std::unordered_map<std::string, std::string> access_control;
 	
 	void	parseConfigFile(const std::string filename);
-	void	startParsing(const std::string &line);
+	int		startParsing(const std::string &line);
 };
 
 
