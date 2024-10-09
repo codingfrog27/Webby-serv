@@ -21,14 +21,14 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Server::Server(Config *config) : _sockets(), _max_clients(config->_maxConnects), addrInfo{0}
+Server::Server(Config *config) : _config(config), _sockets(), _max_clients(config->_maxConnects), _addrInfo{0}
 {	
 	try
 	{
 		setupAddrInfo();
 		for (size_t i = 0; i < MAX_CLIENT; i++)
 		{
-			_sockets.emplace_back(config);
+			_sockets.emplace_back(config, _addrInfo);
 		}
 		
 	}
@@ -50,7 +50,7 @@ void	Server::setupAddrInfo()
 	hints.ai_protocol = IPPROTO_TCP; //Specifies the protocol
 	hints.ai_socktype = SOCK_STREAM; //Specifies the socket type (SOCK_STREAM for TCP)
 
-	status = getaddrinfo(config->_serverName.c_str(), config->_serverPort.c_str(), &hints, &addrInfo); 
+	status = getaddrinfo(_config->_serverName.c_str(), _config->_serverPort.c_str(), &hints, &_addrInfo); 
 	if (status != 0)
 		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
 
@@ -78,7 +78,7 @@ void	Server::setupAddrInfo()
 
 Server::~Server(void)
 {
-	freeaddrinfo(addrInfo);
+	freeaddrinfo(_addrInfo);
 	std::cout << RED << "Server: Destructor called" << RESET << std::endl;
 }
 
@@ -96,7 +96,7 @@ void Server::accept_loop()
 		if (clientFD > 0)
 		{
 			pfds.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0}); //replace w emplace?
-			connections.emplace_back(config);
+			connections.emplace_back(_config);
 			counter++;
 		}
 	}
@@ -110,7 +110,7 @@ void	Server::close_connect(Connection closeme, int i)
 	// auto it = std::find(_sockets.begin(), _sockets.end(), closeme._serverFD);
 	// _sockets.erase(it);
 	// _sockets.emplace(it);
-	_sockets[closeme._socketIndex] = Socket(config); //does this call destructor
+	_sockets[closeme._socketIndex] = Socket(_config, _addrInfo); //does this call destructor
 	pfds.erase(pfds.begin() + i);
 	connections.erase(connections.begin() + i);
 	// _sockets.em

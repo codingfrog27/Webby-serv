@@ -12,8 +12,9 @@
 
 #include "socket.hpp"
 
-Socket::Socket(Config *config)
- : _setYes(1), _hostname(config->_serverName), _port(config->_serverPort), _socketFd(0), ip_address{0}
+Socket::Socket(Config *config, const struct addrinfo *addressInfo)
+ : _addrInfo(addressInfo),_setYes(1), _hostname(config->_serverName), \
+ _port(config->_serverPort), _socketFd(0), ip_address{0}
  {
 	try
 	{
@@ -60,23 +61,19 @@ int	Socket::createConnection()
 {   
 	socklen_t   addrlen = sizeof(_address);
 	int		 new_socket; 
-	
-	//This function configures a socket to listen for incoming connection requests from clients. 
-	//After binding a socket to an address and port, we use listen() to indicate that the socket is ready to accept incoming connections.
 
-	std::cout << YELLOW << "--------- Waiting for new connection ----------" << RESET << std::endl;
-	//This function is called to accept an incoming connection request on a socket that has been set up to listen for connections. 
-	//When a client attempts to connect to the server, accept() creates a new socket for that connection and establishes the communication channel.
-	new_socket = accept(_socketFd, (struct sockaddr *)&_address, (socklen_t *)&addrlen);
+	new_socket = accept(_socketFd, (struct sockaddr *)&_address, &addrlen);
 		if (new_socket >= 0)
 			inet_ntop(_address.ss_family, get_in_addr((struct sockaddr *)&_address), ip_address, sizeof(ip_address));
+		else if (errno == EAGAIN || errno == EWOULDBLOCK)
+			std::cout << CYAN << "No connections available, retrying..." << RESET << std::endl;
+		else
+			throw std::runtime_error(std::string("Accept failed with error: ") + strerror(errno) + "FD ==" + std::to_string(_socketFd));
+	return (new_socket);
+}
+
+	// std::cout << YELLOW << "--------- Waiting for new connection ----------" << RESET << std::endl;
 		// {
 		// 	// std::cout << GREEN << "New connection accepted" << RESET << std::endl;
 		// 	// std::cout << CYAN << "server: got connection from " << ip_address << RESET << std::endl;
 		// }
-		else if (errno == EAGAIN || errno == EWOULDBLOCK)
-			std::cout << CYAN << "No connections available, retrying..." << RESET << std::endl;
-		else
-			throw std::runtime_error(std::string("Accept failed with error: ") + strerror(errno));
-	return (new_socket);
-}

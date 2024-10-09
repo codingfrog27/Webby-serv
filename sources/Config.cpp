@@ -27,7 +27,6 @@ Config::Config(void) //default constructor
 	_rootDir = "website/";
 	_autoIndexFilePath = _rootDir + "index.html"; //do i need slash?
 	
-
 	std::cout << GREEN << "Config: Default constructor called" << RESET << std::endl;
 }
 

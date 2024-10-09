@@ -47,7 +47,7 @@ enum reading_status
 
 class Request 
 {
-	// things to pass/inheret from config
+	// things to pass/inheret from _config
 	// max body size
 	// allowed methods
 	private:

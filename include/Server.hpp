@@ -22,12 +22,12 @@ class Server
 		const int	_max_clients;
 		// Constructors and Destructors
 
-		Config *config;
+		Config *_config;
 		std::vector<Socket> _sockets;
 
 		std::vector<pollfd>	pfds;
 		std::vector<Connection>connections;
-		struct	addrinfo		*addrInfo;
+		struct	addrinfo		*_addrInfo;
 
 		// std::unordered_map<int, Connection> _connections;
 	

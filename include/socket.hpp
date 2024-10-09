@@ -45,10 +45,9 @@
 class Socket
 {
 private:
-	int				_setYes;
-	struct sockaddr_storage _address; //Cover IPv4 and IPv6
-
 	const struct addrinfo	*_addrInfo;
+	int						_setYes;
+	struct sockaddr_storage _address; //Cover IPv4 and IPv6
 	std::string				_hostname; 
 	std::string				_port;
 	char ip_address[INET6_ADDRSTRLEN];
@@ -59,7 +58,7 @@ private:
 
 public:
 	int						_socketFd;
-						Socket(Config *config);
+						Socket(Config *config, const struct addrinfo *addressInfo);
 						~Socket();
 	int					createConnection();
 	//ORTHODOX CANONICAL CLASS FORM//
