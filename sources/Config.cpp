@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/09 15:52:23 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/09 15:57:44 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ return ;
 
 int	Config::parseServerBlock(const std::string &line)
 {
-	std::cout << "Parsing line in Server block: \t";
+	std::cout << GREEN << "Parsing line in Server block: " << RESET;
 	std::string			content;
 	std::string			token;
 	std::istringstream	ss(line);
@@ -206,7 +206,7 @@ int	Config::parseLocationBlock(const std::string &line)
 	std::string			content;
 	std::string			token;
 	std::istringstream	ss(line);
-	std::cout << "Parsing line in Location block: \t";
+	std::cout << CYAN << "Parsing line in Location block: " << RESET;
 	
 	// check se finisce con il char ';'
 	// find end of line (position of ';'), start checking from left to right
