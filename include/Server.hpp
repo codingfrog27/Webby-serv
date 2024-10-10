@@ -39,7 +39,7 @@ class Server
 
 		// Public Methods
 		void	main_server_loop();
-		void	accept_loop();
+		void	accept_loop(int i);
 		void	close_connect(Connection closeme, int i);
 } ;
 

@@ -17,9 +17,9 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Connection::Connection(Config *config)
+Connection::Connection(Config *config, int clientFD): _clientFD(clientFD)
 {
-	config = nullptr;
+	config = config;
 	_request = nullptr;
 
 	std::cout << GREEN << "Connection: Default constructor called" << RESET << std::endl;

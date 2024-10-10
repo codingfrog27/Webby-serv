@@ -36,7 +36,7 @@ class Connection
 		bool		doneReading;
 		
 		// Constructors and Destructors
-		Connection(Config *config);
+		Connection(Config *config, int clientFD);
 		// Connection(const Connection &rhs);
 		// Connection &operator=(const Connection &rhs);
 		~Connection();
