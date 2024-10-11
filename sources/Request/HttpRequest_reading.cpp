@@ -23,7 +23,7 @@ Request::Request(int client_fd):
 	  _keepOpen(true), _statusCode("0 Not started yet")
 {
 	std::cout << GREEN << "Http_request parsing started" << RESET << std::endl;
-	main_reader(_clientFD);
+	main_reader();
 	std::cout << "" << std::endl;
 }
 
@@ -70,11 +70,11 @@ Request::~Request(void)
 
 
 
-void	Request::main_reader(int client_fd)
+void	Request::main_reader()
 {
 	try
 	{
-		read_from_socket(client_fd);
+		read_from_socket();
 		if (!_bodyFound)
 			look_for_body();
 		if (body_bytes_read > _max_body_size)
@@ -104,10 +104,10 @@ void	Request::main_reader(int client_fd)
 	}
 }
 
-void	Request::read_from_socket(int client_fd)
+void	Request::read_from_socket()
 {
 	static char buffer[BUFFER_SIZE] = {0};
-	int	bytes_read = read(client_fd, buffer, BUFFER_SIZE - 1);
+	int	bytes_read = read(_clientFD, buffer, BUFFER_SIZE - 1);
 	
 	if (bytes_read < 0)
 		throw (std::ios_base::failure("reading fail when reading from client socket"));

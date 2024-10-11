@@ -57,12 +57,13 @@ void	Server::setupAddrInfo()
 
 }
 
-void Server::accept_loop(int i)
+Request Server::accept_connection(int i)
 {
 	int clientFD;
 		clientFD = _sockets[i].createConnection();
-		if (clientFD > 0)
-			connections.emplace_back(_config, clientFD);
+			return (Request(clientFD));
+		// if (clientFD > 0)
+		//else handle exception
 }
 
 Server::~Server(void)
@@ -77,57 +78,59 @@ Server::~Server(void)
 
 
 
-void	Server::close_connect(Connection closeme, int i)
+void	Server::close_connect(Request closeme, int i)
 {
 	close(closeme._clientFD);
-	// close(closeme._serverFD);
-	// auto it = std::find(_sockets.begin(), _sockets.end(), closeme._serverFD);
-	// _sockets.erase(it);
-	// _sockets.emplace(it);
-	_sockets[closeme._socketIndex] = Socket(_config, _addrInfo); //does this call destructor
-	pfds.erase(pfds.begin() + i);
-	connections.erase(connections.begin() + i);
-	// _sockets.em
-	
+	_Requests.erase(i); //might need to change if i need data from last request
 }
 
 void	Server::main_server_loop()
 {
 	
-	int num_events;
+	std::unordered_map<int, Request>\
+	::iterator	it;
+	int			num_events;
 	
-	while (1)
+	num_events = poll(pfds.data(), pfds.size(), 2500); //handle poll error
+	if (num_events == 0) 
+		std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
+	for (size_t i = 0; i < num_events; ++i)
+	{
+		if (pfds[i].revents & POLLIN) //take other events
 		{
-			//1 check for new connects
-			// copy_clients_fds(connections); //2
-
-			num_events = poll(pfds.data(), pfds.size(), 2500); 
-			if (num_events < 0) 
-			{
-				std::cerr << RED << "Poll failed with error: " << strerror(errno) << RESET << std::endl;
-				break;
-			}
-			if (num_events == 0) 
-				std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
-			for (size_t i = 0; i < num_events; ++i)
-			{
-				if (pfds[i].revents & POLLIN) //take other events
-				{
-
-					accept_loop(i);
-					connections[i]._request->main_reader(pfds[i].fd);
-				} 
-				if ((pfds[i].revents & POLLOUT) && connections[i].doneReading) //what if ready to post to server but not reday for response
-					responseHandler(connections[i]._request);
-					// responseHandler(connections[i]._request, connections[i]._clientFD);
-					
-					// connections[i].response->generateResponse(); //
-				if (!connections[i]._keepOpen)
-					close_connect(connections[i], i);
-			}
-			/* code */
-		}
+			it = _Requests.find(i);
+			if (it == _Requests.end())
+				_Requests.emplace(i, accept_connection(i));
+			_Requests[i].main_reader();
+		} 
+		if ((pfds[i].revents & POLLOUT) && _Requests[i]._doneReading)
+			responseHandler(&_Requests[i]);
+		if (!_Requests[i]._keepOpen)
+			close_connect(_Requests[i], i);
+		// else
+			// refresh req object only
+	}
 }
+
+
+		// if (num_events < 0) 
+		// {
+		// 	std::cerr << RED << "Poll failed with error: " << strerror(errno) << RESET << std::endl;
+		// 	break;
+		// }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Server::Server(const Server &rhs) :  _max_clients(rhs._max_clients)
 // {

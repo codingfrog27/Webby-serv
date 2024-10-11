@@ -26,7 +26,8 @@ class Server
 		std::vector<Socket> _sockets;
 
 		std::vector<pollfd>	pfds;
-		std::vector<Connection>connections;
+		// std::vector<Connection>connections;
+		std::unordered_map<int, Request>_Requests;
 		struct	addrinfo		*_addrInfo;
 
 		// std::unordered_map<int, Connection> _connections;
@@ -37,10 +38,10 @@ class Server
 		// Server &operator=(const Server &rhs);
 		~Server(void);
 
-		// Public Methods
-		void	main_server_loop();
-		void	accept_loop(int i);
-		void	close_connect(Connection closeme, int i);
+	// Public Methods
+	void		main_server_loop();
+	Request		accept_connection(int i);
+	void		close_connect(Request closeme, int i);
 } ;
 
 

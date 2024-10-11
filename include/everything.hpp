@@ -16,7 +16,6 @@
 #include "Response.hpp"
 #include "socket.hpp"
 #include "Config.hpp"
-#include "Connection.hpp"
 #include "Server.hpp"
 
 

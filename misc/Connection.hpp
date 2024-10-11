@@ -29,7 +29,7 @@ class Connection
 		size_t		_socketIndex; //needed
 		int			_serverFD;
 		int			_clientFD;
-		Request	*_request;
+		Request		_request;
 		Config		*_config;
 		// Response	*response;
 		bool		_keepOpen;
