@@ -100,9 +100,13 @@ void	Server::main_server_loop()
 		{
 			it = _Requests.find(i);
 			if (it == _Requests.end())
-				_Requests.emplace(i, accept_connection(i));
-			_Requests[i].main_reader();
-		} 
+			{
+				auto result = _Requests.emplace(i, accept_connection(i));
+				// catch construct error?
+				it = result.first;
+			}
+			it->second.main_reader();
+		}
 		if ((pfds[i].revents & POLLOUT) && _Requests[i]._doneReading)
 			responseHandler(&_Requests[i]);
 		if (!_Requests[i]._keepOpen)
@@ -113,6 +117,26 @@ void	Server::main_server_loop()
 }
 
 
+void	Server::epollLoop()
+{
+	
+}
+
+
+// void	Server::handleEvents()
+// {
+// 	auto it = _Requests.find(i);  // Use find() to check if the key exists
+
+// 	if (it != _Requests.end()) {
+//     if ((pfds[i].revents & POLLOUT) && it->second._doneReading)
+//         responseHandler(&(it->second));  // Access the value via iterator
+    
+//     if (!it->second._keepOpen)
+//         close_connect(it->second, i);
+// }
+}
+
+	// _Requests[i].main_reader();
 		// if (num_events < 0) 
 		// {
 		// 	std::cerr << RED << "Poll failed with error: " << strerror(errno) << RESET << std::endl;
