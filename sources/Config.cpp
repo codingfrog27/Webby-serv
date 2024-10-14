@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/09 15:57:44 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/14 15:10:34 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,16 @@
 
 
 // ************************************************************************** //
-//                        Constructors and Destructors                        //
+//						Constructors and Destructors						//
 // ************************************************************************** //
 
 Config::Config(void) //default constructor 
 {
 	_serverPort = "8080"; //idk if this works 
-	_serverName = "funny_serverUWU";
-	_maxConnects = 500;
+	_serverName = "localhost"; //"funny-server";
+	_maxConnects = 1;
 	_timeout = 50000;
-	_rootDir = "website";
+	_rootDir = "website/";
 	_autoIndexFilePath = _rootDir + "index.html"; //do i need slash?
 	
 
@@ -59,7 +59,7 @@ Config::~Config(void)
 }
 
 // ************************************************************************** //
-//                                Public methods                              //
+//								Public methods							  //
 // ************************************************************************** //
 
 bool	checkCaracter(const std::string &line, const char &c)
@@ -86,25 +86,6 @@ void Config::parseConfigFile(const std::string fileName)
 	{
 		while (std::getline(file, line))
 		{
-			// if (line.empty() || (line.find("location") && checkCaracter(line, '{')) || line.find("server {") != std::string::npos)
-			// 	continue;
-			// else if (startParsing(line) == 1)
-			// {
-			// 	std::cerr << RED << "Error: Invalid config file" << RESET << std::endl;
-			// 	break;
-			// }
-			// else
-			// {
-			// 	std::cerr << "Error: Invalid config file" << std::endl;
-			// 	break;
-			// }
-			// std::cout << "Ci 6?" << std::endl;
-			// else if (line.find("location") != std::string::npos)
-			// {
-				// std::cout << line << std::endl;
-				// continue;
-			// }
-			        // Rimuovi spazi bianchi iniziali e finali
         	if (line.empty() || line[0] == '#')
         	    continue;
         	if (line.find("server {") != std::string::npos) 
@@ -117,6 +98,21 @@ void Config::parseConfigFile(const std::string fileName)
 			{
         	    if (line.find("location") != std::string::npos && checkCaracter(line, '{')) 
 				{
+					std::string key;
+					size_t location_key = 0;
+					while (line[location_key] && isspace(line[location_key]))
+						location_key++;
+					std::string location_start = line.substr(location_key);
+					size_t location_end_key = location_start.find(' ');
+					key = location_start.substr(0, location_end_key);
+					location_key = location_end_key;
+					while (location_start[location_key] and isspace(location_start[location_key]))
+						location_key++;
+					size_t n_chars = 0;
+					while (location_start[location_key + n_chars] and location_start[location_key + n_chars] != ' ')
+						n_chars++;
+					_locationName = location_start.substr(location_key, n_chars);
+					std::cout << "Location_name: " << _locationName << std::endl;
 					inLocationBlock++;
         	        std::cout << "Entering location block" << std::endl;
         	        continue;

@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/03 14:32:11 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 18:05:40 by mde-cloe         ###   ########.fr       */
-/*                                                                            */
+/*																			*/
+/*														:::	  ::::::::   */
+/*   Server.cpp										 :+:	  :+:	:+:   */
+/*													+:+ +:+		 +:+	 */
+/*   By: mde-cloe <mde-cloe@student.42.fr>		  +#+  +:+	   +#+		*/
+/*												+#+#+#+#+#+   +#+		   */
+/*   Created: 2024/10/03 14:32:11 by mde-cloe		  #+#	#+#			 */
+/*   Updated: 2024/10/07 18:32:31 by mde-cloe		 ###   ########.fr	   */
+/*																			*/
 /* ************************************************************************** */
 
 #include "everything.hpp"
@@ -18,70 +18,89 @@
 
 
 // ************************************************************************** //
-//                        Constructors and Destructors                        //
+//						Constructors and Destructors						//
 // ************************************************************************** //
 
-Server::Server(Config *config) : _sockets()
-{
-	for (size_t i = 0; i < MAX_CLIENT; i++)
+Server::Server(Config *config) : _sockets(), _max_clients(config->_maxConnects), addrInfo{0}
+{	
+	try
 	{
-		_sockets.emplace_back(config);
+		setupAddrInfo();
+		for (size_t i = 0; i < MAX_CLIENT; i++)
+		{
+			_sockets.emplace_back(config);
+		}
+		
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
 	}
 	
 
 	std::cout << GREEN << "Server: Default constructor called" << RESET << std::endl;
 }
 
-Server::Server(const Server &rhs)
+void	Server::setupAddrInfo()
 {
-	std::cout << GREEN << "Server: Copy constructor called" << RESET << std::endl;
+	addrinfo hints;
+	int status;
+	hints.ai_family = AF_UNSPEC; //Specifies the address family. AF_UNSPEC = don't care IPv4 or IPv6
+	hints.ai_flags = AI_PASSIVE; //Provides additional options (AI_PASSIVE for binding to all network interfaces)
+	hints.ai_protocol = IPPROTO_TCP; //Specifies the protocol
+	hints.ai_socktype = SOCK_STREAM; //Specifies the socket type (SOCK_STREAM for TCP)
 
-	*this = rhs;
+	status = getaddrinfo(config->_serverName.c_str(), config->_serverPort.c_str(), &hints, &addrInfo); 
+	if (status != 0)
+		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
+
 }
 
-Server &
-Server::operator=(const Server &rhs)
-{
-	std::cout << GREEN << "Server: Assignment operator called" << RESET << std::endl;
+// Server::Server(const Server &rhs) :  _max_clients(rhs._max_clients)
+// {
+// 	std::cout << GREEN << "Server: Copy constructor called" << RESET << std::endl;
 
-	if (this != &rhs)
-	{
-		// Perform deep copy
-	}
+// 	*this = rhs;
+// }
 
-	return (*this);
-}
+// Server &
+// Server::operator=(const Server &rhs)
+// {
+// 	std::cout << GREEN << "Server: Assignment operator called" << RESET << std::endl;
+
+// 	if (this != &rhs)
+// 	{
+// 		// Perform deep copy
+// 	}
+
+// 	return (*this);
+// }
 
 Server::~Server(void)
 {
+	freeaddrinfo(addrInfo);
 	std::cout << RED << "Server: Destructor called" << RESET << std::endl;
 }
 
 // ************************************************************************** //
-//                                Public methods                              //
+//								Public methods							  //
 // ************************************************************************** //
 
 
 void Server::accept_loop()
 {
-	int clientFD;
+	int clientFD, counter = 0;
 	for (size_t i = 0; i < _sockets.size(); i++)
 	{
 		clientFD = _sockets[i].createConnection();
 		if (clientFD > 0)
 		{
-			pollfd newconnect;
-			newconnect.fd = clientFD;
-			//add events and revents
-			pfds.push_back(newconnect); //replace w emplace?
-
-			Connection newconnectClass(config);
-			//set stuf
-			connections.push_back(newconnectClass);
+			pfds.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0}); //replace w emplace?
+			connections.emplace_back(config);
+			counter++;
 		}
 	}
-	
-	
+	std::cout << counter << "new connections made" << std::endl;
 }
 
 void	Server::close_connect(Connection closeme, int i)
@@ -119,7 +138,7 @@ void	Server::main_server_loop()
 				std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
 			for (size_t i = 0; i < pfds.size(); ++i)
 			{
-				if (pfds[i].revents & POLLIN) 
+				if (pfds[i].revents & POLLIN) //take other events
 					connections[i]._request->main_reader(pfds[i].fd);
 				if ((pfds[i].revents & POLLOUT) && connections[i].doneReading) //what if ready to post to server but not reday for response
 					responseHandler(connections[i]._request);
