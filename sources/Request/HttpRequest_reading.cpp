@@ -23,7 +23,7 @@ Request::Request(int client_fd):
 	  _keepOpen(true), _statusCode("0 Not started yet")
 {
 	std::cout << GREEN << "Http_request parsing started" << RESET << std::endl;
-	main_reader();
+	// main_reader();
 	std::cout << "" << std::endl;
 }
 
@@ -70,7 +70,7 @@ Request::~Request(void)
 
 
 
-void	Request::main_reader()
+void	Request::readRequest()
 {
 	try
 	{

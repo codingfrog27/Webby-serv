@@ -17,6 +17,7 @@
 #include "socket.hpp"
 #include "Config.hpp"
 #include "Server.hpp"
+#include "Connection.hpp"
 
 
 #include <algorithm>

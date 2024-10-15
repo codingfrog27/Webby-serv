@@ -64,7 +64,7 @@ int	Socket::createConnection()
 
 	new_socket = accept(_socketFd, (struct sockaddr *)&_address, &addrlen);
 		if (new_socket >= 0)
-			inet_ntop(_address.ss_family, get_in_addr((struct sockaddr *)&_address), ip_address, sizeof(ip_address));
+			inet_ntop(_address.ss_family, get_in_addr((struct sockaddr *)&_address), ip_address, sizeof(ip_address)); //stores address in _address
 		else if (errno == EAGAIN || errno == EWOULDBLOCK)
 			std::cout << CYAN << "No connections available, retrying..." << RESET << std::endl;
 		else

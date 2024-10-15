@@ -91,7 +91,7 @@ class Request
 	Request 		&operator=(const Request &rhs);
 					~Request(void);
 	//public methods
-	void			main_reader();
+	void			readRequest();
 	std::string		getHeaderValue(std::string key);
 	bool			headerExists(std::string key);
 	std::string		getStatusCode();

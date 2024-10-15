@@ -10,7 +10,10 @@
 /*																			*/
 /* ************************************************************************** */
 
+#pragma once
+
 #include "everything.hpp"
+#include "Connection.hpp"
 
 class Server
 {
@@ -23,11 +26,10 @@ class Server
 		// Constructors and Destructors
 
 		Config *_config;
-		std::vector<Socket> _sockets;
+		Socket *_serverSocket;
 
-		std::vector<pollfd>	pfds;
-		// std::vector<Connection>connections;
-		std::unordered_map<int, Request>_Requests;
+		std::vector<pollfd>		_pollFDs;
+		std::vector<Connection> _Connections;
 		struct	addrinfo		*_addrInfo;
 
 		// std::unordered_map<int, Connection> _connections;
@@ -40,8 +42,8 @@ class Server
 
 	// Public Methods
 	void		main_server_loop();
-	Request		accept_connection(int i);
-	void		close_connect(Request closeme, int i);
+	void		acceptNewConnects();
+	void		close_connect(int i);
 } ;
 
 

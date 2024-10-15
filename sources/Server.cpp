@@ -21,17 +21,14 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Server::Server(Config *config) : _config(config), _sockets(), _max_clients(config->_maxConnects), _addrInfo{0}
+Server::Server(Config *config) : _config(config), _max_clients(config->_maxConnects), _addrInfo{0}
 {	
 	try
 	{
 		setupAddrInfo();
-		for (size_t i = 0; i < MAX_CLIENT; i++)
-		{
-			_sockets.emplace_back(config, _addrInfo);
-			pfds.emplace_back(pollfd{_sockets[i]._socketFd, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
-		}
-		
+		_serverSocket = new Socket(config, _addrInfo); //move adrresinfo back to so
+		_pollFDs.emplace_back(pollfd{_serverSocket->_socketFd, POLLIN | POLLERR,  0});
+		//main loop?
 	}
 	catch(const std::exception& e)
 	{
@@ -57,14 +54,6 @@ void	Server::setupAddrInfo()
 
 }
 
-Request Server::accept_connection(int i)
-{
-	int clientFD;
-		clientFD = _sockets[i].createConnection();
-			return (Request(clientFD));
-		// if (clientFD > 0)
-		//else handle exception
-}
 
 Server::~Server(void)
 {
@@ -78,58 +67,55 @@ Server::~Server(void)
 
 
 
-void	Server::close_connect(Request closeme, int i)
+void	Server::close_connect(int i)
 {
-	close(closeme._clientFD);
-	_Requests.erase(i); //might need to change if i need data from last request
+	close(_Connections[i]._clientFD);
+	_Connections.erase(_Connections.begin() + i);
+	_pollFDs.erase(_pollFDs.begin() + i);
 }
+
+static int s_counter;
 
 void	Server::main_server_loop()
 {
-	
-	std::unordered_map<int, Request>\
-	::iterator	it;
-	int			num_events;
-	
-	num_events = poll(pfds.data(), pfds.size(), -1); //handle poll error
-	if (num_events == 0) 
-		std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
-	else
-		std::cout << "YIPPIE" << std::endl;
-	for (size_t i = 0; i < MAX_CLIENT; ++i)
+	int	size = _pollFDs.size();
+	int c_i;
+	poll(_pollFDs.data(), size, -1); //set diff timeout and mb handle error
+	if (s_counter == 500)
+		std::cout << "DEAR LORDDD\n" << std::endl;
+
+	if (_pollFDs[0].revents & POLLIN)
 	{
-		if (pfds[i].revents & POLLIN) //take other events
-		{
-			it = _Requests.find(i);
-			if (it == _Requests.end())
-			{
-				auto result = _Requests.emplace(i, accept_connection(i));
-				// catch construct error?
-				it = result.first;
-			}
-			it->second.main_reader();
-		}
-		if (pfds[i].revents & POLLOUT)
-		{
-			it = _Requests.find(i);
-			if (it != _Requests.end() && it->second._doneReading) //can i put this if into the above condition?
-			{
-				responseHandler(&it->second);
-				if (!it->second._keepOpen)
-					close_connect(it->second, i);
-			}
-		}
-		// else
-			// refresh req object only
+		std::cout << "DEAR LORDDD\n" << std::endl;
+		acceptNewConnects();
 	}
+	for (size_t i = 1; i < size; ++i)
+	{		
+		c_i = i - 1;
+		if (_pollFDs[i].revents & POLLIN)
+			_Connections[i]._request.readRequest();
+		if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._doneReading) //getter?
+		{
+			responseHandler(&_Connections[i]._request);
+			if (_Connections[i]._keepOpen)
+				_Connections[i]._request = Request(_Connections[i]._clientFD);
+			else
+			close_connect(i);
+		}
+	}
+	s_counter++;
 }
 
 
-// void	Server::epollLoop()
-// {
-	
-// }
 
+void Server::acceptNewConnects()
+{
+	for (int clientFD = accept(_pollFDs[0].fd, nullptr, nullptr); clientFD > 0;)
+	{
+		_pollFDs.emplace_back(pollfd{clientFD, POLLIN, 0});
+		_Connections.emplace_back(Connection(_config, clientFD));
+	}
+}
 
 // void	Server::handleEvents()
 // {
@@ -144,13 +130,52 @@ void	Server::main_server_loop()
 // }
 // }
 
-	// _Requests[i].main_reader();
+	// _Requests[i].readRequest();
 		// if (num_events < 0) 
 		// {
 		// 	std::cerr << RED << "Poll failed with error: " << strerror(errno) << RESET << std::endl;
 		// 	break;
 		// }
 
+// void	Server::main_server_loop()
+// {
+	
+// 	std::unordered_map<int, Request>\
+// 	::iterator	it;
+// 	int			num_events;
+	
+// 	num_events = poll(_pollFDs.data(), _pollFDs.size(), -1); //handle poll error
+// 	if (num_events == 0) 
+// 		std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
+// 	else
+// 		std::cout << "YIPPIE" << std::endl;
+// 	for (size_t i = 0; i < MAX_CLIENT; ++i)
+// 	{
+// 		if (_pollFDs[i].revents & POLLIN) //take other events
+// 		{
+// 			it = _Requests.find(i);
+// 			if (it == _Requests.end())
+// 			{
+// 				auto result = _Requests.emplace(i, acceptNewConnects());
+// 				// catch construct error?
+// 				it = result.first;
+// 			}
+// 			it->second.readRequest();
+// 		}
+// 		if (_pollFDs[i].revents & POLLOUT)
+// 		{
+// 			it = _Requests.find(i);
+// 			if (it != _Requests.end() && it->second._doneReading) //can i put this if into the above condition?
+// 			{
+// 				responseHandler(&it->second);
+// 				if (!it->second._keepOpen)
+// 					close_connect(it->second, i);
+// 			}
+// 		}
+// 		// else
+// 			// refresh req object only
+// 	}
+// }
 
 
 

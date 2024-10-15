@@ -31,7 +31,7 @@ class Connection
 		Request		_request;
 		Config		*_config;
 		// Response	*response;
-		bool		doneReading;
+		bool		_doneReading;
 		bool		_keepOpen;
 		
 		// Constructors and Destructors
