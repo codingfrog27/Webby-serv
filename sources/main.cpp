@@ -21,7 +21,8 @@ int main()
 
 	Config configgy;
 	Server	server(&configgy); //not constructable enough?
-	server.main_server_loop();
+	while (1)
+		server.main_server_loop();
 	close(test_fd);
 
 

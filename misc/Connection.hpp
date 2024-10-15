@@ -27,13 +27,12 @@ class Connection
 
 	public:
 		size_t		_socketIndex; //needed
-		int			_serverFD;
 		int			_clientFD;
 		Request		_request;
 		Config		*_config;
 		// Response	*response;
-		bool		_keepOpen;
 		bool		doneReading;
+		bool		_keepOpen;
 		
 		// Constructors and Destructors
 		Connection(Config *config, int clientFD);

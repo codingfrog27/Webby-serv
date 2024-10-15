@@ -91,10 +91,12 @@ void	Server::main_server_loop()
 	::iterator	it;
 	int			num_events;
 	
-	num_events = poll(pfds.data(), pfds.size(), 2500); //handle poll error
+	num_events = poll(pfds.data(), pfds.size(), -1); //handle poll error
 	if (num_events == 0) 
 		std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
-	for (size_t i = 0; i < num_events; ++i)
+	else
+		std::cout << "YIPPIE" << std::endl;
+	for (size_t i = 0; i < MAX_CLIENT; ++i)
 	{
 		if (pfds[i].revents & POLLIN) //take other events
 		{
@@ -107,20 +109,26 @@ void	Server::main_server_loop()
 			}
 			it->second.main_reader();
 		}
-		if ((pfds[i].revents & POLLOUT) && _Requests[i]._doneReading)
-			responseHandler(&_Requests[i]);
-		if (!_Requests[i]._keepOpen)
-			close_connect(_Requests[i], i);
+		if (pfds[i].revents & POLLOUT)
+		{
+			it = _Requests.find(i);
+			if (it != _Requests.end() && it->second._doneReading) //can i put this if into the above condition?
+			{
+				responseHandler(&it->second);
+				if (!it->second._keepOpen)
+					close_connect(it->second, i);
+			}
+		}
 		// else
 			// refresh req object only
 	}
 }
 
 
-void	Server::epollLoop()
-{
+// void	Server::epollLoop()
+// {
 	
-}
+// }
 
 
 // void	Server::handleEvents()
@@ -134,7 +142,7 @@ void	Server::epollLoop()
 //     if (!it->second._keepOpen)
 //         close_connect(it->second, i);
 // }
-}
+// }
 
 	// _Requests[i].main_reader();
 		// if (num_events < 0) 
