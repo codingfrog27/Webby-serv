@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/14 14:27:02 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/15 15:49:55 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,10 @@ class Config
 	size_t		_timeout; //general _timeout waiting for request/respond sending
 	std::string	_rootDir;
 	std::string	_autoIndexFilePath;
-	std::string _locationName;
+
+	std::vector<std::string> _locationName;
+	std::string _locations;
+	// std::vector<location> _location;
 	// std::vector <location> _locations;
 	// std::vector <Socket> _server;
 	// std::string	error_log_file;
