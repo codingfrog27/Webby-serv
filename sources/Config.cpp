@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/15 16:17:42 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/16 15:37:29 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,67 +161,31 @@ return ;
 
 int	Config::parseServerBlock(const std::string &line)
 {
-	// std::cout << GREEN << "Parsing line in Server block: " << RESET;
-	std::string			content;
-	std::string			token;
-	std::map<std::string, std::string> locationBlock;
-	std::istringstream	ss(line);
-	
-	// check se finisce con il char ';'
-	// find end of line (position of ';'), start checking from left to right
-	// std::cout << "This is line: " << line << std::endl;
-	// if (line.find(''))
+	std::map<std::string, std::string> serverBlock;
+
+	if (line.empty())
+		return (0);
 	auto key = line.begin();
-	while (*key == ' ' or *key == '\t')
+	while (key != line.end() and (*key == ' ' or *key == '\t'))
 		key++;
+	if (key == line.end() or *key == '#' or *key == '}')
+		return (0);
 	auto begin = key;
-	while (*key != ' ' and *key != '\t')
+	while (key != line.end() and *key != ' ' and *key != '\t')
 		key++;
 	std::string tmp_key(begin, key);
-		
-	// size_t start = 0;
-	// while (line[start] && isspace(line[start]))
-	// 	start++;
-	// std::string key, value;
-	// std::string actual_start = line.substr(start);
-	if (line.find('#') or line.size() == 0 or line.empty())
-		return (2);
+
 	auto value  = key;
-	while(*value == ' ' or *value == '\t')
-		value++;
+	while(value != line.end() and (*value == ' ' or+ *value == '\t'))
+	 	value++;
 	auto begin_value = value;
-	while(*begin_value != ';')
-		begin_value++;
+	while(begin_value != line.end() and *begin_value != ';')
+	 	begin_value++;
 	std::string tmp_value(value, begin_value);
-	locationBlock.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));
-	
-	
-	// auto key 
-	// if (end_key.end() == std::string::npos)
-	// {
-		//errore config non valido
-		// std::cout << "This is end_key: " << actual_start << std::endl;
-		// std::cerr << RED << "1) Error: Invalid config file" << RESET << std::endl;
-		// stop parsing throw error ... 
-	// }
-	// else
-	// {
-	// std::cout << "This is line: " << line << std::endl;
-		// key = actual_start.substr(0, end_key);
-		// // std::cout << "This is key: " << key << std::endl;
-		// size_t start_value = end_key;
-		// while (actual_start[start_value] and isspace(actual_start[start_value]))
-		// 	start_value++;
-		// // std::cout << actual_start.substr(start_value) << '\n';
-		// size_t n_chars = 0;
-		// while (actual_start[start_value + n_chars] and
-		//  	actual_start[start_value + n_chars] != ';')
-		// 	n_chars++;
-		// value = actual_start.substr(start_value, n_chars);
-		// std::cout << key << " - " << value << std::endl;
-	// }
-	if (!checkCaracter(line, '}') && !checkCaracter(line, ';'))
-		return (1);
+	serverBlock.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));
+
+	for (const auto& pair : serverBlock) 
+        std::cout << pair.first << ": " << pair.second << std::endl;
 	return (0);
 }
 
@@ -229,83 +193,30 @@ int	Config::parseServerBlock(const std::string &line)
 
 int	Config::parseLocationBlock(const std::string &line)
 {
-	// std::string			content;
-	// std::string			token;
-	// std::istringstream	ss(line);
-	// // std::cout << CYAN << "Parsing line in Location block: " << RESET;
-	
-	// // check se finisce con il char ';'
-	// // find end of line (position of ';'), start checking from left to right
-	// // std::cout << "This is line: " << line << std::endl;
-	// // if (line.find(''))
-	
-	// size_t start = 0;
-	// while (line[start] && isspace(line[start]))
-	// 	start++;
-	// std::string key, value;
-	// std::string actual_start = line.substr(start);
-	// if (actual_start[0] == '#' or actual_start.size() == 0 or actual_start.empty())
-	// 	return (2);
-	// size_t end_key = actual_start.find(' ');
-	// if (end_key == std::string::npos)
-	// {
-	// 	//errore config non valido
-	// 	// std::cout << "This is end_key: " << actual_start << std::endl;
-	// 	// std::cerr << RED << "1) Error: Invalid config file" << RESET << std::endl;
-	// 	// stop parsing throw error ... 
-	// }
-	// else
-	// {
-	// // std::cout << "This is line: " << line << std::endl;
-	// 	key = actual_start.substr(0, end_key);
-	// 	// std::cout << "This is key: " << key << std::endl;
-	// 	size_t start_value = end_key;
-	// 	while (actual_start[start_value] and isspace(actual_start[start_value]))
-	// 		start_value++;
-	// 	// std::cout << actual_start.substr(start_value) << '\n';
-	// 	size_t n_chars = 0;
-	// 	while (actual_start[start_value + n_chars] and
-	// 	 	actual_start[start_value + n_chars] != ';')
-	// 		n_chars++;
-	// 	value = actual_start.substr(start_value, n_chars);
-	// 	std::cout << key << " - " << value << std::endl;
-	// }
 	std::map<std::string, std::string> locationBlock;
 
+	if (line.empty())
+		return (0);
 	auto key = line.begin();
-	while (*key == ' ' or *key == '\t')
-	{
-		if (*key == '#')
-			continue;
+	while (key != line.end() and (*key == ' ' or *key == '\t'))
 		key++;
-	}
+	if (key == line.end() or *key == '#' or *key == '}')
+		return (0);
 	auto begin = key;
-	while (*key != ' ' and *key != '\t')
+	while (key != line.end() and *key != ' ' and *key != '\t')
 		key++;
 	std::string tmp_key(begin, key);
-	std::cout << tmp_key << std::endl;
-		
-	// if (line.find('#') or line.size() == 0 or line.empty())
-	// 	return (2);
-	// size_t start = 0;
-	// while (line[start] && isspace(line[start]))
-	// 	start++;
-	// std::string key, value;
-	// std::string actual_start = line.substr(start);
-	auto value  = key;
-	while(*value == ' ' or *value == '\t')
-		value++;
-	auto begin_value = value;
-	while(*begin_value != ';')
-		begin_value++;
-	std::string tmp_value(value, begin_value);
-	// locationBlock.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));
 
-	// for (const auto& pair : locationBlock) {
-    //     std::cout << pair.first << ": " << pair.second << std::endl;
-    // }
-	
-	if (!checkCaracter(line, '}') && !checkCaracter(line, ';'))
-		return (1);
+	auto value  = key;
+	while(value != line.end() and (*value == ' ' or+ *value == '\t'))
+	 	value++;
+	auto begin_value = value;
+	while(begin_value != line.end() and *begin_value != ';')
+	 	begin_value++;
+	std::string tmp_value(value, begin_value);
+	locationBlock.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));
+
+	for (const auto& pair : locationBlock) 
+        std::cout << pair.first << ": " << pair.second << std::endl;
 	return (0);
 }
