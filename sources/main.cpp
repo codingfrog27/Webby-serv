@@ -21,6 +21,8 @@ int main()
 
 	Config configgy;
 	Server	server(&configgy); //not constructable enough?
+	// sleep(5);
+	// server.acceptNewConnects();
 	while (1)
 		server.main_server_loop();
 	close(test_fd);
@@ -42,3 +44,4 @@ int main()
 
 
 
+//all blocks in one poll?

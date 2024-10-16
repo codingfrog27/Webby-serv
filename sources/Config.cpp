@@ -26,6 +26,7 @@ Config::Config(void) //default constructor
 	_timeout = 50000;
 	_rootDir = "website/";
 	_autoIndexFilePath = _rootDir + "index.html"; //do i need slash?
+	_Timeout = 750;
 	
 	std::cout << GREEN << "Config: Default constructor called" << RESET << std::endl;
 }

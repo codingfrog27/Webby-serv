@@ -44,11 +44,12 @@ void	Server::setupAddrInfo()
 	addrinfo hints;
 	int status;
 	hints.ai_family = AF_UNSPEC; //Specifies the address family. AF_UNSPEC = don't care IPv4 or IPv6
+	hints.ai_socktype = SOCK_STREAM; //Specifies the socket type (SOCK_STREAM for TCP)
 	hints.ai_flags = AI_PASSIVE; //Provides additional options (AI_PASSIVE for binding to all network interfaces)
 	hints.ai_protocol = IPPROTO_TCP; //Specifies the protocol
-	hints.ai_socktype = SOCK_STREAM; //Specifies the socket type (SOCK_STREAM for TCP)
 
-	status = getaddrinfo(_config->_serverName.c_str(), _config->_serverPort.c_str(), &hints, &_addrInfo); 
+	status = getaddrinfo(_config->_serverName.c_str(), _config->_serverPort.c_str(), &hints, &_addrInfo); //?
+	// status = getaddrinfo("localhost", "http", &hints, &_addrInfo); //?
 	if (status != 0)
 		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
 
@@ -74,47 +75,55 @@ void	Server::close_connect(int i)
 	_pollFDs.erase(_pollFDs.begin() + i);
 }
 
-static int s_counter;
 
 void	Server::main_server_loop()
 {
 	int	size = _pollFDs.size();
-	int c_i;
-	poll(_pollFDs.data(), size, -1); //set diff timeout and mb handle error
-	if (s_counter == 500)
-		std::cout << "DEAR LORDDD\n" << std::endl;
+	int j;
+	
+	poll(_pollFDs.data(), size, _config->_Timeout); //set diff timeout and mb handle error //?? data == as pollfd *??
 
 	if (_pollFDs[0].revents & POLLIN)
 	{
 		std::cout << "DEAR LORDDD\n" << std::endl;
 		acceptNewConnects();
 	}
+	std::cout << "coolcoolcool\n" << std::endl;
 	for (size_t i = 1; i < size; ++i)
 	{		
-		c_i = i - 1;
+		j = i - 1;
 		if (_pollFDs[i].revents & POLLIN)
-			_Connections[i]._request.readRequest();
-		if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._doneReading) //getter?
+			_Connections[j]._request.readRequest();
+		if ((_pollFDs[i].revents & POLLOUT) && _Connections[j]._doneReading) //getter?
 		{
-			responseHandler(&_Connections[i]._request);
-			if (_Connections[i]._keepOpen)
-				_Connections[i]._request = Request(_Connections[i]._clientFD);
+			responseHandler(&_Connections[j]._request);
+			if (_Connections[j]._keepOpen)
+				_Connections[j]._request = Request(_Connections[j]._clientFD);
 			else
-			close_connect(i);
+				close_connect(i);
 		}
 	}
-	s_counter++;
 }
 
 
 
 void Server::acceptNewConnects()
 {
-	for (int clientFD = accept(_pollFDs[0].fd, nullptr, nullptr); clientFD > 0;)
+	int counter = 0;
+	int clientFD = accept(_pollFDs[0].fd, nullptr, nullptr); //cal antonio func and store client somewhere
+	if (clientFD > 0) //??
 	{
-		_pollFDs.emplace_back(pollfd{clientFD, POLLIN, 0});
+		// std::cout << "loop nbr" << counter++ << std::endl;
+		_pollFDs.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0}); //pollhup
 		_Connections.emplace_back(Connection(_config, clientFD));
 	}
+	else
+	{
+		std::cout << "NOT ACCEPTED" << std::endl;
+
+	}
+	// std::cout << "ACCEPTED\n" << std::endl;
+	// sleep(5);
 }
 
 // void	Server::handleEvents()

@@ -37,6 +37,7 @@ class Config
 	size_t		_timeout; //general _timeout waiting for request/respond sending
 	std::string	_rootDir;
 	std::string	_autoIndexFilePath;
+	int			_Timeout;
 	// std::string	error_log_file;
 	// std::string	access_log_file;
 

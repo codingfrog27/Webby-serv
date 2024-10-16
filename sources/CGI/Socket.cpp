@@ -35,7 +35,6 @@ Socket::~Socket()
 {
 	if(_socketFd)
 			close(_socketFd);
-	// std::cout << RED << "Destructor socket has been called." << RESET << std::endl;
 }
 
 void	Socket::openSocket()
@@ -48,6 +47,8 @@ void	Socket::openSocket()
 		throw std::runtime_error(std::string("setsockopt error: ") + strerror(errno));
 	if (bind(_socketFd, _addrInfo->ai_addr, _addrInfo->ai_addrlen) == -1)
 		throw std::runtime_error(std::string("Bind errorr: ") + strerror(errno));
+	listen(_socketFd, 20); //SET TO CONFIG VALUE
+	std::cout << "SERVER SOCKET RUNNIN" << std::endl;
 }
 
 void *Socket::get_in_addr(struct sockaddr *sa)
@@ -68,12 +69,7 @@ int	Socket::createConnection()
 		else if (errno == EAGAIN || errno == EWOULDBLOCK)
 			std::cout << CYAN << "No connections available, retrying..." << RESET << std::endl;
 		else
-			throw std::runtime_error(std::string("Accept failed with error: ") + strerror(errno) + "FD ==" + std::to_string(_socketFd));
+			throw std::runtime_error(std::string("Accept failed with error: ") \
+			 + strerror(errno) + "FD ==" + std::to_string(_socketFd));
 	return (new_socket);
 }
-
-	// std::cout << YELLOW << "--------- Waiting for new connection ----------" << RESET << std::endl;
-		// {
-		// 	// std::cout << GREEN << "New connection accepted" << RESET << std::endl;
-		// 	// std::cout << CYAN << "server: got connection from " << ip_address << RESET << std::endl;
-		// }

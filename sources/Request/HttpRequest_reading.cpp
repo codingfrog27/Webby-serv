@@ -22,7 +22,6 @@ Request::Request(int client_fd):
 	  _bodyFound(false), _headerAreParsed(false), _method_type(NOT_PARSED_YET), \
 	  _keepOpen(true), _statusCode("0 Not started yet")
 {
-	std::cout << GREEN << "Http_request parsing started" << RESET << std::endl;
 	// main_reader();
 	std::cout << "" << std::endl;
 }
@@ -72,6 +71,7 @@ Request::~Request(void)
 
 void	Request::readRequest()
 {
+	std::cout << GREEN << "Http_request read" << RESET << std::endl;
 	try
 	{
 		read_from_socket();
@@ -79,7 +79,7 @@ void	Request::readRequest()
 			look_for_body();
 		if (body_bytes_read > _max_body_size)
 			throw (std::length_error("413 Payload too large"));
-		if (reading_mode != READING_HEADERS && !_headerAreParsed)
+		if (reading_mode != READING_HEADERS && _headerAreParsed)
 			parse_headers(_unsortedHeaders);
 		if (reading_mode == FINISHED && _bodyFound)
 			parseBody();
@@ -108,7 +108,8 @@ void	Request::read_from_socket()
 {
 	static char buffer[BUFFER_SIZE] = {0};
 	int	bytes_read = read(_clientFD, buffer, BUFFER_SIZE - 1);
-	
+	sleep(5);
+	//recv?
 	if (bytes_read < 0)
 		throw (std::ios_base::failure("reading fail when reading from client socket"));
 	_rawRequestData.insert(_rawRequestData.end(), buffer, buffer + bytes_read);

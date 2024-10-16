@@ -25,7 +25,7 @@
 #define GREEN "\033[32m"
 #define RED "\033[31m"
 #define RESET "\033[0m"
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 20
 #define PLACEHOLDER_MAX_SIZE 10240
 
 enum Http_method

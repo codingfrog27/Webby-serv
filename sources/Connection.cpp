@@ -17,7 +17,8 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Connection::Connection(Config *config, int clientFD): _clientFD(clientFD), _request(_clientFD)
+Connection::Connection(Config *config, int clientFD): _clientFD(clientFD), \
+ _request(_clientFD), _doneReading(false), _keepOpen(false)
 {
 	config = config;
 	std::cout << GREEN << "Connection: Default constructor called" << RESET << std::endl;
