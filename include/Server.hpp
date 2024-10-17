@@ -12,8 +12,12 @@
 
 #pragma once
 
-#include "everything.hpp"
+// #include "everything.hpp"
 #include "Connection.hpp"
+#include "Request.hpp"
+
+
+class Connection;
 
 class Server
 {

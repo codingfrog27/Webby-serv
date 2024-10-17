@@ -82,7 +82,6 @@ void	Server::main_server_loop()
 	int j;
 	
 	poll(_pollFDs.data(), size, _config->_Timeout); //set diff timeout and mb handle error //?? data == as pollfd *??
-
 	if (_pollFDs[0].revents & POLLIN)
 	{
 		std::cout << "DEAR LORDDD\n" << std::endl;
@@ -97,7 +96,7 @@ void	Server::main_server_loop()
 		{
 			responseHandler(&_Connections[j]._request);
 			if (_Connections[j]._keepOpen)
-				_Connections[j]._request = Request(_Connections[j]._clientFD);
+				_Connections[j]._request = Request(&_Connections[j]);
 			else
 				close_connect(i);
 		}

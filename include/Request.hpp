@@ -13,14 +13,11 @@
 
 #pragma once
 
+#include "Connection.hpp"
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <fcntl.h>
-#include <unistd.h>
-#include <algorithm>
-#include <unordered_map>
-#include <sys/socket.h>
+
 #include "libft.h"
 
 #define GREEN "\033[32m"
@@ -29,14 +26,7 @@
 #define BUFFER_SIZE 20
 #define PLACEHOLDER_MAX_SIZE 10240
 
-enum Http_method
-{
-	INVALID = -1,
-	GET,
-	POST,
-	DELETE,
-	NOT_PARSED_YET,
-};
+
 
 enum reading_status
 {
@@ -46,12 +36,15 @@ enum reading_status
 	FINISHED
 };
 
+class Connection;
+
 class Request 
 {
 	// things to pass/inheret from _config
 	// max body size
 	// allowed methods
 	private:
+	Connection				*_connection;
 	std::string				_unsortedHeaders;
 	reading_status			reading_mode;
 	std::string				_boundary;
@@ -87,7 +80,7 @@ class Request
 	std::string					_statusCode;
 	// Constructors and Destructors
 					Request(void) = delete;
-					Request(int client_fd);
+					Request(Connection *Connection);
 					Request(const Request &rhs);
 	Request 		&operator=(const Request &rhs);
 					~Request(void);

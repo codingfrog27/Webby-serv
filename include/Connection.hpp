@@ -13,11 +13,11 @@
 #pragma once
 
 
-#include "Response.hpp"
-#include "HttpRequest.hpp"
+#include "Request.hpp"
 #include "socket.hpp"
 #include "Config.hpp"
 
+// class Request;
 
 class Connection
 {

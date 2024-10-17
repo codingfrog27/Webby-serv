@@ -10,7 +10,7 @@
 /*																			*/
 /* ************************************************************************** */
 
-#include "HttpRequest.hpp"
+#include "Request.hpp"
 
 // not trimming any trailing whitespace rn cause RFC 7230 states its not allowed
 // some irl servers do allow it though.. so might add later?

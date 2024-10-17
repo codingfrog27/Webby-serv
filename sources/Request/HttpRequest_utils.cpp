@@ -10,7 +10,7 @@
 /*																			*/
 /* ************************************************************************** */
 
-#include "HttpRequest.hpp"
+#include "Request.hpp"
 
 
 std::string	Request::getHeaderValue(std::string key)

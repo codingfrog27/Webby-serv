@@ -10,15 +10,15 @@
 /*																			*/
 /* ************************************************************************** */
 
-#include "HttpRequest.hpp"
+#include "Request.hpp"
 
 // ************************************************************************** //
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
 
-Request::Request(int client_fd):
-	 _clientFD(client_fd), reading_mode(NOT_STARTED), body_bytes_read(0), \
+Request::Request(Connection *Connection): _connection(Connection),
+	 _clientFD(Connection->_clientFD), reading_mode(NOT_STARTED), body_bytes_read(0), \
 	  _bodyFound(false), _headerAreParsed(false), _method_type(NOT_PARSED_YET), \
 	  _keepOpen(true), _statusCode("0 Not started yet")
 {
@@ -38,6 +38,7 @@ Request::operator=(const Request &rhs)
 
 	if (this != &rhs)
 	{
+		_connection = rhs._connection;
 		_clientFD = rhs._clientFD;
 		_URI = rhs._URI;
 		_method_type = rhs._method_type;
@@ -106,10 +107,11 @@ void	Request::read_from_socket()
 {
 	static char buffer[BUFFER_SIZE];
 	int	bytes_read = read(_clientFD, buffer, BUFFER_SIZE - 1);
-	recv(_clientFD, buffer)
+	recv(_clientFD, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT); //more flags
 	if (bytes_read == 0) {
-    std::cout << "Client closed the connection." << std::endl;
-}
+	std::cout << "Client closed the connection." << std::endl;
+	//implement 
+	}
 	std::cout << "Buffer ==" << buffer << std::endl;
 	// sleep(2);
 	//recv?

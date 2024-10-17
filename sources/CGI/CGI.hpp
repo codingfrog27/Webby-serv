@@ -1,5 +1,4 @@
 #pragma once
-#include "../../include/HttpRequest.hpp"
 
 class CGI{
 	public:

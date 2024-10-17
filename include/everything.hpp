@@ -12,12 +12,25 @@
 
 #pragma once
 
-#include "HttpRequest.hpp"
-#include "Response.hpp"
-#include "socket.hpp"
-#include "Config.hpp"
-#include "Server.hpp"
-#include "Connection.hpp"
-
-
 #include <algorithm>
+#include <fcntl.h>
+#include <unistd.h>
+#include <algorithm>
+#include <unordered_map>
+#include <sys/socket.h>
+
+#include "Config.hpp"
+#include "socket.hpp"
+#include "Request.hpp"
+#include "Connection.hpp"
+#include "Server.hpp"
+#include "Response.hpp"
+
+enum Http_method
+{
+	INVALID = -1,
+	GET,
+	POST,
+	DELETE,
+	NOT_PARSED_YET,
+};

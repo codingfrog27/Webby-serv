@@ -1,11 +1,14 @@
 #pragma once
-#include "HttpRequest.hpp"
 #include <fstream>
+#include "Request.hpp"
+#include "everything.hpp"
 
 enum readingMode{
 	TEXT,
 	BINARY
 };
+
+// class Request;
 
 class Response{
 	public:
