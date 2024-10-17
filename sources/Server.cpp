@@ -84,7 +84,7 @@ void	Server::main_server_loop()
 	poll(_pollFDs.data(), size, _config->_Timeout); //set diff timeout and mb handle error //?? data == as pollfd *??
 	if (_pollFDs[0].revents & POLLIN)
 	{
-		std::cout << "DEAR LORDDD\n" << std::endl;
+		std::cout << "NEW CONNECTION :D\n" << std::endl;
 		acceptNewConnects();
 	}
 	for (size_t i = 1; i < size; ++i)

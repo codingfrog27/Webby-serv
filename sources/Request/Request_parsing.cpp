@@ -158,9 +158,9 @@ void	Request::checkHeaders()
 		_keepOpen = false;
 	else if (getHeaderValue("Connection") == "keep-alive")
 		_keepOpen = true;
-	else
-		throw(std::invalid_argument("400 bad request: Connection missing"));
-	if (_method_type == POST)
+	// else
+	// 	throw(std::invalid_argument("400 bad request: Connection missing"));
+	if (_method_type == POST || _method_type == DELETE)
 	{
 		if (!headerExists("Content-Type")) //or if type not supported
 			throw (std::invalid_argument("415 Bad request. Unsupported Media Type"));
@@ -180,6 +180,8 @@ void	Request::checkHeaders()
 			
 		//expect 100 continue?/
 	}
+	else
+		_doneReading = true;
 	//mb implement timeout mechanism since malicious requests could send body without these headers
 }
 

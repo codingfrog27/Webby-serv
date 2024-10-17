@@ -20,9 +20,6 @@
 Connection::Connection(Config *config, int clientFD): _clientFD(clientFD),  \
 _request(clientFD), _keepOpen(false)
 {
-	std::cout << GREEN << "Connection: Default constructor called" << RESET << std::endl;
-	std::cout << "connection cfd ==" << _clientFD << "request fd == " <<\
-	 _request._clientFD << std::endl;
 }
 
 
