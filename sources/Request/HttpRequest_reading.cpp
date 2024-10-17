@@ -38,7 +38,6 @@ Request::operator=(const Request &rhs)
 
 	if (this != &rhs)
 	{
-		_connection = rhs._connection;
 		_clientFD = rhs._clientFD;
 		_URI = rhs._URI;
 		_method_type = rhs._method_type;

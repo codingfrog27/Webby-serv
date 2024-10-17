@@ -18,7 +18,7 @@
 // ************************************************************************** //
 
 Connection::Connection(Config *config, int clientFD): _clientFD(clientFD),  \
-_request(this) , _doneReading(false), _keepOpen(false)
+_request(clientFD) , _doneReading(false), _keepOpen(false)
 {
 	std::cout << GREEN << "Connection: Default constructor called" << RESET << std::endl;
 	std::cout << "connection cfd ==" << _clientFD << "request fd == " <<\
@@ -38,6 +38,16 @@ Connection::operator=(const Connection &rhs)
 {
 	std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
 
+	if (this != &rhs)
+	{
+		_config = rhs._config;
+		_clientFD = rhs._clientFD;
+		_doneReading = rhs._doneReading;
+		_keepOpen = rhs._keepOpen;
+	}
+
+	return (*this);
+}
 	if (this != &rhs)
 	{
 		_config = rhs._config;

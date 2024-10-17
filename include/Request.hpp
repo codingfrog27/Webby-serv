@@ -17,7 +17,11 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-
+#include <fcntl.h>
+#include <unistd.h>
+#include <algorithm>
+#include <unordered_map>
+#include <sys/socket.h>
 #include "libft.h"
 
 #define GREEN "\033[32m"
