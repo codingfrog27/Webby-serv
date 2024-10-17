@@ -152,28 +152,35 @@ void	Request::parseBody()
 
 void	Request::checkHeaders()
 {
-	// static const char *required_headers[] = {"Host", "connection"};
-	// static const char	*required_for_post[] = {"Content-Lenth", "Content-Type"};
-	//required headers
 	if (!headerExists("Host")) //split?
 		throw(std::invalid_argument("400 bad request: Host missing"));
 	if (getHeaderValue("Connection") == "close")
 		_keepOpen = false;
-	// else if (getHeaderValue("Connection") == "keep-alive")
-	// 	_keepOpen = true;
-	// else
-	// 	throw(std::invalid_argument("400 bad request: Conection missing"));
-	if (_bodyFound)
+	else if (getHeaderValue("Connection") == "keep-alive")
+		_keepOpen = true;
+	else
+		throw(std::invalid_argument("400 bad request: Connection missing"));
+	if (_method_type == POST)
 	{
-		if (_method_type == GET )
-			throw (std::invalid_argument("GET requests should not have a body"));
 		if (!headerExists("Content-Type")) //or if type not supported
 			throw (std::invalid_argument("415 Bad request. Unsupported Media Type"));
-		if (!headerExists("content-length") && getHeaderValue("Transfer-Encoding") != "chunked")
-			throw (std::invalid_argument("411 length required"));
+		if (headerExists("content-length"))
+		{
+			_contentLen = std::stoul(getHeaderValue("content-length")); //handle exceptions?
+			if (_contentLen == 0)
+				throw (std::invalid_argument("411 length required"));
+			if (_contentLen > _max_body_size)
+				throw (std::length_error("413 Payload too large"));
+			reading_mode = READING_BODY;
+		}
+		else if (getHeaderValue("Transfer-Encoding") != "chunked")
+			throw (std::invalid_argument("411 length required")); //could seperate to be more precise
+		else
+			reading_mode = READING_BODY_CHUNKED;
+			
+		//expect 100 continue?/
 	}
-
-
+	//mb implement timeout mechanism since malicious requests could send body without these headers
 }
 
 //not sure but Authorization if thats in scope for protected resources

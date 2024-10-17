@@ -25,12 +25,3 @@
 #include "Connection.hpp"
 #include "Server.hpp"
 #include "Response.hpp"
-
-enum Http_method
-{
-	INVALID = -1,
-	GET,
-	POST,
-	DELETE,
-	NOT_PARSED_YET,
-};

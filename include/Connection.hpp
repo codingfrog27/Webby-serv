@@ -29,7 +29,7 @@ class Connection
 		int			_clientFD;
 		Request		_request;
 		Config		*_config;
-		bool		_doneReading;
+		// bool		_doneReading;
 		bool		_keepOpen;
 		// Response	*response;
 		

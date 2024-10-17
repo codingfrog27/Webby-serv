@@ -96,7 +96,7 @@ void	Server::main_server_loop()
 		{
 			responseHandler(&_Connections[j]._request);
 			if (_Connections[j]._keepOpen)
-				_Connections[j]._request = Request(&_Connections[j]);
+				_Connections[j]._request = Request(_Connections[j]._clientFD);
 			else
 				close_connect(i);
 		}

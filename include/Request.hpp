@@ -13,7 +13,6 @@
 
 #pragma once
 
-#include "Connection.hpp"
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -37,10 +36,18 @@ enum reading_status
 	NOT_STARTED,
 	READING_HEADERS,
 	READING_BODY,
+	READING_BODY_CHUNKED,
 	FINISHED
 };
 
-class Connection;
+enum Http_method
+{
+	INVALID = -1,
+	GET,
+	POST,
+	DELETE,
+	NOT_PARSED_YET,
+};
 
 class Request 
 {
@@ -48,18 +55,19 @@ class Request
 	// max body size
 	// allowed methods
 	private:
-	Connection				*_connection;
+	// Connection				*_connection;
 	std::string				_unsortedHeaders;
 	reading_status			reading_mode;
 	std::string				_boundary;
 	int						body_bytes_read;
-	bool					_bodyFound;
+	bool					_rnrnFound;
 	bool					_dataIsChunked;
 	bool					_headerAreParsed;
+	size_t					_contentLen; //need to put in init list
 	const int				_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
 
 
-	void			read_from_socket();
+	int				readSocket(int size);
 	void			parse_headers(std::string str);
 	Http_method		which_method_type(std::string str);
 	void			look_for_body();
@@ -68,6 +76,7 @@ class Request
 	void			parseBody();
 	float			http_version(std::string version);
 	void			checkHeaders();
+	void			readBody();
 
 	public:
 	int							_clientFD;
@@ -84,7 +93,7 @@ class Request
 	std::string					_statusCode;
 	// Constructors and Destructors
 					Request(void) = delete;
-					Request(Connection *Connection);
+					Request(int _clientFD);
 					Request(const Request &rhs);
 	Request 		&operator=(const Request &rhs);
 					~Request(void);
