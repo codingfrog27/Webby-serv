@@ -17,33 +17,37 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Connection::Connection(Config *config, int clientFD): _clientFD(clientFD), \
- _request(_clientFD), _doneReading(false), _keepOpen(false)
+Connection::Connection(Config *config, int clientFD): _clientFD(clientFD),  \
+_request(clientFD) , _doneReading(false), _keepOpen(false)
 {
-	config = config;
 	std::cout << GREEN << "Connection: Default constructor called" << RESET << std::endl;
+	std::cout << "connection cfd ==" << _clientFD << "request fd == " <<\
+	 _request._clientFD << std::endl;
 }
 
 
-// Connection::Connection(const Connection &rhs)
-// {
-// 	std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
+Connection::Connection(const Connection &rhs) : _request(rhs._request)
+{
+	std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
 
-// 	*this = rhs;
-// }
+	*this = rhs;
+}
 
-// Connection &
-// Connection::operator=(const Connection &rhs)
-// {
-// 	std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
+Connection &
+Connection::operator=(const Connection &rhs)
+{
+	std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
 
-// 	if (this != &rhs)
-// 	{
-// 		// Perform deep copy
-// 	}
+	if (this != &rhs)
+	{
+		_config = rhs._config;
+		_clientFD = rhs._clientFD;
+		_doneReading = rhs._doneReading;
+		_keepOpen = rhs._keepOpen;
+	}
 
-// 	return (*this);
-// }
+	return (*this);
+}
 
 Connection::~Connection(void)
 {

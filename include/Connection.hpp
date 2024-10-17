@@ -26,18 +26,17 @@ class Connection
 		
 
 	public:
-		size_t		_socketIndex; //needed
 		int			_clientFD;
 		Request		_request;
 		Config		*_config;
-		// Response	*response;
 		bool		_doneReading;
 		bool		_keepOpen;
+		// Response	*response;
 		
 		// Constructors and Destructors
 		Connection(Config *config, int clientFD);
-		// Connection(const Connection &rhs);
-		// Connection &operator=(const Connection &rhs);
+		Connection(const Connection &rhs);
+		Connection &operator=(const Connection &rhs);
 		~Connection();
 
 		// Public Methods

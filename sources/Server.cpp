@@ -88,7 +88,6 @@ void	Server::main_server_loop()
 		std::cout << "DEAR LORDDD\n" << std::endl;
 		acceptNewConnects();
 	}
-	std::cout << "coolcoolcool\n" << std::endl;
 	for (size_t i = 1; i < size; ++i)
 	{		
 		j = i - 1;
@@ -115,7 +114,7 @@ void Server::acceptNewConnects()
 	{
 		// std::cout << "loop nbr" << counter++ << std::endl;
 		_pollFDs.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0}); //pollhup
-		_Connections.emplace_back(Connection(_config, clientFD));
+		_Connections.emplace_back(_config, clientFD);
 	}
 	else
 	{

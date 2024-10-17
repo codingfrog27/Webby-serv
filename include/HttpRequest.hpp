@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <algorithm>
 #include <unordered_map>
+#include <sys/socket.h>
 #include "libft.h"
 
 #define GREEN "\033[32m"
@@ -73,7 +74,7 @@ class Request
 
 	public:
 	int							_clientFD;
-	std::vector<char>			_rawRequestData;
+	std::vector<unsigned char>	_rawRequestData;
 	Http_method					_method_type;
 	std::unordered_map\
 	<std::string, std::string>	_headers;

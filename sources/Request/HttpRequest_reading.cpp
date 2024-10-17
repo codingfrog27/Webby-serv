@@ -22,14 +22,12 @@ Request::Request(int client_fd):
 	  _bodyFound(false), _headerAreParsed(false), _method_type(NOT_PARSED_YET), \
 	  _keepOpen(true), _statusCode("0 Not started yet")
 {
-	// main_reader();
-	std::cout << "" << std::endl;
+	_rawRequestData.reserve(50); //mb 100
 }
 
 Request::Request(const Request &rhs)
 {
 	std::cout << GREEN << "Http_request: Copy constructor called" << RESET << std::endl;
-
 	*this = rhs;
 }
 
@@ -40,6 +38,7 @@ Request::operator=(const Request &rhs)
 
 	if (this != &rhs)
 	{
+		_clientFD = rhs._clientFD;
 		_URI = rhs._URI;
 		_method_type = rhs._method_type;
 		_http_version = rhs._http_version;
@@ -71,7 +70,6 @@ Request::~Request(void)
 
 void	Request::readRequest()
 {
-	std::cout << GREEN << "Http_request read" << RESET << std::endl;
 	try
 	{
 		read_from_socket();
@@ -106,9 +104,14 @@ void	Request::readRequest()
 
 void	Request::read_from_socket()
 {
-	static char buffer[BUFFER_SIZE] = {0};
+	static char buffer[BUFFER_SIZE];
 	int	bytes_read = read(_clientFD, buffer, BUFFER_SIZE - 1);
-	sleep(5);
+	recv(_clientFD, buffer)
+	if (bytes_read == 0) {
+    std::cout << "Client closed the connection." << std::endl;
+}
+	std::cout << "Buffer ==" << buffer << std::endl;
+	// sleep(2);
 	//recv?
 	if (bytes_read < 0)
 		throw (std::ios_base::failure("reading fail when reading from client socket"));
@@ -121,8 +124,8 @@ void	Request::read_from_socket()
 
 void	Request::look_for_body()
 {
-	static const std::vector<char> body_delim = {'\r', '\n', '\r', '\n'};
-	std::vector<char>::iterator it = std::search(_rawRequestData.begin(),\
+	static const std::vector< unsigned char> body_delim = {'\r', '\n', '\r', '\n'};
+	std::vector<unsigned char>::iterator it = std::search(_rawRequestData.begin(),\
 	_rawRequestData.end(),body_delim.begin(), body_delim.end()); //is search allowed?
 	
 	if (reading_mode != FINISHED && it == _rawRequestData.end())
