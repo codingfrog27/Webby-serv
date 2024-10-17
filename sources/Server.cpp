@@ -92,7 +92,7 @@ void	Server::main_server_loop()
 		j = i - 1;
 		if (_pollFDs[i].revents & POLLIN)
 			_Connections[j]._request.readRequest();
-		if ((_pollFDs[i].revents & POLLOUT) && _Connections[j]._doneReading) //getter?
+		if ((_pollFDs[i].revents & POLLOUT) && _Connections[j]._request._doneReading) //getter?
 		{
 			responseHandler(&_Connections[j]._request);
 			if (_Connections[j]._keepOpen)
@@ -103,7 +103,7 @@ void	Server::main_server_loop()
 	}
 }
 
-
+//swag
 
 void Server::acceptNewConnects()
 {
