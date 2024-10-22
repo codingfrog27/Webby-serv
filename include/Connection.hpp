@@ -26,15 +26,16 @@ class Connection
 		
 
 	public:
+		bool		_isServerSocket;
 		int			_clientFD;
 		Request		_request;
 		Config		*_config;
-		// bool		_doneReading;
 		bool		_keepOpen;
+		// bool		_doneReading;
 		// Response	*response;
 		
 		// Constructors and Destructors
-		Connection(Config *config, int clientFD);
+		Connection(Config *config, int clientFD, bool isServerside);
 		Connection(const Connection &rhs);
 		Connection &operator=(const Connection &rhs);
 		~Connection();

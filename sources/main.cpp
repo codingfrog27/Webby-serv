@@ -19,8 +19,8 @@ int main()
 		std::cerr << "open failed" << std::endl;
 	// Request request(test_fd);
 
-	Config configgy;
-	Server	server(&configgy); //not constructable enough?
+	std::vector<Config> tmpConfigs;
+	Server	server(tmpConfigs); //not constructable enough?
 	// sleep(5);
 	// server.acceptNewConnects();
 	while (1)

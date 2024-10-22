@@ -17,8 +17,9 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Connection::Connection(Config *config, int clientFD): _clientFD(clientFD),  \
-_request(clientFD), _keepOpen(false)
+Connection::Connection(Config *config, int clientFD, bool isServerside): \
+_isServerSocket(isServerside), _clientFD(clientFD), _request(clientFD), \
+_keepOpen(false)
 {
 }
 
@@ -37,6 +38,7 @@ Connection::operator=(const Connection &rhs)
 
 	if (this != &rhs)
 	{
+		_isServerSocket = rhs._isServerSocket;
 		_config = rhs._config;
 		_clientFD = rhs._clientFD;
 		_keepOpen = rhs._keepOpen;

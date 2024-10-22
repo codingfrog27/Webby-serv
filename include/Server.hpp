@@ -12,25 +12,26 @@
 
 #pragma once
 
-// #include "everything.hpp"
+#include "Config.hpp"
 #include "Connection.hpp"
 #include "Request.hpp"
+#include "everything.hpp"
 
-
-class Connection;
 
 class Server
 {
 	private:
 		// Private Attributes
-		void	setupAddrInfo();
+		void	setupAddrInfo(Config *config);
 
 	public:
-		const int	_max_clients;
+		// const int	_max_clients;
 		// Constructors and Destructors
 
-		Config *_config;
-		Socket *_serverSocket;
+
+		// Config *_config;
+		std::vector<Socket> _serverSockets;
+		std::vector<Config> _serverBlocks;
 
 		std::vector<pollfd>		_pollFDs;
 		std::vector<Connection> _Connections;
@@ -39,14 +40,14 @@ class Server
 		// std::unordered_map<int, Connection> _connections;
 	
 
-		Server(Config *config); //socket init here
+		Server(const std::vector<Config>& vec); //socket init here
 		// Server(const Server &rhs);
 		// Server &operator=(const Server &rhs);
 		~Server(void);
 
 	// Public Methods
 	void		main_server_loop();
-	void		acceptNewConnects();
+	void		acceptNewConnects(int i);
 	void		close_connect(int i);
 } ;
 

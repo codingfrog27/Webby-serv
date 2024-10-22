@@ -19,9 +19,9 @@
 #include <unordered_map>
 #include <sys/socket.h>
 
-#include "Config.hpp"
 #include "socket.hpp"
 #include "Request.hpp"
-#include "Connection.hpp"
 #include "Server.hpp"
 #include "Response.hpp"
+#include "Config.hpp"
+#include "Connection.hpp"

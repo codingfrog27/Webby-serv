@@ -21,13 +21,20 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Server::Server(Config *config) : _config(config), _max_clients(config->_maxConnects), _addrInfo{0}
+Server::Server(const std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 {	
 	try
 	{
-		setupAddrInfo();
-		_serverSocket = new Socket(config, _addrInfo); //move adrresinfo back to so
-		_pollFDs.emplace_back(pollfd{_serverSocket->_socketFd, POLLIN | POLLERR,  0});
+		for (Config& looper : _serverBlocks) //fix loop
+		{
+			std::cout << "1" << std::endl;
+			setupAddrInfo(&looper); //make addr info vec if we need to keep track of all of it (plus TEST)
+			Socket tmp(&looper, _addrInfo); //can make index loop if i dont want tmp object
+			_pollFDs.emplace_back(pollfd{tmp._socketFd, POLLIN | POLLERR,  0});
+			_Connections.emplace_back(&looper, tmp._socketFd, true);
+			_serverSockets.push_back(tmp); //move adrresinfo back to so
+		}
+		
 		//main loop?
 	}
 	catch(const std::exception& e)
@@ -39,7 +46,7 @@ Server::Server(Config *config) : _config(config), _max_clients(config->_maxConne
 	std::cout << GREEN << "Server: Default constructor called" << RESET << std::endl;
 }
 
-void	Server::setupAddrInfo()
+void	Server::setupAddrInfo(Config *config)
 {
 	addrinfo hints;
 	int status;
@@ -48,7 +55,7 @@ void	Server::setupAddrInfo()
 	hints.ai_flags = AI_PASSIVE; //Provides additional options (AI_PASSIVE for binding to all network interfaces)
 	hints.ai_protocol = IPPROTO_TCP; //Specifies the protocol
 
-	status = getaddrinfo(_config->_serverName.c_str(), _config->_serverPort.c_str(), &hints, &_addrInfo); //?
+	status = getaddrinfo(config->_serverName.c_str(), config->_serverPort.c_str(), &hints, &_addrInfo); //?
 	// status = getaddrinfo("localhost", "http", &hints, &_addrInfo); //?
 	if (status != 0)
 		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
@@ -76,27 +83,27 @@ void	Server::close_connect(int i)
 }
 
 
+#define TMP_POLL_TIME 5000
+
 void	Server::main_server_loop()
 {
 	int	size = _pollFDs.size();
-	int j;
 	
-	poll(_pollFDs.data(), size, _config->_Timeout); //set diff timeout and mb handle error //?? data == as pollfd *??
-	if (_pollFDs[0].revents & POLLIN)
-	{
-		std::cout << "NEW CONNECTION :D\n" << std::endl;
-		acceptNewConnects();
-	}
-	for (size_t i = 1; i < size; ++i)
+	poll(_pollFDs.data(), size, TMP_POLL_TIME); //set diff timeout and mb handle error //?? data == as pollfd *??
+	for (size_t i = 0; i < size; ++i)
 	{		
-		j = i - 1;
 		if (_pollFDs[i].revents & POLLIN)
-			_Connections[j]._request.readRequest();
-		if ((_pollFDs[i].revents & POLLOUT) && _Connections[j]._request._doneReading) //getter?
 		{
-			responseHandler(&_Connections[j]._request);
-			if (_Connections[j]._keepOpen)
-				_Connections[j]._request = Request(_Connections[j]._clientFD);
+			if (_Connections[i]._isServerSocket)
+				acceptNewConnects(i);
+			else
+				_Connections[i]._request.readRequest();
+		}
+		if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading) //getter?
+		{
+			responseHandler(&_Connections[i]._request);
+			if (_Connections[i]._keepOpen)
+				_Connections[i]._request = Request(_Connections[i]._clientFD);
 			else
 				close_connect(i);
 		}
@@ -105,21 +112,17 @@ void	Server::main_server_loop()
 
 //swag
 
-void Server::acceptNewConnects()
+void Server::acceptNewConnects(int i)
 {
-	int counter = 0;
-	int clientFD = accept(_pollFDs[0].fd, nullptr, nullptr); //cal antonio func and store client somewhere
+	int clientFD = accept(_pollFDs[i].fd, nullptr, nullptr); //cal antonio func and store client somewhere
 	if (clientFD > 0) //??
 	{
-		// std::cout << "loop nbr" << counter++ << std::endl;
+		std::cout << "new connection! :)" << std::endl;
 		_pollFDs.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0}); //pollhup
-		_Connections.emplace_back(_config, clientFD);
+		_Connections.emplace_back(_Connections[i]._config, clientFD, false);
 	}
 	else
-	{
 		std::cout << "NOT ACCEPTED" << std::endl;
-
-	}
 	// std::cout << "ACCEPTED\n" << std::endl;
 	// sleep(5);
 }
