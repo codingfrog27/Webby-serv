@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   main.cpp                                           :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/09/06 17:47:46 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2024/10/21 16:33:03 by antoniosimo   ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
+/*   Updated: 2024/10/22 17:50:08 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,20 @@
 
 int main()
 {
-	Config webserver;
+	Config config;
+	Config *webserver;
 
-	webserver.createSocketObject(webserver.parseConfigFile("example_config.conf"));
-	// webserver.startParsing(config);
+	webserver = config.parseConfigFile("example_config.conf");
+	if (webserver)
+	{
+		// std::cout << "SERVER BLOCK BEFORE UPDATE: " << std::endl;
+		// webserver->printBlockValue(config.serverBlock);
+		// webserver->updateListenValue("listen", config);
+		// std::cout << "SERVER BLOCK AFTER UPDATE: " << std::endl;
+		// webserver->printBlockValue(config.serverBlock);
+		// webserver->printBlockValue(config.locationBlock);
+		delete webserver;
+	}
 
 	return 0;
 }

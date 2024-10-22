@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   Config.hpp                                         :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/09/18 15:09:44 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2024/10/21 16:32:50 by antoniosimo   ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   Config.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
+/*   Updated: 2024/10/22 17:20:06 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ class Config
 	std::string	_rootDir;
 	std::string	_autoIndexFilePath;
 
-	std::map<std::string, std::string> serverBlock;
-	std::map<std::string, std::string> locationBlock;
+	std::multimap<std::string, std::string> serverBlock;
+	std::multimap<std::string, std::string> locationBlock;
 	std::vector<std::string> _locationName;
 	std::string _locations;
 	// std::vector<location> _location;
@@ -66,12 +66,14 @@ class Config
 	// std::unordered_map<std::string, std::string> custom_error_pages;
 	// std::unordered_map<std::string, std::string> access_control;
 	
-	Config	parseConfigFile(const std::string filename);
+	Config*	parseConfigFile(const std::string filename);
 	void	parseLocationBlock(const std::string &line);
 	void	parseServerBlock(const std::string &line);
 	int		startParsing(const std::string &line);
-	void	createSocketObject(Config config);
+	void	createSocketObject(Config &config);
 	void	initizalizeServerobj();
+	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
+	void	updateValue(const std::string& newValue, Config &config);
 };
 
 
