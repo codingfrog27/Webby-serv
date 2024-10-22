@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/09 16:19:30 by asimone          ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   main.cpp                                           :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/09/06 17:47:46 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2024/10/21 16:33:03 by antoniosimo   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 int main()
 {
 	Config webserver;
-	webserver.parseConfigFile("example_config.conf");
 
+	webserver.createSocketObject(webserver.parseConfigFile("example_config.conf"));
 	// webserver.startParsing(config);
 
 	return 0;

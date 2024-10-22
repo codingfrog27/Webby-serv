@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Config.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/16 15:37:29 by asimone          ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Config.cpp                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2024/10/21 16:32:45 by antoniosimo   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
-#include <algorithm>
+
 #include "socket.hpp"
 #include "Colors.hpp"
 
@@ -69,16 +69,10 @@ bool	checkCaracter(const std::string &line, const char &c)
 	return (false);
 }
 
-std::string removeSpaces(const std::string &str)
-{
-	std::string result;
-	result.erase(std::remove_if(result.begin(), result.end(), ::isspace), result.end());
-	return (result);
-}
 
-
-void Config::parseConfigFile(const std::string fileName)
+Config Config::parseConfigFile(const std::string fileName)
 {
+	Config	configfile;
 	std::string			line;
 	std::ifstream		file(fileName);
 	static size_t inServerBlock = 0;
@@ -88,24 +82,23 @@ void Config::parseConfigFile(const std::string fileName)
 	if (!file.is_open())
 	{
 		std::cerr << "Error: Unable to open file" << std::endl;
-		return ;
 	}
-	if (file.is_open())
-	{
+	try
+	{	
 		while (std::getline(file, line))
 		{
-        	if (line.empty() || line[0] == '#')
-        	    continue;
+    		if (line.empty() || line[0] == '#')
+    		    continue;
 			
-        	if (line.find("server {") != std::string::npos) 
+    		if (line.find("server {") != std::string::npos) 
 			{
 				inServerBlock++;
-        		std::cout << "Entering server block" << std::endl;
-        	    continue;
-        	}
-        	if (inServerBlock) 
+    			std::cout << "Entering server block" << std::endl;
+    		    continue;
+    		}
+    		if (inServerBlock) 
 			{	
-        	    if (line.find("location") != std::string::npos && checkCaracter(line, '{')) 
+    		    if (line.find("location") != std::string::npos && checkCaracter(line, '{')) 
 				{
 					auto location_name = line.begin();
 					while (*location_name == ' ' or *location_name == '\t')
@@ -122,101 +115,126 @@ void Config::parseConfigFile(const std::string fileName)
 						location_value++;
 					std::string tmp_value(begin_value, location_value);
 					_locationName.push_back(tmp_value);
-					std::cout << _locationName.back() << std::endl;
+					//std::cout << _locationName.back() << std::endl;
 					
 					inLocationBlock++;
-        	        continue;
-        	    }
+    		        continue;
+    		    }
 				if (inLocationBlock != 0)
 					parseLocationBlock(line);
-        	    if (inLocationBlock) 
+    		    if (inLocationBlock) 
 				{
-        	        if (checkCaracter(line, '}')) 
+    		        if (checkCaracter(line, '}')) 
 					{
-        	            inLocationBlock--;
-        	            // std::cout << "Exiting location block" << std::endl;
-        	        }
-        	        continue;
-        	    }
-        	    if (checkCaracter(line, '}')) 
+    		            inLocationBlock--;
+    		            // std::cout << "Exiting location block" << std::endl;
+    		        }
+    		        continue;
+    		    }
+    		    if (checkCaracter(line, '}')) 
 				{
 					if (inServerBlock == 1)
 						inServerBlock--;
-        	        // std::cout << "Exiting server block" << std::endl;
-        	    } 
+    		        // std::cout << "Exiting server block" << std::endl;
+    		    } 
 				else 
 				{
-        	        parseServerBlock(line);
-        	        // std::cout << "Parsing line in server block: " << line << std::endl;
-        	    }
-        	}
-    	}
-	file.close();
+    		        parseServerBlock(line);
+    		        // std::cout << "Parsing line in server block: " << line << std::endl;
+    		    }
+    		}
+		}
 	}
-	else 
-		std::cerr << "Error: Unable to open file" << std::endl;
-return ;
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+		throw;
+	}
+	return (configfile);
 }
 
 
-int	Config::parseServerBlock(const std::string &line)
+void	Config::parseServerBlock(const std::string &line)
 {
-	std::map<std::string, std::string> serverBlock;
+	int nonCommentLines = 0;
 
-	if (line.empty())
-		return (0);
-	auto key = line.begin();
-	while (key != line.end() and (*key == ' ' or *key == '\t'))
-		key++;
-	if (key == line.end() or *key == '#' or *key == '}')
-		return (0);
-	auto begin = key;
-	while (key != line.end() and *key != ' ' and *key != '\t')
-		key++;
-	std::string tmp_key(begin, key);
-
-	auto value  = key;
-	while(value != line.end() and (*value == ' ' or+ *value == '\t'))
-	 	value++;
-	auto begin_value = value;
-	while(begin_value != line.end() and *begin_value != ';')
-	 	begin_value++;
-	std::string tmp_value(value, begin_value);
-	serverBlock.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));
-
-	for (const auto& pair : serverBlock) 
-        std::cout << pair.first << ": " << pair.second << std::endl;
-	return (0);
+	try
+	{
+		//if (line.empty())
+		//	throw (std::invalid_argument("Error: Empty line"));
+		auto key = line.begin();
+		while (key != line.end() and (*key == ' ' or *key == '\t'))
+			key++;
+		//if (key == line.end() or *key == '#' or *key == '}')
+		//	throw(std::invalid_argument("Error: Empty configuration file"));
+		nonCommentLines++;
+		auto begin = key;
+		while (key != line.end() and *key != ' ' and *key != '\t')
+			key++;
+		std::string tmp_key(begin, key);
+	
+		auto value  = key;
+		while(value != line.end() and (*value == ' ' or+ *value == '\t'))
+		 	value++;
+		auto begin_value = value;
+		while(begin_value != line.end() and *begin_value != ';')
+		 	begin_value++;
+		//if (begin_value == line.end() || *begin_value != ';')
+    	//	throw (std::invalid_argument("Error: Missing semicolon after value"));
+		std::string tmp_value(value, begin_value);
+		serverBlock.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));	
+		if (nonCommentLines == 0)
+			throw (std::invalid_argument("Error: Empty line"));
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+	//for (const auto& pair : serverBlock) 
+    //    std::cout << pair.first << ": " << pair.second << std::endl;
+	return ;
 }
 
 
 
-int	Config::parseLocationBlock(const std::string &line)
+void	Config::parseLocationBlock(const std::string &line)
 {
-	std::map<std::string, std::string> locationBlock;
+	//if (line.empty())
+	//	return (0);
+	try
+	{
+		auto key = line.begin();
+		while (key != line.end() and (*key == ' ' or *key == '\t'))
+			key++;
+		//if (key == line.end() or *key == '#' or *key == '}')
+		//	throw(std::invalid_argument("Error: Empty location file"));
+		auto begin = key;
+		while (key != line.end() and *key != ' ' and *key != '\t')
+			key++;
+		std::string tmp_key(begin, key);
+	
+		auto value  = key;
+		while(value != line.end() and (*value == ' ' or+ *value == '\t'))
+		 	value++;
+		auto begin_value = value;
+		while(begin_value != line.end() and *begin_value != ';')
+		 	begin_value++;
+		//if (begin_value == line.end() || *begin_value != ';')
+	    //	throw (std::invalid_argument("Error: Missing semicolon after value"));
+		std::string tmp_value(value, begin_value);
+		locationBlock.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+	//for (const auto& pair : locationBlock) 
+    //    std::cout << pair.first << ": " << pair.second << std::endl;
+	return;
+}
 
-	if (line.empty())
-		return (0);
-	auto key = line.begin();
-	while (key != line.end() and (*key == ' ' or *key == '\t'))
-		key++;
-	if (key == line.end() or *key == '#' or *key == '}')
-		return (0);
-	auto begin = key;
-	while (key != line.end() and *key != ' ' and *key != '\t')
-		key++;
-	std::string tmp_key(begin, key);
-
-	auto value  = key;
-	while(value != line.end() and (*value == ' ' or+ *value == '\t'))
-	 	value++;
-	auto begin_value = value;
-	while(begin_value != line.end() and *begin_value != ';')
-	 	begin_value++;
-	std::string tmp_value(value, begin_value);
-	locationBlock.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));
-
-	for (const auto& pair : locationBlock) 
-        std::cout << pair.first << ": " << pair.second << std::endl;
-	return (0);
+void	Config::createSocketObject(Config configFile)
+{	
+	for (const auto& pair : configFile.serverBlock)
+		std::cout << pair.first << ": " << pair.second << std::endl;
 }
