@@ -52,8 +52,7 @@ std::string	Response::generateResponse() const{
 		response += it->first + ": " + it->second + "\r\n";
 	}
 	response += "\r\n";
-	response += _body.data();
-	// response += tmp_read_file("website/index.html");
+	response += std::string(_body.begin(), _body.end());
 	
 	return response;
 }

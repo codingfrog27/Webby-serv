@@ -3,9 +3,10 @@
 
 std::string	resolveFilePath(Request* request){
 	std::string uri = request->_URI;
-	std::string host = request->_headers["Host"];
-	std::string file = uri.erase(0, host.length()); ///host length + 8 if http:// or 9 if https:// with request target in absolute form
-	std::string path = request->_headers["Root"] + file;
+	// std::string host = request->_headers["Host"]; //
+	// std::string file = uri.erase(0, host.length()); ///host length + 8 if http:// or 9 if https:// with request target in absolute form
+	// std::string path = request->_headers["Root"] + file; 
+	std::string path = "website" + uri; //needs to be grabbed from config, not request
 	return path;
 }
 
