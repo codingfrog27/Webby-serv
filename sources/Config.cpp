@@ -45,7 +45,13 @@ Config::operator=(const Config &rhs)
 
 	if (this != &rhs)
 	{
-		// Perform deep copy
+		_serverPort = rhs._serverPort;
+		_serverName = rhs._serverName;
+		_maxConnects = rhs._maxConnects;
+		_timeout = rhs._timeout;
+		_rootDir = rhs._rootDir;
+		_autoIndexFilePath = rhs._autoIndexFilePath;
+		_Timeout = rhs._Timeout;
 	}
 
 	return (*this);

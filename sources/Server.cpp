@@ -25,9 +25,8 @@ Server::Server(const std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0
 {	
 	try
 	{
-		for (Config& looper : _serverBlocks) //fix loop
+		for (Config& looper : _serverBlocks) //this calls copy constructer
 		{
-			std::cout << "1" << std::endl;
 			setupAddrInfo(&looper); //make addr info vec if we need to keep track of all of it (plus TEST)
 			Socket tmp(&looper, _addrInfo); //can make index loop if i dont want tmp object
 			_pollFDs.emplace_back(pollfd{tmp._socketFd, POLLIN | POLLERR,  0});

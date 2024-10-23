@@ -20,6 +20,7 @@ int main()
 	// Request request(test_fd);
 
 	std::vector<Config> tmpConfigs;
+	tmpConfigs.emplace_back();
 	Server	server(tmpConfigs); //not constructable enough?
 	// sleep(5);
 	// server.acceptNewConnects();
@@ -35,7 +36,7 @@ int main()
 
 // int	future_real_main(int argc, char **argv)
 // {
-// 	//if argv != 2 default config
+// 	//if argv != 2 default config 
 // 	// else
 // 	Config config(argv[1]);
 // 	Connection *connections = server_setup(&config);
