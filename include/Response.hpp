@@ -31,7 +31,7 @@ class Response{
 
 	private:
 		const Http_method								_method_type;
-		const float										_http_version;
+		const std::string								_http_version;
 		std::string										_status;
 		std::unordered_map<std::string, std::string>	_headers;
 		std::vector<char>								_body;

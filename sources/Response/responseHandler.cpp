@@ -72,9 +72,10 @@ static Response*	deleteMethod(Request* request, Response* response){
 void	responseHandler(Request* request)
 {
 	Response *response = new Response(request);
-	if (!request->getStatusCode().empty()) //might have to be renamed
+	std::string responseText;
+	if (request->getStatusCode().empty()) //might have to be renamed
 		response->autoFillResponse(request->getStatusCode());
-	else if (request->_method_type == GET)
+	if (request->_method_type == GET)
 		response = getMethod(request, response);
 	else if (request->_method_type == POST)
 		response = postMethod(request, response);
@@ -84,6 +85,8 @@ void	responseHandler(Request* request)
 		response->autoFillResponse("405 Method Not Allowed");
 		response->setHeaders("Allow", "GET, POST, DELETE");
 	}
-	std::cout << response->generateResponse() << std::endl;
+	responseText = response->generateResponse();
+	std::cout << responseText << std::endl;
+	write(request->_clientFD, responseText.c_str(), responseText.size()); //maybe send instead?
 	return;
 }

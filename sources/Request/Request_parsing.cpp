@@ -110,11 +110,14 @@ void Request::dechunkBody() //from copilot will check next week
 // 	// and then throw the data inbetween in a new buffer?
 }
 
-float Request::http_version(std::string version) //throw error if not 1 or 1.1
+std::string Request::http_version(std::string version) //throw error if not 1 or 1.1
 {
-	if (version.compare(0, 6, "HTTP/1") != 0 && version.compare(0, 8, "HTTP/1.1") != 0)
+	if (!version.compare(0, 8, "HTTP/1.1"))
+		return (version.substr(0, 8)); 
+	else if (!version.compare(0, 6, "HTTP/1"))
+		return (version.substr(0, 6));
+	else
 		throw std::invalid_argument("Unsupported HTTP version: " + version);
-	return (std::stof(version.substr(5))); 
 }
 
 void	Request::parseBody()
@@ -180,8 +183,11 @@ void	Request::checkHeaders()
 			
 		//expect 100 continue?/
 	}
-	else
+	else //bodys in GET, get ignored :)
+	{
 		_doneReading = true;
+		_statusCode = "200 OK";
+	}
 	//mb implement timeout mechanism since malicious requests could send body without these headers
 }
 

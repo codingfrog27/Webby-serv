@@ -48,7 +48,6 @@ void	Socket::openSocket()
 	if (bind(_socketFd, _addrInfo->ai_addr, _addrInfo->ai_addrlen) == -1)
 		throw std::runtime_error(std::string("Bind errorr: ") + strerror(errno));
 	listen(_socketFd, 20); //SET TO CONFIG VALUE
-	std::cout << "SERVER SOCKET RUNNIN" << std::endl;
 }
 
 void *Socket::get_in_addr(struct sockaddr *sa)

@@ -25,15 +25,13 @@ Server::Server(const std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0
 {	
 	try
 	{
-		for (Config& looper : _serverBlocks) //this calls copy constructer
-		{
-			setupAddrInfo(&looper); //make addr info vec if we need to keep track of all of it (plus TEST)
-			Socket tmp(&looper, _addrInfo); //can make index loop if i dont want tmp object
-			_pollFDs.emplace_back(pollfd{tmp._socketFd, POLLIN | POLLERR,  0});
-			_Connections.emplace_back(&looper, tmp._socketFd, true);
-			_serverSockets.push_back(tmp); //move adrresinfo back to so
-		}
-		
+		for (size_t i = 0; i < _serverBlocks.size(); ++i)
+ 	{
+		setupAddrInfo(&_serverBlocks[i]);
+		_serverSockets.emplace_back(&_serverBlocks[i], _addrInfo); //make addr info vec if we need to keep track of all of it (plus TEST)
+		_pollFDs.emplace_back(pollfd{_serverSockets[i]._socketFd, POLLIN | POLLERR,  0});
+		_Connections.emplace_back(&_serverBlocks[i], _serverSockets[i]._socketFd, true);
+	}
 		//main loop?
 	}
 	catch(const std::exception& e)

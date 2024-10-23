@@ -74,7 +74,7 @@ class Request
 	size_t			parse_req_line(std::string req_line);
 	void			dechunkBody();
 	void			parseBody();
-	float			http_version(std::string version);
+	std::string		http_version(std::string version);
 	void			checkHeaders();
 	void			readBody();
 
@@ -84,7 +84,7 @@ class Request
 	Http_method					_method_type;
 	std::unordered_map\
 	<std::string, std::string>	_headers;
-	float						_http_version;
+	std::string					_http_version;
 	std::string					request_line;
 	std::string 				_URI; 
 	bool						_keepOpen;
