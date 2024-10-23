@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/22 18:19:01 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/23 17:24:26 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,15 +69,57 @@ bool	checkCaracter(const std::string &line, const char &c)
 	return (false);
 }
 
+std::string	findLocationName(const std::string &line)
+{
+	auto location_name = line.begin();
+	while (location_name != line.end() && (*location_name == ' ' or *location_name == '\t'))
+		location_name++;
+	auto begin = location_name;
+	while (location_name != line.end() && (*location_name != ' ' and *location_name != '\t'))
+		location_name++;
+	
+	auto location_value = location_name;
+	while (location_value != line.end() && (*location_value == ' ' or *location_value == '\t'))
+		location_value++;
+	auto begin_value = location_value;
+	while(location_value != line.end() && (*location_value != ' ' and *location_value != '\t'))
+		location_value++;
+
+	return (std::string(begin_value, location_value));
+}
+
+void	Config::findKeyandValue(const std::string &line, std::multimap<std::string, std::string> &block)
+{
+	
+	auto key = line.begin();
+	while (key != line.end() and (*key == ' ' or *key == '\t'))
+		key++;
+	if (key == line.end() or *key == '#' or *key == '}')
+		return;
+	auto begin = key;
+	while (key != line.end() and *key != ' ' and *key != '\t')
+		key++;
+	std::string tmp_key(begin, key);
+
+		auto value  = key;
+	while(value != line.end() and (*value == ' ' or+ *value == '\t'))
+	 	value++;
+	auto begin_value = value;
+	while(begin_value != line.end() and *begin_value != ';')
+	 	begin_value++;
+	if (begin_value == line.end() || *begin_value != ';')
+    	return;
+	std::string tmp_value(value, begin_value);
+	block.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));
+}
+
 Config* Config::parseConfigFile(const std::string fileName)
 {
-	Config				*configfile = new Config();
-	std::string			line;
-	std::ifstream		file(fileName);
-	static size_t inServerBlock = 0;
-    static size_t inLocationBlock = 0;
-	std::vector<Config> serverblocks;
-	
+	Config			*configfile = new Config();
+	std::string		line;
+	std::ifstream	file(fileName);
+	static size_t 	inServerBlock = 0;
+    static size_t 	inLocationBlock = 0;
 
 	if (!file.is_open())
 	{
@@ -88,9 +130,6 @@ Config* Config::parseConfigFile(const std::string fileName)
 		int i = 0;
 		while (std::getline(file, line))
 		{
-			std::cout << line << std::endl;
-			i++;
-			std::cout << i << std::endl;
     		if (line.empty() || line[0] == '#')
     		    continue;
 			
@@ -98,56 +137,42 @@ Config* Config::parseConfigFile(const std::string fileName)
 			{
 				inServerBlock++;
     			// std::cout << "Entering server block" << std::endl;
+
+				//make config/serverblock object here and loop further in the object (by passing the stream)
     		    continue;
     		}
     		if (inServerBlock) 
 			{	
     		    if (line.find("location") != std::string::npos && checkCaracter(line, '{')) 
 				{
-					auto location_name = line.begin();
-					while (location_name != line.end() && (*location_name == ' ' or *location_name == '\t'))
-						location_name++;
-					auto begin = location_name;
-					while (location_name != line.end() && (*location_name != ' ' and *location_name != '\t'))
-						location_name++;
-					
-					auto location_value = location_name;
-					while (location_value != line.end() && (*location_value == ' ' or *location_value == '\t'))
-						location_value++;
-					auto begin_value = location_value;
-					while(location_value != line.end() && (*location_value != ' ' and *location_value != '\t'))
-						location_value++;
-					std::string tmp_value(begin_value, location_value);
-					_locationName.push_back(tmp_value);
+					// std::cout << line << std::endl;
+					//make location object here and loop further in the object (by passing the stream)
+					//vec.emplaceback(infile)
+
+					std::string tmp_value(findLocationName(line));	
+					// _locationName.push_back(tmp_value);
+					parseLocationBlock(file, tmp_value);
 					// std::cout << _locationName.back() << std::endl;
-					
-					inLocationBlock++;
     		        continue;
     		    }
-				if (inLocationBlock != 0)
-					parseLocationBlock(line);
-    		    if (inLocationBlock) 
-				{
-    		        if (checkCaracter(line, '}')) 
-					{
-    		            inLocationBlock--;
-    		            // std::cout << "Exiting location block" << std::endl;
-    		        }
-    		        continue;
-    		    }
-    		    if (checkCaracter(line, '}')) 
-				{
-					if (inServerBlock == 1)
-						inServerBlock--;
-    		        // std::cout << "Exiting server block" << std::endl;
-    		    } 
+    		    // if (inLocationBlock) 
+				// {
+    		    // if (checkCaracter(line, '}')) 
+				// {
+				// 	if (inServerBlock == 1)
+				// 		inServerBlock--;
+    		           // inLocationBlock--;
+    		           // std::cout << "Exiting location block" << std::endl;
+    		    // }
 				else 
 				{
-    		        parseServerBlock(line);
+					std::cout << line << std::endl;
+    			    parseServerBlock(line, configfile);
+				}    
+    		       // continue;
     		    	// std::cout << "Parsing line in server block: " << line << std::endl;
-    		    }
-    		}
-		}
+			}
+    	}
 	}
 	catch(const std::exception& e)
 	{
@@ -158,38 +183,19 @@ Config* Config::parseConfigFile(const std::string fileName)
 	return (configfile);
 }
 
-
-void	Config::parseServerBlock(const std::string &line)
+void	Config::parseServerBlock(const std::string &line, Config *configFile)
 {
 	int nonCommentLines = 0;
 
 	try
 	{
-		//if (line.empty())
-		//	throw (std::invalid_argument("Error: Empty line"));
-		auto key = line.begin();
-		while (key != line.end() and (*key == ' ' or *key == '\t'))
-			key++;
-		if (key == line.end() or *key == '#' or *key == '}')
-			return;
 		nonCommentLines++;
-		auto begin = key;
-		while (key != line.end() and *key != ' ' and *key != '\t')
-			key++;
-		std::string tmp_key(begin, key);
-	
-		auto value  = key;
-		while(value != line.end() and (*value == ' ' or+ *value == '\t'))
-		 	value++;
-		auto begin_value = value;
-		while(begin_value != line.end() and *begin_value != ';')
-		 	begin_value++;
-		if (begin_value == line.end() || *begin_value != ';')
-    		return;
-		std::string tmp_value(value, begin_value);
-		serverBlock.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));	
+		//if (line.empty())
+		//	throw (std::invalid_argument("Error: Empty line"));	
+		findKeyandValue(line, configFile->serverBlock);
 		if (nonCommentLines == 0)
 			throw (std::invalid_argument("Error: Empty line"));
+		// printBlockValue(configFile->serverBlock);
 	}
 	catch(const std::exception& e)
 	{
@@ -200,32 +206,35 @@ void	Config::parseServerBlock(const std::string &line)
 
 
 
-void	Config::parseLocationBlock(const std::string &line)
+void	Config::parseLocationBlock(std::ifstream &file, const std::string &locationName)
 {
-	//if (line.empty())
-	//	return (0);
+	std::string line;
+	location	loc;
+	int			locationNested = 1;
+
 	try
 	{	
-		auto key = line.begin();
-		while (key != line.end() and (*key == ' ' or *key == '\t'))
-			key++;
-		if (key == line.end() or *key == '#' or *key == '}')
-			return;
-		auto begin = key;
-		while (key != line.end() and *key != ' ' and *key != '\t')
-			key++;
-		std::string tmp_key(begin, key);
-	
-		auto value  = key;
-		while(value != line.end() and (*value == ' ' or+ *value == '\t'))
-		 	value++;
-		auto begin_value = value;
-		while(begin_value != line.end() and *begin_value != ';')
-		 	begin_value++;
-		if (begin_value == line.end() || *begin_value != ';')
-	    	return;
-		std::string tmp_value(value, begin_value);
-		locationBlock.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));
+		while (std::getline(file, line)) 
+		{
+        	if (line.empty() || line[0] == '#')
+            	continue;
+			if (checkCaracter(line, '{')) 
+             	locationNested++;
+			if (checkCaracter(line, '}'))
+			{
+				locationNested--;
+				if (locationNested == 0)
+             		break;
+			}
+			if (locationNested == 1)
+				findKeyandValue(line, loc.locationBlock);
+			else if (locationNested > 1 && line.find("location") != std::string::npos)
+			{
+				std::string nestedLocation(findLocationName(line));
+				parseLocationBlock(file, nestedLocation);
+			}
+        }
+		_locations.insert(std::make_pair(locationName, loc));
 	}
 	catch(const std::exception& e)
 	{
@@ -274,4 +283,14 @@ void	Config::printBlockValue(const std::multimap<std::string, std::string> &conf
 {
 	for (const auto& pair : configBlock)
 		std::cout << pair.first << ": " << pair.second << std::endl;	
+}
+
+void Config::printLocationBlock() const 
+{
+    for (const auto& pair : _locations) {
+        std::cout << "Location: " << pair.first << std::endl;
+        for (const auto& setting : pair.second.locationBlock) {
+            std::cout << "  " << setting.first << ": " << setting.second << std::endl;
+        }
+    }
 }

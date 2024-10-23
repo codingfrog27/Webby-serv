@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/22 17:20:06 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/23 16:42:35 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 #include <ctype.h>
+#include "location.hpp"
 
 class Config
 {
@@ -47,9 +48,8 @@ class Config
 	std::string	_autoIndexFilePath;
 
 	std::multimap<std::string, std::string> serverBlock;
-	std::multimap<std::string, std::string> locationBlock;
+	std::multimap<std::string, location> _locations;
 	std::vector<std::string> _locationName;
-	std::string _locations;
 	// std::vector<location> _location;
 	// std::vector <location> _locations;
 	// std::vector <Socket> _server;
@@ -67,13 +67,18 @@ class Config
 	// std::unordered_map<std::string, std::string> access_control;
 	
 	Config*	parseConfigFile(const std::string filename);
-	void	parseLocationBlock(const std::string &line);
-	void	parseServerBlock(const std::string &line);
+	void	parseLocationBlock(std::ifstream &file, const std::string &locationName);
+	void	parseServerBlock(const std::string &line, Config *configFile);
 	int		startParsing(const std::string &line);
 	void	createSocketObject(Config &config);
 	void	initizalizeServerobj();
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	void	updateValue(const std::string& newValue, Config &config);
+	void	findKeyandValue(const std::string &line, std::multimap<std::string, std::string> &block);
+
+
+
+	void printLocationBlock() const;
 };
 
 

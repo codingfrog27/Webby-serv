@@ -1,53 +1,52 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   Location.cpp                                       :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2024/10/21 15:19:00 by antoniosimo   ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   Location.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
+/*   Updated: 2024/10/23 16:32:58 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "Location.hpp"
-//#include "Colors.hpp"
+#include "location.hpp"
+#include "Colors.hpp"
 
-//// ************************************************************************** //
-////                        Constructors and Destructors                        //
-//// ************************************************************************** //
+// ************************************************************************** //
+//                        Constructors and Destructors                        //
+// ************************************************************************** //
 
-//Location::Location(void)
-//{
-//	_locationName = "default";
-//	std::cout << GREEN << "Location: Default constructor called" << RESET << std::endl;
-//}
+location::location(void)
+{
+	std::cout << GREEN << "location: Default constructor called" << RESET << std::endl;
+}
 
-//Location::Location(const Location &rhs)
-//{
-//	std::cout << GREEN << "Location: Copy constructor called" << RESET << std::endl;
+location::location(const location &rhs)
+{
+	// std::cout << GREEN << "location: Copy constructor called" << RESET << std::endl;
 
-//	*this = rhs;
-//}
+	*this = rhs;
+}
 
-//Location &
-//Location::operator=(const Location &rhs)
-//{
-//	std::cout << GREEN << "Location: Assignment operator called" << RESET << std::endl;
+location &
+location::operator=(const location &rhs)
+{
+	// std::cout << GREEN << "location: Assignment operator called" << RESET << std::endl;
 
-//	if (this != &rhs)
-//	{
-//		// Perform deep copy
-//	}
+	if (this != &rhs)
+	{
+		// Perform deep copy
+	}
 
-//	return (*this);
-//}
+	return (*this);
+}
 
-//Location::~Location(void)
-//{
-//	std::cout << RED << "Location: Destructor called" << RESET << std::endl;
-//}
+location::~location(void)
+{
+	std::cout << RED << "location: Destructor called" << RESET << std::endl;
+}
 
-//// ************************************************************************** //
-////                                Public methods                              //
-//// ************************************************************************** //
+// ************************************************************************** //
+//                                Public methods                              //
+// ************************************************************************** //

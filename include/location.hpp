@@ -10,10 +10,20 @@
 /*																			*/
 /* ************************************************************************** */
 
-//#pragma once
+#pragma once
+#include <iostream>
+#include <map>
 
-//class location
-//{
-    
+class location
+{
+    private:
 
-//};
+    public:
+        std::multimap<std::string, std::string> locationBlock;
+
+        location(void);
+        location(const location &rhs);
+        location &operator=(const location &rhs);
+        ~location(void);
+
+};
