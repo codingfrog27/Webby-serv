@@ -17,6 +17,9 @@
 class location
 {
     private:
+        // std::string _locationName;
+        std::string _root;
+
 
     public:
         std::multimap<std::string, std::string> locationBlock;
@@ -25,5 +28,10 @@ class location
         location(const location &rhs);
         location &operator=(const location &rhs);
         ~location(void);
+        void	printLocationValue(const location& loc) const;
+        std::string	getRoot(const location& loc);
+        void	setRoot(const std::string& root);
 
 };
+
+

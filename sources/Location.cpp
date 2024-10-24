@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/23 16:32:58 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/24 16:50:56 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,3 +50,25 @@ location::~location(void)
 // ************************************************************************** //
 //                                Public methods                              //
 // ************************************************************************** //
+
+std::string	location::getRoot(const location& locationBlock)
+{
+	for(const auto& pair : locationBlock)
+	{
+		if (pair.first == "root")
+			return (pair.second);
+	}
+	return ("default");
+}
+
+void	location::setRoot(const std::string& root)
+{
+	this->_root = root;
+	std::cout << "Root set to: " << _root << std::endl;
+}
+
+void	location::printLocationValue(const location& loc) const
+{
+	for (const auto& pair : loc.locationBlock)
+		std::cout << pair.first << ": " << pair.second << std::endl;	
+}

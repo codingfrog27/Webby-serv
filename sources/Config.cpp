@@ -6,12 +6,11 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/23 17:24:26 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/24 16:49:40 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
-
 #include "socket.hpp"
 #include "Colors.hpp"
 
@@ -113,9 +112,8 @@ void	Config::findKeyandValue(const std::string &line, std::multimap<std::string,
 	block.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));
 }
 
-Config* Config::parseConfigFile(const std::string fileName)
+void Config::parseConfigFile(const std::string fileName)
 {
-	Config			*configfile = new Config();
 	std::string		line;
 	std::ifstream	file(fileName);
 	static size_t 	inServerBlock = 0;
@@ -166,8 +164,7 @@ Config* Config::parseConfigFile(const std::string fileName)
     		    // }
 				else 
 				{
-					std::cout << line << std::endl;
-    			    parseServerBlock(line, configfile);
+    			    parseServerBlock(line);
 				}    
     		       // continue;
     		    	// std::cout << "Parsing line in server block: " << line << std::endl;
@@ -177,24 +174,38 @@ Config* Config::parseConfigFile(const std::string fileName)
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
-		delete configfile;
 		throw;
 	}
-	return (configfile);
 }
 
-void	Config::parseServerBlock(const std::string &line, Config *configFile)
+
+
+// int	checkConfigFile(const std::string &line)
+// {	
+// 	for(auto it = line.begin(); it != line.end(); it++)
+// 	{
+// 		if (*it == ' ' || *it == '\t')
+// 			// std::cout << "Space or tab found" << std::endl;
+// 			it++;
+// 		if (*it == '#')
+// 			it++;
+// 	}
+// }
+
+void	Config::parseServerBlock(const std::string &line)
 {
-	int nonCommentLines = 0;
+	// int nonCommentLines = 0;
 
 	try
 	{
-		nonCommentLines++;
+		// if (line.empty())// || line[0] == '#')
+		//  	throw (std::invalid_argument("Error: Empty line"));
+		// checkConfigFile(line);
 		//if (line.empty())
 		//	throw (std::invalid_argument("Error: Empty line"));	
-		findKeyandValue(line, configFile->serverBlock);
-		if (nonCommentLines == 0)
-			throw (std::invalid_argument("Error: Empty line"));
+		findKeyandValue(line, Config::serverBlock);
+		// if (nonCommentLines == 0)
+		// 	throw (std::invalid_argument("Error: Empty line"));
 		// printBlockValue(configFile->serverBlock);
 	}
 	catch(const std::exception& e)
@@ -279,18 +290,32 @@ void	Config::parseLocationBlock(std::ifstream &file, const std::string &location
 	
 	
 // }
+
+location	Config::findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName)
+{
+	auto it = locations.find(locationName);
+	if (it != locations.end())
+	{
+		std::cout << "Location found: " << it->first << std::endl;
+		return (it->second);
+		// for (const auto& setting : it->second.locationBlock) 
+		// {
+        //     std::cout << "  " << setting.first << ": " << setting.second << std::endl;
+		// 	// setting.second.printLocationValue(it->second);
+        // }
+	}
+	else 
+	{
+        std::cout << "Location not found: " << locationName << std::endl;
+    }
+}
+
+
+
+
+
 void	Config::printBlockValue(const std::multimap<std::string, std::string> &configBlock)
 {
 	for (const auto& pair : configBlock)
 		std::cout << pair.first << ": " << pair.second << std::endl;	
-}
-
-void Config::printLocationBlock() const 
-{
-    for (const auto& pair : _locations) {
-        std::cout << "Location: " << pair.first << std::endl;
-        for (const auto& setting : pair.second.locationBlock) {
-            std::cout << "  " << setting.first << ": " << setting.second << std::endl;
-        }
-    }
 }
