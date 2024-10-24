@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/24 16:49:36 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/24 21:09:47 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class Config
 	public:
 		// Constructors and Destructors
 		Config(void);
+		Config::Config(std::ifstream &file, std::string &line);
 		Config(const Config &rhs);
 		Config &operator=(const Config &rhs);
 		~Config(void);
@@ -49,6 +50,13 @@ class Config
 
 	std::multimap<std::string, std::string> serverBlock;
 	std::multimap<std::string, location> _locations;
+
+
+
+	std::vector<location> 				_newLocations;
+	std::map<std::string, std::string>	_rulemap;
+	std::vector<std::string>			_locNames;
+
 	// std::vector<std::string> _locationName;
 	// std::vector<location> _location;
 	// std::vector <location> _locations;
@@ -66,7 +74,7 @@ class Config
 	// std::unordered_map<std::string, std::string> custom_error_pages;
 	// std::unordered_map<std::string, std::string> access_control;
 	
-	void	parseConfigFile(const std::string filename);
+	// void	parseConfigFile(const std::string filename);
 	void	parseLocationBlock(std::ifstream &file, const std::string &locationName);
 	void	parseServerBlock(const std::string &line);
 	int		startParsing(const std::string &line);
@@ -74,10 +82,16 @@ class Config
 	void	initizalizeServerobj();
 	void	updateValue(const std::string& newValue, Config &config);
 	void	findKeyandValue(const std::string &line, std::multimap<std::string, std::string> &block);
-	
+	void	Config::parseRule(const std::string &line);
+
 	
 	location	findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 };
 
 
+std::vector<Config>	parseConfigFile(const std::string fileName);
+bool	checkstr(const std::string &line, const std::string &str);
+bool	checkCaracter(const std::string &line, const char &c);
+bool	locationFound(std::string &line);
+std::string	findLocationName(const std::string &line);

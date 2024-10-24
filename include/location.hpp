@@ -23,15 +23,19 @@ class location
 
     public:
         std::multimap<std::string, std::string> locationBlock;
+		std::vector<location> _nestedLocations;
+		std::map<std::string, std::string>	_rulemap;
+		std::string _name;
 
         location(void);
+		location(std::ifstream &file, std::string &line);
         location(const location &rhs);
         location &operator=(const location &rhs);
         ~location(void);
         void	printLocationValue(const location& loc) const;
         std::string	getRoot(const location& loc);
         void	setRoot(const std::string& root);
-
+		void	parseRule(const std::string &line);
 };
 
 
