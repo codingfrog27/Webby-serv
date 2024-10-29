@@ -13,6 +13,7 @@
 #pragma once
 #include <iostream>
 #include <map>
+#include <vector>
 
 class location
 {
@@ -23,6 +24,7 @@ class location
 
     public:
         std::multimap<std::string, std::string> locationBlock;
+		//nested locatoin names
 		std::vector<location> _nestedLocations;
 		std::map<std::string, std::string>	_rulemap;
 		std::string _name;

@@ -140,7 +140,7 @@ void	Server::main_server_loop()
 			{
 				if (pfds[i].revents & POLLIN) //take other events
 					connections[i]._request->main_reader(pfds[i].fd);
-				if ((pfds[i].revents & POLLOUT) && connections[i].doneReading) //what if ready to post to server but not reday for response
+				else if ((pfds[i].revents & POLLOUT) && connections[i].doneReading) //what if ready to post to server but not reday for response
 					responseHandler(connections[i]._request);
 					// responseHandler(connections[i]._request, connections[i]._clientFD);
 					

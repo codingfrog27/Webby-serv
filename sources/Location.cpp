@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/24 16:50:56 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/29 16:27:58 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "location.hpp"
+#include "Config.hpp"
 #include "Colors.hpp"
 
 // ************************************************************************** //
@@ -24,7 +25,7 @@ location::location(void)
 
 location::location(const location &rhs)
 {
-	// std::cout << GREEN << "location: Copy constructor called" << RESET << std::endl;
+	std::cout << GREEN << "location: Copy constructor called" << RESET << std::endl;
 
 	*this = rhs;
 }
@@ -32,11 +33,11 @@ location::location(const location &rhs)
 location &
 location::operator=(const location &rhs)
 {
-	// std::cout << GREEN << "location: Assignment operator called" << RESET << std::endl;
+	std::cout << GREEN << "location: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
-		// Perform deep copy
+		_rulemap = rhs._rulemap;
 	}
 
 	return (*this);
@@ -51,15 +52,16 @@ location::~location(void)
 //                                Public methods                              //
 // ************************************************************************** //
 
-std::string	location::getRoot(const location& locationBlock)
-{
-	for(const auto& pair : locationBlock)
-	{
-		if (pair.first == "root")
-			return (pair.second);
-	}
-	return ("default");
-}
+
+// std::string	location::getRoot(const location& locationBlock)
+// {
+// 	for(const auto& pair : locationBlock)
+// 	{
+// 		if (pair.first == "root")
+// 			return (pair.second);
+// 	}
+// 	return ("default");
+// }
 
 void	location::setRoot(const std::string& root)
 {
