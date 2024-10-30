@@ -24,9 +24,9 @@ class location
 
 
     public:
-        std::unordered_map<std::string, std::string> _locationBlock;
         std::vector<location> _nestedLocations;
-        std::map<std::string, std::string> _rulemap;
+        std::unordered_map<std::string, std::string> _locationBlock;
+        std::unordered_map<std::string, std::string> _rulemap;
         std::string _name;
 
         location(void);
@@ -40,6 +40,10 @@ class location
         void setRoot(const std::string& root);
         void parseRule(const std::string &line);
 
+        std::string getName() const;
 };
+        
+bool	locationFound(std::string &line);
+bool	checkCaracter(const std::string &line, const char &c);
 
 

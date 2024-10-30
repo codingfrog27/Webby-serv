@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/30 11:58:48 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/30 15:16:20 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ class Config
 	std::unordered_map<std::string, location> _locations;
 	std::vector<location> 	_newLocations;
 	std::vector<std::string> _locNames;
-	std::map<std::string, std::string> _rulemap;
+	std::unordered_map<std::string, std::string> _rulemap;
 	// std::vector<std::string> _locationName;
 	// std::vector<location> _location;
 	// std::vector <location> _locations;
@@ -85,6 +85,7 @@ class Config
 };
 	
 std::vector<Config>	parseConfigFile(const std::string fileName);
+bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 bool	checkstr(const std::string &line, const std::string &str);
 std::string	findLocationName(const std::string &line);

@@ -6,11 +6,12 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/30 11:52:21 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/30 15:15:38 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "location.hpp"
+#include "Config.hpp"
 #include "Colors.hpp"
 
 // ************************************************************************** //
@@ -51,45 +52,26 @@ location::~location(void)
 //                                Public methods                              //
 // ************************************************************************** //
 
-// std::string	location::getRoot(const location& locationBlock)
-// {
-// 	for(const auto& pair : locationBlock)
-// 	{
-// 		if (pair.first == "root")
-// 			return (pair.second);
-// 	}
-// 	return ("default");
-// }
-
-// void	location::setRoot(const location& loc)//, const std::string& value)
-// {
-// 	for(const auto& pair : loc)
-// 	{
-// 		std::cout << "Pair: " << pair.first << " " << pair.second << std::endl;
-// 		if (pair.first == value)
-// 			this->_root = pair.second;
-// 		else
-// 			this->_root = "default";
-// 			return (pair.second);
-// 	}
-// }
-
-void	location::setRoot(const std::string& root)
+void   location::parseRule(const std::string &line)
 {
-	this->_root = root;
-	std::cout << "Root set to: " << _root << std::endl;
+       auto key = line.begin();
+       while (key != line.end() and (*key == ' ' or *key == '\t'))
+               key++;
+       if (key == line.end() or *key == '#' or *key == '}')
+               return;
+       auto begin = key;
+       while (key != line.end() and *key != ' ' and *key != '\t')
+               key++;
+               key++;
+       std::string tmp_key(begin, key);
+       auto value  = key;
+       while(value != line.end() and (*value == ' ' or+ *value == '\t'))
+               value++;
+       auto begin_value = value;
+       while(begin_value != line.end() and *begin_value != ';')
+               begin_value++;
+       if (begin_value == line.end() || *begin_value != ';')
+       return;
+       std::string tmp_value(value, begin_value);      
+       _rulemap[tmp_key] = tmp_value;
 }
-
-// root = setRoot(loc, "root", "default");
-
-std::string	location::getRoot(const location& loc)
-{
-	std::cout << "Root: " << loc._root << std::endl;
-	return (this->_root);
-}
-
-// void	location::printLocationValue(const location& loc) const
-// {
-// 	for (const auto& pair : loc.locationBlock)
-// 		std::cout << pair.first << ": " << pair.second << std::endl;	
-// }

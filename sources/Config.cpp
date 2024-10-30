@@ -6,10 +6,11 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/30 11:45:29 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/30 15:17:49 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "location.hpp"
 #include "Config.hpp"
 #include "socket.hpp"
 #include "Colors.hpp"
@@ -68,26 +69,69 @@ bool	checkCaracter(const std::string &line, const char &c)
 	return (false);
 }
 
-std::string	findLocationName(const std::string &line)
+bool	checkstr(const std::string &line, const std::string &str)
 {
-	auto location_name = line.begin();
-	while (location_name != line.end() && (*location_name == ' ' or *location_name == '\t'))
-		location_name++;
-	auto begin = location_name;
-	while (location_name != line.end() && (*location_name != ' ' and *location_name != '\t'))
-		location_name++;
-	
-	auto location_value = location_name;
-	while (location_value != line.end() && (*location_value == ' ' or *location_value == '\t'))
-		location_value++;
-	auto begin_value = location_value;
-	while(location_value != line.end() && (*location_value != ' ' and *location_value != '\t'))
-		location_value++;
-
-	return (std::string(begin_value, location_value));
+	if (line.find(str) != std::string::npos)
+		return (true);
+	return (false);
 }
 
-void	Config::findKeyandValue(const std::string &line, std::multimap<std::string, std::string> &block)
+bool	locationFound(std::string &line)
+{
+	if (checkstr(line, "location") && checkCaracter(line, '{'))
+		return (true);
+	return (false);
+}
+
+std::vector<Config>	parseConfigFile(const std::string fileName)
+{
+	std::string		line;
+	std::ifstream	file(fileName);
+	std::vector<Config>	Configs;
+
+	if (!file.is_open())
+		throw std::invalid_argument("Error: Unable to open file" );
+	while (std::getline(file, line))
+	{
+		if (line.empty() || line[0] == '#')
+			continue;
+		if (line.find("server {") != std::string::npos) 
+			Configs.emplace_back(file, line);
+		// else
+			// throw std::invalid_argument("non comment text between server blocks! >:(");
+	}
+	return (Configs);
+}
+
+std::string location::getName() const {
+    return _name;
+}
+
+Config::Config(std::ifstream &file, std::string &line)
+{
+	size_t i = 0;
+	std::string set(" \t");
+	while (std::getline(file, line))
+	{
+		if (line.empty() || line[i] == '#')
+			continue;
+		if (locationFound(line))
+		{
+			location newloc(file, line);
+			_newLocations.push_back(std::move(newloc));	
+		}
+		else if (checkCaracter(line, '}'))
+		{
+			for (const auto& pair : _rulemap) 
+        		std::cout << pair.first << ": " << pair.second << std::endl;
+			return;
+		}
+		else
+			parseRule(line);
+	}
+}
+
+void	Config::parseRule(const std::string &line)
 {
 	auto key = line.begin();
 	while (key != line.end() and (*key == ' ' or *key == '\t'))
@@ -98,8 +142,7 @@ void	Config::findKeyandValue(const std::string &line, std::multimap<std::string,
 	while (key != line.end() and *key != ' ' and *key != '\t')
 		key++;
 	std::string tmp_key(begin, key);
-
-		auto value  = key;
+	auto value  = key;
 	while(value != line.end() and (*value == ' ' or+ *value == '\t'))
 	 	value++;
 	auto begin_value = value;
@@ -107,217 +150,30 @@ void	Config::findKeyandValue(const std::string &line, std::multimap<std::string,
 	 	begin_value++;
 	if (begin_value == line.end() || *begin_value != ';')
     	return;
-	std::string tmp_value(value, begin_value);
-	block.insert(std::pair<std::string, std::string>(tmp_key, tmp_value));
+	std::string tmp_value(value, begin_value);	
+	_rulemap[tmp_key] = tmp_value;
 }
 
-// void Config::parseConfigFile(const std::string fileName)
-// {
-// 	std::string		line;
-// 	std::ifstream	file(fileName);
-// 	static size_t 	inServerBlock = 0;
-//     static size_t 	inLocationBlock = 0;
-
-// 	if (!file.is_open())
-// 	{
-// 		std::cerr << "Error: Unable to open file" << std::endl;
-// 	}
-// 	try
-// 	{	
-// 		int i = 0;
-// 		while (std::getline(file, line))
-// 		{
-//     		if (line.empty() || line[0] == '#')
-//     		    continue;
-			
-//     		if (line.find("server {") != std::string::npos) 
-// 			{
-// 				inServerBlock++;
-//     			// std::cout << "Entering server block" << std::endl;
-
-// 				//make config/serverblock object here and loop further in the object (by passing the stream)
-//     		    continue;
-//     		}
-//     		if (inServerBlock) 
-// 			{	
-//     		    if (line.find("location") != std::string::npos && checkCaracter(line, '{')) 
-// 				{
-// 					// std::cout << line << std::endl;
-// 					//make location object here and loop further in the object (by passing the stream)
-// 					//vec.emplaceback(infile)
-
-// 					std::string tmp_value(findLocationName(line));	
-// 					// _locationName.push_back(tmp_value);
-// 					parseLocationBlock(file, tmp_value);
-// 					// std::cout << _locationName.back() << std::endl;
-//     		        continue;
-//     		    }
-//     		    // if (inLocationBlock) 
-// 				// {
-//     		    // if (checkCaracter(line, '}')) 
-// 				// {
-// 				// 	if (inServerBlock == 1)
-// 				// 		inServerBlock--;
-//     		           // inLocationBlock--;
-//     		           // std::cout << "Exiting location block" << std::endl;
-//     		    // }
-// 				else 
-// 				{
-//     			    parseServerBlock(line);
-// 				}    
-//     		       // continue;
-//     		    	// std::cout << "Parsing line in server block: " << line << std::endl;
-// 			}
-//     	}
-// 	}
-// 	catch(const std::exception& e)
-// 	{
-// 		std::cerr << e.what() << '\n';
-// 		throw;
-// 	}
-// }
-
-
-
-// int	checkConfigFile(const std::string &line)
-// {	
-// 	for(auto it = line.begin(); it != line.end(); it++)
-// 	{
-// 		if (*it == ' ' || *it == '\t')
-// 			// std::cout << "Space or tab found" << std::endl;
-// 			it++;
-// 		if (*it == '#')
-// 			it++;
-// 	}
-// }
-
-// void	Config::parseServerBlock(const std::string &line)
-// {
-// 	// int nonCommentLines = 0;
-
-// 	try
-// 	{
-// 		// if (line.empty())// || line[0] == '#')
-// 		//  	throw (std::invalid_argument("Error: Empty line"));
-// 		// checkConfigFile(line);
-// 		//if (line.empty())
-// 		//	throw (std::invalid_argument("Error: Empty line"));	
-// 		findKeyandValue(line, Config::serverBlock);
-// 		// if (nonCommentLines == 0)
-// 		// 	throw (std::invalid_argument("Error: Empty line"));
-// 		// printBlockValue(configFile->serverBlock);
-// 	}
-// 	catch(const std::exception& e)
-// 	{
-// 		std::cerr << e.what() << '\n';
-// 	}
-// 	return ;
-// }
-
-
-
-// void	Config::parseLocationBlock(std::ifstream &file, const std::string &locationName)
-// {
-// 	std::string line;
-// 	location	loc;
-// 	int			locationNested = 1;
-
-// 	try
-// 	{	
-// 		while (std::getline(file, line)) 
-// 		{
-//         	if (line.empty() || line[0] == '#')
-//             	continue;
-// 			if (checkCaracter(line, '{')) 
-//              	locationNested++;
-// 			if (checkCaracter(line, '}'))
-// 			{
-// 				locationNested--;
-// 				if (locationNested == 0)
-//              		break;
-// 			}
-// 			if (locationNested == 1)
-// 				findKeyandValue(line, loc.locationBlock);
-// 			else if (locationNested > 1 && line.find("location") != std::string::npos)
-// 			{
-// 				std::string nestedLocation(findLocationName(line));
-// 				parseLocationBlock(file, nestedLocation);
-// 			}
-// 			// printBlockValue(loc.locationBlock);
-//         }
-// 		_locations.insert(std::make_pair(locationName, loc));
-// 	}
-// 	catch(const std::exception& e)
-// 	{
-// 		std::cerr << e.what() << '\n';
-// 	}
-// 	return;
-// }
-
-// std::string Config::updateValue(const std::string& valueToFind, Config &config) 
-// {
-// 	bool valueFound = false;
-//     auto range = config.serverBlock.equal_range(valueToFind);
-	
-//     for (auto it = range.first; it != range.second; ++it)
-// 	{
-//         // _serverPort = it->second;
-// 		valueFound = true;
-// 		return (it->second);
-// 		// break;
-// 	}
-// 	if (!valueFound)
-// 		return ("");	
-// 		// _serverPort = "0";
-// }
-
-
-// void	Config::mapToMembers()
-// {
-// 	// char *rules = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-
-// 	// for (size_t i = 0; rules[i]; i++)
-// 	// {
-// 	// 	/* code */
-// 	// }
-
-// 	bool check;
-
-// 	_timeout = updateListenValue("timeout", *this);
-// 	if (_timeout == "")
-// 		_timeout = "5000";
-// 	_rootDir = updateListenValue("root", *this);
-	
-	
-// }
-
-location	Config::findLocation (const std::multimap<std::string, location>& locations, const std::string& locationName)
+location::location(std::ifstream &file, std::string &line)
 {
-	location loc;
-
-	auto it = locations.find(locationName);
-	if (it != locations.end())
+	size_t i = 0;
+	std::string set(" \t");
+	while (std::getline(file, line))
 	{
-		std::cout << "Location found: " << it->first << std::endl;
-		return (it->second);
-		// for (const auto& setting : it->second.locationBlock) 
-		// {
-        //     std::cout << "  " << setting.first << ": " << setting.second << std::endl;
-		// 	// setting.second.printLocationValue(it->second);
-        // }
+		if (line.empty() || line[i] == '#')
+			continue;
+		if (locationFound(line))
+		{
+			location newloc(file, line);
+			_nestedLocations.push_back(std::move(newloc));	
+		}
+		else if (checkCaracter(line, '}'))
+		{
+			for (const auto& pair : _rulemap) 
+        		std::cout << pair.first << ": " << pair.second << std::endl;
+			return;
+		}
+		else
+			parseRule(line);
 	}
-	else 
-	{
-        std::cout << "Location not found: " << locationName << std::endl;
-    }
-}
-
-
-
-
-
-void	Config::printBlockValue(const std::multimap<std::string, std::string> &configBlock)
-{
-	for (const auto& pair : configBlock)
-		std::cout << pair.first << ": " << pair.second << std::endl;	
 }
