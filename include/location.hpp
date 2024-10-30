@@ -20,7 +20,14 @@ class location
 {
     private:
         // std::string _locationName;
-        std::string _root;
+        std::string     _alias;
+        std::string     _allow_methods;
+        std::string     _autoindex;
+        std::string     _cgi_extension;
+        std::string     _cgi_path; 
+        std::string     _index;
+        std::string     _return;
+        std::string     _root;
 
 
     public:
@@ -37,10 +44,23 @@ class location
         void	printLocationValue(const location& loc) const;
         std::string	getRoot(const location& loc);
         // void	setRoot(const location& loc);
-        void setRoot(const std::string& root);
         void parseRule(const std::string &line);
 
         std::string getName() const;
+        std::string	location::getAlias();
+        void	location::setAlias(const std::string &value);
+        std::string	location::getAllowMethods();
+        void	location::setAllowMethods(const std::string &value);
+        std::string	location::getAutoindex();
+        void	location::setAutoindex(const std::string &value);
+        std::string	location::getCgiExtension();
+        void	location::setCgiExtension(const std::string &value);
+        std::string	location::getCgiPath();
+        void	location::setCgiPath(const std::string &value);
+        std::string	location::getReturn();
+        void	location::setReturn(const std::string &value);
+        std::string	location::getRoot();
+        void	location::setRoot(const std::string &value);
 };
         
 bool	locationFound(std::string &line);

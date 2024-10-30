@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/30 15:17:49 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/30 16:57:12 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,80 @@ Config::operator=(const Config &rhs)
 Config::~Config(void)
 {
 	std::cout << RED << "Config: Destructor called" << RESET << std::endl;
+}
+
+// ************************************************************************** //
+//								GETTER & SETTER								  //
+// ************************************************************************** //
+
+std::string	Config::getRoot()
+{
+	return(this->_rootDir);
+}
+
+void	Config::setRoot(const std::string &value)
+{
+	this->_rootDir = _rulemap.at(value);
+}
+
+std::string	Config::getListen()
+{
+	return(this->_listen);
+}
+
+void	Config::setListen(const std::string &value)
+{
+	this->_listen = _rulemap.at(value);
+}
+
+std::string	Config::getServerName()
+{
+	return(this->_serverName);
+}
+
+void	Config::setServerName(const std::string &value)
+{
+	this->_serverName = _rulemap.at(value);
+}
+
+std::string	Config::getHost()
+{
+	return(this->_host);
+}
+
+void	Config::setHost(const std::string &value)
+{
+	this->_host = _rulemap.at(value);
+}
+
+std::string	Config::getErrorPage()
+{
+	return(this->_errorPage);
+}
+
+void	Config::setErrorPage(const std::string &value)
+{
+	this->_errorPage = _rulemap.at(value);
+}
+
+std::string	Config::getMaxBodySize()
+{
+	return(this->_client_max_body_size);
+}
+
+void	Config::setMaxBodySize(const std::string &value)
+{
+	this->_client_max_body_size = _rulemap.at(value);
+}
+
+std::string	Config::getIndex()
+{
+	return(this->_index);
+}
+
+void	Config::setIndex(const std::string &value)
+{
+	this->_index = _rulemap.at(value);
 }
 
 // ************************************************************************** //
@@ -121,11 +195,7 @@ Config::Config(std::ifstream &file, std::string &line)
 			_newLocations.push_back(std::move(newloc));	
 		}
 		else if (checkCaracter(line, '}'))
-		{
-			for (const auto& pair : _rulemap) 
-        		std::cout << pair.first << ": " << pair.second << std::endl;
 			return;
-		}
 		else
 			parseRule(line);
 	}
@@ -168,11 +238,7 @@ location::location(std::ifstream &file, std::string &line)
 			_nestedLocations.push_back(std::move(newloc));	
 		}
 		else if (checkCaracter(line, '}'))
-		{
-			for (const auto& pair : _rulemap) 
-        		std::cout << pair.first << ": " << pair.second << std::endl;
 			return;
-		}
 		else
 			parseRule(line);
 	}

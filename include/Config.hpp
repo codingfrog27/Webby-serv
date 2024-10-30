@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/30 15:16:20 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/30 16:56:47 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,23 @@ class Config
 		
 
 	public:
+		std::string _autoindex;
+		std::string _autoIndexFilePath;
+		std::string _client_max_body_size;
+		std::string _errorPage;
+		std::string _host;
+		std::string _index;
+		std::string _listen;
+		std::string _rootDir;
+		std::string _serverPort;
+		std::string _serverName;
+		size_t		_maxConnects;
+		size_t		_timeout; //general _timeout waiting for request/respond sending
+		std::vector<location> 	_newLocations;
+		std::vector<std::string> _locNames;
+		std::unordered_map<std::string, location> _locations;
+		std::unordered_map<std::string, std::string> _rulemap;
+
 		// Constructors and Destructors
 		Config(void);
 		Config(std::ifstream &file, std::string &line);
@@ -41,18 +58,7 @@ class Config
 
 	//these are all REQUIRED
 	size_t i = 0;
-	std::string	_serverPort;
 	// size_t		_serverPort;
-	std::string	_serverName;
-	size_t		_maxConnects;
-	size_t		_timeout; //general _timeout waiting for request/respond sending
-	std::string	_rootDir;
-	std::string	_autoIndexFilePath;
-
-	std::unordered_map<std::string, location> _locations;
-	std::vector<location> 	_newLocations;
-	std::vector<std::string> _locNames;
-	std::unordered_map<std::string, std::string> _rulemap;
 	// std::vector<std::string> _locationName;
 	// std::vector<location> _location;
 	// std::vector <location> _locations;
@@ -82,6 +88,21 @@ class Config
 	location findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	void	parseRule(const std::string &line);
+	
+	void	setRoot(const std::string &value);
+	void	setListen(const std::string &value);
+	std::string	getRoot();
+	std::string	getListen();
+	std::string	getServerName();
+	void	setServerName(const std::string &value);
+	std::string	getHost();
+	void	setHost(const std::string &value);
+	std::string	getErrorPage();
+	void	setErrorPage(const std::string &value);
+	std::string	getMaxBodySize();
+	void	setMaxBodySize(const std::string &value);
+	std::string	getIndex();
+	void	setIndex(const std::string &value);
 };
 	
 std::vector<Config>	parseConfigFile(const std::string fileName);

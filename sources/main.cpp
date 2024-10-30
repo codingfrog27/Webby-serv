@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/30 12:35:09 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/30 17:16:58 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,6 @@ int main()
 	
 
 	std::vector<Config> servers = parseConfigFile("example_config.conf");
-	// std::cout << "SERVER BLOCK BEFORE UPDATE: " << std::endl;
-	// webserver->printBlockValue(config.serverBlock);
-	// webserver->updateListenValue("listen", config);
-	// std::cout << "SERVER BLOCK AFTER UPDATE: " << std::endl;
-	// config.printBlockValue(config.serverBlock);
-	// webserver->printBlockValue(webserver->locationBlock);
-	// loc.setRoot(loc.getRoot(config.findLocation(config._locations, "/tours")));
-	// config.printBlockValue(config._locations.find("/tours")->second.locationBlock);
-	// loc.getRoot(loc);
 
 	return 0;
 }
