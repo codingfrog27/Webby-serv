@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/24 16:49:53 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/29 12:00:44 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,10 @@ int main()
 	// std::cout << "SERVER BLOCK AFTER UPDATE: " << std::endl;
 	// config.printBlockValue(config.serverBlock);
 	// webserver->printBlockValue(webserver->locationBlock);
-	loc.setRoot(loc.getRoot(config.findLocation(config._locations, "/tours")));
+	// loc.setRoot(loc.getRoot(config.findLocation(config._locations, "/tours")));
 	// config.printBlockValue(config._locations.find("/tours")->second.locationBlock);
+	loc.setRoot(config.findLocation(config._locations, "/tours"));
+	// loc.getRoot(loc);
 
 	return 0;
 }

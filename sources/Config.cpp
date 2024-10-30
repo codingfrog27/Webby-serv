@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/24 16:49:40 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/29 14:41:49 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ std::string	findLocationName(const std::string &line)
 
 void	Config::findKeyandValue(const std::string &line, std::multimap<std::string, std::string> &block)
 {
-	
 	auto key = line.begin();
 	while (key != line.end() and (*key == ' ' or *key == '\t'))
 		key++;
@@ -244,6 +243,7 @@ void	Config::parseLocationBlock(std::ifstream &file, const std::string &location
 				std::string nestedLocation(findLocationName(line));
 				parseLocationBlock(file, nestedLocation);
 			}
+			// printBlockValue(loc.locationBlock);
         }
 		_locations.insert(std::make_pair(locationName, loc));
 	}
@@ -291,8 +291,10 @@ void	Config::parseLocationBlock(std::ifstream &file, const std::string &location
 	
 // }
 
-location	Config::findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName)
+location	Config::findLocation (const std::multimap<std::string, location>& locations, const std::string& locationName)
 {
+	location loc;
+
 	auto it = locations.find(locationName);
 	if (it != locations.end())
 	{

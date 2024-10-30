@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/24 16:50:56 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/29 15:01:26 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,20 +51,35 @@ location::~location(void)
 //                                Public methods                              //
 // ************************************************************************** //
 
-std::string	location::getRoot(const location& locationBlock)
+// std::string	location::getRoot(const location& locationBlock)
+// {
+// 	for(const auto& pair : locationBlock)
+// 	{
+// 		if (pair.first == "root")
+// 			return (pair.second);
+// 	}
+// 	return ("default");
+// }
+
+void	location::setRoot(const location& loc, const std::string& value)
 {
-	for(const auto& pair : locationBlock)
+	for(const auto& pair : loc.locationBlock)
 	{
-		if (pair.first == "root")
+		std::cout << "Pair: " << pair.first << " " << pair.second << std::endl;
+		if (pair.first == value)
+			this->_root = pair.second;
+		else
+			this->_root = "default";
 			return (pair.second);
 	}
-	return ("default");
 }
 
-void	location::setRoot(const std::string& root)
+// root = setRoot(loc, "root", "default");
+
+std::string	location::getRoot(const location& loc)
 {
-	this->_root = root;
-	std::cout << "Root set to: " << _root << std::endl;
+	std::cout << "Root: " << loc._root << std::endl;
+	return (this->_root);
 }
 
 void	location::printLocationValue(const location& loc) const

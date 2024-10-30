@@ -6,13 +6,14 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/24 16:49:36 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/30 11:41:31 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <algorithm>
+#include <unordered_map>
 #include <map>
 #include <iostream>
 #include <fstream>
@@ -30,6 +31,7 @@ class Config
 	public:
 		// Constructors and Destructors
 		Config(void);
+		Config(std::ifstream &file, std::string &line);
 		Config(const Config &rhs);
 		Config &operator=(const Config &rhs);
 		~Config(void);
@@ -47,8 +49,10 @@ class Config
 	std::string	_rootDir;
 	std::string	_autoIndexFilePath;
 
-	std::multimap<std::string, std::string> serverBlock;
-	std::multimap<std::string, location> _locations;
+	std::unordered_map<std::string, location> _locations;
+	std::vector<location> 	_newLocations;
+	std::vector<std::string> _locNames;
+	std::map<std::string, std::string> _rulemap;
 	// std::vector<std::string> _locationName;
 	// std::vector<location> _location;
 	// std::vector <location> _locations;
@@ -66,7 +70,7 @@ class Config
 	// std::unordered_map<std::string, std::string> custom_error_pages;
 	// std::unordered_map<std::string, std::string> access_control;
 	
-	void	parseConfigFile(const std::string filename);
+	std::vector<Config>	parseConfigFile(const std::string fileName);
 	void	parseLocationBlock(std::ifstream &file, const std::string &locationName);
 	void	parseServerBlock(const std::string &line);
 	int		startParsing(const std::string &line);
@@ -76,8 +80,9 @@ class Config
 	void	findKeyandValue(const std::string &line, std::multimap<std::string, std::string> &block);
 	
 	
-	location	findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
+	location findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
+	void	parseRule(const std::string &line);
 };
 
 

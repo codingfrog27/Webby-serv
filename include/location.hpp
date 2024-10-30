@@ -13,6 +13,7 @@
 #pragma once
 #include <iostream>
 #include <map>
+#include <unordered_map>
 
 class location
 {
@@ -22,15 +23,20 @@ class location
 
 
     public:
-        std::multimap<std::string, std::string> locationBlock;
+        std::unordered_map<std::string, std::string> _locationBlock;
+        std::vector<location> _nestedLocations;
+        std::map<std::string, std::string> _rulemap;
+        std::string _locationName;
 
         location(void);
+        location(std::ifstream &file, std::string &line);
         location(const location &rhs);
         location &operator=(const location &rhs);
         ~location(void);
         void	printLocationValue(const location& loc) const;
         std::string	getRoot(const location& loc);
-        void	setRoot(const std::string& root);
+        void	setRoot(const location& loc);
+        void parseRule(const std::string &line);
 
 };
 
