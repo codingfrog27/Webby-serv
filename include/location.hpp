@@ -14,6 +14,7 @@
 #include <iostream>
 #include <map>
 #include <unordered_map>
+#include <vector>
 
 class location
 {
@@ -26,7 +27,7 @@ class location
         std::unordered_map<std::string, std::string> _locationBlock;
         std::vector<location> _nestedLocations;
         std::map<std::string, std::string> _rulemap;
-        std::string _locationName;
+        std::string _name;
 
         location(void);
         location(std::ifstream &file, std::string &line);
@@ -35,7 +36,8 @@ class location
         ~location(void);
         void	printLocationValue(const location& loc) const;
         std::string	getRoot(const location& loc);
-        void	setRoot(const location& loc);
+        // void	setRoot(const location& loc);
+        void setRoot(const std::string& root);
         void parseRule(const std::string &line);
 
 };

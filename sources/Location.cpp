@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/29 15:01:26 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/30 11:52:21 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,17 +61,23 @@ location::~location(void)
 // 	return ("default");
 // }
 
-void	location::setRoot(const location& loc, const std::string& value)
+// void	location::setRoot(const location& loc)//, const std::string& value)
+// {
+// 	for(const auto& pair : loc)
+// 	{
+// 		std::cout << "Pair: " << pair.first << " " << pair.second << std::endl;
+// 		if (pair.first == value)
+// 			this->_root = pair.second;
+// 		else
+// 			this->_root = "default";
+// 			return (pair.second);
+// 	}
+// }
+
+void	location::setRoot(const std::string& root)
 {
-	for(const auto& pair : loc.locationBlock)
-	{
-		std::cout << "Pair: " << pair.first << " " << pair.second << std::endl;
-		if (pair.first == value)
-			this->_root = pair.second;
-		else
-			this->_root = "default";
-			return (pair.second);
-	}
+	this->_root = root;
+	std::cout << "Root set to: " << _root << std::endl;
 }
 
 // root = setRoot(loc, "root", "default");
@@ -82,8 +88,8 @@ std::string	location::getRoot(const location& loc)
 	return (this->_root);
 }
 
-void	location::printLocationValue(const location& loc) const
-{
-	for (const auto& pair : loc.locationBlock)
-		std::cout << pair.first << ": " << pair.second << std::endl;	
-}
+// void	location::printLocationValue(const location& loc) const
+// {
+// 	for (const auto& pair : loc.locationBlock)
+// 		std::cout << pair.first << ": " << pair.second << std::endl;	
+// }

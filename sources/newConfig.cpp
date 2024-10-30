@@ -3,14 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   newConfig.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 19:24:07 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/29 16:43:29 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/10/30 11:54:24 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
+
+bool	checkstr(const std::string &line, const std::string &str)
+{
+	if (line.find(str) != std::string::npos)
+		return (true);
+	return (false);
+}
+
+bool	locationFound(std::string &line)
+{
+	if (checkstr(line, "location") && checkCaracter(line, '{')) //add error protect by checking till comment
+	{
+		// if (!checkCaracter(line, '{'))
+		// {
+		// 	throw (std::invalid_argument("no opening brace after location\n"));
+		// }
+		return (true);
+	}
+	return (false);
+}
 
 std::vector<Config>	parseConfigFile(const std::string fileName)
 {
@@ -62,18 +82,7 @@ Config::Config(std::ifstream &file, std::string &line)
 	}
 }
 
-bool	locationFound(std::string &line)
-{
-	if (checkstr(line, "location") && checkCaracter(line, '{')) //add error protect by checking till comment
-	{
-		// if (!checkCaracter(line, '{'))
-		// {
-		// 	throw (std::invalid_argument("no opening brace after location\n"));
-		// }
-		return (true);
-	}
-	return (false);
-}
+
 
 location::location(std::ifstream &file, std::string &line)
 {
@@ -152,9 +161,4 @@ void	location::parseRule(const std::string &line) //im lazy, either config inher
 }
 
 
-bool	checkstr(const std::string &line, const std::string &str)
-{
-	if (line.find(str) != std::string::npos)
-		return (true);
-	return (false);
-}
+

@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/30 11:41:31 by asimone          ###   ########.fr       */
+/*   Updated: 2024/10/30 11:58:48 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ class Config
 	// std::unordered_map<std::string, std::string> custom_error_pages;
 	// std::unordered_map<std::string, std::string> access_control;
 	
-	std::vector<Config>	parseConfigFile(const std::string fileName);
 	void	parseLocationBlock(std::ifstream &file, const std::string &locationName);
 	void	parseServerBlock(const std::string &line);
 	int		startParsing(const std::string &line);
@@ -84,5 +83,10 @@ class Config
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	void	parseRule(const std::string &line);
 };
+	
+std::vector<Config>	parseConfigFile(const std::string fileName);
+bool	checkCaracter(const std::string &line, const char &c);
+bool	checkstr(const std::string &line, const std::string &str);
+std::string	findLocationName(const std::string &line);
 
 
