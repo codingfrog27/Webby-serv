@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/30 16:56:47 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/04 15:48:08 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,39 +76,31 @@ class Config
 	// std::unordered_map<std::string, std::string> custom_error_pages;
 	// std::unordered_map<std::string, std::string> access_control;
 	
-	void	parseLocationBlock(std::ifstream &file, const std::string &locationName);
-	void	parseServerBlock(const std::string &line);
-	int		startParsing(const std::string &line);
-	void	createSocketObject(Config &config);
-	void	initizalizeServerobj();
-	void	updateValue(const std::string& newValue, Config &config);
-	void	findKeyandValue(const std::string &line, std::multimap<std::string, std::string> &block);
-	
-	
 	location findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	void	parseRule(const std::string &line);
 	
-	void	setRoot(const std::string &value);
-	void	setListen(const std::string &value);
-	std::string	getRoot();
-	std::string	getListen();
-	std::string	getServerName();
-	void	setServerName(const std::string &value);
-	std::string	getHost();
-	void	setHost(const std::string &value);
 	std::string	getErrorPage();
-	void	setErrorPage(const std::string &value);
 	std::string	getMaxBodySize();
-	void	setMaxBodySize(const std::string &value);
+	std::string	getHost();
 	std::string	getIndex();
-	void	setIndex(const std::string &value);
+	std::string	getListen();
+	std::string	getRoot();
+	std::string	getServerName();
+	void		setErrorPage(const std::string &key);
+	void		setHost(const std::string &key);
+	void		setIndex(const std::string &key);
+	void		setListen(const std::string &key);
+	void		setMaxBodySize(const std::string &key);
+	void		setRoot(const std::string &key);
+	void		setServerName(const std::string &key);
+	void		initializeServer();
+	std::string toString() const;
 };
 	
 std::vector<Config>	parseConfigFile(const std::string fileName);
 bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 bool	checkstr(const std::string &line, const std::string &str);
-std::string	findLocationName(const std::string &line);
 
 

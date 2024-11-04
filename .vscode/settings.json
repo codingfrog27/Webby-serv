@@ -1,4 +1,5 @@
 {
+    "C_Cpp.default.cppStandard": "c++20",
     "files.associations": {
         "array": "cpp",
         "atomic": "cpp",

@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/30 16:57:12 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/04 15:41:24 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,11 @@ std::string	Config::getRoot()
 	return(this->_rootDir);
 }
 
-void	Config::setRoot(const std::string &value)
+void	Config::setRoot(const std::string &key)
 {
-	this->_rootDir = _rulemap.at(value);
+	if (!_rulemap.contains(key))
+		return;
+	this->_rootDir = _rulemap.at(key);
 }
 
 std::string	Config::getListen()
@@ -77,9 +79,11 @@ std::string	Config::getListen()
 	return(this->_listen);
 }
 
-void	Config::setListen(const std::string &value)
+void	Config::setListen(const std::string &key)
 {
-	this->_listen = _rulemap.at(value);
+	if (!_rulemap.contains(key))
+		return;
+	this->_listen = _rulemap.at(key);
 }
 
 std::string	Config::getServerName()
@@ -87,9 +91,11 @@ std::string	Config::getServerName()
 	return(this->_serverName);
 }
 
-void	Config::setServerName(const std::string &value)
+void	Config::setServerName(const std::string &key)
 {
-	this->_serverName = _rulemap.at(value);
+	if (!_rulemap.contains(key))
+		return;
+	this->_serverName = _rulemap.at(key);
 }
 
 std::string	Config::getHost()
@@ -97,9 +103,11 @@ std::string	Config::getHost()
 	return(this->_host);
 }
 
-void	Config::setHost(const std::string &value)
+void	Config::setHost(const std::string &key)
 {
-	this->_host = _rulemap.at(value);
+	if (!_rulemap.contains(key))
+		return;
+	this->_host = _rulemap.at(key);
 }
 
 std::string	Config::getErrorPage()
@@ -107,9 +115,11 @@ std::string	Config::getErrorPage()
 	return(this->_errorPage);
 }
 
-void	Config::setErrorPage(const std::string &value)
+void	Config::setErrorPage(const std::string &key)
 {
-	this->_errorPage = _rulemap.at(value);
+	if (!_rulemap.contains(key))
+		return;
+	this->_errorPage = _rulemap.at(key);
 }
 
 std::string	Config::getMaxBodySize()
@@ -117,9 +127,11 @@ std::string	Config::getMaxBodySize()
 	return(this->_client_max_body_size);
 }
 
-void	Config::setMaxBodySize(const std::string &value)
+void	Config::setMaxBodySize(const std::string &key)
 {
-	this->_client_max_body_size = _rulemap.at(value);
+	if (!_rulemap.contains(key))
+		return;
+	this->_client_max_body_size = _rulemap.at(key);
 }
 
 std::string	Config::getIndex()
@@ -127,9 +139,11 @@ std::string	Config::getIndex()
 	return(this->_index);
 }
 
-void	Config::setIndex(const std::string &value)
+void	Config::setIndex(const std::string &key)
 {
-	this->_index = _rulemap.at(value);
+	if (!_rulemap.contains(key))
+		return;
+	this->_index = _rulemap.at(key);
 }
 
 // ************************************************************************** //
@@ -167,10 +181,12 @@ std::vector<Config>	parseConfigFile(const std::string fileName)
 		throw std::invalid_argument("Error: Unable to open file" );
 	while (std::getline(file, line))
 	{
-		if (line.empty() || line[0] == '#')
+		if (line.empty() || checkCaracter(line, '#'))
 			continue;
-		if (line.find("server {") != std::string::npos) 
+		if (line.find("server {") != std::string::npos)
+		{
 			Configs.emplace_back(file, line);
+		}
 		// else
 			// throw std::invalid_argument("non comment text between server blocks! >:(");
 	}
@@ -190,15 +206,35 @@ Config::Config(std::ifstream &file, std::string &line)
 		if (line.empty() || line[i] == '#')
 			continue;
 		if (locationFound(line))
-		{
-			location newloc(file, line);
-			_newLocations.push_back(std::move(newloc));	
-		}
+			_newLocations.emplace_back(file, line);
 		else if (checkCaracter(line, '}'))
 			return;
 		else
 			parseRule(line);
 	}
+}
+
+std::string Config::toString() const {
+    std::ostringstream oss;
+    oss << "Server Name: " << _serverName << "\n";
+	oss << "Root: " << _rootDir << "\n";
+	oss << "Listen: " << _listen << "\n";
+	oss << "Host: " << _host << "\n";
+	oss << "Error Page: " << _errorPage << "\n";
+	oss << "Max Body Size: " << _client_max_body_size << "\n";
+	oss << "Index: " << _index << "\n";
+    return oss.str();
+}
+
+void	Config::initializeServer()
+{
+	setMaxBodySize("client_max_body_size");
+	setErrorPage("error_page");
+	setHost("host");
+	setIndex("index");
+	setListen("listen");
+	setRoot("root");
+	setServerName("server_name");
 }
 
 void	Config::parseRule(const std::string &line)
@@ -221,7 +257,8 @@ void	Config::parseRule(const std::string &line)
 	if (begin_value == line.end() || *begin_value != ';')
     	return;
 	std::string tmp_value(value, begin_value);	
-	_rulemap[tmp_key] = tmp_value;
+	_rulemap.emplace(tmp_key, tmp_value);
+	initializeServer();
 }
 
 location::location(std::ifstream &file, std::string &line)
@@ -233,10 +270,7 @@ location::location(std::ifstream &file, std::string &line)
 		if (line.empty() || line[i] == '#')
 			continue;
 		if (locationFound(line))
-		{
-			location newloc(file, line);
-			_nestedLocations.push_back(std::move(newloc));	
-		}
+			_nestedLocations.emplace_back(file, line);
 		else if (checkCaracter(line, '}'))
 			return;
 		else

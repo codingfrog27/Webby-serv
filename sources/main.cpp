@@ -6,21 +6,33 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/30 17:16:58 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/04 15:10:51 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "everything.hpp"
 
-int main()
-{
-	Config config;
-	location loc;
+// int main()
+// {	
+// 	std::ifstream file("example_config.conf");
+// 	std::string buffer;
+
+// 	std::vector<Config> servers = parseConfigFile("example_config.conf");
 	
+// 	return 0;
+// }
 
-	std::vector<Config> servers = parseConfigFile("example_config.conf");
+int main() {
+    std::string fileName = "example_config.conf";
+    std::vector<Config> configs = parseConfigFile(fileName);
 
-	return 0;
+    if (!configs.empty()) {
+        std::cout << configs[0].toString() << std::endl;
+    } else {
+        std::cout << "No configs found." << std::endl;
+    }
+
+    return 0;
 }
 
 

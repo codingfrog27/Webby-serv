@@ -42,25 +42,28 @@ class location
         location &operator=(const location &rhs);
         ~location(void);
         void	printLocationValue(const location& loc) const;
-        std::string	getRoot(const location& loc);
         // void	setRoot(const location& loc);
         void parseRule(const std::string &line);
 
         std::string getName() const;
-        std::string	location::getAlias();
-        void	location::setAlias(const std::string &value);
-        std::string	location::getAllowMethods();
-        void	location::setAllowMethods(const std::string &value);
-        std::string	location::getAutoindex();
-        void	location::setAutoindex(const std::string &value);
-        std::string	location::getCgiExtension();
-        void	location::setCgiExtension(const std::string &value);
-        std::string	location::getCgiPath();
-        void	location::setCgiPath(const std::string &value);
-        std::string	location::getReturn();
-        void	location::setReturn(const std::string &value);
-        std::string	location::getRoot();
-        void	location::setRoot(const std::string &value);
+
+        std::string	getAlias();
+        std::string	getAllowMethods();
+        std::string	getAutoindex();
+        std::string	getCgiExtension();
+        std::string	getCgiPath();
+        std::string	getReturn();
+        std::string	getRoot();
+        void	setAlias(const std::string &key);
+        void	setAllowMethods(const std::string &key);
+        void	setAutoindex(const std::string &key);
+        void	setCgiExtension(const std::string &key);
+        void	setCgiPath(const std::string &key);
+        void	setReturn(const std::string &key);
+        void	setRoot(const std::string &key);
+        void    initializeLocation();
+
+        std::string toString() const;
 };
         
 bool	locationFound(std::string &line);
