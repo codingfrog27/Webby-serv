@@ -91,23 +91,23 @@ void	Server::main_server_loop()
 	{		
 		if (_pollFDs[i].revents & POLLIN)
 		{
-			if (_Connections[i]._isServerSocket)
+			if (_Connections[i]._isServerSocket) //add donewriting prev response 
 				acceptNewConnects(i);
 			else
 				_Connections[i]._request.readRequest();
 		}
-		if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading) //getter?
+		else if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading) //getter?
 		{
-			responseHandler(&_Connections[i]._request);
-			if (_Connections[i]._keepOpen)
+			responseHandler(&_Connections[i]._request); //also needs to be segmented
+			if (_Connections[i]._keepOpen) 
 				_Connections[i]._request = Request(_Connections[i]._clientFD);
 			else
 				close_connect(i);
 		}
 	}
-}
+} //potnetial change, bitshift pollfd options to only read or only write in one loop
 
-//swag
+//test with image downloading
 
 void Server::acceptNewConnects(int i)
 {
