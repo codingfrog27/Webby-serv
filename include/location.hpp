@@ -20,6 +20,9 @@ class location
 {
     private:
         // std::string _locationName;
+
+
+    public:
         std::string     _alias;
         std::string     _allow_methods;
         std::string     _autoindex;
@@ -29,8 +32,6 @@ class location
         std::string     _return;
         std::string     _root;
 
-
-    public:
         std::vector<location> _nestedLocations;
         std::unordered_map<std::string, std::string> _locationBlock;
         std::unordered_map<std::string, std::string> _rulemap;
@@ -52,6 +53,7 @@ class location
         std::string	getAutoindex();
         std::string	getCgiExtension();
         std::string	getCgiPath();
+        std::string	getIndex();
         std::string	getReturn();
         std::string	getRoot();
         void	setAlias(const std::string &key);
@@ -59,6 +61,7 @@ class location
         void	setAutoindex(const std::string &key);
         void	setCgiExtension(const std::string &key);
         void	setCgiPath(const std::string &key);
+        void	setIndex(const std::string &key);
         void	setReturn(const std::string &key);
         void	setRoot(const std::string &key);
         void    initializeLocation();

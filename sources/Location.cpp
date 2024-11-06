@@ -6,13 +6,14 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/04 16:00:03 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/06 13:07:12 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "location.hpp"
 #include "Config.hpp"
 #include "Colors.hpp"
+#include <sstream>
 
 // ************************************************************************** //
 //                        Constructors and Destructors                        //
@@ -124,6 +125,18 @@ void	location::setCgiPath(const std::string &key)
 	this-> _cgi_path = _rulemap.at(key);
 }
 
+std::string	location::getIndex()
+{
+	return(this->_index);
+}
+
+void	location::setIndex(const std::string &key)
+{
+	if (!_rulemap.contains(key))
+		return;
+	this->_index = _rulemap.at(key);
+}
+
 std::string	location::getReturn()
 {
 	return(this->_return);
@@ -140,20 +153,30 @@ void	location::setReturn(const std::string &key)
 //                                Public methods                              //
 // ************************************************************************** //
 
-std::string location::toString() const {
+std::string location::toString() const 
+{
     std::ostringstream oss;
+	oss << "Alias: " << _alias << "\n";
+	oss << "Allow_methods: " << _allow_methods << "\n";
+	oss << "Autoindex: " << _autoindex << "\n";
+	oss << "Cgi_extension: " << _cgi_extension << "\n";
+	oss << "Cgi path: " << _cgi_path << "\n";
+	oss << "Index: " << _index << "\n";
+	oss << "Return: " << _return << "\n";
+	oss << "Root: " << _root << "\n";
     return oss.str();
 }
 
 void	location::initializeLocation()
 {
-	setRoot("root");
-	setAlias("alias");
-	setAllowMethods("allow_methods");
-	setAutoindex("autoindex");
-	setCgiExtension("cgi_extension");
-	setCgiPath("cgi_path");
-	setReturn("return");
+	setAlias("alias ");
+	setAllowMethods("allow_methods ");
+	setAutoindex("autoindex ");
+	setCgiExtension("cgi_ext ");
+	setCgiPath("cgi_path ");
+	setIndex("index ");
+	setReturn("return ");
+	setRoot("root ");
 }
 
 void   location::parseRule(const std::string &line)
@@ -178,5 +201,4 @@ void   location::parseRule(const std::string &line)
 			return;
        std::string tmp_value(value, begin_value);      
        _rulemap.emplace(tmp_key, tmp_value);
-	   initializeLocation();
 }

@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/04 15:48:08 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/06 12:59:36 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <ctype.h>
+#include <memory>
 #include "location.hpp"
 
 class Config
@@ -41,7 +42,8 @@ class Config
 		std::string _serverName;
 		size_t		_maxConnects;
 		size_t		_timeout; //general _timeout waiting for request/respond sending
-		std::vector<location> 	_newLocations;
+		
+		std::vector<std::unique_ptr<location>> _newLocations;
 		std::vector<std::string> _locNames;
 		std::unordered_map<std::string, location> _locations;
 		std::unordered_map<std::string, std::string> _rulemap;

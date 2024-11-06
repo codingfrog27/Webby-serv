@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:47:46 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/04 15:10:51 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/06 13:06:38 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ int main() {
 
     if (!configs.empty()) {
         std::cout << configs[0].toString() << std::endl;
+        std::cout << configs[0]._newLocations[0]->toString() << std::endl;
+        std::cout << configs[0]._newLocations[0]->_nestedLocations[0].toString() << std::endl;
+        std::cout << configs[0]._newLocations[1]->toString() << std::endl;
     } else {
         std::cout << "No configs found." << std::endl;
     }
