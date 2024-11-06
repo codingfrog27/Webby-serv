@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/06 19:46:06 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/06 21:06:13 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ std::vector<Config>	parseConfigFile(const std::string fileName)
 
 Config::Config(std::ifstream &file, std::string &line)
 {
-	std::cout << GREEN << "location filestream constructor called" \
+	std::cout << GREEN << "config filestream constructor called" \
 	<< RESET << std::endl;
 	while (std::getline(file, line))
 	{
@@ -50,7 +50,7 @@ Config::Config(std::ifstream &file, std::string &line)
 		else if (checkCaracter(line, '}'))
 		{
 			int validServer = mapToMembers();
-			setServer(validServer);
+			// setServer(validServer);
 			// if (validServer == EMPTY)
 			// 	Config defaultConfig;				
 			// else 
@@ -64,86 +64,80 @@ Config::Config(std::ifstream &file, std::string &line)
 
 int	Config::mapToMembers()
 {
-	int rule = EMPTY;
-	int	counter = 0;
 	
 	for (auto i = _rulemap.begin(); i != _rulemap.end(); i++)
 	{			
-		std::cout << counter << std::endl;	
-		counter++;
 		if (_rulemap.contains("listen"))
-			rule = LISTEN;
-		else if (_rulemap.contains("client_max_body_size"))
-			rule = MAX_BODY_SIZE;
-		else if (_rulemap.contains("error_page"))
-			rule = ERROR_PAGE;
-		else if (_rulemap.contains("host"))
-			rule = HOST;
-		else if (_rulemap.contains("index"))
-			rule = INDEX;
-		else if (_rulemap.contains("root"))
-			rule = ROOT;
-		else if (_rulemap.contains("server_name"))
-			rule = SERVER_NAME;
-		else
-			rule = EMPTY;
+			setListen(validateListen());
+		if (_rulemap.contains("client_max_body_size"))
+			setMaxBodySize("client_max_body_size");
+		if (_rulemap.contains("error_page"))
+			setErrorPage("error_page");
+		if (_rulemap.contains("host"))
+			setHost("host");
+		if (_rulemap.contains("index"))
+			setIndex("index");
+		if (_rulemap.contains("root"))
+			setRoot("root");
+		if (_rulemap.contains("server_name"))
+			setServerName("server_name");
 	}
-	return (rule);
+	return (1);
 }
 
-void	Config::setServer(const int rule)
-{
-	switch (rule)
-	{
-	case LISTEN:
-		setListen(validateListen());
-		if (_rulemap.empty())
-			break;
-		else
-			mapToMembers();
-	case MAX_BODY_SIZE:
-		setMaxBodySize("client_max_body_size");
-		if (_rulemap.empty())
-			break;
-		else
-			mapToMembers();
-	case ERROR_PAGE:
-		setErrorPage("error_page");
-		if (_rulemap.empty())
-			break;
-		else
-			mapToMembers();
-	case HOST:
-		setHost("host");
-		if (_rulemap.empty())
-			break;
-		else
-			mapToMembers();
-	case INDEX:
-		setIndex("index");
-		if (_rulemap.empty())
-			break;
-		else
-			mapToMembers();
-	case ROOT:
-		setRoot("root");
-		if (_rulemap.empty())
-			break;
-		else
-			mapToMembers();
-	case SERVER_NAME:
-		setServerName("server_name");
-		if (_rulemap.empty())
-			break;
-		else
-			mapToMembers();
-	case EMPTY:
-		std::cout << "hello gamers" << std::endl;
-		break;
-	default:
-		throw std::invalid_argument("Error: Invalid rule");
-	}
-}
+// void	Config::setServer(const int rule)
+// {
+// 	switch (rule)
+// 	{
+// 	case LISTEN:
+// 		setListen(validateListen());
+// 		if (_rulemap.empty())
+// 			break;
+// 		else
+// 			mapToMembers();
+// 	case MAX_BODY_SIZE:
+// 		setMaxBodySize("client_max_body_size");
+// 		if (_rulemap.empty())
+// 			break;
+// 		else
+// 			mapToMembers();
+// 	case ERROR_PAGE:
+// 		setErrorPage("error_page");
+// 		if (_rulemap.empty())
+// 			break;
+// 		else
+// 			mapToMembers();
+// 	case HOST:
+// 		setHost("host");
+// 		if (_rulemap.empty())
+// 			break;
+// 		else
+// 			mapToMembers();
+// 	case INDEX:
+// 		setIndex("index");
+// 		if (_rulemap.empty())
+// 			break;
+// 		else
+// 			mapToMembers();
+// 	case ROOT:
+// 		setRoot("root");
+// 		if (_rulemap.empty())
+// 			break;
+// 		else
+// 			mapToMembers();
+// 	case SERVER_NAME:
+// 		setServerName("server_name");
+// 		if (_rulemap.empty())
+// 			break;
+// 		else
+// 			mapToMembers();
+// 	case EMPTY:
+// 		std::cout << "hello gamers" << std::endl;
+// 		break;
+// 	default:
+// 		throw std::invalid_argument("Error: Invalid rule");
+// 	}
+// }
 
 void	Config::parseRule(const std::string &line)
 {

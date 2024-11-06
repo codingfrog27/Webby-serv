@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:27:26 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/06 19:46:52 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:55:22 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,13 @@ bool	locationFound(std::string &line)
 	return (false);
 }
 
-bool	endMap(std::unordered_map<std::string, std::string> &map)
-{
-	// for(auto i = map.begin(); i != map.end(); i++)
-	// {
-	// 	if (i == map.end())
-	// 		return (true);
-	// }
-	// return (false);
-	return (_rulemap.empty());
-}
+// bool	endMap(std::unordered_map<std::string, std::string> &map)
+// {
+// 	// for(auto i = map.begin(); i != map.end(); i++)
+// 	// {
+// 	// 	if (i == map.end())
+// 	// 		return (true);
+// 	// }
+// 	// return (false);
+// 	return (_rulemap.empty());
+// }
