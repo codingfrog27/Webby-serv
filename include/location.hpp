@@ -13,6 +13,7 @@
 #pragma once
 #include <iostream>
 #include <map>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -32,7 +33,7 @@ class location
         std::string     _return;
         std::string     _root;
 
-        std::vector<location> _nestedLocations;
+        std::vector<std::unique_ptr<location>> _nestedLocations;
         std::unordered_map<std::string, std::string> _locationBlock;
         std::unordered_map<std::string, std::string> _rulemap;
         std::string _name;

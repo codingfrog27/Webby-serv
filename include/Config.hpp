@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/06 12:59:36 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/06 15:52:21 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@ class Config
 		std::string _index;
 		std::string _listen;
 		std::string _rootDir;
-		std::string _serverPort;
 		std::string _serverName;
+		std::string _serverPort;
 		size_t		_maxConnects;
 		size_t		_timeout; //general _timeout waiting for request/respond sending
 		
@@ -96,7 +96,10 @@ class Config
 	void		setMaxBodySize(const std::string &key);
 	void		setRoot(const std::string &key);
 	void		setServerName(const std::string &key);
-	void		initializeServer();
+	int		initializeServer();
+	void	setServer(const int rule);
+
+	std::string	validateListen();
 	std::string toString() const;
 };
 	
