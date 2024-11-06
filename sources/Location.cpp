@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/06 13:07:12 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/06 19:40:10 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,27 @@
 location::location(void)
 {
 	std::cout << GREEN << "location: Default constructor called" << RESET << std::endl;
+}
+
+location::location(std::ifstream &file, std::string &line)
+{
+	std::cout << GREEN << "location filestream constructor called" \
+	<< RESET << std::endl;
+	size_t i = 0;
+	while (std::getline(file, line))
+	{
+		if (line.empty() || line[i] == '#')
+			continue;
+		if (locationFound(line))
+			_nestedLocations.push_back(std::unique_ptr<location>(new location(file, line)));
+		else if (checkCaracter(line, '}'))
+		{
+			initializeLocation();
+			return;
+		}
+		else
+			parseRule(line);
+	}
 }
 
 location::location(const location &rhs)
