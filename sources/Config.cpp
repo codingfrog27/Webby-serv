@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/06 21:06:13 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/06 21:10:03 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,7 @@ Config::Config(std::ifstream &file, std::string &line)
 		else if (checkCaracter(line, '}'))
 		{
 			int validServer = mapToMembers();
-			// setServer(validServer);
-			// if (validServer == EMPTY)
-			// 	Config defaultConfig;				
-			// else 
+			
 			return;
 		}
 		else
@@ -63,10 +60,7 @@ Config::Config(std::ifstream &file, std::string &line)
 
 
 int	Config::mapToMembers()
-{
-	
-	for (auto i = _rulemap.begin(); i != _rulemap.end(); i++)
-	{			
+{		
 		if (_rulemap.contains("listen"))
 			setListen(validateListen());
 		if (_rulemap.contains("client_max_body_size"))
@@ -81,7 +75,6 @@ int	Config::mapToMembers()
 			setRoot("root");
 		if (_rulemap.contains("server_name"))
 			setServerName("server_name");
-	}
 	return (1);
 }
 

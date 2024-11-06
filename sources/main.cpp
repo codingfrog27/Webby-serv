@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/06 19:51:01 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/06 21:10:27 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,17 @@ int main() {
 // and after setting everything look for unset values
 //alternatively instead of looping through the whole map we can call find each time and do the
 // check for empty feels there directly, but since we alreayd have the loop lets use it :)
+
+
+
+//she works!! I think actually we can even move the contains if statements into the set
+// functions themselves :) it never needed to be a for loop cause contains just finds it directly ;)
+
+
+
+
+
+
 
 
 // int	future_real_main(int argc, char **argv)
