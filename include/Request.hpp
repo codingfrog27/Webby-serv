@@ -30,6 +30,8 @@
 #define PLACEHOLDER_MAX_SIZE 10240
 
 
+//unsigned char vector iterator
+typedef std::vector<unsigned char>::iterator t_ucit;
 
 enum reading_status
 {
@@ -77,6 +79,8 @@ class Request
 	std::string		http_version(std::string version);
 	void			checkHeaders();
 	void			readBody();
+	void			dechunkBody();
+	void			findCR();
 
 	public:
 	int							_clientFD;
