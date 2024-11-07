@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/07 15:56:13 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:57:17 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,22 +26,17 @@ int main() {
 			// std::cout << configs[0]._newLocations[0]->toString() << std::endl;
 			// std::cout << configs[0]._newLocations[0]->_nestedLocations[0]->toString() << std::endl;
 			// std::cout << configs[0]._newLocations[1]->toString() << std::endl;
-		} else {
+		}
+		 else {
 			std::cout << "No configs found." << std::endl;
 		}
 	}
-	Server	server(&configgy); //not constructable enough?
-	server.main_server_loop();
-	close(test_fd);
-
-
-
-	return 0;
-}
 	catch(const std::exception& e)
 	{
 		std::cerr << "Exceotion caught!" << e.what() << std::endl;
 	}
+	Server	server(configs); //not constructable enough?
+	server.main_server_loop();
 	return 0;
 }
 
