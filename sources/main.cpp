@@ -6,11 +6,13 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/07 15:55:03 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:56:13 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "everything.hpp"
+#include "Server.hpp"
+#include "Config.hpp"
 
 int main() {
 	std::string fileName = "example_config.conf";
@@ -28,6 +30,14 @@ int main() {
 			std::cout << "No configs found." << std::endl;
 		}
 	}
+	Server	server(&configgy); //not constructable enough?
+	server.main_server_loop();
+	close(test_fd);
+
+
+
+	return 0;
+}
 	catch(const std::exception& e)
 	{
 		std::cerr << "Exceotion caught!" << e.what() << std::endl;
