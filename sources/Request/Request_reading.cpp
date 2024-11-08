@@ -82,19 +82,6 @@ void	Request::look_for_body()
 	}
 }
 
-
-int	Request::convertChunkSize(const std::string &hexStr, size_t rnPos)
-{
-	size_t		chunkSize;
-	char		*hexEnd;
-	chunkSize = std::strtol(hexStr.data(), &hexEnd ,16); //alt: use parse_hex
-	if (*hexEnd != '\r')
-			throw ClientErrorExcept(400, "bad hex number in chunk");
-	if (chunkSize + body_bytes_read > _max_body_size)
-		throw ClientErrorExcept(413, "payload too large");
-
-}
-
 void	Request::readBody()
 {
 	if (body_bytes_read + BUFFER_SIZE > _contentLen)

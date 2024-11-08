@@ -12,29 +12,6 @@
 
 #include "Request.hpp"
 
-// not trimming any trailing whitespace rn cause RFC 7230 states its not allowed
-// some irl servers do allow it though.. so might add later?
-void	Request::parse_headers(std::string header_str)
-{
-	size_t						start, colon_pos, line_end;
-	std::string					key, value;
-
-	start = parse_req_line(header_str);
-	line_end = header_str.find("\r\n", start);
-	while (line_end != std::string::npos)
-	{
-		colon_pos = header_str.find(':', start);
-		if (colon_pos == std::string::npos)
-			throw (std::invalid_argument("colon missing in header"));
-		key = header_str.substr(start, colon_pos - start);
-		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2)); //check for empty values?
-		_headers[key] = value;
-		start = line_end + 2;
-		line_end = header_str.find("\r\n", start);
-	}
-	checkHeaders();
-}
-
 size_t	Request::parse_req_line(std::string req_line)
 {
 	size_t	line_end, method_end, uri_end;
@@ -62,85 +39,28 @@ size_t	Request::parse_req_line(std::string req_line)
 	return (line_end + 2);
 }
 
-Http_method Request::which_method_type(std::string str) 
+// not trimming any trailing whitespace rn cause RFC 7230 states its not allowed
+// some irl servers do allow it though.. so might add later?
+void	Request::parse_headers(std::string header_str)
 {
-	const char *Methods[] = {"GET", "POST", "DELETE"}; //will be updated after config parsing
+	size_t						start, colon_pos, line_end;
+	std::string					key, value;
 
-	for (size_t i = 0; i < 3; i++)
+	start = parse_req_line(header_str);
+	line_end = header_str.find("\r\n", start);
+	while (line_end != std::string::npos)
 	{
-		if (str == Methods[i])
-			return (static_cast<Http_method>(i));
+		colon_pos = header_str.find(':', start);
+		if (colon_pos == std::string::npos)
+			throw (std::invalid_argument("colon missing in header"));
+		key = header_str.substr(start, colon_pos - start);
+		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2)); //check for empty values?
+		_headers[key] = value;
+		start = line_end + 2;
+		line_end = header_str.find("\r\n", start);
 	}
-	throw std::invalid_argument("Unsupported HTTP method: " + str);
+	checkHeaders();
 }
-
-
-void	Request::dechunkBody()
-{
-	std::string	bodyStr(_rawRequestData.begin(), _rawRequestData.end());
-	size_t		bodySize = _rawRequestData.size();
-	size_t		chunkSize;
-	size_t		rnPos = bodyStr.find("\r\n");
-	while (rnPos != std::string::npos)
-	{
-		chunkSize = convertChunkSize(bodyStr.substr(0, rnPos + 1), rnPos);
-		if (chunkSize > bodySize) //wait for whole chunk to be read from socket, alt: keep track of diff and make logic to finish reading next time
-			break;
-		if (chunkSize == 0)
-		{
-			_doneReading = true;
-			
-		}
-		_dechunkedBody += bodyStr.substr(rnPos + 2, chunkSize);
-		rnPos = bodyStr.find("\r\n", rnPos + 2);
-	}
-	// bodyStr.erase(0, rnPos + 2 + chunkSize);
-	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + rnPos + 2 + chunkSize));
-	
-}
-
-std::string Request::http_version(std::string version) //throw error if not 1 or 1.1
-{
-	if (!version.compare(0, 8, "HTTP/1.1"))
-		return (version.substr(0, 8)); 
-	else if (!version.compare(0, 6, "HTTP/1"))
-		return (version.substr(0, 6));
-	else
-		throw std::invalid_argument("Unsupported HTTP version: " + version);
-}
-
-void	Request::parseBody()
-{
-	const std::string	suffix = "--";
-		std::string		content_type = getHeaderValue("Content-Type"); //make ref?
-		std::string		delimiter;
-		//assuming its there cause of header check
-	
-		
-	if (getHeaderValue("transfer encoding") == "chunked")
-		dechunkBody();
-	if(content_type.compare("multipart/form-data; boundary=") == 0)
-	{
-		if (content_type.size() < 31)
-			throw(std::invalid_argument("400, Bad Request, empty boundary parameter"));
-		delimiter = content_type.substr(31);
-	}
-	
-
-
-}
-	// If any transfer coding other than chunked is applied to a request's
-	//  content, the sender MUST apply chunked as the final transfer coding 
-	//  to ensure that the message is properly framed. 
-	// If any transfer coding other
-	//  than chunked is applied to a response's content, the sender MUST either
-	//   apply chunked as the final transfer coding or terminate the message by closing the connection.
-
-
-//content encoding bestaat ook nog
-//check for content length == body bytes read
-	
-//multipart/form data
 
 void	Request::checkHeaders()
 {
@@ -186,3 +106,62 @@ void	Request::checkHeaders()
 // look into expext, mb range,
 //  if-modified-since/if-none-match 
 // ^ (could contain misuse but else return 304) 
+
+
+
+//almost done! just add logic so we can erase once after the loop by keeping track of our last found rn
+//wait doesnt completelt ofjeoifwajdoiwa time to go homee
+void	Request::dechunkBody()
+{
+	std::string	bodyStr(_rawRequestData.begin(), _rawRequestData.end());
+	size_t		bodySize = _rawRequestData.size();
+	size_t		chunkSize;
+	size_t		rnPos = bodyStr.find("\r\n");
+	while (rnPos != std::string::npos)
+	{
+		chunkSize = convertChunkSize(&bodyStr[rnPos + 2]);
+		if (chunkSize > bodySize)
+			break;
+		if (chunkSize == 0)
+		{
+			_doneReading = true;
+			
+		}
+		_dechunkedBody += bodyStr.substr(rnPos + 2, chunkSize);
+		rnPos = bodyStr.find("\r\n", rnPos + 2);
+	}
+	// bodyStr.erase(0, rnPos + 2 + chunkSize);
+	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + rnPos + 2 + chunkSize));
+	
+}
+
+
+void	Request::parseBody()
+{
+	const std::string	suffix = "--";
+		std::string		content_type = getHeaderValue("Content-Type"); //make ref?
+		std::string		delimiter;
+		//assuming its there cause of header check
+	
+		
+	if (getHeaderValue("transfer encoding") == "chunked")
+		dechunkBody();
+	if(content_type.compare("multipart/form-data; boundary=") == 0)
+	{
+		if (content_type.size() < 31)
+			throw(std::invalid_argument("400, Bad Request, empty boundary parameter"));
+		delimiter = content_type.substr(31);
+	}
+}
+	// If any transfer coding other than chunked is applied to a request's
+	//  content, the sender MUST apply chunked as the final transfer coding 
+	//  to ensure that the message is properly framed. 
+	// If any transfer coding other
+	//  than chunked is applied to a response's content, the sender MUST either
+	//   apply chunked as the final transfer coding or terminate the message by closing the connection.
+
+
+//content encoding bestaat ook nog
+//check for content length == body bytes read
+	
+//multipart/form data
