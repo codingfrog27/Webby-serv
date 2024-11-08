@@ -22,6 +22,7 @@
 #include <unordered_map>
 #include <sys/socket.h>
 #include "libft.h"
+#include "ClientErrorExcept.hpp"
 
 #define GREEN "\033[32m"
 #define RED "\033[31m"
@@ -58,6 +59,7 @@ class Request
 	// allowed methods
 	private:
 	// Connection				*_connection;
+	std::string				_dechunkedBody;
 	std::string				_unsortedHeaders;
 	reading_status			reading_mode;
 	std::string				_boundary;

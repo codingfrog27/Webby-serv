@@ -86,18 +86,39 @@ void	Request::look_for_body()
 	}
 }
 
-void	Request::findCR(int pos)
-{
-	t_ucit it = std::search(_rawRequestData.begin() + pos, _rawRequestData.end(), "\r\n", "\r\n" + 2);
-	if (it == _rawRequestData.end())
+// void	Request::findCR(int pos)
+// {
+// 	t_ucit it = std::search(_rawRequestData.begin() + pos, _rawRequestData.end(), "\r\n", "\r\n" + 2);
+// 	if (it == _rawRequestData.end())
+
 		
-}
+// }
 
 
 void	Request::dechunkBody()
 {
+	std::string	bodyStr(_rawRequestData.begin(), _rawRequestData.end());
+	std::string	hexStr;
+	char		*hexEnd;
+	size_t		bodySize = _rawRequestData.size();
+	size_t		chunkSize;
+	size_t		rnPos = bodyStr.find("\r\n"); //test if it goes past NULLBYTE
+	while (rnPos != std::string::npos)
+	{
+		hexStr.assign(bodyStr.begin(), bodyStr.begin() + rnPos + 1); //can use substr
+		chunkSize = std::strtol(hexStr.data(), &hexEnd ,16); //alt: use parse_hex
+		if (*hexEnd != '\r')
+			throw ClientErrorExcept(400, "bad hex number in chunk");
+		if (chunkSize + body_bytes_read > _max_body_size)
+			throw ClientErrorExcept(413, "payload too large");
+		if (chunkSize > bodySize)
+			break;
+		_dechunkedBody += bodyStr.substr(rnPos + 2, chunkSize);
+		bodyStr.erase(0, rnPos + 2 + chunkSize);
+		//copy into parsed str
+	}
 	
-
+		_rawRequestData.erase()
 }
 
 
@@ -115,3 +136,31 @@ void	Request::readBody()
 			throw (std::length_error("413 Payload too large"));
 }
 // test
+
+// size_t parse_hex_string(const std::string& hex_string) {
+// 	size_t value = 0;
+// 	bool valid = true;
+
+// 	// Check for "0x" prefix
+// 	if (hex_string.substr(0, 2) != "0x" && hex_string.substr(0, 2) != "0X") {
+// 		valid = false;
+// 	}
+
+// 	for (size_t i = 2; i < hex_string.size() && valid; i++) {
+// 		char c = hex_string[i];
+// 		if (isdigit(c)) {
+// 			value = (value << 4) + (c - '0');
+// 		} else if (isxdigit(c)) {
+// 			value = (value << 4) + (toupper(c) - 'A' + 10);
+// 		} else {
+// 			valid = false;
+// 			break;
+// 		}
+// 	}
+
+// 	if (!valid) {
+// 		// Handle invalid input, e.g., throw an exception or return an error code
+// 	}
+
+// 	return value;
+// }
