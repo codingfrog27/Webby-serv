@@ -39,7 +39,6 @@
 #define YELLOW	"\033[33m"
 #define RESET	"\033[0m"
 
-#define BACKLOG 10 // how many pending connections queue will hold
 #define PORT 8080 // common used port for web servers
 
 class Socket
@@ -61,9 +60,4 @@ public:
 						Socket(Config *config, const struct addrinfo *addressInfo);
 						~Socket();
 	int					createConnection();
-	//ORTHODOX CANONICAL CLASS FORM//
-	// Socket(const std::string &t_hostname, const std::string &t_port);
-	// Socket(const Socket &obj);
-	// Socket& operator=(const Socket& obj);
-
 };

@@ -75,39 +75,28 @@ Http_method Request::which_method_type(std::string str)
 }
 
 
-void Request::dechunkBody() //from copilot will check next week
+void	Request::dechunkBody()
 {
-// 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
-// 	  // Implementation for dechunking the body
-//	 std::vector<char> body = _rawRequestData; // Assuming you have a method to get the body content as a vector of chars
-//	 std::vector<char> dechunked_body;
-//	 size_t pos = 0;
-
-//	 while (pos < body.size()) {
-//		 auto chunk_size_end = std::search(body.begin() + pos, body.end(), "\r\n", "\r\n" + 2);
-//		 if (chunk_size_end == body.end()) {
-//			 throw std::invalid_argument("400 Bad Request: Invalid chunked encoding");
-//		 }
-
-//		 std::string chunk_size_str(body.begin() + pos, chunk_size_end);
-//		 size_t chunk_size = std::stoul(chunk_size_str, nullptr, 16);
-//		 pos = chunk_size_end - body.begin() + 2;
-
-//		 if (chunk_size == 0) {
-//			 break; // End of chunks
-//		 }
-
-//		 if (pos + chunk_size > body.size()) {
-//			 throw std::invalid_argument("400 Bad Request: Incomplete chunked encoding");
-//		 }
-
-//		 dechunked_body.insert(dechunked_body.end(), body.begin() + pos, body.begin() + pos + chunk_size);
-//		 pos += chunk_size + 2; // Skip chunk data and CRLF
-//	 }
-
+	std::string	bodyStr(_rawRequestData.begin(), _rawRequestData.end());
+	size_t		bodySize = _rawRequestData.size();
+	size_t		chunkSize;
+	size_t		rnPos = bodyStr.find("\r\n");
+	while (rnPos != std::string::npos)
+	{
+		chunkSize = convertChunkSize(bodyStr.substr(0, rnPos + 1), rnPos);
+		if (chunkSize > bodySize) //wait for whole chunk to be read from socket, alt: keep track of diff and make logic to finish reading next time
+			break;
+		if (chunkSize == 0)
+		{
+			_doneReading = true;
+			
+		}
+		_dechunkedBody += bodyStr.substr(rnPos + 2, chunkSize);
+		rnPos = bodyStr.find("\r\n", rnPos + 2);
+	}
+	// bodyStr.erase(0, rnPos + 2 + chunkSize);
+	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + rnPos + 2 + chunkSize));
 	
-// 	//think maybe i just stoul() the size given (tho its hex should remember)
-// 	// and then throw the data inbetween in a new buffer?
 }
 
 std::string Request::http_version(std::string version) //throw error if not 1 or 1.1

@@ -23,6 +23,7 @@
 #include <sys/socket.h>
 #include "libft.h"
 #include "ClientErrorExcept.hpp"
+#include "ConnectionClosedExcep.hpp"
 
 #define GREEN "\033[32m"
 #define RED "\033[31m"
@@ -52,63 +53,62 @@ enum Http_method
 	NOT_PARSED_YET,
 };
 
+	// things to pass/inheret from _config
+									// max body size
+									// allowed methods
+									// timeouts
 class Request 
 {
-	// things to pass/inheret from _config
-	// max body size
-	// allowed methods
 	private:
-	// Connection				*_connection;
-	std::string				_dechunkedBody;
-	std::string				_unsortedHeaders;
-	reading_status			reading_mode;
-	std::string				_boundary;
-	int						body_bytes_read;
-	bool					_rnrnFound;
-	bool					_dataIsChunked;
-	bool					_headerAreParsed;
-	size_t					_contentLen; //need to put in init list
-	const int				_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
+		// Connection				*_connection;
+		std::string				_dechunkedBody;
+		std::string				_unsortedHeaders;
+		reading_status			reading_mode;
+		std::string				_boundary;
+		int						body_bytes_read;
+		bool					_rnrnFound;
+		bool					_dataIsChunked;
+		bool					_headerAreParsed;
+		size_t					_contentLen; //need to put in init list
+		const int				_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
 
 
-	int				readSocket(int size);
-	void			parse_headers(std::string str);
-	Http_method		which_method_type(std::string str);
-	void			look_for_body();
-	size_t			parse_req_line(std::string req_line);
-	void			dechunkBody();
-	void			parseBody();
-	std::string		http_version(std::string version);
-	void			checkHeaders();
-	void			readBody();
-	void			dechunkBody();
-	void			findCR();
-
+		int						readSocket(int size);
+		void					parse_headers(std::string str);
+		Http_method				which_method_type(std::string str);
+		void					look_for_body();
+		size_t					parse_req_line(std::string req_line);
+		void					dechunkBody();
+		void					parseBody();
+		std::string				http_version(std::string version);
+		void					checkHeaders();
+		void					readBody();
+		int						convertChunkSize(const std::string &hexStr, size_t rnPos);
 	public:
-	int							_clientFD;
-	std::vector<unsigned char>	_rawRequestData;
-	Http_method					_method_type;
-	std::unordered_map\
-	<std::string, std::string>	_headers;
-	std::string					_http_version;
-	std::string					request_line;
-	std::string 				_URI; 
-	bool						_keepOpen;
-	bool						_error_occured;
-	bool						_doneReading;
-	std::string					_statusCode;
-	// Constructors and Destructors
-					Request(void) = delete;
-					Request(int _clientFD);
-					Request(const Request &rhs);
-	Request 		&operator=(const Request &rhs);
-					~Request(void);
-	//public methods
-	void			readRequest();
-	std::string		getHeaderValue(std::string key);
-	bool			headerExists(std::string key);
-	std::string		getStatusCode();
-	void			printHeaders();
+		int							_clientFD;
+		std::vector<unsigned char>	_rawRequestData;
+		Http_method					_method_type;
+		std::unordered_map\
+		<std::string, std::string>	_headers;
+		std::string					_http_version;
+		std::string					request_line;
+		std::string 				_URI; 
+		bool						_keepOpen;
+		bool						_error_occured;
+		bool						_doneReading;
+		std::string					_statusCode;
+		// Constructors and Destructors
+						Request(void) = delete;
+						Request(int _clientFD);
+						Request(const Request &rhs);
+		Request 		&operator=(const Request &rhs);
+						~Request(void);
+		//public methods
+		void			readRequest();
+		std::string		getHeaderValue(std::string key);
+		bool			headerExists(std::string key);
+		std::string		getStatusCode();
+		void			printHeaders();
 };
 
 //bleb

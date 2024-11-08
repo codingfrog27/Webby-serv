@@ -1,40 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ClientErrorExcept.cpp                              :+:      :+:    :+:   */
+/*   ConnectionClosedExcep.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/08 15:19:12 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/08 19:04:22 by mde-cloe         ###   ########.fr       */
+/*   Created: 2024/11/08 19:20:55 by mde-cloe          #+#    #+#             */
+/*   Updated: 2024/11/08 19:23:36 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ClientErrorExcept.hpp"
+#include "ConnectionClosedExcep.hpp"
 
 
 // ************************************************************************** //
 //                        Constructors and Destructors                        //
 // ************************************************************************** //
 
-ClientErrorExcept::ClientErrorExcept(unsigned int code, std::string msg) : _errorMsg(msg), _statusCode(code) {
-}
-
-ClientErrorExcept::ClientErrorExcept(const ClientErrorExcept &rhs)\
-  : _errorMsg(rhs._errorMsg), _statusCode(rhs._statusCode)	{
-}
-
-ClientErrorExcept::~ClientErrorExcept(void){ //=default in header instead?
-}
-
-
-const char		*ClientErrorExcept::what() const noexcept
+ConnectionClosedExcep::ConnectionClosedExcep(int clientFD) : _clientFD(clientFD)
 {
-	return (_errorMsg.c_str());
+	std::cout << GREEN << "ConnectionClosedExcep: Default constructor called" << RESET << std::endl;
+}
+
+ConnectionClosedExcep::ConnectionClosedExcep(const ConnectionClosedExcep &rhs) : _clientFD(rhs._clientFD)
+{
+	std::cout << GREEN << "ConnectionClosedExcep: Copy constructor called" << RESET << std::endl;
+}
+
+ConnectionClosedExcep::~ConnectionClosedExcep(void)
+{
+	std::cout << RED << "ConnectionClosedExcep: Destructor called" << RESET << std::endl;
 }
 
 // ************************************************************************** //
 //                                Public methods                              //
 // ************************************************************************** //
 
-
+//is based on recv reading 0 even with POLLIN
+const char		*ConnectionClosedExcep::what() const noexcept
+{
+	return ("Client has closed the connection");
+}
