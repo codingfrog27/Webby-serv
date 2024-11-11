@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/11 14:12:08 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/11 16:36:44 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@ int main() {
 	try
 	{
 		if (!configs.empty()) {
-			std::cout << configs[0].toString() << std::endl;
-			// configs[0].setServer(0);
-			std::cout << configs[0]._newLocations[0]->toString() << std::endl;
-			std::cout << configs[0]._newLocations[0]->_nestedLocations[0]->toString() << std::endl;
-			std::cout << configs[0]._newLocations[1]->toString() << std::endl;
+			// std::cout << configs[0].toString() << std::endl;
+			// // configs[0].setServer(0);
+			// std::cout << configs[0]._newLocations[0]->toString() << std::endl;
+			// std::cout << configs[0]._newLocations[0]->_nestedLocations[0]->toString() << std::endl;
+			// std::cout << configs[0]._newLocations[1]->toString() << std::endl;
 		} else {
 			std::cout << "No configs found." << std::endl;
 		}

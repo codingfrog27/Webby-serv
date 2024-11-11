@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:27:26 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/11 14:11:48 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/11 14:13:23 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,14 +50,3 @@ bool	locationFound(std::string &line)
 		return (true);
 	return (false);
 }
-
-// bool	endMap(std::unordered_map<std::string, std::string> &map)
-// {
-// 	// for(auto i = map.begin(); i != map.end(); i++)
-// 	// {
-// 	// 	if (i == map.end())
-// 	// 		return (true);
-// 	// }
-// 	// return (false);
-// 	return (_rulemap.empty());
-// }

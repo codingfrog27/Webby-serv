@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/11 14:11:34 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/11 17:01:58 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,17 +64,17 @@ int	Config::mapToMembers()
 		if (_rulemap.contains("listen"))
 			setListen(validateListen());
 		if (_rulemap.contains("client_max_body_size"))
-			setMaxBodySize("client_max_body_size");
+			setMaxBodySize(validateMaxBodySize());
 		if (_rulemap.contains("error_page"))
-			setErrorPage("error_page");
+			setErrorPage(validateErrorPage());
 		if (_rulemap.contains("host"))
-			setHost("host");
+			setHost(validateHost());
 		if (_rulemap.contains("index"))
-			setIndex("index");
+			setIndex(validateIndex());
 		if (_rulemap.contains("root"))
-			setRoot("root");
+			setRoot(validateRoot());
 		if (_rulemap.contains("server_name"))
-			setServerName("server_name");
+			setServerName(validateServerName());
 	return (1);
 }
 
@@ -106,9 +106,15 @@ void	Config::parseRule(const std::string &line)
 	 	value++;
 	auto begin_value = value;
 	while(begin_value != line.end() and *begin_value != ';')
+	{
 	 	begin_value++;
+	}
+	//write here if I don't find the semicolon I have to throw an error
 	if (begin_value == line.end() || *begin_value != ';')
+	{	
     	return;
+	}
 	std::string tmp_value(value, begin_value);	
+	std::cout << tmp_value << std::endl;
 	_rulemap.emplace(tmp_key, tmp_value);
 }

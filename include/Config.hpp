@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/11 14:11:59 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/11 16:12:05 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,13 @@ class Config
 	void		setServer(const int rule);
 
 	int			mapToMembers();
+	std::string validateErrorPage();
+	std::string validateHost();
+	std::string validateIndex();
 	std::string	validateListen();
+	std::string validateMaxBodySize();
+	std::string validateRoot();
+	std::string validateServerName();
 	std::string toString() const;
 };
 	
