@@ -10,14 +10,13 @@ std::string	resolveFilePath(Request* request){
 	return path;
 }
 
-bool	fileExists(std::string path, Response* response){
+bool	fileExists(std::string path){
 	std::ifstream file(path);
 	if (file.is_open()){
 		file.close();
 		return true;
 	}
 	return false;
-	(void)response; //fix later
 }
 
 /* anything that's not text has to be handled as raw bits*/
