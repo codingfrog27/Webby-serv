@@ -6,12 +6,11 @@ static Response*	getMethod(Request* request, Response* response){
 	size_t size = 0;
 
 	if (fileExists(path, response)){
-		// if (getReadingMode(*response) == BINARY)
-		// 	file.open(path, std::ios::binary); 
-		// else
+		response->setContentType(path);
+		if (getReadingMode(*response) == BINARY)
+			file.open(path, std::ios::binary); 
+		else
 			file.open(path);
-		// // wont have a content type since it wont have a body.. (assumming you're looking at the request headers
-		// if not did you set this somewhere else based on the filetype or soemthing else? Cause thne i missed it)
 		if (file.is_open()){
 			file.seekg(0, std::ios::end);
 			size = file.tellg();
@@ -24,7 +23,6 @@ static Response*	getMethod(Request* request, Response* response){
 			std::vector<char> buffer(size);
 			if (file.read(buffer.data(), size)){
 				response->setStatus("200 OK");
-				response->setContentType(path);
 				response->setHeaders("Content-Length", std::to_string(size));
 				response->setBody(buffer);
 			}
@@ -75,9 +73,9 @@ void	responseHandler(Request* request)
 {
 	Response *response = new Response(request);
 	std::string responseText;
-	if (request->getStatusCode().empty()) //might have to be renamed
+	if (!request->getStatusCode().empty()) //if there was an error in (parsing) the request
 		response->autoFillResponse(request->getStatusCode());
-	if (request->_method_type == GET)
+	else if (request->_method_type == GET)
 		response = getMethod(request, response);
 	else if (request->_method_type == POST)
 		response = postMethod(request, response);
@@ -89,6 +87,6 @@ void	responseHandler(Request* request)
 	}
 	responseText = response->generateResponse();
 	std::cout << responseText << std::endl;
-	write(request->_clientFD, responseText.c_str(), responseText.size()); //maybe send instead?
+	write(request->_clientFD, responseText.c_str(), responseText.size()); //needs to be send back in a loop (see requestHandler)
 	return;
 }
