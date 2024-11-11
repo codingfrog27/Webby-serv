@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/06 15:52:21 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/11 14:11:59 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,9 +96,10 @@ class Config
 	void		setMaxBodySize(const std::string &key);
 	void		setRoot(const std::string &key);
 	void		setServerName(const std::string &key);
-	int		initializeServer();
-	void	setServer(const int rule);
+	int			initializeServer();
+	void		setServer(const int rule);
 
+	int			mapToMembers();
 	std::string	validateListen();
 	std::string toString() const;
 };
