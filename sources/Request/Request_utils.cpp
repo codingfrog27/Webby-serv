@@ -70,7 +70,7 @@ std::string Request::http_version(std::string version) //throw error if not 1 or
 		throw std::invalid_argument("Unsupported HTTP version: " + version);
 }
 
-int	Request::convertChunkSize(const std::string &hexStr, size_t &bytesRead)
+int	Request::convertChunkSize(const std::string &hexStr, size_t &hexStrSize)
 {
 	size_t		chunkSize;
 	char		*hexEnd;
@@ -79,6 +79,6 @@ int	Request::convertChunkSize(const std::string &hexStr, size_t &bytesRead)
 			throw ClientErrorExcept(400, "bad hex number in chunk");
 	if (chunkSize + body_bytes_read > _max_body_size)
 		throw ClientErrorExcept(413, "payload too large");
-	bytesRead += (hexEnd - hexStr.c_str());
+	hexStrSize = (hexEnd - hexStr.c_str()); //test
 	return (chunkSize);
 }

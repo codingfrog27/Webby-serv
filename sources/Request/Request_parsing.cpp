@@ -116,27 +116,25 @@ void	Request::dechunkBody()
 {
 	std::string	bodyStr(_rawRequestData.begin(), _rawRequestData.end());
 	size_t		bodySize = _rawRequestData.size();
+	size_t		bytesParsed = 0; 
+	size_t		hexStrSize = 0;
 	size_t		chunkSize;
-	size_t		rnPos = bodyStr.find("\r\n"); //assumes the starting rnrn of body is still there but also only last one
-	size_t		charsRead = 0;
-	while (rnPos != std::string::npos)
+	//assumes the starting rnrn of body is still there but also only last one
+	for (size_t rnPos = bodyStr.find("\r\n", bytesParsed); rnPos != std::string::npos;)
 	{
 		rnPos += 2;
-		chunkSize = convertChunkSize(&bodyStr[rnPos], chunkSize);
-		if (chunkSize > bodySize)
+		chunkSize = convertChunkSize(&bodyStr[rnPos], hexStrSize);
+		if (chunkSize > bodySize - hexStrSize) //means
 			break;
-		if (chunkSize == 0)
+		if (chunkSize > bodySize || chunkSize == 0)
 		{
 			_doneReading = true;
-			
+			break;
 		}
-		charsRead += rnPos + chunkSize;
-		_dechunkedBody += bodyStr.substr(rnPos, chunkSize);
-		rnPos = bodyStr.find("\r\n", rnPos);
+		_dechunkedBody += bodyStr.substr(rnPos + hexStrSize, chunkSize);
+		bytesParsed += rnPos + hexStrSize + chunkSize;
 	}
-	// bodyStr.erase(0, rnPos + 2 + chunkSize);
-	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + rnPos + 2 + chunkSize));
-	
+	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + bytesParsed));
 }
 
 
