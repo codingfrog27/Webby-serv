@@ -95,7 +95,8 @@ void	Request::checkHeaders()
 	else //bodys in GET, get ignored :)
 	{
 		_doneReading = true;
-		_statusCode = "200 OK";
+		// _statusCode = "200 OK";
+		_statusCode = "";
 	}
 	//mb implement timeout mechanism since malicious requests could send body without these headers
 }
@@ -116,10 +117,12 @@ void	Request::dechunkBody()
 	std::string	bodyStr(_rawRequestData.begin(), _rawRequestData.end());
 	size_t		bodySize = _rawRequestData.size();
 	size_t		chunkSize;
-	size_t		rnPos = bodyStr.find("\r\n");
+	size_t		rnPos = bodyStr.find("\r\n"); //assumes the starting rnrn of body is still there but also only last one
+	size_t		charsRead = 0;
 	while (rnPos != std::string::npos)
 	{
-		chunkSize = convertChunkSize(&bodyStr[rnPos + 2]);
+		rnPos += 2;
+		chunkSize = convertChunkSize(&bodyStr[rnPos], chunkSize);
 		if (chunkSize > bodySize)
 			break;
 		if (chunkSize == 0)
@@ -127,8 +130,9 @@ void	Request::dechunkBody()
 			_doneReading = true;
 			
 		}
-		_dechunkedBody += bodyStr.substr(rnPos + 2, chunkSize);
-		rnPos = bodyStr.find("\r\n", rnPos + 2);
+		charsRead += rnPos + chunkSize;
+		_dechunkedBody += bodyStr.substr(rnPos, chunkSize);
+		rnPos = bodyStr.find("\r\n", rnPos);
 	}
 	// bodyStr.erase(0, rnPos + 2 + chunkSize);
 	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + rnPos + 2 + chunkSize));

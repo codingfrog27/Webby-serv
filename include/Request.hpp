@@ -83,7 +83,7 @@ class Request
 		std::string				http_version(std::string version);
 		void					checkHeaders();
 		void					readBody();
-		int						convertChunkSize(const std::string &hexStr);
+		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 	public:
 		int							_clientFD;
 		std::vector<unsigned char>	_rawRequestData;

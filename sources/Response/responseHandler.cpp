@@ -9,9 +9,9 @@ static Response*	getMethod(Request* request, Response* response){
 		// if (getReadingMode(*response) == BINARY)
 		// 	file.open(path, std::ios::binary); 
 		// else
-			file.open(path);
 		// // wont have a content type since it wont have a body.. (assumming you're looking at the request headers
 		// if not did you set this somewhere else based on the filetype or soemthing else? Cause thne i missed it)
+			file.open(path);
 		if (file.is_open()){
 			file.seekg(0, std::ios::end);
 			size = file.tellg();
