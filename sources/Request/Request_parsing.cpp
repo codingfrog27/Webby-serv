@@ -1,4 +1,16 @@
 /* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Request_parsing.cpp                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
+/*   Updated: 2024/11/12 20:44:45 by mde-cloe         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
 /*																			*/
 /*														:::	  ::::::::   */
 /*   HttpRequest_parsing.cpp							:+:	  :+:	:+:   */
@@ -112,7 +124,7 @@ void	Request::checkHeaders()
 
 //almost done! just add logic so we can erase once after the loop by keeping track of our last found rn
 //wait doesnt completelt ofjeoifwajdoiwa time to go homee
-void	Request::dechunkBody()
+bool	Request::dechunkBody()
 {
 	std::string	bodyStr(_rawRequestData.begin(), _rawRequestData.end());
 	size_t		bodySize = _rawRequestData.size();
@@ -126,15 +138,15 @@ void	Request::dechunkBody()
 		chunkSize = convertChunkSize(&bodyStr[rnPos], hexStrSize);
 		if (chunkSize > bodySize - hexStrSize) //means
 			break;
-		if (chunkSize > bodySize || chunkSize == 0)
-		{
+		if (chunkSize == 0)
 			_doneReading = true;
-			break;
-		}
-		_dechunkedBody += bodyStr.substr(rnPos + hexStrSize, chunkSize);
+		else
+			_reqBody += bodyStr.substr(rnPos + hexStrSize, chunkSize);
 		bytesParsed += rnPos + hexStrSize + chunkSize;
 	}
-	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + bytesParsed));
+	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + bytesParsed)); 
+	//do i have to remove 2 more if we're at the end? if so can make chunksize 2 :)
+	return (_doneReading);
 }
 
 
@@ -147,11 +159,11 @@ void	Request::parseBody()
 	
 		
 	if (getHeaderValue("transfer encoding") == "chunked")
-		dechunkBody();
+		_dataIsChunked = true;
 	if(content_type.compare("multipart/form-data; boundary=") == 0)
 	{
-		if (content_type.size() < 31)
-			throw(std::invalid_argument("400, Bad Request, empty boundary parameter"));
+		if (content_type.size() < 31) //meaning multiform without boundery!
+			throw(ClientErrorExcept(400, "400, Bad Request, empty boundary parameter"));
 		delimiter = content_type.substr(31);
 	}
 }

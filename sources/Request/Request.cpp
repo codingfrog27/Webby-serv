@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/17 20:15:02 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/12 20:38:26 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 Request::Request(int clientFD):
 	 _clientFD(clientFD), _doneReading(false), reading_mode(NOT_STARTED), body_bytes_read(0), \
-	  _rnrnFound(false), _headerAreParsed(false), _method_type(NOT_PARSED_YET), \
+	  _rnrnFound(false), _headerAreParsed(false), _hasBody(false), _method_type(NOT_PARSED_YET), \
 	  _keepOpen(true), _statusCode("0 Not started yet")
 {
-	_rawRequestData.reserve(50); //mb 100
+	_rawRequestData.reserve(100);
 }
 
 Request::Request(const Request &rhs)
@@ -43,6 +43,7 @@ Request::operator=(const Request &rhs)
 		_rnrnFound = rhs._rnrnFound;
 		body_bytes_read = rhs.body_bytes_read;
 		reading_mode = rhs.reading_mode;
+		_hasBody = rhs._hasBody;
 	}
 
 	return (*this);

@@ -61,7 +61,7 @@ class Request
 {
 	private:
 		// Connection				*_connection;
-		std::string				_dechunkedBody;
+		std::string				_reqBody;
 		std::string				_unsortedHeaders;
 		reading_status			reading_mode;
 		std::string				_boundary;
@@ -69,6 +69,7 @@ class Request
 		bool					_rnrnFound;
 		bool					_dataIsChunked;
 		bool					_headerAreParsed;
+		bool					_hasBody;
 		size_t					_contentLen; //need to put in init list
 		const int				_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
 
@@ -76,13 +77,14 @@ class Request
 		int						readSocket(int size);
 		void					parse_headers(std::string str);
 		Http_method				which_method_type(std::string str);
-		void					look_for_body();
+		bool					look_for_body();
 		size_t					parse_req_line(std::string req_line);
-		void					dechunkBody();
+		bool					bodyIsRead();
+		bool					dechunkBody();
 		void					parseBody();
 		std::string				http_version(std::string version);
 		void					checkHeaders();
-		void					readBody();
+		void					parseBody();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 	public:
 		int							_clientFD;
