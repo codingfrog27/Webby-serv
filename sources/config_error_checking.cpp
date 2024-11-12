@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/11 16:43:57 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/12 16:28:13 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,42 @@
 //change error_page to vector because it can have multiple values and we have to add them to the vector
 //change index to vector because it can have multiple values and we have to add them to the vector
 
+std::string	find_value(std::string& directive)
+{
+	char value;
+	auto i = directive.begin();
+	for	(i; *i == ' '; i++);
+	auto begin_value = i;
+	for (i; i < directive.end(); i++)
+		std::cout << directive << std::endl;
+	
+}
+
 // To be continued...
 std::string Config::validateErrorPage()
 {
 	std::string errorPage;
 	if (!_rulemap.contains("error_page"))
 		throw std::invalid_argument("Error: error_page directive not found");
-	errorPage = _rulemap.at("error_page");
+	
+	errorPage = normalize_space(_rulemap.at("error_page"));
+	// std::cout << errorPage << std::endl;
+	// normalize_space(errorPage);
+	// std::cout << errorPage << std::endl;
+	// for (auto i : _rulemap.at("error_page"))
+	// {
+	// 	errorPage.insert(_rulemap.)
+	// }
+	
+	// for (auto i : _rulemap)
+	// 	for(auto x : i.second)
+	// 	{
+	// 		if (_rulemap)
+	// 		std::cout << i.first << i.second << std::endl;
+	// 	}
+
+	// std::cout << "I'm here!" << std::endl;
+	// print_map(_errorPage);
 	
 	return (errorPage);
 }
@@ -47,11 +76,16 @@ std::string	Config::validateListen()
 	if (!_rulemap.contains("listen"))
 		throw std::invalid_argument("Error: listen directive not found");
 	listen = _rulemap.at("listen");
+	// std::cout << "Tha's why: " << listen << std::endl;
 	for(auto i = 0; i < listen.size(); i++)
 	{
-		if (!isdigit(listen[i]) || listen.empty())
-			throw std::invalid_argument("Error: invalid character in listen directive");
+		find_value(listen);
+		// if (!isdigit(listen[i]) || listen.empty())
+		// {
+		// 	throw std::invalid_argument("Error: invalid character in listen directive");
+		// }
 	}
+	std::cout << "Tha's why: " << listen << std::endl;
 	return (listen);
 }
 

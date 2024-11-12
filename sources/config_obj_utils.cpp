@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config_obj_utils.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/06 19:38:16 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/12 11:31:13 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,16 +113,17 @@ void	Config::setHost(const std::string &key)
 	this->_host = _rulemap.at(key);
 }
 
-std::string	Config::getErrorPage()
-{
-	return(this->_errorPage);
-}
+// std::string	Config::getErrorPage()
+// {
+// 	return(this->_errorPage);
+// }
 
 void	Config::setErrorPage(const std::string &key)
 {
 	if (!_rulemap.contains(key))
 		return;
-	this->_errorPage = _rulemap.at(key);
+	// this->_errorPage = _rulemap.at(key);
+	// this->_errorPage.emplace()
 }
 
 std::string	Config::getMaxBodySize()
@@ -137,14 +138,14 @@ void	Config::setMaxBodySize(const std::string &key)
 	this->_client_max_body_size = _rulemap.at(key);
 }
 
-std::string	Config::getIndex()
-{
-	return(this->_index);
-}
+// std::string	Config::getIndex()
+// {
+// 	return(this->_index);
+// }
 
 void	Config::setIndex(const std::string &key)
 {
 	if (!_rulemap.contains(key))
 		return;
-	this->_index = _rulemap.at(key);
+	// this->_index = _rulemap.at(key);
 }

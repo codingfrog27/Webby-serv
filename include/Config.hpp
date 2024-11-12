@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/11 16:12:05 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/12 12:40:30 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,9 @@ class Config
 		std::string _autoindex;
 		std::string _autoIndexFilePath;
 		std::string _client_max_body_size;
-		std::string _errorPage;
+		std::unordered_map<std::string, std::string> _errorPage;
 		std::string _host;
-		std::string _index;
+		std::vector<std::string> _index;
 		std::string _listen;
 		std::string _rootDir;
 		std::string _serverName;
@@ -115,4 +115,5 @@ bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 bool	checkstr(const std::string &line, const std::string &str);
 
-
+void	print_map(const std::unordered_map<std::string, std::string> map);
+std::string	normalize_space(std::string& str);

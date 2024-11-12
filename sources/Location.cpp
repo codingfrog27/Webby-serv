@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/06 19:40:10 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/12 15:32:07 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,24 +202,27 @@ void	location::initializeLocation()
 
 void   location::parseRule(const std::string &line)
 {
-       auto key = line.begin();
-       while (key != line.end() and (*key == ' ' or *key == '\t'))
-               key++;
-       if (key == line.end() or *key == '#' or *key == '}')
-               return;
-       auto begin = key;
-       while (key != line.end() and *key != ' ' and *key != '\t')
-               key++;
-               key++;
-       std::string tmp_key(begin, key);
-       auto value  = key;
-       while(value != line.end() and (*value == ' ' or+ *value == '\t'))
-               value++;
-       auto begin_value = value;
-       while(begin_value != line.end() and *begin_value != ';')
-               begin_value++;
-       if (begin_value == line.end() || *begin_value != ';')
-			return;
-       std::string tmp_value(value, begin_value);      
-       _rulemap.emplace(tmp_key, tmp_value);
+	auto comment_pos = line.find('#');
+	std::string directive = line.substr(0, comment_pos);
+
+	auto key_begin = directive.begin();
+	while (key_begin != directive.end() and (*key_begin == ' ' or *key_begin == '\t'))
+		key_begin++;
+	if (key_begin == directive.end() or *key_begin == '#' or *key_begin == '}')
+		return;
+	auto key_end = key_begin;
+	while (key_begin != directive.end() and *key_begin != ' ' and *key_begin != '\t')
+		key_begin++;
+	std::string tmp_key(key_end, key_begin);
+	auto value_begin = key_end;
+	while(value_begin!= directive.end() and (*value_begin== ' ' or+ *value_begin== '\t'))
+	 	value_begin++;
+	auto value_end = value_begin;
+	while(value_end != directive.end() and *value_end != ';')
+	 	value_end++;
+	if (value_end == directive.end())
+		throw std::invalid_argument("Error: Missing semicolon.");
+	std::string tmp_value(value_begin, value_end);	
+	std::cout << tmp_value << std::endl;
+	_rulemap.emplace(tmp_key, tmp_value);
 }
