@@ -1,19 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   config_error_checking.cpp                          :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/11/06 19:41:53 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2024/11/12 22:48:22 by antoniosimo   ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   config_error_checking.cpp                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
+/*   Updated: 2024/11/13 17:53:53 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
 #include <filesystem>
 
-//change error_page to vector because it can have multiple values and we have to add them to the vector
 //change index to vector because it can have multiple values and we have to add them to the vector
 
 std::string	find_value(std::string& directive)
@@ -23,67 +22,119 @@ std::string	find_value(std::string& directive)
 	
 	if (directive.length() == 0)
 		throw std::invalid_argument("Error: directive is empty");
-	//if (directive.)
+		
 	int i = 0;
-	while(directive[i] != ' ')
+	
+	while (directive[i])
 	{
+		if (isspace(directive[i]))
+		{
+			value = directive.substr(i + 1, i - directive.length());
+			break;
+		}
 		i++;
-	} 
-	//std::cout << value << std::endl;
+	}
 	return (value);
 }
 
+std::string	getErrorPageMapKey(std::string& errorPage_value)
+{
+	int digits = 0;
+	std::string	errorPage_key;
 
+	for (auto i = 0; i < errorPage_value[i]; i++)
+	{
+		if (isspace(errorPage_value[i]))
+			errorPage_key = errorPage_value.substr(0, i);
+	}
+	for (auto i = 0; i < errorPage_key[i]; i++)
+	{
+		if (isdigit(errorPage_key[i]))
+			digits++;
+		if (digits > 3 || !isdigit(errorPage_key[i]))
+			throw std::invalid_argument("Error: invalid error_page code directive");
+	}
+	return (errorPage_key);
+}
 
-// leggo la stringa la divido in due
-//quando trovo lo spazio 
-//la parola successiva è il valore.
-//il valore termina quando finisce la stringa.
+std::string getErrorPageMapValue(std::string& errorPage_value)
+{
+	std::string errorPage_path = errorPage_value.substr(4, errorPage_value.length());
 
-// To be continued...
+	for (auto i = 0; i < errorPage_path.length(); i++)
+	{
+		if (!isdigit(errorPage_path[i]) && !isalpha(errorPage_path[i]) && errorPage_path[i] != '/' && errorPage_path[i] != '.')
+			throw std::invalid_argument("Error: invalid character in error_page directive");
+	}
+	return (errorPage_path);
+}
+
 std::string Config::validateErrorPage()
 {
-	std::string errorPage;
+	std::string errorPage_rule;
+	std::string errorPage_value;
+	size_t find_space = 0;
+	int space = 0;
+	
 	if (!_rulemap.contains("error_page"))
 		throw std::invalid_argument("Error: error_page directive not found");
 	
-	errorPage = normalize_space(_rulemap.at("error_page"));
-	// std::cout << errorPage << std::endl;
-	// normalize_space(errorPage);
-	// std::cout << errorPage << std::endl;
-	// for (auto i : _rulemap.at("error_page"))
-	// {
-	// 	errorPage.insert(_rulemap.)
-	// }
-	
-	// for (auto i : _rulemap)
-	// 	for(auto x : i.second)
-	// 	{
-	// 		if (_rulemap)
-	// 		std::cout << i.first << i.second << std::endl;
-	// 	}
+	errorPage_rule = normalize_space(_rulemap.at("error_page"));
+	errorPage_value = find_value(errorPage_rule);
 
-	// std::cout << "I'm here!" << std::endl;
-	// print_map(_errorPage);
+	for (auto i = 0; i < errorPage_value.length(); i++)
+	{
+		if (isspace(errorPage_value[i]))
+		{
+			find_space = errorPage_value.find(' ');
+			if (errorPage_value[find_space + 1] != '/')
+				throw std::invalid_argument("Error: invalid path in error_page directive");
+			space++;
+			i++;
+		}
+		if (space > 1)
+			throw std::invalid_argument("Error: invalid character in error_page directive");
+	}
 	
-	return (errorPage);
+	std::string map_key = getErrorPageMapKey(errorPage_value);
+	std::string map_value = getErrorPageMapValue(errorPage_value);
+	
+	return (errorPage_value);
 }
-// To be continued...
+
+
+//dividere la stringa per ogni spazio
+//copiare la stringa trovata in una variabile con substring
+//aggiungere ogni parola che viene trovata nel vettore
+
 std::string Config::validateIndex()
 {
 	std::string index_rule;
 	std::string index_value;
+	int find_space = 0;
+	static int space = 0;
 	
 	if (!_rulemap.contains("index"))
 		throw std::invalid_argument("Error: index directive not found");
-	index_rule = _rulemap.at("index");
+	index_rule = normalize_space(_rulemap.at("index"));
 	index_value = find_value(index_rule);
-	//std::cout << index_rule << std::endl;
+	
+	// size_t end_index_first_value = index_value.find(' ') or index_value.size();
+	
+	for (auto i = 0; i < index_value.length(); i++)
+	{
+		if (isspace(index_value[i]))
+		{
+			// std::cout << i << std::endl;
+		}
+		// if (!isdigit(index_value[i]) && !isalpha(index_value[i]) && index_value[i] != '.')
+		// 	throw std::invalid_argument("Error: invalid character in error_page directive");
+	}
+	std::cout << i << std::endl;
+	
+	// if (!space)
+	// 	std::string tmp_index = index_value.substr(0, index_value.length());
 
-	//std::string temp;
-
-
-	// std:: cout << "index: " << index << std::endl;
 	return (index_rule);
 }
 
@@ -95,15 +146,14 @@ std::string	Config::validateListen()
 	if (!_rulemap.contains("listen"))
 		throw std::invalid_argument("Error: listen directive not found");
 		
-	listen_rule = _rulemap.at("listen");
+	listen_rule = normalize_space (_rulemap.at("listen"));
 	listen_value = find_value(listen_rule);
-	
+
 	for (auto i = 0; i < listen_value.length(); i++)
 	{
-		if (!isdigit(listen_value[i]))// || listen_value.empty())
+		if (!isdigit(listen_value[i]))
 			throw std::invalid_argument("Error: invalid character in listen directive");
 	}
-	
 	return (listen_value);
 }
 
@@ -115,7 +165,7 @@ std::string Config::validateMaxBodySize()
 	if (!_rulemap.contains("client_max_body_size"))
 		throw std::invalid_argument("Error: client_max_body_size directive not found");
 		
-	maxBodySize_rule = _rulemap.at("client_max_body_size");
+	maxBodySize_rule = normalize_space(_rulemap.at("client_max_body_size"));
 	maxBodySize_value = find_value(maxBodySize_rule);
 	
 	char lastChar = maxBodySize_value.back();
@@ -126,7 +176,7 @@ std::string Config::validateMaxBodySize()
 	
 	for(auto i = 0; i < maxBodySize_value.size(); i++)
 	{
-		if (!isdigit(maxBodySize_value[i]))// || maxBodySize.empty())
+		if (!isdigit(maxBodySize_value[i]))
 			throw std::invalid_argument("Error: invalid character in client_max_body_size directive");
 	}
 	return (maxBodySize_value + lastChar);
@@ -140,7 +190,7 @@ std::string Config::validateHost()
 	if (!_rulemap.contains("host"))
 		throw std::invalid_argument("Error: host directive not found");
 		
-	host_rule = _rulemap.at("host");
+	host_rule = normalize_space(_rulemap.at("host"));
 	host_value = find_value(host_rule); 
 
 	int dotCount = 0;
@@ -161,45 +211,42 @@ std::string Config::validateHost()
 
 std::string Config::validateServerName()
 {
-	std::string serverName;
+	std::string serverName_rule;
+	std::string serverName_value;
+	
+	
 	if (!_rulemap.contains("server_name"))
 		throw std::invalid_argument("Error: server_name directive not found");
-	serverName = _rulemap.at("server_name");
+	serverName_rule = normalize_space(_rulemap.at("server_name"));
+	serverName_value = find_value(serverName_rule);
+	
+	for(auto i = 0; i < serverName_value.length(); i++)
+	{
+		if (!isalpha(serverName_value[i]) && !isdigit(serverName_value[i]) && serverName_value[i] != '-' && serverName_value[i] != '.')
+			throw std::invalid_argument("Error: invalid character in server_name directive");
+	}
 
-	return (serverName);
+	return (serverName_value);
 }
 
 std::string Config::validateRoot()
 {
-	std::string root;
+	std::string root_rule;
+	std::string root_value;
+
 	if (!_rulemap.contains("root"))
 		throw std::invalid_argument("Error: root directive not found");
 	
-	root = _rulemap.at("root");
-	// std::filesystem::path& root;
-	// std::filesystem::status(root).permissions();
-	// std::filesystem::perms p;
-    // using std::filesystem::perms;
-    // auto show = [=](char op, perms perm)
-    // {
-    //     std::cout << (perms::none == (perm & p) ? '-' : op);
-    // };
-	// show('r', perms::owner_read);
-    // show('w', perms::owner_write);
-    // show('x', perms::owner_exec);
-	// std::cout << '\n';
-	// std::cout << "__________________" << '\n';
-    // show('r', perms::group_read);
-    // show('w', perms::group_write);
-    // show('x', perms::group_exec);
-	// std::cout << '\n';
-	// std::cout << "__________________" << '\n';;
-    // show('r', perms::others_read);
-    // show('w', perms::others_write);
-    // show('x', perms::others_exec);
-    // std::cout << '\n';
+	root_rule = normalize_space(_rulemap.at("root"));
+	root_value = find_value(root_rule);
 
+	for (auto i = 0; i < root_value.length(); i++)
+	{
+		if (root_value[0] != '/')
+			throw std::invalid_argument("Error: invalid root path directive");
+		if (!isdigit(root_value[i]) && !isalpha(root_value[i]) && root_value[i] != '/' && root_value[i] != '.' && root_value[i] != '_')
+			throw std::invalid_argument("Error: invalid root path directive");
+	}
 	
-	
-	return (root);
+	return (root_value);
 }
