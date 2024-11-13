@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   config_error_checking.cpp                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/12 16:28:13 by asimone          ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   config_error_checking.cpp                          :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/11/06 19:41:53 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2024/11/12 22:48:22 by antoniosimo   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,27 @@
 
 std::string	find_value(std::string& directive)
 {
-	char value;
-	auto i = directive.begin();
-	for	(i; *i == ' '; i++);
-	auto begin_value = i;
-	for (i; i < directive.end(); i++)
-		std::cout << directive << std::endl;
+	std::string value;
+	std::cout << directive << std::endl;
 	
+	if (directive.length() == 0)
+		throw std::invalid_argument("Error: directive is empty");
+	//if (directive.)
+	int i = 0;
+	while(directive[i] != ' ')
+	{
+		i++;
+	} 
+	//std::cout << value << std::endl;
+	return (value);
 }
+
+
+
+// leggo la stringa la divido in due
+//quando trovo lo spazio 
+//la parola successiva è il valore.
+//il valore termina quando finisce la stringa.
 
 // To be continued...
 std::string Config::validateErrorPage()
@@ -58,80 +71,92 @@ std::string Config::validateErrorPage()
 // To be continued...
 std::string Config::validateIndex()
 {
-	std::string index;
+	std::string index_rule;
+	std::string index_value;
+	
 	if (!_rulemap.contains("index"))
 		throw std::invalid_argument("Error: index directive not found");
-	index = _rulemap.at("index");
+	index_rule = _rulemap.at("index");
+	index_value = find_value(index_rule);
+	//std::cout << index_rule << std::endl;
 
-	std::string temp;
+	//std::string temp;
 
 
 	// std:: cout << "index: " << index << std::endl;
-	return (index);
+	return (index_rule);
 }
 
 std::string	Config::validateListen()
 {
-	std::string listen;
+	std::string listen_rule;;
+	std::string listen_value;
+	
 	if (!_rulemap.contains("listen"))
 		throw std::invalid_argument("Error: listen directive not found");
-	listen = _rulemap.at("listen");
-	// std::cout << "Tha's why: " << listen << std::endl;
-	for(auto i = 0; i < listen.size(); i++)
+		
+	listen_rule = _rulemap.at("listen");
+	listen_value = find_value(listen_rule);
+	
+	for (auto i = 0; i < listen_value.length(); i++)
 	{
-		find_value(listen);
-		// if (!isdigit(listen[i]) || listen.empty())
-		// {
-		// 	throw std::invalid_argument("Error: invalid character in listen directive");
-		// }
+		if (!isdigit(listen_value[i]))// || listen_value.empty())
+			throw std::invalid_argument("Error: invalid character in listen directive");
 	}
-	std::cout << "Tha's why: " << listen << std::endl;
-	return (listen);
+	
+	return (listen_value);
 }
 
 std::string Config::validateMaxBodySize()
 {
-	std::string maxBodySize;
+	std::string maxBodySize_rule;
+	std::string maxBodySize_value;
+	
 	if (!_rulemap.contains("client_max_body_size"))
 		throw std::invalid_argument("Error: client_max_body_size directive not found");
-	maxBodySize = _rulemap.at("client_max_body_size");
-
-	char lastChar = maxBodySize.back();
+		
+	maxBodySize_rule = _rulemap.at("client_max_body_size");
+	maxBodySize_value = find_value(maxBodySize_rule);
+	
+	char lastChar = maxBodySize_value.back();
 	if (lastChar == 'k' || lastChar == 'K' || lastChar == 'm' || lastChar == 'M' || lastChar == 'g' || lastChar == 'G')
-		maxBodySize.pop_back();
+		maxBodySize_value.pop_back();
 	else
 		throw std::invalid_argument("Error: invalid character in client_max_body_size directive");
 	
-	for(auto i = 0; i < maxBodySize.size(); i++)
+	for(auto i = 0; i < maxBodySize_value.size(); i++)
 	{
-		if (!isdigit(maxBodySize[i]) || maxBodySize.empty())
+		if (!isdigit(maxBodySize_value[i]))// || maxBodySize.empty())
 			throw std::invalid_argument("Error: invalid character in client_max_body_size directive");
 	}
-	return (maxBodySize + lastChar);
+	return (maxBodySize_value + lastChar);
 }
 
 std::string Config::validateHost()
 {
-	std::string host;
+	std::string host_rule;
+	std::string host_value;
+	
 	if (!_rulemap.contains("host"))
 		throw std::invalid_argument("Error: host directive not found");
-	host = _rulemap.at("host");
+		
+	host_rule = _rulemap.at("host");
+	host_value = find_value(host_rule); 
 
 	int dotCount = 0;
-
-	for(auto i = 0; i < host.size(); i++)
+	for(auto i = 0; i < host_value.length(); i++)
 	{
-		if (host[i] == '.')
+		if (host_value[i] == '.')
 		{
 			dotCount++;
 			i++;
 		}
-		if (!isdigit(host[i]) || host.empty())
+		if (!isdigit(host_value[i]) && host_value[i] != '.')
 			throw std::invalid_argument("Error: invalid character in host directive");
 	}
 	if (dotCount != 3)
 		throw std::invalid_argument("Error: invalid host directive");
-	return (host);
+	return (host_rule);
 }
 
 std::string Config::validateServerName()
