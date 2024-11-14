@@ -69,9 +69,9 @@ static Response*	deleteMethod(Request* request, Response* response, std::string 
 void	responseHandler(Request* request, Config* config)
 {
 	Response *response = new Response(request);
-	std::string filePath = resolveFilePath(request, config);
+	std::string filePath = resolveFilePath(request, response, config);
 	std::string responseText;
-	
+
 	if (!request->getStatusCode().empty()) //if there was an error in (parsing) the request
 		response->autoFillResponse(request->getStatusCode());
 	else if (request->_method_type == GET)
