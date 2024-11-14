@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/12 15:32:07 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/14 12:48:38 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,6 +223,6 @@ void   location::parseRule(const std::string &line)
 	if (value_end == directive.end())
 		throw std::invalid_argument("Error: Missing semicolon.");
 	std::string tmp_value(value_begin, value_end);	
-	std::cout << tmp_value << std::endl;
+	// std::cout << tmp_value << std::endl;
 	_rulemap.emplace(tmp_key, tmp_value);
 }

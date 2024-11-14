@@ -6,19 +6,16 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/13 17:53:53 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/14 12:50:20 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
 #include <filesystem>
 
-//change index to vector because it can have multiple values and we have to add them to the vector
-
 std::string	find_value(std::string& directive)
 {
 	std::string value;
-	std::cout << directive << std::endl;
 	
 	if (directive.length() == 0)
 		throw std::invalid_argument("Error: directive is empty");
@@ -98,43 +95,59 @@ std::string Config::validateErrorPage()
 	
 	std::string map_key = getErrorPageMapKey(errorPage_value);
 	std::string map_value = getErrorPageMapValue(errorPage_value);
+	_errorPage.emplace(map_key, map_value);
+	print_map(_errorPage);
 	
 	return (errorPage_value);
 }
 
 
-//dividere la stringa per ogni spazio
-//copiare la stringa trovata in una variabile con substring
-//aggiungere ogni parola che viene trovata nel vettore
-
 std::string Config::validateIndex()
 {
 	std::string index_rule;
 	std::string index_value;
-	int find_space = 0;
+	std::string tmp_value;
+	
+	int space_pos = 0;
 	static int space = 0;
 	
 	if (!_rulemap.contains("index"))
 		throw std::invalid_argument("Error: index directive not found");
+
 	index_rule = normalize_space(_rulemap.at("index"));
 	index_value = find_value(index_rule);
-	
-	// size_t end_index_first_value = index_value.find(' ') or index_value.size();
 	
 	for (auto i = 0; i < index_value.length(); i++)
 	{
 		if (isspace(index_value[i]))
-		{
-			// std::cout << i << std::endl;
-		}
-		// if (!isdigit(index_value[i]) && !isalpha(index_value[i]) && index_value[i] != '.')
-		// 	throw std::invalid_argument("Error: invalid character in error_page directive");
+			i++;
+		if (!isalpha(index_value[i]) && !isdigit(index_value[i]) && index_value[i] != '-' && index_value[i] != '.')
+			throw std::invalid_argument("Error: invalid character in index directive");
 	}
-	std::cout << i << std::endl;
-	
-	// if (!space)
-	// 	std::string tmp_index = index_value.substr(0, index_value.length());
-
+	for (auto i = 0; i < index_value.length(); i++)
+	{
+		if (isspace(index_value[i]))
+			space++;
+	}
+	if (space == 0)
+	{
+		tmp_value = index_value.substr(0, index_value.length());
+		_index.push_back(tmp_value);
+	}
+	else
+	{
+		int j = 0;
+		for (int i = 0; i < index_value.length(); i++)
+		{
+			if (!isspace(index_value[i]))
+			{	
+				for (j = i; !isspace(index_value[j]) && j < (index_value.length()); j++)
+					tmp_value = index_value.substr(i, j - i);
+				_index.push_back(tmp_value);
+				i = j;	
+			}
+		}
+	}
 	return (index_rule);
 }
 
