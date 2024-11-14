@@ -23,11 +23,13 @@ void	Request::readRequest()
 		readSocket(0);
 		if (!_rnrnFound)
 		{
-			if (look_for_body())
+			if (look_for_body()) //make 1 if
 				parse_headers(_unsortedHeaders);
 		}
-		if (_hasBody && bodyIsRead()) //make hasBody
+		if (_hasBody && bodyIsRead()) {
+			std::cout << "PARSING BODY" << std::endl;
 			parseBody();
+		} //make hasBody
 		// timeout check here?
 	}
 	catch(ClientErrorExcept &e)
@@ -51,7 +53,8 @@ int	Request::readSocket(int size)
 	if (!size)
 		size = BUFFER_SIZE;
 	char buffer[size];
-	int	bytes_read = recv(_clientFD, buffer, size, MSG_DONTWAIT); //more flags
+	// int	bytes_read = recv(_clientFD, buffer, size, MSG_DONTWAIT); //more flags
+	int	bytes_read = read(_clientFD, buffer, size); //more flags
 	if (bytes_read <= 0)
 	{
 		if (bytes_read == 0)
@@ -75,7 +78,7 @@ bool	Request::look_for_body()
 		return (false);
 	}
 	_rnrnFound = true;
-	_unsortedHeaders = std::string(_rawRequestData.begin(), it);
+	_unsortedHeaders = std::string(_rawRequestData.begin(), it + 2);
 	_rawRequestData.erase(_rawRequestData.begin(), it + 2); //cut out the first CRLF
 	body_bytes_read = _rawRequestData.size();
 	return (true);

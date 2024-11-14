@@ -1,11 +1,13 @@
-HTTP/1.1 200 OK
+POST /cgi-bin/process.cgi HTTP/1.1 200 OK
 Content-Type: text/plain
 Transfer-Encoding: chunked
+Host: www.example.com
+hallo: poepie
+what: thadogdoin
 
 
-7\r\n
-Mozilla\r\n
-11\r\n
-Developer Network\r\n
-0\r\n
-\r\n
+7
+Mozilla
+11
+Developer Network
+0

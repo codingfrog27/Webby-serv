@@ -28,7 +28,7 @@
 #define GREEN "\033[32m"
 #define RED "\033[31m"
 #define RESET "\033[0m"
-#define BUFFER_SIZE 20
+#define BUFFER_SIZE 1024
 #define PLACEHOLDER_MAX_SIZE 10240
 
 
@@ -81,10 +81,12 @@ class Request
 		size_t					parse_req_line(std::string req_line);
 		bool					bodyIsRead();
 		bool					dechunkBody();
-		void					parseBody();
 		std::string				http_version(std::string version);
 		void					checkHeaders();
+		void					checkBodyHeaders();
 		void					parseBody();
+		void					parseFormData(std::string &content_type);
+		void					parseUrlEncoded();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 	public:
 		int							_clientFD;
@@ -92,6 +94,8 @@ class Request
 		Http_method					_method_type;
 		std::unordered_map\
 		<std::string, std::string>	_headers;
+		std::unordered_map\
+		<std::string, std::string>	_wwwFormEncodedPairs;
 		std::string					_http_version;
 		std::string					request_line;
 		std::string 				_URI; 
