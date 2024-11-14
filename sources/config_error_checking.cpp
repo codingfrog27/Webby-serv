@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/14 12:50:20 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/14 16:06:45 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ std::string	getErrorPageMapKey(std::string& errorPage_value)
 	{
 		if (isdigit(errorPage_key[i]))
 			digits++;
-		if (digits > 3 || !isdigit(errorPage_key[i]))
-			throw std::invalid_argument("Error: invalid error_page code directive");
+		// if (digits > 3 || !isdigit(errorPage_key[i]))
+		// 	throw std::invalid_argument("Error: invalid error_page code directive");
 	}
 	return (errorPage_key);
 }
@@ -60,16 +60,17 @@ std::string getErrorPageMapValue(std::string& errorPage_value)
 
 	for (auto i = 0; i < errorPage_path.length(); i++)
 	{
-		if (!isdigit(errorPage_path[i]) && !isalpha(errorPage_path[i]) && errorPage_path[i] != '/' && errorPage_path[i] != '.')
-			throw std::invalid_argument("Error: invalid character in error_page directive");
+		// if (!isdigit(errorPage_path[i]) && !isalpha(errorPage_path[i]) && errorPage_path[i] != '/' && errorPage_path[i] != '.')
+		// 	throw std::invalid_argument("Error: invalid character in error_page directive");
 	}
 	return (errorPage_path);
 }
 
-std::string Config::validateErrorPage()
+std::unordered_map<std::string, std::string>		Config::validateErrorPage()
 {
 	std::string errorPage_rule;
 	std::string errorPage_value;
+	std::unordered_map<std::string, std::string> tmpErrorPageMap;
 	size_t find_space = 0;
 	int space = 0;
 	
@@ -89,24 +90,22 @@ std::string Config::validateErrorPage()
 			space++;
 			i++;
 		}
-		if (space > 1)
-			throw std::invalid_argument("Error: invalid character in error_page directive");
+		// if (space > 1)
+		// 	throw std::invalid_argument("Error: invalid character in error_page directive");
 	}
 	
 	std::string map_key = getErrorPageMapKey(errorPage_value);
 	std::string map_value = getErrorPageMapValue(errorPage_value);
-	_errorPage.emplace(map_key, map_value);
-	print_map(_errorPage);
-	
-	return (errorPage_value);
+	tmpErrorPageMap.emplace(map_key, map_value);
+	return (tmpErrorPageMap);
 }
 
-
-std::string Config::validateIndex()
+std::vector<std::string>		Config::ValidateIndex()
 {
 	std::string index_rule;
 	std::string index_value;
 	std::string tmp_value;
+	std::vector<std::string>  tmp_vector;
 	
 	int space_pos = 0;
 	static int space = 0;
@@ -132,7 +131,7 @@ std::string Config::validateIndex()
 	if (space == 0)
 	{
 		tmp_value = index_value.substr(0, index_value.length());
-		_index.push_back(tmp_value);
+		tmp_vector.push_back(tmp_value);
 	}
 	else
 	{
@@ -143,12 +142,12 @@ std::string Config::validateIndex()
 			{	
 				for (j = i; !isspace(index_value[j]) && j < (index_value.length()); j++)
 					tmp_value = index_value.substr(i, j - i);
-				_index.push_back(tmp_value);
+				tmp_vector.push_back(tmp_value);
 				i = j;	
 			}
 		}
 	}
-	return (index_rule);
+	return (tmp_vector);
 }
 
 std::string	Config::validateListen()

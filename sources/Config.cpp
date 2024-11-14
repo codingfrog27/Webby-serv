@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/14 12:50:11 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/14 16:07:01 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	Config::mapToMembers()
 		if (_rulemap.contains("host"))
 			setHost(validateHost());
 		if (_rulemap.contains("index"))
-			setIndex(validateIndex());
+			setIndex(ValidateIndex());
 		if (_rulemap.contains("root"))
 			setRoot(validateRoot());
 		if (_rulemap.contains("server_name"))
