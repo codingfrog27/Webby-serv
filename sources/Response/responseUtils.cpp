@@ -24,9 +24,12 @@ std::string	resolveFilePath(Request* request, Response* response, Config* config
 	if (filePath.find(config->_serverPort) != std::string::npos)
 		filePath.erase(0, config->_serverPort.length() + 1);
 	temp = checkForRedirection(filePath, config);
-	if (temp != filePath)
+	if (temp != filePath){
+		response->setStatus("301 Moved Permanently");
+	}
 		return temp;
 	return config->_rootDir + temp;
+}
 
 bool	fileExists(std::string path){
 	std::ifstream file(path);
