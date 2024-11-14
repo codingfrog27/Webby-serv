@@ -5,7 +5,7 @@ static Response*	getMethod(Request* request, Response* response){
 	std::ifstream file;
 	size_t size = 0;
 
-	if (fileExists(path, response)){
+	if (fileExists(path)){
 		response->setContentType(path);
 		if (getReadingMode(*response) == BINARY)
 			file.open(path, std::ios::binary); 
@@ -58,7 +58,7 @@ static Response*	postMethod(Request* request, Response* response){
 static Response*	deleteMethod(Request* request, Response* response){
 	std::string path = resolveFilePath(request);
 
-	if (fileExists(path, response)){
+	if (fileExists(path)){
 		if (std::remove(path.c_str()) == 0)
 			response->autoFillResponse("200 OK");
 		else

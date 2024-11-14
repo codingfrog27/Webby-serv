@@ -39,6 +39,5 @@ class Response{
 
 void		responseHandler(Request* request);
 std::string	resolveFilePath(Request* request);
-bool		fileExists(std::string path, Response* response);
+bool		fileExists(std::string path);
 readingMode	getReadingMode(Response & response);
-void		responseHandler(Request* request);
