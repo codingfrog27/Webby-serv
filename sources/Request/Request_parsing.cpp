@@ -6,7 +6,7 @@
 /*   By: coding_frog <coding_frog@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/15 16:55:27 by coding_frog      ###   ########.fr       */
+/*   Updated: 2024/11/15 17:04:30 by coding_frog      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,11 +193,12 @@ std::string	urlDecode(const std::string &encoded)
 
 void	Request::parseUrlEncoded()
 {
-    std::istringstream stream(_reqBody);
-    std::string pair;
-    while (std::getline(stream, pair, '&')) {
-        size_t pos = pair.find('=');
-        if (pos == std::string::npos)
+	std::istringstream stream(_reqBody.substr(2));
+	std::string pair;
+
+	while (std::getline(stream, pair, '&')) {
+		size_t pos = pair.find('=');
+		if (pos == std::string::npos)
 			throw (ClientErrorExcept(400, "400, missing = in www-form encoded pairs"));
 		_wwwFormEncodedPairs[urlDecode(pair.substr(0, pos))] = urlDecode(pair.substr(pos + 1));
 	}

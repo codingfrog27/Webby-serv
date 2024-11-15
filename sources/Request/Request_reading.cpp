@@ -51,7 +51,7 @@ void	Request::readRequest()
 int	Request::readSocket(int size)
 {
 	if (!size)
-		size = BUFFER_SIZE;
+		size = BUFFER_SIZE; //make smaller if max body size < buffer size
 	char buffer[size];
 	// int	bytes_read = recv(_clientFD, buffer, size, MSG_DONTWAIT); //more flags
 	int	bytes_read = read(_clientFD, buffer, size); //more flags
@@ -94,7 +94,8 @@ bool	Request::bodyIsRead()
 	{	
 		_doneReading = true;
 		reading_mode = FINISHED;
-		_reqBody = std::string(_rawRequestData.begin() + 2,(_rawRequestData.begin() + _contentLen));
+		_reqBody = std::string(_rawRequestData.begin(), (_rawRequestData.begin() + _contentLen + 2));
+		_rawRequestData.erase(_rawRequestData.begin(), _rawRequestData.begin() + _contentLen + 2);
 		return (true);
 	}
 	return (_doneReading);
