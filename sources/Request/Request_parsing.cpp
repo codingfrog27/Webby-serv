@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request_parsing.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: coding_frog <coding_frog@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/14 19:21:14 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/15 16:55:27 by coding_frog      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void	Request::checkBodyHeaders()
 	}
 	try
 	{
-		_contentLen = std::stoul(getHeaderValue("content-length"));
+		_contentLen = std::stoul(getHeaderValue("Content-Length"));
 		reading_mode = READING_BODY;
 	}
 	catch(const std::invalid_argument& e)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: coding_frog <coding_frog@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/13 18:31:29 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/15 16:41:02 by coding_frog      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 int	main(void)
 {
 	// std::cout << "Hello World!" << std::endl;
-	int fd = open("/home/mde-cloe/PROJECTS/Webby-serv/chunked_request.txt", O_RDONLY);
+	int fd = open("chunked_request.txt", O_RDONLY);
 	Request test(fd);
 	test.readRequest();
 	

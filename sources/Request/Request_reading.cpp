@@ -58,7 +58,7 @@ int	Request::readSocket(int size)
 	if (bytes_read <= 0)
 	{
 		if (bytes_read == 0)
-			throw(ConnectionClosedExcep(_clientFD));
+			throw(ConnectionClosedExcep(_clientFD)); //implement
 		else
 			throw (std::ios_base::failure("reading fail when reading from client socket"));
 	}
