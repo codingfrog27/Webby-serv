@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/14 19:21:14 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/18 19:15:47 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,6 +210,10 @@ void	Request::parseFormData(std::string &content_type){
 		if (content_type.size() < 31) //meaning multiform without boundery!
 			throw(ClientErrorExcept(400, "400, Bad Request, empty boundary parameter"));
 	std::string delimiter = "--" + content_type.substr(31);
+	for (size_t i = _reqBody.find(delimiter, ); i < count; i++)
+	{
+		/* code */
+	}
 	
 
 }
