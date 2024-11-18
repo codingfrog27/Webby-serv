@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/14 16:06:45 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/18 16:56:09 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,8 @@ std::vector<std::string>		Config::ValidateIndex()
 			}
 		}
 	}
+	for (auto i = tmp_vector.begin(); i < tmp_vector.end(); i++)
+		std::cout << *i << std::endl;
 	return (tmp_vector);
 }
 
