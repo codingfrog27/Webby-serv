@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/18 19:15:47 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/18 19:18:06 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void	Request::checkBodyHeaders()
 	}
 	try
 	{
-		_contentLen = std::stoul(getHeaderValue("content-length"));
+		_contentLen = std::stoul(getHeaderValue("Content-Length"));
 		reading_mode = READING_BODY;
 	}
 	catch(const std::invalid_argument& e)
@@ -193,11 +193,12 @@ std::string	urlDecode(const std::string &encoded)
 
 void	Request::parseUrlEncoded()
 {
-    std::istringstream stream(_reqBody);
-    std::string pair;
-    while (std::getline(stream, pair, '&')) {
-        size_t pos = pair.find('=');
-        if (pos == std::string::npos)
+	std::istringstream stream(_reqBody.substr(2));
+	std::string pair;
+
+	while (std::getline(stream, pair, '&')) {
+		size_t pos = pair.find('=');
+		if (pos == std::string::npos)
 			throw (ClientErrorExcept(400, "400, missing = in www-form encoded pairs"));
 		_wwwFormEncodedPairs[urlDecode(pair.substr(0, pos))] = urlDecode(pair.substr(pos + 1));
 	}
