@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/18 19:18:06 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:56:06 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ void	Request::parse_headers(std::string header_str)
 		_headers[key] = value;
 		start = line_end + 2;
 		line_end = header_str.find("\r\n", start);
-		std::cout << key << "= " << value << std::endl;
 	}
 	checkHeaders();
 }
@@ -207,16 +206,33 @@ void	Request::parseUrlEncoded()
 
 void	Request::parseFormData(std::string &content_type){
 	//assuming its there cause of header check
-
+	size_t nextboundary;
 		if (content_type.size() < 31) //meaning multiform without boundery!
 			throw(ClientErrorExcept(400, "400, Bad Request, empty boundary parameter"));
 	std::string delimiter = "--" + content_type.substr(31);
-	for (size_t i = _reqBody.find(delimiter, ); i < count; i++)
+	for (size_t i = _reqBody.find(delimiter); i != std::string::npos; i = nextboundary)
 	{
-		/* code */
+		if (_reqBody.compare(i, 2, "--") == 0)
+			break;
+
+		//make new form object
+		//object.headers = parse_headers(&_reqBody[i + delimiter.size()]);
+
+
+		//change parse headers to take table to save the key and values to (and move checkheaders elsewhere)
+		// ORR give a bool and put a conditional in there but less pretty
+		//OR parse manually for members since
+		// Content-Disposition: form-data; name="file"; filename="example.txt"
+		// AND Content-Type: text/plain are the key ones, could even throw the other ones out
+		// if i use table might copy/move the 2 important ones to seperate strings anyways
+
+		nextboundary = _reqBody.find(delimiter, i);
+		if (i == std::string::npos)
+			throw	ClientErrorExcept(400, "400 no closing boundary in multiform");
+		
+		//object.body = _reqBody.substr(boundary + delimiter.size(), nextboundary - boundary)
+
 	}
 	
 
 }
-
-//multipart/form data
