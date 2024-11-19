@@ -53,14 +53,10 @@ enum Http_method
 	NOT_PARSED_YET,
 };
 
-	// things to pass/inheret from _config
-									// max body size
-									// allowed methods
-									// timeouts
 class Request 
 {
 	private:
-		// Connection				*_connection;
+		// Connection				*_config;
 		std::string				_reqBody;
 		std::string				_unsortedHeaders;
 		reading_status			reading_mode;
@@ -77,11 +73,11 @@ class Request
 		int						readSocket(int size);
 		void					parse_headers(std::string str);
 		Http_method				which_method_type(std::string str);
-		bool					look_for_body();
+		bool					headerEndFound();
 		size_t					parse_req_line(std::string req_line);
 		bool					bodyIsRead();
 		bool					dechunkBody();
-		std::string				http_version(std::string version);
+		std::string				http_version(const std::string &version);
 		void					checkHeaders();
 		void					checkBodyHeaders();
 		void					parseBody();

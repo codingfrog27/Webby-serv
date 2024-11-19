@@ -12,8 +12,6 @@
 
 #include "Request.hpp"
 
-//body is written like var=value&var2=value2 etc
-
 void	Request::readRequest()
 {
 	try
@@ -21,24 +19,22 @@ void	Request::readRequest()
 		if (_statusCode == "0 Not started yet")
 			_statusCode = "102 Processing";
 		readSocket(0);
-		if (!_rnrnFound)
-		{
-			if (look_for_body()) //make 1 if
-				parse_headers(_unsortedHeaders);
-		}
+		if (!_rnrnFound && headerEndFound())
+			parse_headers(_unsortedHeaders);
 		if (_hasBody && bodyIsRead()) {
 			std::cout << "PARSING BODY" << std::endl;
 			parseBody();
-		} //make hasBody
-		// timeout check here?
+		}
 	}
 	catch(ClientErrorExcept &e)
 	{
 		std::cerr << e.what() << std::endl;
-		// if we want custom payload too l"\nbytes read sofar = "<< body_bytes_read
-		//<< "\nwhile allowed amount = "<< _max_body_size << std::endl;
 	}
-	catch(const std::ios_base::failure &e) //custom exception class
+	catch (ConnectionClosedExcep &e)
+	{
+		std::cerr << "Client closed connection" << std::endl;
+	}
+	catch(const std::ios_base::failure &e)
 	{
 		std::cerr << e.what() << std::endl;
 	}
@@ -51,14 +47,14 @@ void	Request::readRequest()
 int	Request::readSocket(int size)
 {
 	if (!size)
-		size = BUFFER_SIZE; //make smaller if max body size < buffer size
+		size = BUFFER_SIZE;
 	char buffer[size];
-	// int	bytes_read = recv(_clientFD, buffer, size, MSG_DONTWAIT); //more flags
-	int	bytes_read = read(_clientFD, buffer, size); //more flags
+	int	bytes_read = recv(_clientFD, buffer, size, MSG_DONTWAIT); //more flags
+	// int	bytes_read = read(_clientFD, buffer, size);
 	if (bytes_read <= 0)
 	{
 		if (bytes_read == 0)
-			throw(ConnectionClosedExcep(_clientFD)); //implement
+			throw(ConnectionClosedExcep(_clientFD));
 		else
 			throw (std::ios_base::failure("reading fail when reading from client socket"));
 	}
@@ -68,7 +64,7 @@ int	Request::readSocket(int size)
 	return (bytes_read);
 }
 
-bool	Request::look_for_body()
+bool	Request::headerEndFound()
 {
 	static const std::vector< unsigned char> body_delim = {'\r', '\n', '\r', '\n'};
 	std::vector<unsigned char>::iterator it = std::search(_rawRequestData.begin(),\

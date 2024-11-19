@@ -11,7 +11,14 @@
 /* ************************************************************************** */
 
 #include "libft.h"
-
+/**
+ * @brief allocates a smaller string from a bigger one
+ * 
+ * @param s string to grab a part from
+ * @param start the start of s that you want 
+ * @param len length of your substr
+ * @return char* opinter to the new string
+ */
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char	*substr;

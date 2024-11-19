@@ -6,20 +6,8 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/19 15:56:06 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/19 19:31:48 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
-
-/* ************************************************************************** */
-/*																			*/
-/*														:::	  ::::::::   */
-/*   HttpRequest_parsing.cpp							:+:	  :+:	:+:   */
-/*													+:+ +:+		 +:+	 */
-/*   By: mde-cloe <mde-cloe@student.42.fr>		  +#+  +:+	   +#+		*/
-/*												+#+#+#+#+#+   +#+		   */
-/*   Created: 2024/09/24 14:11:35 by mde-cloe		  #+#	#+#			 */
-/*   Updated: 2024/10/04 18:04:40 by mde-cloe		 ###   ########.fr	   */
-/*																			*/
 /* ************************************************************************** */
 
 #include "Request.hpp"
@@ -51,8 +39,6 @@ size_t	Request::parse_req_line(std::string req_line)
 	return (line_end + 2);
 }
 
-// not trimming any trailing whitespace rn cause RFC 7230 states its not allowed
-// some irl servers do allow it though.. so might add later?
 void	Request::parse_headers(std::string header_str)
 {
 	size_t						start, colon_pos;
@@ -75,10 +61,10 @@ void	Request::parse_headers(std::string header_str)
 
 void	Request::checkHeaders()
 {
-	if (!headerExists("Host")) //split?
+	if (!headerExists("Host"))
 		throw(std::invalid_argument("400 bad request: Host missing"));
 	if (getHeaderValue("Connection") == "close")
-		_keepOpen = false; //default is to keep open so only change when asked
+		_keepOpen = false;
 	if (_method_type == GET)
 	{
 		_doneReading = true;
@@ -86,11 +72,7 @@ void	Request::checkHeaders()
 	}
 	else
 		checkBodyHeaders();
-	
-		//expect 100 continue?/
-	//mb implement timeout mechanism since malicious requests could send body without these headers
 }
-
 
 void	Request::checkBodyHeaders()
 {
@@ -123,17 +105,10 @@ void	Request::checkBodyHeaders()
 	if (_contentLen > _max_body_size)
 		throw (ClientErrorExcept(413, "413 Payload too large"));
 }
-//not sure but Authorization if thats in scope for protected resources
-//accept
-//not mandated but could return 406 Not Acceptable
-// look into expext, mb range,
-//  if-modified-since/if-none-match 
-// ^ (could contain misuse but else return 304) 
 
 
 
-//almost done! just add logic so we can erase once after the loop by keeping track of our last found rn
-//wait doesnt completelt ofjeoifwajdoiwa time to go homee
+
 bool	Request::dechunkBody()
 {
 	std::string	bodyStr(_rawRequestData.begin(), _rawRequestData.end());
@@ -170,25 +145,7 @@ void	Request::parseBody()
 		parseUrlEncoded();
 }
 
-
-std::string	urlDecode(const std::string &encoded)
-{
-	std::string decodedStr;
-	char ch;
-	
-	for (size_t i = 0; encoded[i]; i++)
-	{
-		ch = encoded[i];
-		 if (encoded[i] == '%') {
-			ch = static_cast<char>(std::stoi(encoded.substr(i + 1, 2), nullptr, 16));
-			i += 2;
-		 }
-		 else if (encoded[i] == '+')
-		 	ch = ' ';
-		decodedStr += ch;
-	}
-	return (decodedStr);
-}
+std::string	urlDecode(const std::string &encoded);
 
 void	Request::parseUrlEncoded()
 {
