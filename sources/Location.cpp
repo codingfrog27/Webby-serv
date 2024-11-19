@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/18 16:59:32 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/19 16:05:00 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,16 +134,14 @@ void	location::setCgiPath(const std::vector<std::string> &cgi_path)
 	this-> _cgi_path = cgi_path;
 }
 
-std::string	location::getIndex()
+std::vector<std::string>	location::getIndex()
 {
 	return(this->_index);
 }
 
-void	location::setIndex(const std::string &key)
+void	location::setIndex(const std::vector<std::string> &index)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_index = _rulemap.at(key);
+	this->_index = index;
 }
 
 std::string	location::getReturn()
@@ -168,7 +166,7 @@ std::string location::toString() const
 	oss << "Autoindex: " << _autoindex << "\n";
 	// oss << "Cgi_extension: " << _cgi_extension << "\n";
 	// oss << "Cgi path: " << _cgi_path << "\n";
-	oss << "Index: " << _index << "\n";
+	// oss << "Index: " << _index << "\n";
 	oss << "Return: " << _return << "\n";
 	oss << "Root: " << _root << "\n";
     return oss.str();
@@ -181,7 +179,7 @@ void	location::initializeLocation()
 	setAutoindex(validateAutoindex());
 	setCgiExtension(validateCgiExt());
 	setCgiPath(validateCgiPath());
-	setIndex("index ");
+	setIndex(validateIndex());
 	setReturn(validateReturn());
 	setRoot(validateRoot());
 }

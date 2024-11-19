@@ -29,7 +29,7 @@ class location
         bool                        _autoindex;
         std::vector<std::string>    _cgi_extension;
         std::vector<std::string>    _cgi_path; 
-        std::string                 _index;
+        std::vector<std::string>    _index;
         std::string                 _return;
         std::string                 _root;
 
@@ -43,8 +43,8 @@ class location
         location(const location &rhs);
         location &operator=(const location &rhs);
         ~location(void);
+        
         void	printLocationValue(const location& loc) const;
-        // void	setRoot(const location& loc);
         void parseRule(const std::string &line);
 
         std::string getName() const;
@@ -54,7 +54,7 @@ class location
         bool	    getAutoindex();
         std::vector<std::string>	getCgiExtension();
         std::vector<std::string>    getCgiPath();
-        std::string	getIndex();
+        std::vector<std::string>	getIndex();
         std::string	getReturn();
         std::string	getRoot();
         void	setAlias(const std::string &alias);
@@ -62,14 +62,16 @@ class location
         void	setAutoindex(const bool &autoindex);
         void	setCgiExtension(const std::vector<std::string> &cgi_extension);
         void	setCgiPath(const std::vector<std::string> &cgi_path);
-        void	setIndex(const std::string &index);
-        void	setReturn(const std::string &return);
+        void    setIndex(const std::vector<std::string> &index);
+        void	setReturn(const std::string &t_return);
         void	setRoot(const std::string &root);
         void    initializeLocation();
 
         std::string toString() const;
         std::string validateAlias();
+        std::vector<std::string> validateAllowMethods();
         bool validateAutoindex();
+        std::vector<std::string> validateIndex();
         std::string validateReturn();
         std::string validateRoot();
 

@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/14 16:07:01 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/19 16:09:26 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,21 +60,15 @@ Config::Config(std::ifstream &file, std::string &line)
 
 
 int	Config::mapToMembers()
-{		
-		if (_rulemap.contains("listen"))
-			setListen(validateListen());
-		if (_rulemap.contains("client_max_body_size"))
-			setMaxBodySize(validateMaxBodySize());
-		if (_rulemap.contains("error_page"))
-			setErrorPage(validateErrorPage());
-		if (_rulemap.contains("host"))
-			setHost(validateHost());
-		if (_rulemap.contains("index"))
-			setIndex(ValidateIndex());
-		if (_rulemap.contains("root"))
-			setRoot(validateRoot());
-		if (_rulemap.contains("server_name"))
-			setServerName(validateServerName());
+{	
+	setListen(validateListen());
+	setMaxBodySize(validateMaxBodySize());
+	setErrorPage(validateErrorPage());
+	setHost(validateHost());	
+	setIndex(ValidateIndex());
+	setRoot(validateRoot());
+	setServerName(validateServerName());
+	
 	return (1);
 }
 

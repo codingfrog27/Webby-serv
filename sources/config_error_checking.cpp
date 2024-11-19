@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/18 16:56:09 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/19 16:14:02 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ std::string getErrorPageMapValue(std::string& errorPage_value)
 	return (errorPage_path);
 }
 
+
+//change the errorpage unordered_map in multi_map so like this we can have same key
 std::unordered_map<std::string, std::string>		Config::validateErrorPage()
 {
 	std::string errorPage_rule;
@@ -74,12 +76,13 @@ std::unordered_map<std::string, std::string>		Config::validateErrorPage()
 	size_t find_space = 0;
 	int space = 0;
 	
-	if (!_rulemap.contains("error_page"))
+	if (_rulemap.contains("error_page"))
+	{
+		errorPage_rule = normalize_space(_rulemap.at("error_page"));
+		errorPage_value = find_value(errorPage_rule);
+	}
+	else 
 		throw std::invalid_argument("Error: error_page directive not found");
-	
-	errorPage_rule = normalize_space(_rulemap.at("error_page"));
-	errorPage_value = find_value(errorPage_rule);
-
 	for (auto i = 0; i < errorPage_value.length(); i++)
 	{
 		if (isspace(errorPage_value[i]))
@@ -110,12 +113,13 @@ std::vector<std::string>		Config::ValidateIndex()
 	int space_pos = 0;
 	static int space = 0;
 	
-	if (!_rulemap.contains("index"))
+	if (_rulemap.contains("index"))
+	{
+		index_rule = normalize_space(_rulemap.at("index"));
+		index_value = find_value(index_rule);
+	}
+	else
 		throw std::invalid_argument("Error: index directive not found");
-
-	index_rule = normalize_space(_rulemap.at("index"));
-	index_value = find_value(index_rule);
-	
 	for (auto i = 0; i < index_value.length(); i++)
 	{
 		if (isspace(index_value[i]))
@@ -147,8 +151,6 @@ std::vector<std::string>		Config::ValidateIndex()
 			}
 		}
 	}
-	for (auto i = tmp_vector.begin(); i < tmp_vector.end(); i++)
-		std::cout << *i << std::endl;
 	return (tmp_vector);
 }
 
@@ -157,12 +159,13 @@ std::string	Config::validateListen()
 	std::string listen_rule;;
 	std::string listen_value;
 	
-	if (!_rulemap.contains("listen"))
+	if (_rulemap.contains("listen"))
+	{
+		listen_rule = normalize_space (_rulemap.at("listen"));
+		listen_value = find_value(listen_rule);
+	}
+	else 	
 		throw std::invalid_argument("Error: listen directive not found");
-		
-	listen_rule = normalize_space (_rulemap.at("listen"));
-	listen_value = find_value(listen_rule);
-
 	for (auto i = 0; i < listen_value.length(); i++)
 	{
 		if (!isdigit(listen_value[i]))
@@ -176,12 +179,13 @@ std::string Config::validateMaxBodySize()
 	std::string maxBodySize_rule;
 	std::string maxBodySize_value;
 	
-	if (!_rulemap.contains("client_max_body_size"))
+	if (_rulemap.contains("client_max_body_size"))
+	{
+		maxBodySize_rule = normalize_space(_rulemap.at("client_max_body_size"));
+		maxBodySize_value = find_value(maxBodySize_rule);
+	}
+	else 
 		throw std::invalid_argument("Error: client_max_body_size directive not found");
-		
-	maxBodySize_rule = normalize_space(_rulemap.at("client_max_body_size"));
-	maxBodySize_value = find_value(maxBodySize_rule);
-	
 	char lastChar = maxBodySize_value.back();
 	if (lastChar == 'k' || lastChar == 'K' || lastChar == 'm' || lastChar == 'M' || lastChar == 'g' || lastChar == 'G')
 		maxBodySize_value.pop_back();
@@ -201,12 +205,13 @@ std::string Config::validateHost()
 	std::string host_rule;
 	std::string host_value;
 	
-	if (!_rulemap.contains("host"))
+	if (_rulemap.contains("host"))
+	{
+		host_rule = normalize_space(_rulemap.at("host"));
+		host_value = find_value(host_rule); 
+	}
+	else 
 		throw std::invalid_argument("Error: host directive not found");
-		
-	host_rule = normalize_space(_rulemap.at("host"));
-	host_value = find_value(host_rule); 
-
 	int dotCount = 0;
 	for(auto i = 0; i < host_value.length(); i++)
 	{
@@ -229,11 +234,13 @@ std::string Config::validateServerName()
 	std::string serverName_value;
 	
 	
-	if (!_rulemap.contains("server_name"))
+	if (_rulemap.contains("server_name"))
+	{
+		serverName_rule = normalize_space(_rulemap.at("server_name"));
+		serverName_value = find_value(serverName_rule);
+	}
+	else 
 		throw std::invalid_argument("Error: server_name directive not found");
-	serverName_rule = normalize_space(_rulemap.at("server_name"));
-	serverName_value = find_value(serverName_rule);
-	
 	for(auto i = 0; i < serverName_value.length(); i++)
 	{
 		if (!isalpha(serverName_value[i]) && !isdigit(serverName_value[i]) && serverName_value[i] != '-' && serverName_value[i] != '.')
@@ -248,12 +255,13 @@ std::string Config::validateRoot()
 	std::string root_rule;
 	std::string root_value;
 
-	if (!_rulemap.contains("root"))
+	if (_rulemap.contains("root"))
+	{
+		root_rule = normalize_space(_rulemap.at("root"));
+		root_value = find_value(root_rule);
+	}
+	else
 		throw std::invalid_argument("Error: root directive not found");
-	
-	root_rule = normalize_space(_rulemap.at("root"));
-	root_value = find_value(root_rule);
-
 	for (auto i = 0; i < root_value.length(); i++)
 	{
 		if (root_value[0] != '/')
