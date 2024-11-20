@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config_error_checking.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/19 16:14:02 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/20 16:37:19 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,7 +243,8 @@ std::string Config::validateServerName()
 		throw std::invalid_argument("Error: server_name directive not found");
 	for(auto i = 0; i < serverName_value.length(); i++)
 	{
-		if (!isalpha(serverName_value[i]) && !isdigit(serverName_value[i]) && serverName_value[i] != '-' && serverName_value[i] != '.')
+		if (!isalpha(serverName_value[i]) && !isdigit(serverName_value[i]) && \
+			serverName_value[i] != '-' && serverName_value[i] != '.' && serverName_value[i] != '_')
 			throw std::invalid_argument("Error: invalid character in server_name directive");
 	}
 
