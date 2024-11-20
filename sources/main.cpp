@@ -6,11 +6,12 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/20 16:58:16 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/20 17:13:23 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "everything.hpp"
+bool	noDoublePorts(const std::vector<std::unique_ptr<Config>> &configs);
 #include "Colors.hpp"
 
 int main() {
@@ -30,9 +31,12 @@ int main() {
 						std::cout << "NESTED location block:\n" << configs[i]->_newLocations[j]->_nestedLocations[0]->toString()\
 						 << std::endl;
 					}
-					
 				}
 			}
+		if (noDoublePorts(configs))
+			std::cout << "Ciao" << std::endl;
+		else
+			std::cout << ":(((())))" << std::endl;
 			
 			// // configs[0].setServer(0);
 			// std::cout << configs[0]._newLocations[1]->toString() << std::endl;
@@ -45,4 +49,18 @@ int main() {
 		std::cerr << "Exceotion caught!" << e.what() << std::endl;
 	}
 	return 0;
+}
+
+bool	noDoublePorts(const std::vector<std::unique_ptr<Config>> &configs)
+{
+	for (size_t i = 0; i < configs.size(); i++)
+	{
+		const std::string &port = configs[i]->getListen();
+		for (size_t j = i + 1; j < configs.size(); j++)
+		{
+			if (port == configs[j]->getListen())
+				return (false);
+		}
+	}
+	return (true);
 }
