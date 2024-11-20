@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/20 16:34:04 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/20 16:45:36 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 #include "socket.hpp"
 #include <memory>
 
-std::vector<Config>	parseConfigFile(const std::string fileName)
+std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName)
 {
 	std::string		line;
 	std::ifstream	file(fileName);
-	std::vector<Config>	Configs;
+	std::vector<std::unique_ptr<Config>>	Configs;
 
 	if (!file.is_open())
 		throw std::invalid_argument("Error: Unable to open file" );
@@ -29,7 +29,8 @@ std::vector<Config>	parseConfigFile(const std::string fileName)
 			continue;
 		if (line.find("server {") != std::string::npos)
 		{
-			Configs.emplace_back(file, line);
+			// Configs.emplace_back(file, line);
+			Configs.push_back(std::unique_ptr<Config>(new Config(file, line)));
 		}
 		// else
 			// throw std::invalid_argument("non comment text between server blocks! >:(");

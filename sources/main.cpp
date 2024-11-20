@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/20 16:41:31 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/20 16:46:45 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 
 int main() {
 	std::string fileName = "example_config.conf";
-	std::vector<Config> configs = parseConfigFile("example_config.conf");
+	std::vector<std::unique_ptr<Config>> configs = parseConfigFile("example_config.conf");
 
 	try
 	{
 		if (!configs.empty()) {
 			for (size_t i = 0; i < configs.size(); i++){
-				std::cout << "server block:" << configs[i].toString() << "---------" << std::endl;
-				for (size_t j = 0; j < configs[i]._newLocations.size(); j++){
-					std::cout << "location block:" << configs[i]._newLocations[j]->toString() \
+				std::cout << "server block:" << configs[i]->toString() << "---------" << std::endl;
+				for (size_t j = 0; j < configs[i]->_newLocations.size(); j++){
+					std::cout << "location block:" << configs[i]->_newLocations[j]->toString() \
 					<< "---------------" << std::endl;
 				}
 			}
