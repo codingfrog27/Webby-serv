@@ -14,6 +14,7 @@
 
 void	Request::readRequest()
 {
+	//update idle time
 	try
 	{
 		if (_statusCode == "0 Not started yet")
@@ -25,6 +26,7 @@ void	Request::readRequest()
 			std::cout << "PARSING BODY" << std::endl;
 			parseBody();
 		}
+		//timeout check
 	}
 	catch(ClientErrorExcept &e)
 	{
