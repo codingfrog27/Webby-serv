@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/20 16:37:19 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/20 17:19:12 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ std::string getErrorPageMapValue(std::string& errorPage_value)
 {
 	std::string errorPage_path = errorPage_value.substr(4, errorPage_value.length());
 
-	for (auto i = 0; i < errorPage_path.length(); i++)
+	for (size_t i = 0; i < errorPage_path.length(); i++)
 	{
 		// if (!isdigit(errorPage_path[i]) && !isalpha(errorPage_path[i]) && errorPage_path[i] != '/' && errorPage_path[i] != '.')
 		// 	throw std::invalid_argument("Error: invalid character in error_page directive");
@@ -240,7 +240,7 @@ std::string Config::validateServerName()
 		serverName_value = find_value(serverName_rule);
 	}
 	else 
-		throw std::invalid_argument("Error: server_name directive not found");
+		return ("Default name");
 	for(auto i = 0; i < serverName_value.length(); i++)
 	{
 		if (!isalpha(serverName_value[i]) && !isdigit(serverName_value[i]) && \
