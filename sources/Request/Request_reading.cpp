@@ -31,6 +31,8 @@ void	Request::readRequest()
 	catch(ClientErrorExcept &e)
 	{
 		std::cerr << e.what() << std::endl;
+		_doneReading = true;
+		_statusCode = e.what();
 	}
 	catch (ConnectionClosedExcep &e)
 	{
