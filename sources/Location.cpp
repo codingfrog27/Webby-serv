@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/14 12:48:38 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/19 16:05:00 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,11 +79,9 @@ std::string	location::getRoot()
 	return(this->_root);
 }
 
-void	location::setRoot(const std::string &key)
+void	location::setRoot(const std::string &root)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_root = _rulemap.at(key);
+	this->_root = root;
 }
 
 std::string	location::getAlias()
@@ -91,71 +89,59 @@ std::string	location::getAlias()
 	return(this->_alias);
 }
 
-void	location::setAlias(const std::string &key)
+void	location::setAlias(const std::string &alias)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_alias = _rulemap.at(key);
+	this->_alias = alias;
 }
 
-std::string	location::getAllowMethods()
+std::vector<std::string>	location::getAllowMethods()
 {
 	return(this->_allow_methods);
 }
 
-void	location::setAllowMethods(const std::string &key)
+void	location::setAllowMethods(const std::vector<std::string> &allow_methods)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_allow_methods = _rulemap.at(key);
+	this->_allow_methods = allow_methods;
 }
 
-std::string	location::getAutoindex()
+bool	location::getAutoindex()
 {
 	return(this->_autoindex);
 }
 
-void	location::setAutoindex(const std::string &key)
+void	location::setAutoindex(const bool &autoindex)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_autoindex = _rulemap.at(key);
+	this->_autoindex = autoindex;
 }
 
-std::string	location::getCgiExtension()
+std::vector<std::string>	location::getCgiExtension()
 {
 	return(this->_cgi_extension);
 }
 
-void	location::setCgiExtension(const std::string &key)
+void	location::setCgiExtension(const std::vector<std::string> &cgi_extension)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_cgi_extension = _rulemap.at(key);
+	this->_cgi_extension = cgi_extension;
 }
 
-std::string	location::getCgiPath()
+std::vector<std::string>	location::getCgiPath()
 {
 	return(this-> _cgi_path);
 }
 
-void	location::setCgiPath(const std::string &key)
+void	location::setCgiPath(const std::vector<std::string> &cgi_path)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this-> _cgi_path = _rulemap.at(key);
+	this-> _cgi_path = cgi_path;
 }
 
-std::string	location::getIndex()
+std::vector<std::string>	location::getIndex()
 {
 	return(this->_index);
 }
 
-void	location::setIndex(const std::string &key)
+void	location::setIndex(const std::vector<std::string> &index)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_index = _rulemap.at(key);
+	this->_index = index;
 }
 
 std::string	location::getReturn()
@@ -163,11 +149,9 @@ std::string	location::getReturn()
 	return(this->_return);
 }
 
-void	location::setReturn(const std::string &key)
+void	location::setReturn(const std::string &t_return)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_return = _rulemap.at(key);
+	this->_return = t_return;
 }
 
 // ************************************************************************** //
@@ -178,11 +162,11 @@ std::string location::toString() const
 {
     std::ostringstream oss;
 	oss << "Alias: " << _alias << "\n";
-	oss << "Allow_methods: " << _allow_methods << "\n";
+	// oss << "Allow_methods: " << _allow_methods << "\n";
 	oss << "Autoindex: " << _autoindex << "\n";
-	oss << "Cgi_extension: " << _cgi_extension << "\n";
-	oss << "Cgi path: " << _cgi_path << "\n";
-	oss << "Index: " << _index << "\n";
+	// oss << "Cgi_extension: " << _cgi_extension << "\n";
+	// oss << "Cgi path: " << _cgi_path << "\n";
+	// oss << "Index: " << _index << "\n";
 	oss << "Return: " << _return << "\n";
 	oss << "Root: " << _root << "\n";
     return oss.str();
@@ -190,14 +174,14 @@ std::string location::toString() const
 
 void	location::initializeLocation()
 {
-	setAlias("alias ");
-	setAllowMethods("allow_methods ");
-	setAutoindex("autoindex ");
-	setCgiExtension("cgi_ext ");
-	setCgiPath("cgi_path ");
-	setIndex("index ");
-	setReturn("return ");
-	setRoot("root ");
+	setAlias(validateAlias());
+	setAllowMethods(validateAllowMethods());
+	setAutoindex(validateAutoindex());
+	setCgiExtension(validateCgiExt());
+	setCgiPath(validateCgiPath());
+	setIndex(validateIndex());
+	setReturn(validateReturn());
+	setRoot(validateRoot());
 }
 
 void   location::parseRule(const std::string &line)

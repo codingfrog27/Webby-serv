@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   Config.cpp                                         :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: asimone <asimone@student.42.fr>              +#+                     */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2024/11/14 14:58:11 by mstegema      ########   odam.nl         */
+/*   Updated: 2024/11/21 11:28:28 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 #include "socket.hpp"
 #include <memory>
 
-std::vector<Config>	parseConfigFile(const std::string fileName)
+std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName)
 {
 	std::string		line;
 	std::ifstream	file(fileName);
-	std::vector<Config>	Configs;
+	std::vector<std::unique_ptr<Config>>	Configs;
 
 	if (!file.is_open())
 		throw std::invalid_argument("Error: Unable to open file" );
@@ -29,7 +29,8 @@ std::vector<Config>	parseConfigFile(const std::string fileName)
 			continue;
 		if (line.find("server {") != std::string::npos)
 		{
-			Configs.emplace_back(file, line);
+			// Configs.emplace_back(file, line);
+			Configs.push_back(std::unique_ptr<Config>(new Config(file, line)));
 		}
 		// else
 			// throw std::invalid_argument("non comment text between server blocks! >:(");
@@ -60,21 +61,15 @@ Config::Config(std::ifstream &file, std::string &line)
 
 
 int	Config::mapToMembers()
-{		
-		if (_rulemap.contains("listen"))
-			setListen(validateListen());
-		if (_rulemap.contains("client_max_body_size"))
-			setMaxBodySize(validateMaxBodySize());
-		if (_rulemap.contains("error_page"))
-			setErrorPage(validateErrorPage());
-		if (_rulemap.contains("host"))
-			setHost(validateHost());
-		if (_rulemap.contains("index"))
-			setIndex(validateIndex());
-		if (_rulemap.contains("root"))
-			setRoot(validateRoot());
-		if (_rulemap.contains("server_name"))
-			setServerName(validateServerName());
+{	
+	setListen(validateListen());
+	setMaxBodySize(validateMaxBodySize());
+	setErrorPage(validateErrorPage());
+	setHost(validateHost());	
+	setIndex(ValidateIndex());
+	setRoot(validateRoot());
+	setServerName(validateServerName());
+	
 	return (1);
 }
 

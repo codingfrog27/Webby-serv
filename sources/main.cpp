@@ -3,26 +3,42 @@
 /*                                                        ::::::::            */
 /*   main.cpp                                           :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: asimone <asimone@student.42.fr>              +#+                     */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2024/11/14 14:58:37 by mstegema      ########   odam.nl         */
+/*   Updated: 2024/11/21 11:51:18 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "everything.hpp"
+bool	noDoublePorts(const std::vector<std::unique_ptr<Config>> &configs);
+#include "Colors.hpp"
 
 int main() {
 	std::string fileName = "example_config.conf";
-	std::vector<Config> configs = parseConfigFile("example_config.conf");
+	std::vector<std::unique_ptr<Config>> configs = parseConfigFile("example_config.conf");
 
 	try
 	{
 		if (!configs.empty()) {
-			// std::cout << configs[0].toString() << std::endl;
+			for (size_t i = 0; i < configs.size(); i++){
+				std::cout << "server block:\n" << configs[i]->toString() << "---------" << std::endl;
+				for (size_t j = 0; j < configs[i]->_newLocations.size(); j++){
+					std::cout << "location block:\n" << configs[i]->_newLocations[j]->toString() \
+					<< "---------------" << std::endl;
+					for (size_t k = 0; k < configs[i]->_newLocations[j]->_nestedLocations.size(); k++)
+					{
+						std::cout << "NESTED location block:\n" << configs[i]->_newLocations[j]->_nestedLocations[0]->toString()\
+						 << std::endl;
+					}
+				}
+			}
+		if (noDoublePorts(configs))
+			std::cout << "Ciao" << std::endl;
+		else
+			std::cout << ":(((())))" << std::endl;
+			
 			// // configs[0].setServer(0);
-			// std::cout << configs[0]._newLocations[0]->toString() << std::endl;
-			// std::cout << configs[0]._newLocations[0]->_nestedLocations[0]->toString() << std::endl;
 			// std::cout << configs[0]._newLocations[1]->toString() << std::endl;
 		} else {
 			std::cout << "No configs found." << std::endl;
@@ -35,39 +51,16 @@ int main() {
 	return 0;
 }
 
-
-//changes
-// << operator instead of tostring
-//moved ufncs to utils
-
-//think we can use strings right away, problem was calling setserver afterwards in main loop
-
-//i dont think we have to check for existence in the setters (likei in setmaxbody size)
-// since it will only go in there if already found
-// we should however check for errors when setting each member
-
-
-// and after setting everything look for unset values
-//alternatively instead of looping through the whole map we can call find each time and do the
-// check for empty feels there directly, but since we alreayd have the loop lets use it :)
-
-
-
-//she works!! I think actually we can even move the contains if statements into the set
-// functions themselves :) it never needed to be a for loop cause contains just finds it directly ;)
-
-
-
-
-
-
-
-
-// int	future_real_main(int argc, char **argv)
-// {
-// 	//if argv != 2 default config 
-// 	// else
-// 	Config config(argv[1]);
-// 	Connection *connections = server_setup(&config);
-// 	main_server_loop();
-// }
+bool	noDoublePorts(const std::vector<std::unique_ptr<Config>> &configs)
+{
+	for (size_t i = 0; i < configs.size(); i++)
+	{
+		const std::string &port = configs[i]->getListen();
+		for (size_t j = i + 1; j < configs.size(); j++)
+		{
+			if (port == configs[j]->getListen())
+				return (false);
+		}
+	}
+	return (true);
+}
