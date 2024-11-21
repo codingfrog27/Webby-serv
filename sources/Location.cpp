@@ -25,29 +25,6 @@ location::location(void)
 
 location::location(std::ifstream &file, std::string &line)
 {
-	std::cout << GREEN << "location filestream constructor called" \
-	<< RESET << std::endl;
-	size_t i = 0;
-	while (std::getline(file, line))
-	{
-		if (line.empty() || line[i] == '#')
-			continue;
-		if (locationFound(line))
-			_nestedLocations.push_back(std::unique_ptr<location>(new location(file, line)));
-		else if (checkCaracter(line, '}'))
-		{
-			initializeLocation();
-			return;
-		}
-		else
-			parseRule(line);
-	}
-}
-
-location::location(std::ifstream &file, std::string &line)
-{
-	std::cout << GREEN << "location filestream constructor called" \
-	<< RESET << std::endl;
 	size_t i = 0;
 	while (std::getline(file, line))
 	{
@@ -67,7 +44,7 @@ location::location(std::ifstream &file, std::string &line)
 
 location::location(const location &rhs)
 {
-	// std::cout << GREEN << "location: Copy constructor called" << RESET << std::endl;
+	std::cout << GREEN << "location: Copy constructor called" << RESET << std::endl;
 
 	*this = rhs;
 }

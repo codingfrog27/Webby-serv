@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/21 17:18:56 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/21 17:29:48 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,14 @@ class Config
 		Config(const Config &rhs);
 		Config &operator=(const Config &rhs);
 		~Config(void);
+	std::string toString() const;
+	std::unordered_map<std::string, std::string> getErrorPage();
+	std::string	getMaxBodySize();
+	std::string	getHost();
+	std::vector<std::string> getIndex();
+	std::string	getListen();
+	std::string	getRoot();
+	std::string	getServerName();
 
 	
 
@@ -74,13 +82,6 @@ class Config
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	void	parseRule(const std::string &line);
 	
-	std::unordered_map<std::string, std::string> getErrorPage();
-	std::string	getMaxBodySize();
-	std::string	getHost();
-	std::vector<std::string> getIndex();
-	std::string	getListen();
-	std::string	getRoot();
-	std::string	getServerName();
 	void		setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap);
 	void		setHost(const std::string &host);
 	void		setIndex(const std::vector<std::string> &index_vector);
@@ -91,7 +92,7 @@ class Config
 	void		setServer(const int rule);
 
 	int			initializeServer();
-	int			mapToMembers();
+	void		mapToMembers();
 	std::unordered_map<std::string, std::string> validateErrorPage();
 	std::string validateHost();
 	std::vector<std::string> ValidateIndex();
@@ -99,12 +100,11 @@ class Config
 	std::string validateMaxBodySize();
 	std::string validateRoot();
 	std::string validateServerName();
-	std::string toString() const;
 };
 
 
 std::ostream& operator<<(std::ostream& os, const Config& config);
-std::vector<Config>	parseConfigFile(const std::string fileName);
+std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName);
 bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 bool	checkstr(const std::string &line, const std::string &str);
