@@ -3,54 +3,65 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: coding_frog <coding_frog@student.42.fr>    +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/15 16:41:02 by coding_frog      ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2024/11/21 16:55:40 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+
 #include "everything.hpp"
-#include "Server.hpp"
-#include "Config.hpp"
+bool	noDoublePorts(const std::vector<std::unique_ptr<Config>> &configs);
+#include "Colors.hpp"
 
+int main() {
+	std::string fileName = "example_config.conf";
+	std::vector<std::unique_ptr<Config>> configs = parseConfigFile("example_config.conf");
 
-int	main(void)
-{
-	// std::cout << "Hello World!" << std::endl;
-	int fd = open("chunked_request.txt", O_RDONLY);
-	Request test(fd);
-	test.readRequest();
-	
-	return (0);
+	try
+	{
+		if (!configs.empty()) {
+			for (size_t i = 0; i < configs.size(); i++){
+				std::cout << "server block:\n" << configs[i]->toString() << "---------" << std::endl;
+				for (size_t j = 0; j < configs[i]->_newLocations.size(); j++){
+					std::cout << "location block:\n" << configs[i]->_newLocations[j]->toString() \
+					<< "---------------" << std::endl;
+					for (size_t k = 0; k < configs[i]->_newLocations[j]->_nestedLocations.size(); k++)
+					{
+						std::cout << "NESTED location block:\n" << configs[i]->_newLocations[j]->_nestedLocations[0]->toString()\
+						 << std::endl;
+					}
+				}
+			}
+		if (noDoublePorts(configs))
+			std::cout << "Ciao" << std::endl;
+		else
+			std::cout << ":(((())))" << std::endl;
+			
+			// // configs[0].setServer(0);
+			// std::cout << configs[0]._newLocations[1]->toString() << std::endl;
+		} else {
+			std::cout << "No configs found." << std::endl;
+		}
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << "Exceotion caught!" << e.what() << std::endl;
+	}
+	return 0;
 }
 
-
-
-
-// int main() {
-// 	std::string fileName = "example_config.conf";
-// 	std::vector<Config> configs = parseConfigFile("example_config.conf");
-
-// 	try
-// 	{
-// 		if (!configs.empty()) {
-// 			std::cout << configs[0] << std::endl;
-// 			// configs[0].setServer(0);
-// 			// std::cout << configs[0]._newLocations[0]->toString() << std::endl;
-// 			// std::cout << configs[0]._newLocations[0]->_nestedLocations[0]->toString() << std::endl;
-// 			// std::cout << configs[0]._newLocations[1]->toString() << std::endl;
-// 		}
-// 		 else {
-// 			std::cout << "No configs found." << std::endl;
-// 			configs.emplace_back();
-// 		}
-// 	Server	server(configs); //not constructable enough?
-// 	server.main_server_loop();
-// 	}
-// 	catch(const std::exception& e)
-// 	{
-// 		std::cerr << "Exceotion caught!" << e.what() << std::endl;
-// 	}
-// 	return 0;
-// }
+bool	noDoublePorts(const std::vector<std::unique_ptr<Config>> &configs)
+{
+	for (size_t i = 0; i < configs.size(); i++)
+	{
+		const std::string &port = configs[i]->getListen();
+		for (size_t j = i + 1; j < configs.size(); j++)
+		{
+			if (port == configs[j]->getListen())
+				return (false);
+		}
+	}
+	return (true);
+}

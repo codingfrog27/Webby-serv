@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/07 15:53:18 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/21 16:53:52 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 #include "socket.hpp"
 #include <memory>
 
-std::vector<Config>	parseConfigFile(const std::string fileName)
+std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName)
 {
 	std::string		line;
 	std::ifstream	file(fileName);
-	std::vector<Config>	Configs;
+	std::vector<std::unique_ptr<Config>>	Configs;
 
 	if (!file.is_open())
 		throw std::invalid_argument("Error: Unable to open file" );
@@ -29,7 +29,8 @@ std::vector<Config>	parseConfigFile(const std::string fileName)
 			continue;
 		if (line.find("server {") != std::string::npos)
 		{
-			Configs.emplace_back(file, line);
+			// Configs.emplace_back(file, line);
+			Configs.push_back(std::unique_ptr<Config>(new Config(file, line)));
 		}
 		// else
 			// throw std::invalid_argument("non comment text between server blocks! >:(");
@@ -60,97 +61,54 @@ Config::Config(std::ifstream &file, std::string &line)
 
 
 int	Config::mapToMembers()
-{		
-		if (_rulemap.contains("listen"))
-			setListen(validateListen());
-		if (_rulemap.contains("client_max_body_size"))
-			setMaxBodySize("client_max_body_size");
-		if (_rulemap.contains("error_page"))
-			setErrorPage("error_page");
-		if (_rulemap.contains("host"))
-			setHost("host");
-		if (_rulemap.contains("index"))
-			setIndex("index");
-		if (_rulemap.contains("root"))
-			setRoot("root");
-		if (_rulemap.contains("server_name"))
-			setServerName("server_name");
+{	
+	setListen(validateListen());
+	setMaxBodySize(validateMaxBodySize());
+	setErrorPage(validateErrorPage());
+	setHost(validateHost());	
+	setIndex(ValidateIndex());
+	setRoot(validateRoot());
+	setServerName(validateServerName());
+	
 	return (1);
 }
 
-// void	Config::setServer(const int rule)
-// {
-// 	switch (rule)
-// 	{
-// 	case LISTEN:
-// 		setListen(validateListen());
-// 		if (_rulemap.empty())
-// 			break;
-// 		else
-// 			mapToMembers();
-// 	case MAX_BODY_SIZE:
-// 		setMaxBodySize("client_max_body_size");
-// 		if (_rulemap.empty())
-// 			break;
-// 		else
-// 			mapToMembers();
-// 	case ERROR_PAGE:
-// 		setErrorPage("error_page");
-// 		if (_rulemap.empty())
-// 			break;
-// 		else
-// 			mapToMembers();
-// 	case HOST:
-// 		setHost("host");
-// 		if (_rulemap.empty())
-// 			break;
-// 		else
-// 			mapToMembers();
-// 	case INDEX:
-// 		setIndex("index");
-// 		if (_rulemap.empty())
-// 			break;
-// 		else
-// 			mapToMembers();
-// 	case ROOT:
-// 		setRoot("root");
-// 		if (_rulemap.empty())
-// 			break;
-// 		else
-// 			mapToMembers();
-// 	case SERVER_NAME:
-// 		setServerName("server_name");
-// 		if (_rulemap.empty())
-// 			break;
-// 		else
-// 			mapToMembers();
-// 	case EMPTY:
-// 		std::cout << "hello gamers" << std::endl;
-// 		break;
-// 	default:
-// 		throw std::invalid_argument("Error: Invalid rule");
-// 	}
-// }
+std::string Config::toString() const {
+    std::ostringstream oss;
+    oss << "Server Name: " << _serverName << "\n";
+	oss << "Root: " << _rootDir << "\n";
+	oss << "Listen: " << _listen << "\n";
+	oss << "Host: " << _host << "\n";
+	// oss << "Error Page: " << _errorPage << "\n";
+	// print_map(_errorPage);
+	oss << "Max Body Size: " << _client_max_body_size << "\n";
+	// oss << "Index: " << _index << "\n";
+    return oss.str();
+}
 
 void	Config::parseRule(const std::string &line)
 {
-	auto key = line.begin();
-	while (key != line.end() and (*key == ' ' or *key == '\t'))
-		key++;
-	if (key == line.end() or *key == '#' or *key == '}')
+	auto comment_pos = line.find('#');
+	std::string directive = line.substr(0, comment_pos);
+
+	auto key_begin = directive.begin();
+	while (key_begin != directive.end() and (*key_begin == ' ' or *key_begin == '\t'))
+		key_begin++;
+	if (key_begin == directive.end() or *key_begin == '#' or *key_begin == '}')
 		return;
-	auto begin = key;
-	while (key != line.end() and *key != ' ' and *key != '\t')
-		key++;
-	std::string tmp_key(begin, key);
-	auto value  = key;
-	while(value != line.end() and (*value == ' ' or+ *value == '\t'))
-	 	value++;
-	auto begin_value = value;
-	while(begin_value != line.end() and *begin_value != ';')
-	 	begin_value++;
-	if (begin_value == line.end() || *begin_value != ';')
-    	return;
-	std::string tmp_value(value, begin_value);	
+	auto key_end = key_begin;
+	while (key_begin != directive.end() and *key_begin != ' ' and *key_begin != '\t')
+		key_begin++;
+	std::string tmp_key(key_end, key_begin);
+	auto value_begin = key_end;
+	while(value_begin!= directive.end() and (*value_begin== ' ' or+ *value_begin== '\t'))
+	 	value_begin++;
+	auto value_end = value_begin;
+	while(value_end != directive.end() and *value_end != ';')
+	 	value_end++;
+	if (value_end == directive.end())
+		throw std::invalid_argument("Error: Missing semicolon.");
+	std::string tmp_value(value_begin, value_end);	
+	// std::cout << tmp_value << std::endl;
 	_rulemap.emplace(tmp_key, tmp_value);
 }

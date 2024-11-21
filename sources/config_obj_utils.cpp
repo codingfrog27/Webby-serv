@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/08 17:51:17 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/21 17:01:08 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,9 @@ std::string	Config::getRoot()
 	return(this->_rootDir);
 }
 
-void	Config::setRoot(const std::string &key)
+void	Config::setRoot(const std::string &root)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_rootDir = _rulemap.at(key);
+	this->_rootDir = root;
 }
 
 std::string	Config::getListen()
@@ -87,11 +85,9 @@ std::string	Config::getListen()
 	return(this->_listen);
 }
 
-void	Config::setListen(const std::string &value)
+void	Config::setListen(const std::string &listen)
 {
-	// if (!_rulemap.contains(key))
-	// 	return;
-	this->_listen = value;
+	this->_listen = listen;
 }
 
 std::string	Config::getServerName()
@@ -99,11 +95,9 @@ std::string	Config::getServerName()
 	return(this->_serverName);
 }
 
-void	Config::setServerName(const std::string &key)
+void	Config::setServerName(const std::string &serverName)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_serverName = _rulemap.at(key);
+	this->_serverName = serverName;
 }
 
 std::string	Config::getHost()
@@ -111,23 +105,19 @@ std::string	Config::getHost()
 	return(this->_host);
 }
 
-void	Config::setHost(const std::string &key)
+void	Config::setHost(const std::string &host)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_host = _rulemap.at(key);
+	this->_host = host;
 }
 
-std::string	Config::getErrorPage()
+std::unordered_map<std::string, std::string>	Config::getErrorPage()
 {
 	return(this->_errorPage);
 }
 
-void	Config::setErrorPage(const std::string &key)
+void	Config::setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_errorPage = _rulemap.at(key);
+	this->_errorPage = errorPageMap;
 }
 
 std::string	Config::getMaxBodySize()
@@ -135,21 +125,17 @@ std::string	Config::getMaxBodySize()
 	return(this->_client_max_body_size);
 }
 
-void	Config::setMaxBodySize(const std::string &key)
+void	Config::setMaxBodySize(const std::string &maxBodySize)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_client_max_body_size = _rulemap.at(key);
+	this->_client_max_body_size = maxBodySize;
 }
 
-std::string	Config::getIndex()
+std::vector<std::string>	Config::getIndex()
 {
 	return(this->_index);
 }
 
-void	Config::setIndex(const std::string &key)
+void	Config::setIndex(const std::vector<std::string> &index_vector)
 {
-	if (!_rulemap.contains(key))
-		return;
-	this->_index = _rulemap.at(key);
+	this->_index = index_vector;
 }
