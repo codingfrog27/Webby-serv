@@ -16,4 +16,4 @@ class CGI{
 
 };
 
-void	CGIHandler(HttpRequest* request, Response* response, Http_method method); 
+Response*	CGIHandler(Request* request, Response* response, int fd); 

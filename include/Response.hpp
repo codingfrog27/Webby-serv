@@ -38,6 +38,7 @@ class Response{
 };
 
 void		responseHandler(Request* request, Config* config);
-std::string	resolveFilePath(Request* request, Response* response, Config* config);
+// std::string	resolveFilePath(Request* request, Response* response, Config* config);
+bool		isCGIrequired(Request* request);
 bool		fileExists(std::string path);
 readingMode	getReadingMode(Response & response);

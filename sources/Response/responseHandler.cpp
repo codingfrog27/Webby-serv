@@ -1,15 +1,16 @@
 #include "Response.hpp"
+#include "CGI.hpp"
 
-static Response*	getMethod(Request* request, Response* response, std::string filePath){
+static Response*	getMethod(Request* request, Response* response){
 	std::ifstream file;
 	size_t size = 0;
 
-	if (fileExists(filePath)){
-		response->setContentType(filePath);
+	if (fileExists(request->_filePath)){
+		response->setContentType(request->_filePath);
 		if (getReadingMode(*response) == BINARY)
-			file.open(filePath, std::ios::binary); 
+			file.open(request->_filePath, std::ios::binary); 
 		else
-			file.open(filePath);
+			file.open(request->_filePath);
 		if (file.is_open()){
 			file.seekg(0, std::ios::end);
 			size = file.tellg();
@@ -35,14 +36,14 @@ static Response*	getMethod(Request* request, Response* response, std::string fil
 	return (response);
 }
 
-static Response*	postMethod(Request* request, Response* response, std::string filePath){
+static Response*	postMethod(Request* request, Response* response){
 	std::ofstream file;
 
 	// check for CGI??
 	if(getReadingMode(*response) == BINARY)
-		file.open(filePath, std::ios::app);
+		file.open(request->_filePath, std::ios::app);
 	else
-		file.open(filePath);
+		file.open(request->_filePath);
 	if (file.is_open()){
 		// file << request->getRawRequestData; //get body
 		file.close();
@@ -53,10 +54,10 @@ static Response*	postMethod(Request* request, Response* response, std::string fi
 	return response;
 }
 
-static Response*	deleteMethod(Request* request, Response* response, std::string filePath){
+static Response*	deleteMethod(Request* request, Response* response){
 
-	if (fileExists(filePath)){
-		if (std::remove(filePath.c_str()) == 0)
+	if (fileExists(request->_filePath)){
+		if (std::remove(request->_filePath.c_str()) == 0)
 			response->autoFillResponse("200 OK");
 		else
 			response->autoFillResponse("500 Internal Server Error");
@@ -69,23 +70,25 @@ static Response*	deleteMethod(Request* request, Response* response, std::string 
 void	responseHandler(Request* request, Config* config)
 {
 	Response *response = new Response(request);
-	std::string filePath = resolveFilePath(request, response, config);
-	std::string responseText;
+	std::string responseBuffer;
 
 	if (!request->getStatusCode().empty()) //if there was an error in (parsing) the request
 		response->autoFillResponse(request->getStatusCode());
+	else if (isCGIrequired(request))
+		response = CGIHandler(request, response, request->_clientFD);
 	else if (request->_method_type == GET)
-		response = getMethod(request, response, filePath);
+		response = getMethod(request, response);
 	else if (request->_method_type == POST)
-		response = postMethod(request, response, filePath);
+		response = postMethod(request, response);
 	else if (request->_method_type == DELETE)
-		response = deleteMethod(request, response, filePath);
-	else{
-		response->autoFillResponse("405 Method Not Allowed");
-		response->setHeaders("Allow", "GET, POST, DELETE");
-	}
-	responseText = response->generateResponse();
-	std::cout << responseText << std::endl;
-	write(request->_clientFD, responseText.c_str(), responseText.size()); //needs to be send back in a loop (see requestHandler)
+		response = deleteMethod(request, response);
+	// else{
+	// 	response->autoFillResponse("405 Method Not Allowed");
+	// 	response->setHeaders("Allow", "GET, POST, DELETE");
+	// }
+	// to be handled in requestHandler
+	responseBuffer = response->generateResponse();
+	std::cout << responseBuffer << std::endl;
+	write(request->_clientFD, responseBuffer.c_str(), responseBuffer.size()); //needs to be send back in a loop (see requestHandler)
 	return;
 }
