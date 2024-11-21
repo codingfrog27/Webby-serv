@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/03 14:32:11 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 18:05:40 by mde-cloe         ###   ########.fr       */
-/*                                                                            */
+/*																			*/
+/*														:::	  ::::::::   */
+/*   Server.cpp										 :+:	  :+:	:+:   */
+/*													+:+ +:+		 +:+	 */
+/*   By: mde-cloe <mde-cloe@student.42.fr>		  +#+  +:+	   +#+		*/
+/*												+#+#+#+#+#+   +#+		   */
+/*   Created: 2024/10/03 14:32:11 by mde-cloe		  #+#	#+#			 */
+/*   Updated: 2024/10/07 18:32:31 by mde-cloe		 ###   ########.fr	   */
+/*																			*/
 /* ************************************************************************** */
 
 #include "everything.hpp"
@@ -18,117 +18,109 @@
 
 
 // ************************************************************************** //
-//                        Constructors and Destructors                        //
+//						Constructors and Destructors						//
 // ************************************************************************** //
 
-Server::Server(Config *config) : _sockets()
-{
-	for (size_t i = 0; i < MAX_CLIENT; i++)
+Server::Server(const std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
+{	
+	try
 	{
-		_sockets.emplace_back(config);
+		for (size_t i = 0; i < _serverBlocks.size(); ++i)
+ 		{
+			setupAddrInfo(&_serverBlocks[i]);
+			_serverSockets.emplace_back(&_serverBlocks[i], _addrInfo);
+			_pollFDs.emplace_back(pollfd{_serverSockets[i]._socketFd, POLLIN | POLLERR,  0});
+			_Connections.emplace_back(&_serverBlocks[i], _serverSockets[i]._socketFd, true);
+		}
 	}
-	
-
-	std::cout << GREEN << "Server: Default constructor called" << RESET << std::endl;
-}
-
-Server::Server(const Server &rhs)
-{
-	std::cout << GREEN << "Server: Copy constructor called" << RESET << std::endl;
-
-	*this = rhs;
-}
-
-Server &
-Server::operator=(const Server &rhs)
-{
-	std::cout << GREEN << "Server: Assignment operator called" << RESET << std::endl;
-
-	if (this != &rhs)
+	catch(const std::exception& e)
 	{
-		// Perform deep copy
+		std::cerr << e.what() << '\n';
 	}
-
-	return (*this);
+	std::cout << GREEN << "Server is running :)" << RESET << std::endl;
 }
+
+
+// AF_UNSPEC = don't care IPv4 or IPv6
+// SOCK_STREAM; //Specifies the socket type (SOCK_STREAM for TCP)
+// AI_PASSIVE; //Provides additional options (AI_PASSIVE for binding to all network interfaces)
+// IPPROTO_TCP; //Specifies the protocol
+void	Server::setupAddrInfo(Config *config)
+{
+	addrinfo hints;
+	int status;
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_PASSIVE;
+	hints.ai_protocol = IPPROTO_TCP;
+
+	status = getaddrinfo(config->_serverName.c_str(), config->_serverPort.c_str(), &hints, &_addrInfo); //?
+	if (status != 0)
+		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
+
+}
+
 
 Server::~Server(void)
 {
+	freeaddrinfo(_addrInfo);
 	std::cout << RED << "Server: Destructor called" << RESET << std::endl;
 }
 
 // ************************************************************************** //
-//                                Public methods                              //
+//								Public methods							  //
 // ************************************************************************** //
 
 
-void Server::accept_loop()
-{
-	int clientFD;
-	for (size_t i = 0; i < _sockets.size(); i++)
-	{
-		clientFD = _sockets[i].createConnection();
-		if (clientFD > 0)
-		{
-			pollfd newconnect;
-			newconnect.fd = clientFD;
-			//add events and revents
-			pfds.push_back(newconnect); //replace w emplace?
 
-			Connection newconnectClass(config);
-			//set stuf
-			connections.push_back(newconnectClass);
-		}
-	}
-	
-	
+void	Server::close_connect(int i)
+{
+	close(_Connections[i]._clientFD);
+	_Connections.erase(_Connections.begin() + i);
+	_pollFDs.erase(_pollFDs.begin() + i);
 }
 
-void	Server::close_connect(Connection closeme, int i)
-{
-	close(closeme._clientFD);
-	close(closeme._serverFD);
-	// auto it = std::find(_sockets.begin(), _sockets.end(), closeme._serverFD);
-	// _sockets.erase(it);
-	// _sockets.emplace(it);
-	_sockets[closeme._socketIndex] = Socket(config); //does this call destructor
-	pfds.erase(pfds.begin() + i);
-	connections.erase(connections.begin() + i);
-	// _sockets.em
-	
-}
+
+#define TMP_POLL_TIME 5000
 
 void	Server::main_server_loop()
 {
+	int	size = _pollFDs.size();
 	
-	int num_events;
-	
-	while (1)
+	poll(_pollFDs.data(), size, TMP_POLL_TIME);
+	//get current time
+	for (size_t i = 0; i < size; ++i)
+	{		
+		if (_pollFDs[i].revents & POLLIN)
 		{
-			accept_loop();
-			//1 check for new connects
-			// copy_clients_fds(connections); //2
-
-			num_events = poll(pfds.data(), pfds.size(), 2500);
-			if (num_events < 0) 
-			{
-				std::cerr << RED << "Poll failed with error: " << strerror(errno) << RESET << std::endl;
-				break;
-			}
-			if (num_events == 0) 
-				std::cout << MAGENTA << "Poll timed out, no events to handle." << RESET << std::endl;
-			for (size_t i = 0; i < pfds.size(); ++i)
-			{
-				if (pfds[i].revents & POLLIN) 
-					connections[i]._request->main_reader(pfds[i].fd);
-				if ((pfds[i].revents & POLLOUT) && connections[i].doneReading) //what if ready to post to server but not reday for response
-					responseHandler(connections[i]._request);
-					// responseHandler(connections[i]._request, connections[i]._clientFD);
-					
-					// connections[i].response->generateResponse(); //
-				if (!connections[i]._keepOpen)
-					close_connect(connections[i], i);
-			}
-			/* code */
+			if (_Connections[i]._isServerSocket) 
+				acceptNewConnects(i);
+			else
+				_Connections[i]._request.readRequest();
 		}
+		else if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading)
+		{
+			responseHandler(&_Connections[i]._request);
+			if (_Connections[i]._keepOpen) 
+				_Connections[i]._request = Request(_Connections[i]._clientFD); 
+			else
+				close_connect(i);
+		}
+		//else if (current_time - last_action_time > idle timeout)
+			// close_connect()
+	}
+}
+
+
+void Server::acceptNewConnects(int i)
+{
+	int clientFD = accept(_pollFDs[i].fd, nullptr, nullptr); //timeout check??
+	if (clientFD > 0)
+	{
+		std::cout << "new connection! :)" << std::endl;
+		_pollFDs.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
+		_Connections.emplace_back(_Connections[i]._config, clientFD, false);
+	}
+	else
+		std::cout << "NOT ACCEPTED" << std::endl;
 }

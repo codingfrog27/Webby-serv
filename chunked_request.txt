@@ -1,0 +1,22 @@
+POST /login HTTP/1.1
+Host: www.example.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 33
+
+username=john_doe&password=secret
+
+
+
+POST /cgi-bin/process.cgi HTTP/1.1 200 OK
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Host: www.example.com
+hallo: poepie
+what: thadogdoin
+
+
+7
+Mozilla
+11
+Developer Network
+0

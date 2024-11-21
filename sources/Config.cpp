@@ -1,63 +1,116 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Config.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 18:48:41 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Config.cpp                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2024/11/21 12:22:03 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "location.hpp"
 #include "Config.hpp"
-#include "Colors.hpp"
+#include "socket.hpp"
+#include <memory>
 
-
-// ************************************************************************** //
-//                        Constructors and Destructors                        //
-// ************************************************************************** //
-
-Config::Config(void) //default constructor 
+std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName)
 {
-	_serverPort = "8080"; //idk if this works 
-	_serverName = "funny_serverUWU";
-	_maxConnects = 500;
-	_timeout = 50000;
-	_rootDir = "website";
-	_autoIndexFilePath = _rootDir + "index.html"; //do i need slash?
-	
+	std::string		line;
+	std::ifstream	file(fileName);
+	std::vector<std::unique_ptr<Config>>	Configs;
 
-	std::cout << GREEN << "Config: Default constructor called" << RESET << std::endl;
-}
-
-Config::Config(const Config &rhs)
-{
-	std::cout << GREEN << "Config: Copy constructor called" << RESET << std::endl;
-
-	*this = rhs;
-}
-
-Config &
-Config::operator=(const Config &rhs)
-{
-	std::cout << GREEN << "Config: Assignment operator called" << RESET << std::endl;
-
-	if (this != &rhs)
+	if (!file.is_open())
+		throw std::invalid_argument("Error: Unable to open file" );
+	while (std::getline(file, line))
 	{
-		// Perform deep copy
+		if (line.empty() || checkCaracter(line, '#'))
+			continue;
+		if (line.find("server {") != std::string::npos)
+		{
+			// Configs.emplace_back(file, line);
+			Configs.push_back(std::unique_ptr<Config>(new Config(file, line)));
+		}
+		// else
+			// throw std::invalid_argument("non comment text between server blocks! >:(");
 	}
-
-	return (*this);
+	return (Configs);
 }
 
-Config::~Config(void)
+Config::Config(std::ifstream &file, std::string &line)
 {
-	std::cout << RED << "Config: Destructor called" << RESET << std::endl;
+	std::cout << GREEN << "config filestream constructor called" \
+	<< RESET << std::endl;
+	while (std::getline(file, line))
+	{
+		if (line.empty() || line[i] == '#')
+			continue;
+		if (locationFound(line))
+			_newLocations.push_back(std::unique_ptr<location>(new location(file, line)));
+		else if (checkCaracter(line, '}'))
+		{
+			int validServer = mapToMembers();
+			
+			int validServer = mapToMembers();
+			
+			return;
+		}
+		else
+			parseRule(line);
+	}
 }
 
-// ************************************************************************** //
-//                                Public methods                              //
-// ************************************************************************** //
 
+int	Config::mapToMembers()
+{	
+	setListen(validateListen());
+	setMaxBodySize(validateMaxBodySize());
+	setErrorPage(validateErrorPage());
+	setHost(validateHost());	
+	setIndex(ValidateIndex());
+	setRoot(validateRoot());
+	setServerName(validateServerName());
+	
+	return (1);
+}
 
+std::string Config::toString() const {
+    std::ostringstream oss;
+    oss << "Server Name: " << _serverName << "\n";
+	oss << "Root: " << _rootDir << "\n";
+	oss << "Listen: " << _listen << "\n";
+	oss << "Host: " << _host << "\n";
+	// oss << "Error Page: " << _errorPage << "\n";
+	// print_map(_errorPage);
+	oss << "Max Body Size: " << _client_max_body_size << "\n";
+	// oss << "Index: " << _index << "\n";
+    return oss.str();
+}
+
+void	Config::parseRule(const std::string &line)
+{
+	auto comment_pos = line.find('#');
+	std::string directive = line.substr(0, comment_pos);
+
+	auto key_begin = directive.begin();
+	while (key_begin != directive.end() and (*key_begin == ' ' or *key_begin == '\t'))
+		key_begin++;
+	if (key_begin == directive.end() or *key_begin == '#' or *key_begin == '}')
+		return;
+	auto key_end = key_begin;
+	while (key_begin != directive.end() and *key_begin != ' ' and *key_begin != '\t')
+		key_begin++;
+	std::string tmp_key(key_end, key_begin);
+	auto value_begin = key_end;
+	while(value_begin!= directive.end() and (*value_begin== ' ' or+ *value_begin== '\t'))
+	 	value_begin++;
+	auto value_end = value_begin;
+	while(value_end != directive.end() and *value_end != ';')
+	 	value_end++;
+	if (value_end == directive.end())
+		throw std::invalid_argument("Error: Missing semicolon.");
+	std::string tmp_value(value_begin, value_end);	
+	// std::cout << tmp_value << std::endl;
+	_rulemap.emplace(tmp_key, tmp_value);
+}

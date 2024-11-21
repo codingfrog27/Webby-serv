@@ -1,50 +1,51 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Connection.cpp                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/02 16:26:31 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/10/03 17:46:55 by asimone          ###   ########.fr       */
-/*                                                                            */
+/*																			*/
+/*														:::	  ::::::::   */
+/*   Connection.cpp									 :+:	  :+:	:+:   */
+/*													+:+ +:+		 +:+	 */
+/*   By: asimone <asimone@student.42.fr>			+#+  +:+	   +#+		*/
+/*												+#+#+#+#+#+   +#+		   */
+/*   Created: 2024/10/02 16:26:31 by mde-cloe		  #+#	#+#			 */
+/*   Updated: 2024/10/03 17:46:55 by asimone		  ###   ########.fr	   */
+/*																			*/
 /* ************************************************************************** */
 
 #include "Connection.hpp"
 
 
 // ************************************************************************** //
-//                        Constructors and Destructors                        //
+//						Constructors and Destructors						//
 // ************************************************************************** //
 
-Connection::Connection(Config *config)
+Connection::Connection(Config *config, int clientFD, bool isServerside): \
+_isServerSocket(isServerside), _clientFD(clientFD), _request(clientFD), \
+_keepOpen(false)
 {
-	config = nullptr;
-	_request = nullptr;
-
-	std::cout << GREEN << "Connection: Default constructor called" << RESET << std::endl;
 }
 
 
-// Connection::Connection(const Connection &rhs)
-// {
-// 	std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
+Connection::Connection(const Connection &rhs) : _request(rhs._request)
+{
+	std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
 
-// 	*this = rhs;
-// }
+	*this = rhs;
+}
 
-// Connection &
-// Connection::operator=(const Connection &rhs)
-// {
-// 	std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
+Connection &
+Connection::operator=(const Connection &rhs)
+{
+	std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
 
-// 	if (this != &rhs)
-// 	{
-// 		// Perform deep copy
-// 	}
+	if (this != &rhs)
+	{
+		_isServerSocket = rhs._isServerSocket;
+		_config = rhs._config;
+		_clientFD = rhs._clientFD;
+		_keepOpen = rhs._keepOpen;
+	}
 
-// 	return (*this);
-// }
+	return (*this);
+}
 
 Connection::~Connection(void)
 {
@@ -52,7 +53,7 @@ Connection::~Connection(void)
 }
 
 // ************************************************************************** //
-//                                Public methods                              //
+//								Public methods							  //
 // ************************************************************************** //
 
 // int Connection::Create_Connection(void)

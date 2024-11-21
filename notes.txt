@@ -1,0 +1,26 @@
+nov 7
+
+can rad multiple chunks
+
+typical read size 4kb but i can do less for headers
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+By using the AI_PASSIVE flag, I’m telling the program to bind to the IP of the host it’s running on. If you want to bind to a specific local IP address, drop the AI_PASSIVE and put an IP address in for the first argument to getaddrinfo().
+
+
+bind
+
+

@@ -1,16 +1,19 @@
 #pragma once
-#include "HttpRequest.hpp"
 #include <fstream>
+#include "Request.hpp"
+#include "everything.hpp"
 
 enum readingMode{
 	TEXT,
 	BINARY
 };
 
+// class Request;
+
 class Response{
 	public:
 		Response() = delete;
-		Response(HttpRequest* request);
+		Response(Request* request);
 		Response(const Response &obj) = delete;
 		Response& operator=(const Response& obj) = delete;
 		~Response();
@@ -28,14 +31,13 @@ class Response{
 
 	private:
 		const Http_method								_method_type;
-		const float										_http_version;
+		const std::string								_http_version;
 		std::string										_status;
 		std::unordered_map<std::string, std::string>	_headers;
 		std::vector<char>								_body;
 };
 
-void		responseHandler(HttpRequest* request);
-std::string	resolveFilePath(HttpRequest* request);
-bool		fileExists(std::string path, Response* response);
+void		responseHandler(Request* request, Config* config);
+std::string	resolveFilePath(Request* request, Response* response, Config* config);
+bool		fileExists(std::string path);
 readingMode	getReadingMode(Response & response);
-void		responseHandler(HttpRequest* request);
