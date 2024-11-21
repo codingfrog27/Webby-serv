@@ -23,11 +23,6 @@ std::string	resolveFilePath(Request* request, Response* response, Config* config
 		filePath.erase(0, config->_host.length());
 	if (filePath.find(config->_serverPort) != std::string::npos)
 		filePath.erase(0, config->_serverPort.length() + 1);
-	temp = checkForRedirection(filePath, config);
-	if (temp != filePath){
-		response->setStatus("301 Moved Permanently");
-	}
-		return temp;
 	return config->_rootDir + temp;
 }
 
