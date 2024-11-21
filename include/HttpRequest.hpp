@@ -95,5 +95,6 @@ class Request
 	bool											_keepOpen;
 	bool											_error_occured;
 	std::string										_statusCode;
+	std::string										_filePath;
 };
 	// std::string document_root = "/var/www/html"; // Example document root
