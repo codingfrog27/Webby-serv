@@ -1,11 +1,11 @@
 #include "Response.hpp"
 #include <fstream>
 
-static std::string	checkForRedirection(std::string filePath, Config* config){
-	if (config->_locNames.contains(filePath)){
-		return filePath;
-	}
-}
+// static std::string	checkForRedirection(std::string filePath, Config* config){
+// 	if (config->_locNames.contains(filePath)){
+// 		return filePath;
+// 	}
+// }
 
 // here ^^ take into account subdirectories and locations
 
