@@ -36,15 +36,15 @@ void	Response::autoFillResponse(std::string status){
 	return ;
 }
 
-std::string tmp_read_file(std::string page)
-{
-	std::ifstream file(page);
-	std::stringstream buffer;
-	if (!file.is_open())
-	throw std::runtime_error("Could not open file: " + page);	 
-	buffer << file.rdbuf();
-	return buffer.str();
-}
+// std::string tmp_read_file(std::string page)
+// {
+// 	std::ifstream file(page);
+// 	std::stringstream buffer;
+// 	if (!file.is_open())
+// 	throw std::runtime_error("Could not open file: " + page);	 
+// 	buffer << file.rdbuf();
+// 	return buffer.str();
+// }
 
 std::string	Response::generateResponse() const{
 	std::string response = _http_version + " " + _status + "\r\n";

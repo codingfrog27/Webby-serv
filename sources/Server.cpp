@@ -88,6 +88,7 @@ void	Server::main_server_loop()
 	int	size = _pollFDs.size();
 	
 	poll(_pollFDs.data(), size, TMP_POLL_TIME);
+	//get current time
 	for (size_t i = 0; i < size; ++i)
 	{		
 		if (_pollFDs[i].revents & POLLIN)
@@ -105,13 +106,15 @@ void	Server::main_server_loop()
 			else
 				close_connect(i);
 		}
+		//else if (current_time - last_action_time > idle timeout)
+			// close_connect()
 	}
 }
 
 
 void Server::acceptNewConnects(int i)
 {
-	int clientFD = accept(_pollFDs[i].fd, nullptr, nullptr);
+	int clientFD = accept(_pollFDs[i].fd, nullptr, nullptr); //timeout check??
 	if (clientFD > 0)
 	{
 		std::cout << "new connection! :)" << std::endl;

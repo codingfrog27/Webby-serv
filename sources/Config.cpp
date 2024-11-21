@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/21 16:53:52 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/21 17:14:53 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ Config::Config(std::ifstream &file, std::string &line)
 			_newLocations.push_back(std::unique_ptr<location>(new location(file, line)));
 		else if (checkCaracter(line, '}'))
 		{
+			int validServer = mapToMembers();
+			
 			int validServer = mapToMembers();
 			
 			return;

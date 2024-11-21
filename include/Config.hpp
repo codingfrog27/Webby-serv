@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/21 16:59:19 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/21 17:18:56 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,8 +101,10 @@ class Config
 	std::string validateServerName();
 	std::string toString() const;
 };
-	
-std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName);
+
+
+std::ostream& operator<<(std::ostream& os, const Config& config);
+std::vector<Config>	parseConfigFile(const std::string fileName);
 bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 bool	checkstr(const std::string &line, const std::string &str);

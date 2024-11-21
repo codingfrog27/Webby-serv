@@ -37,8 +37,7 @@ class Response{
 		std::vector<char>								_body;
 };
 
-void		responseHandler(Request* request);
-std::string	resolveFilePath(Request* request);
-bool		fileExists(std::string path, Response* response);
+void		responseHandler(Request* request, Config* config);
+std::string	resolveFilePath(Request* request, Response* response, Config* config);
+bool		fileExists(std::string path);
 readingMode	getReadingMode(Response & response);
-void		responseHandler(Request* request);
