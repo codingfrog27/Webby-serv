@@ -4,15 +4,16 @@ CC = c++
 Wflags = -Wall -Wextra
 VERSION_FLAG = -std=c++20
 
-
-INCLUDE = -I include/ -I libft/include
+INCLUDE_FLAGS = -I include/ -I libft/include
 LIBFT_A			:=	./libft/libft.a
 Wflags := -g -fsanitize=address
 # Wflags := -Wall -Wextra -Werror -g -fsanitize=address
 
 
+INCLDIR := include/
 SRCDIR = sources
 OBJDIR = objects
+HEADERS := $(shell find $(INCLDIR) -name '*.hpp')
 SOURCES := $(shell find $(SRCDIR) -name '*.cpp')
 OBJECTS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
 
@@ -30,13 +31,13 @@ C_RESET = \033[0m
 #-----------------
 
 $(NAME): $(SOURCES) $(OBJECTS) $(LIBFT_A)
-	@$(CC) $(Wflags) $(INCLUDE) $(VERSION_FLAG) $(OBJECTS) -o $(NAME)
+	@$(CC) $(Wflags) $(INCLUDE_FLAGS) $(VERSION_FLAG) $(OBJECTS) -o $(NAME)
 	@printf "$(C_BLUE)$(NAME) $(C_GREEN) Compiled!\n\n$(C_RESET )"
 
-$(OBJDIR)/%.o : $(SRCDIR)/%.cpp | $(OBJDIR)
+$(OBJDIR)/%.o : $(SRCDIR)/%.cpp $(HEADERS) | $(OBJDIR)
 	@mkdir -p $(dir $@)
 	@printf "$(C_GREEN) Compiling $(C_BLUE)$<\n$(C_RESET)"
-	@$(CC) -c $< $(Wflags) $(INCLUDE) $(VERSION_FLAG) -o $@
+	@$(CC) -c $< $(Wflags) $(INCLUDE_FLAGS) $(VERSION_FLAG) -o $@
 
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)

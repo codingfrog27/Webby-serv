@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2024/11/21 11:28:16 by mstegema      ########   odam.nl         */
+/*   Updated: 2024/11/21 12:15:53 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,20 @@
 #include <memory>
 #include "location.hpp"
 
+enum ServerRules
+{
+	LISTEN,
+	MAX_BODY_SIZE,
+	ERROR_PAGE,
+	HOST,
+	INDEX,
+	ROOT,
+	SERVER_NAME,
+	EMPTY
+};
+
 class Config
 {
-	private:
-		// Private Attributes
-		
-
 	public:
 		std::string _autoindex;
 		std::string _autoIndexFilePath;
@@ -56,28 +64,12 @@ class Config
 		~Config(void);
 
 	
-	// std::map<std::string, std::string> _configMap;
 
 	//these are all REQUIRED
 	size_t i = 0;
-	// size_t		_serverPort;
-	// std::vector<std::string> _locationName;
-	// std::vector<location> _location;
-	// std::vector <location> _locations;
-	// std::vector <Socket> _server;
-	// std::string	error_log_file;
-	// std::string	access_log_file;
-
-			
-	// size_t		keep_alive_timeout; //spefically how long to keep an idle connection open before closing
-	// bool		directory_listing; //aka autoindex: wether to display list of pages when requested dir isnt found
-	// std::string	cgi_script_directory;
-	// // not required but expected
-
-	// size_t		max_keep_alive_requests;
-	// std::unordered_map<std::string, std::string> custom_error_pages;
-	// std::unordered_map<std::string, std::string> access_control;
 	
+	
+	private:
 	location findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	void	parseRule(const std::string &line);
@@ -89,28 +81,26 @@ class Config
 	std::string	getListen();
 	std::string	getRoot();
 	std::string	getServerName();
-	void		setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap);
-	void		setHost(const std::string &host);
-	void		setIndex(const std::vector<std::string> &index_vector);
-	void		setListen(const std::string &listen);
-	void		setMaxBodySize(const std::string &maxBodySize);
-	void		setRoot(const std::string &root);
-	void		setServerName(const std::string &serverName);
-	void		setServer(const int rule);
+	void		setErrorPage(const std::string &key);
+	void		setHost(const std::string &key);
+	void		setIndex(const std::string &key);
+	void		setListen(const std::string &key);
+	void		setMaxBodySize(const std::string &key);
+	void		setRoot(const std::string &key);
+	void		setServerName(const std::string &key);
+	int		mapToMembers();
+	void	setServer(const int rule);
 
-	int			initializeServer();
-	int			mapToMembers();
-	std::unordered_map<std::string, std::string> validateErrorPage();
-	std::string validateHost();
-	std::vector<std::string> ValidateIndex();
 	std::string	validateListen();
 	std::string validateMaxBodySize();
 	std::string validateRoot();
 	std::string validateServerName();
 	std::string toString() const;
 };
-	
-std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName);
+
+
+std::ostream& operator<<(std::ostream& os, const Config& config);
+std::vector<Config>	parseConfigFile(const std::string fileName);
 bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 bool	checkstr(const std::string &line, const std::string &str);

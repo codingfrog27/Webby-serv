@@ -1,39 +1,16 @@
 /* ************************************************************************** */
-/*																			*/
-/*														:::	  ::::::::   */
-/*   HttpRequest_parsing.cpp							:+:	  :+:	:+:   */
-/*													+:+ +:+		 +:+	 */
-/*   By: mde-cloe <mde-cloe@student.42.fr>		  +#+  +:+	   +#+		*/
-/*												+#+#+#+#+#+   +#+		   */
-/*   Created: 2024/09/24 14:11:35 by mde-cloe		  #+#	#+#			 */
-/*   Updated: 2024/10/04 18:04:40 by mde-cloe		 ###   ########.fr	   */
-/*																			*/
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Request_parsing.cpp                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
+/*   Updated: 2024/11/19 19:31:48 by mde-cloe         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
-
-// not trimming any trailing whitespace rn cause RFC 7230 states its not allowed
-// some irl servers do allow it though.. so might add later?
-void	Request::parse_headers(std::string header_str)
-{
-	size_t						start, colon_pos, line_end;
-	std::string					key, value;
-
-	start = parse_req_line(header_str);
-	line_end = header_str.find("\r\n", start);
-	while (line_end != std::string::npos)
-	{
-		colon_pos = header_str.find(':', start);
-		if (colon_pos == std::string::npos)
-			throw (std::invalid_argument("colon missing in header"));
-		key = header_str.substr(start, colon_pos - start);
-		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2)); //check for empty values?
-		_headers[key] = value;
-		start = line_end + 2;
-		line_end = header_str.find("\r\n", start);
-	}
-	checkHeaders();
-}
 
 size_t	Request::parse_req_line(std::string req_line)
 {
@@ -62,138 +39,157 @@ size_t	Request::parse_req_line(std::string req_line)
 	return (line_end + 2);
 }
 
-Http_method Request::which_method_type(std::string str) 
+void	Request::parse_headers(std::string header_str)
 {
-	const char *Methods[] = {"GET", "POST", "DELETE"}; //will be updated after config parsing
+	size_t						start, colon_pos;
+	std::string					key, value;
 
-	for (size_t i = 0; i < 3; i++)
+	start = parse_req_line(header_str);
+	for (size_t line_end = header_str.find("\r\n", start); line_end != std::string::npos;)
 	{
-		if (str == Methods[i])
-			return (static_cast<Http_method>(i));
+		colon_pos = header_str.find(':', start);
+		if (colon_pos == std::string::npos)
+			throw (std::invalid_argument("colon missing in header"));
+		key = header_str.substr(start, colon_pos - start);
+		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2)); //check for empty values?
+		_headers[key] = value;
+		start = line_end + 2;
+		line_end = header_str.find("\r\n", start);
 	}
-	throw std::invalid_argument("Unsupported HTTP method: " + str);
+	checkHeaders();
 }
-
-
-void Request::dechunkBody() //from copilot will check next week
-{
-// 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
-// 	  // Implementation for dechunking the body
-//	 std::vector<char> body = _rawRequestData; // Assuming you have a method to get the body content as a vector of chars
-//	 std::vector<char> dechunked_body;
-//	 size_t pos = 0;
-
-//	 while (pos < body.size()) {
-//		 auto chunk_size_end = std::search(body.begin() + pos, body.end(), "\r\n", "\r\n" + 2);
-//		 if (chunk_size_end == body.end()) {
-//			 throw std::invalid_argument("400 Bad Request: Invalid chunked encoding");
-//		 }
-
-//		 std::string chunk_size_str(body.begin() + pos, chunk_size_end);
-//		 size_t chunk_size = std::stoul(chunk_size_str, nullptr, 16);
-//		 pos = chunk_size_end - body.begin() + 2;
-
-//		 if (chunk_size == 0) {
-//			 break; // End of chunks
-//		 }
-
-//		 if (pos + chunk_size > body.size()) {
-//			 throw std::invalid_argument("400 Bad Request: Incomplete chunked encoding");
-//		 }
-
-//		 dechunked_body.insert(dechunked_body.end(), body.begin() + pos, body.begin() + pos + chunk_size);
-//		 pos += chunk_size + 2; // Skip chunk data and CRLF
-//	 }
-
-	
-// 	//think maybe i just stoul() the size given (tho its hex should remember)
-// 	// and then throw the data inbetween in a new buffer?
-}
-
-std::string Request::http_version(std::string version) //throw error if not 1 or 1.1
-{
-	if (!version.compare(0, 8, "HTTP/1.1"))
-		return (version.substr(0, 8)); 
-	else if (!version.compare(0, 6, "HTTP/1"))
-		return (version.substr(0, 6));
-	else
-		throw std::invalid_argument("Unsupported HTTP version: " + version);
-}
-
-void	Request::parseBody()
-{
-	const std::string	suffix = "--";
-		std::string		content_type = getHeaderValue("Content-Type"); //make ref?
-		std::string		delimiter;
-		//assuming its there cause of header check
-	
-		
-	if (getHeaderValue("transfer encoding") == "chunked")
-		dechunkBody();
-	if(content_type.compare("multipart/form-data; boundary=") == 0)
-	{
-		if (content_type.size() < 31)
-			throw(std::invalid_argument("400, Bad Request, empty boundary parameter"));
-		delimiter = content_type.substr(31);
-	}
-	
-
-
-}
-	// If any transfer coding other than chunked is applied to a request's
-	//  content, the sender MUST apply chunked as the final transfer coding 
-	//  to ensure that the message is properly framed. 
-	// If any transfer coding other
-	//  than chunked is applied to a response's content, the sender MUST either
-	//   apply chunked as the final transfer coding or terminate the message by closing the connection.
-
-
-//content encoding bestaat ook nog
-//check for content length == body bytes read
-	
-//multipart/form data
 
 void	Request::checkHeaders()
 {
-	if (!headerExists("Host")) //split?
+	if (!headerExists("Host"))
 		throw(std::invalid_argument("400 bad request: Host missing"));
 	if (getHeaderValue("Connection") == "close")
 		_keepOpen = false;
-	else if (getHeaderValue("Connection") == "keep-alive")
-		_keepOpen = true;
-	// else
-	// 	throw(std::invalid_argument("400 bad request: Connection missing"));
-	if (_method_type == POST || _method_type == DELETE)
-	{
-		if (!headerExists("Content-Type")) //or if type not supported
-			throw (std::invalid_argument("415 Bad request. Unsupported Media Type"));
-		if (headerExists("content-length"))
-		{
-			_contentLen = std::stoul(getHeaderValue("content-length")); //handle exceptions?
-			if (_contentLen == 0)
-				throw (std::invalid_argument("411 length required"));
-			if (_contentLen > _max_body_size)
-				throw (std::length_error("413 Payload too large"));
-			reading_mode = READING_BODY;
-		}
-		else if (getHeaderValue("Transfer-Encoding") != "chunked")
-			throw (std::invalid_argument("411 length required")); //could seperate to be more precise
-		else
-			reading_mode = READING_BODY_CHUNKED;
-			
-		//expect 100 continue?/
-	}
-	else //bodys in GET, get ignored :)
+	if (_method_type == GET)
 	{
 		_doneReading = true;
-		_statusCode = "200 OK";
+		_statusCode = "";
 	}
-	//mb implement timeout mechanism since malicious requests could send body without these headers
+	else
+		checkBodyHeaders();
 }
 
-//not sure but Authorization if thats in scope for protected resources
-//accept
-//not mandated but could return 406 Not Acceptable
-// look into expext, mb range,
-//  if-modified-since/if-none-match 
-// ^ (could contain misuse but else return 304) 
+void	Request::checkBodyHeaders()
+{
+	_hasBody = true;
+	if (!headerExists("Content-Type")) //or if type not supported
+		throw (std::invalid_argument("415 Bad request. Unsupported Media Type"));
+	if (getHeaderValue("Transfer-Encoding") == "chunked")
+	{
+		_dataIsChunked = true;
+		reading_mode = READING_BODY_CHUNKED;
+		return;
+	}
+	try
+	{
+		_contentLen = std::stoul(getHeaderValue("Content-Length"));
+		reading_mode = READING_BODY;
+	}
+	catch(const std::invalid_argument& e)
+	{
+		std::cerr << e.what() << '\n';
+		throw (ClientErrorExcept(413, "413 Payload too large"));
+	}
+	catch(const std::out_of_range& e)
+	{
+		std::cerr << e.what() << '\n';
+		throw (ClientErrorExcept(413, "413 Payload too large"));
+	}
+	if (_contentLen == 0)
+		throw (ClientErrorExcept(411, "411 length required"));
+	if (_contentLen > _max_body_size)
+		throw (ClientErrorExcept(413, "413 Payload too large"));
+}
+
+
+
+
+bool	Request::dechunkBody()
+{
+	std::string	bodyStr(_rawRequestData.begin(), _rawRequestData.end());
+	size_t		bodySize = _rawRequestData.size();
+	size_t		bytesParsed = 0; 
+	size_t		hexStrSize = 0;
+	size_t		chunkSize;
+	//assumes the starting rnrn of body is still there but also only last one
+	for (size_t rnPos = bodyStr.find("\r\n", bytesParsed); rnPos != std::string::npos;)
+	{
+		rnPos += 2;
+		chunkSize = convertChunkSize(&bodyStr[rnPos], hexStrSize);
+		if (chunkSize > bodySize - hexStrSize) //means
+			break;
+		bytesParsed += rnPos + hexStrSize + chunkSize;
+		if (chunkSize == 0){
+			_doneReading = true;
+			break;
+		}
+		_reqBody += bodyStr.substr(rnPos + hexStrSize, chunkSize);
+	}
+	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + bytesParsed)); 
+	//do i have to remove 2 more if we're at the end? if so can make chunksize 2 :)
+	return (_doneReading);
+}
+
+
+void	Request::parseBody()
+{
+	std::string		content_type = getHeaderValue("Content-Type");
+	if(content_type.compare("multipart/form-data; boundary=") == 0)
+		parseFormData(content_type);
+	else if (content_type.compare("application/x-www-form-urlencoded") == 0)
+		parseUrlEncoded();
+}
+
+std::string	urlDecode(const std::string &encoded);
+
+void	Request::parseUrlEncoded()
+{
+	std::istringstream stream(_reqBody.substr(2));
+	std::string pair;
+
+	while (std::getline(stream, pair, '&')) {
+		size_t pos = pair.find('=');
+		if (pos == std::string::npos)
+			throw (ClientErrorExcept(400, "400, missing = in www-form encoded pairs"));
+		_wwwFormEncodedPairs[urlDecode(pair.substr(0, pos))] = urlDecode(pair.substr(pos + 1));
+	}
+}
+
+
+void	Request::parseFormData(std::string &content_type){
+	//assuming its there cause of header check
+	size_t nextboundary;
+		if (content_type.size() < 31) //meaning multiform without boundery!
+			throw(ClientErrorExcept(400, "400, Bad Request, empty boundary parameter"));
+	std::string delimiter = "--" + content_type.substr(31);
+	for (size_t i = _reqBody.find(delimiter); i != std::string::npos; i = nextboundary)
+	{
+		if (_reqBody.compare(i, 2, "--") == 0)
+			break;
+
+		//make new form object
+		//object.headers = parse_headers(&_reqBody[i + delimiter.size()]);
+
+
+		//change parse headers to take table to save the key and values to (and move checkheaders elsewhere)
+		// ORR give a bool and put a conditional in there but less pretty
+		//OR parse manually for members since
+		// Content-Disposition: form-data; name="file"; filename="example.txt"
+		// AND Content-Type: text/plain are the key ones, could even throw the other ones out
+		// if i use table might copy/move the 2 important ones to seperate strings anyways
+
+		nextboundary = _reqBody.find(delimiter, i);
+		if (i == std::string::npos)
+			throw	ClientErrorExcept(400, "400 no closing boundary in multiform");
+		
+		//object.body = _reqBody.substr(boundary + delimiter.size(), nextboundary - boundary)
+
+	}
+	
+
+}
