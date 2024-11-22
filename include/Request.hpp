@@ -95,6 +95,7 @@ class Request
 		std::string					_http_version;
 		std::string					request_line;
 		std::string 				_URI; 
+		std::string					_filePath;
 		bool						_keepOpen;
 		bool						_error_occured;
 		bool						_doneReading;

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/22 15:36:05 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/22 19:04:40 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,9 @@ int main(int argc, char ** argv) {
 //compile
 //exception
 //add missing closing brace errors
+
+//getreqbody
+//filepath string
+
 
 //
