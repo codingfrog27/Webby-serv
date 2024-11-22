@@ -3,7 +3,7 @@
 Response*	CGIHandler(Request* request, Response* response){
 	int	fd[2];
 
-	// should we even envoke CGI?
+	// should we even invoke CGI?
 	if (request->_method_type != GET || request->_method_type != POST){
 		response->autoFillResponse("405 Method Not Allowed");
 		response->setHeaders("Allow", "GET, POST");
@@ -24,7 +24,7 @@ Response*	CGIHandler(Request* request, Response* response){
 	}
 	CGI* newCGI = new CGI(fd[0], fd[1]);
 	newCGI->setupCGIEnvironment(request);
-	newCGI->invokeCGI(request, response);
+	response = newCGI->invokeCGI(request, response);
 
 	return response;
 }
