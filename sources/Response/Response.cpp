@@ -93,12 +93,12 @@ void	Response::setHeaders(std::string key, std::string value){
 }
 
 void	Response::setBody(std::string body){
-	_body.assign(body.begin(), body.end());
+	_body = body;
 	return ;
 }
 
 void	Response::setBody(std::vector<char> body){
-	_body = body;
+	_body.assign(body.begin(), body.end());
 	return ;
 }
 

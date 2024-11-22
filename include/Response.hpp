@@ -36,7 +36,7 @@ class Response{
 		const std::string								_http_version;
 		std::string										_status;
 		std::unordered_map<std::string, std::string>	_headers;
-		std::vector<char>								_body;
+		std::string										_body;
 };
 
 void		responseHandler(Request* request, Config* config);

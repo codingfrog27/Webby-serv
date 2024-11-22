@@ -45,7 +45,7 @@ static Response*	postMethod(Request* request, Response* response){
 	else
 		file.open(request->_filePath);
 	if (file.is_open()){
-		// file << request->getRawRequestData; //get body
+		file << request->getReqBody();
 		file.close();
 		response->autoFillResponse("201 Created");
 	}
