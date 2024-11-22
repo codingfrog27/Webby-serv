@@ -6,13 +6,14 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/21 17:29:48 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/22 15:30:50 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <algorithm>
+#include <exception>
 #include <unordered_map>
 #include <map>
 #include <iostream>
@@ -22,6 +23,7 @@
 #include <ctype.h>
 #include <memory>
 #include "location.hpp"
+#include "Colors.hpp"
 
 enum ServerRules
 {
@@ -71,7 +73,10 @@ class Config
 	std::string	getRoot();
 	std::string	getServerName();
 
+	class noBlockFound : public std::exception
+	{
 	
+	};
 
 	//these are all REQUIRED
 	size_t i = 0;
@@ -103,8 +108,10 @@ class Config
 };
 
 
+void	checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs);
+void	printConfigs(const std::vector<std::unique_ptr<Config>> &configs);
 std::ostream& operator<<(std::ostream& os, const Config& config);
-std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName);
+std::vector<std::unique_ptr<Config>>	readConfigFile(const std::string fileName);
 bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 bool	checkstr(const std::string &line, const std::string &str);

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/21 17:25:46 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/22 15:30:58 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,28 @@
 #include "socket.hpp"
 #include <memory>
 
-std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName)
+
+void	parseConfig(int argc, char ** argv, std::vector<std::unique_ptr<Config>> &configs)
 {
-	std::string		line;
-	std::ifstream	file(fileName);
+	try
+	{
+		if (argc != 2)
+			throw Config::noBlockFound("please provide a config file (and no other arguments)");
+		configs = readConfigFile(argv[1]);
+	}
+	catch(const Config::noBlockFound &e)
+	{
+		std::cerr << e.what() << "\n running with default config values" << std::endl;
+		configs.push_back(std::unique_ptr<Config>(new Config()));
+	}
+}
+
+
+std::vector<std::unique_ptr<Config>>	readConfigFile(const std::string fileName)
+{
 	std::vector<std::unique_ptr<Config>>	Configs;
+	std::string								line;
+	std::ifstream							file(fileName);
 
 	if (!file.is_open())
 		throw std::invalid_argument("Error: Unable to open file" );
@@ -35,6 +52,9 @@ std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName)
 		// else
 			// throw std::invalid_argument("non comment text between server blocks! >:(");
 	}
+	if (Configs.empty())
+		throw Config::noBlockFound("no server blocks found! be sure to start your block wit \"server {\"");
+	checkPortUniqueness(Configs);
 	return (Configs);
 }
 
@@ -56,6 +76,7 @@ Config::Config(std::ifstream &file, std::string &line)
 		else
 			parseRule(line);
 	}
+	throw std::invalid_argument("no closing brace in server block!");
 }
 
 
