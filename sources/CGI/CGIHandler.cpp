@@ -1,6 +1,6 @@
 #include "CGI.hpp"
 
-Response*	CGIHandler(Request* request, Response* response, int fd){
+Response*	CGIHandler(Request* request, Response* response){
 	int	fd[2];
 
 	// should we even envoke CGI?
@@ -22,13 +22,10 @@ Response*	CGIHandler(Request* request, Response* response, int fd){
 		response->autoFillResponse("500 Internal Server Error: pipe");
 		return ;
 	}
-	int PID = fork();
-	if (PID == -1){
-		response->autoFillResponse("500 Internal Server Error: fork");
-		return ;
-	}
-	CGI* newCGI = new CGI(fd);
+	CGI* newCGI = new CGI(fd[0], fd[1]);
 	newCGI->setupCGIEnvironment(request);
+	newCGI->invokeCGI(request, response);
+
 	return response;
 }
 
