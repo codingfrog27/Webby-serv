@@ -104,6 +104,21 @@ void	Response::setBody(std::vector<char> body){
 
 /*	getters	*/
 
+/* anything that's not text has to be handled as raw bits*/
+readingMode	Response::getReadingMode() const{
+	if (Response::getHeader("Content-type").find("text") != std::string::npos)
+		return TEXT;
+	else
+		return BINARY;
+}
+
+readingMode	Response::getReadingMode(Request & request) const{
+	if (request._headers["Content-Type"].find("text") != std::string::npos)
+		return TEXT;
+	else
+		return BINARY;
+}
+
 /*	takes a string as key, finds it in the map and returns the value	*/
 std::string	Response::getHeader(std::string key) const{
 	auto it = _headers.find(key);

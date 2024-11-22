@@ -28,6 +28,8 @@ class Response{
 		void											setBody(std::vector<char>);
 
 		std::string										getHeader(std::string key) const;
+		readingMode										Response::getReadingMode(Request & request) const;
+		readingMode										Response::getReadingMode() const;
 
 	private:
 		const Http_method								_method_type;

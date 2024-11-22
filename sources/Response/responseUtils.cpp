@@ -47,11 +47,3 @@ bool	fileExists(std::string path){
 	}
 	return false;
 }
-
-/* anything that's not text has to be handled as raw bits*/
-readingMode	getReadingMode(Response & response){
-	if (response.getHeader("Content-type").find("text") != std::string::npos)
-		return TEXT;
-	else
-		return BINARY;
-}

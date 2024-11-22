@@ -7,7 +7,7 @@ static Response*	getMethod(Request* request, Response* response){
 
 	if (fileExists(request->_filePath)){
 		response->setContentType(request->_filePath);
-		if (getReadingMode(*response) == BINARY)
+		if (response->getReadingMode() == BINARY)
 			file.open(request->_filePath, std::ios::binary); 
 		else
 			file.open(request->_filePath);
@@ -40,7 +40,7 @@ static Response*	postMethod(Request* request, Response* response){
 	std::ofstream file;
 
 	// check for CGI??
-	if(getReadingMode(*response) == BINARY)
+	if(response->getReadingMode(*request) == BINARY)
 		file.open(request->_filePath, std::ios::app);
 	else
 		file.open(request->_filePath);
@@ -75,7 +75,7 @@ void	responseHandler(Request* request, Config* config)
 	if (!request->getStatusCode().empty()) //if there was an error in (parsing) the request
 		response->autoFillResponse(request->getStatusCode());
 	else if (isCGIrequired(request))
-		response = CGIHandler(request, response, request->_clientFD);
+		response = CGIHandler(request, response);
 	else if (request->_method_type == GET)
 		response = getMethod(request, response);
 	else if (request->_method_type == POST)
