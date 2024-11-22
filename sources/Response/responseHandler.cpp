@@ -41,7 +41,7 @@ static Response*	postMethod(Request* request, Response* response){
 
 	// check for CGI??
 	if(response->getReadingMode(*request) == BINARY)
-		file.open(request->_filePath, std::ios::app);
+		file.open(request->_filePath, std::ios::binary);
 	else
 		file.open(request->_filePath);
 	if (file.is_open()){
