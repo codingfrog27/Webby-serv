@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/22 15:30:58 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/26 18:26:02 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ void	parseConfig(int argc, char ** argv, std::vector<std::unique_ptr<Config>> &c
 	try
 	{
 		if (argc != 2)
-			throw Config::noBlockFound("please provide a config file (and no other arguments)");
+			throw Config::NoBlockFound("please provide a config file (and no other arguments)");
 		configs = readConfigFile(argv[1]);
 	}
-	catch(const Config::noBlockFound &e)
+	catch(const Config::NoBlockFound &e)
 	{
 		std::cerr << e.what() << "\n running with default config values" << std::endl;
 		configs.push_back(std::unique_ptr<Config>(new Config()));
@@ -53,7 +53,7 @@ std::vector<std::unique_ptr<Config>>	readConfigFile(const std::string fileName)
 			// throw std::invalid_argument("non comment text between server blocks! >:(");
 	}
 	if (Configs.empty())
-		throw Config::noBlockFound("no server blocks found! be sure to start your block wit \"server {\"");
+		throw Config::NoBlockFound("no server blocks found! be sure to start your block wit \"server {\"");
 	checkPortUniqueness(Configs);
 	return (Configs);
 }

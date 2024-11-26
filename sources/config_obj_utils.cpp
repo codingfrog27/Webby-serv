@@ -129,3 +129,11 @@ void	Config::setIndex(const std::vector<std::string> &index_vector)
 {
 	this->_index = index_vector;
 }
+
+Config::NoBlockFound::NoBlockFound(std::string errMsg) : _errMsg(errMsg)
+{}
+
+const char		*Config::NoBlockFound::what() const noexcept
+{
+	return (_errMsg.c_str());
+}

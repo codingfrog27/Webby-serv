@@ -101,3 +101,8 @@ std::string	urlDecode(const std::string &encoded)
 	}
 	return (decodedStr);
 }
+
+const std::string &Request::getBody()
+{
+	return (_reqBody);
+}

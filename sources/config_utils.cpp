@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:27:26 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/22 15:21:41 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/26 18:30:21 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ std::string	normalize_space(std::string& str)
 void	printConfigs(const std::vector<std::unique_ptr<Config>> &configs)
 {
 	for (size_t i = 0; i < configs.size(); i++){
-		std::cout << "server block:\n" << configs[i]->toString() LINE << std::endl;
+		std::cout << "server block:\n" << configs[i]->toString() << LINE << std::endl;
 		for (size_t j = 0; j < configs[i]->_newLocations.size(); j++){
 			std::cout << "location block:\n" << configs[i]->_newLocations[j]->toString() \
 			<< "---------------" << std::endl;

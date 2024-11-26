@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/22 15:30:50 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/26 18:41:38 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,12 @@ class Config
 	std::string	getRoot();
 	std::string	getServerName();
 
-	class noBlockFound : public std::exception
+	class NoBlockFound : public std::exception
 	{
-	
+		public:
+			std::string _errMsg;
+		NoBlockFound(std::string errMsg);
+		const char		*what() const noexcept override;
 	};
 
 	//these are all REQUIRED
@@ -83,10 +86,9 @@ class Config
 	
 	
 	private:
-	location findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
-	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
-	void	parseRule(const std::string &line);
-	
+	location	findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
+	void		printBlockValue(const std::multimap<std::string, std::string> &configFile);
+	void		parseRule(const std::string &line);
 	void		setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap);
 	void		setHost(const std::string &host);
 	void		setIndex(const std::vector<std::string> &index_vector);
@@ -107,7 +109,7 @@ class Config
 	std::string validateServerName();
 };
 
-
+void	parseConfig(int argc, char ** argv, std::vector<std::unique_ptr<Config>> &configs);
 void	checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs);
 void	printConfigs(const std::vector<std::unique_ptr<Config>> &configs);
 std::ostream& operator<<(std::ostream& os, const Config& config);

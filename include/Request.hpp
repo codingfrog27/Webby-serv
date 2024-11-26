@@ -106,6 +106,10 @@ class Request
 						Request(const Request &rhs);
 		Request 		&operator=(const Request &rhs);
 						~Request(void);
+
+
+		//get and setters
+		const std::string &getBody();
 		//public methods
 		void			readRequest();
 		std::string		getHeaderValue(std::string key);

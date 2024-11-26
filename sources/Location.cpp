@@ -40,11 +40,13 @@ location::location(std::ifstream &file, std::string &line)
 		else
 			parseRule(line);
 	}
+	throw std::invalid_argument("no closing brace in location block!");
 }
 
 location::location(const location &rhs)
 {
-	std::cout << GREEN << "location: Copy constructor called" << RESET << std::endl;
+	std::cout << GREEN << "location: Copy constructor called" \
+	RED "WHICH HASNT BEEN MADE YET AHH" RESET << std::endl;
 
 	*this = rhs;
 }
