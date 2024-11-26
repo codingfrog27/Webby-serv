@@ -14,11 +14,11 @@ class CGI{
 
 		void				setupCGIEnvironment(Request* request);
 		void 				addToEnvp(std::string key, std::string value);
-		// void				setFDIn(int fd);
-		// void				setFDOut(int fd);
+		// void				setFD0(int fd);
+		// void				setFD1(int fd);
 
-		// int					getFDIn(void) const;
-		// int					getFDOut(void) const;
+		// int					getFD0(void) const;
+		// int					getFD1(void) const;
 
 	private:
 		std::vector<char*>	_envp;

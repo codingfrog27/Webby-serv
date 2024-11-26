@@ -1,4 +1,5 @@
 #include "CGI.hpp"
+#include <wait.h>
 
 CGI::CGI(int fd0, int fd1) : _fd0(fd0), _fd1(fd1){
 	return ;
@@ -9,46 +10,6 @@ CGI::~CGI(){
 		delete[] str;
 	}
 }
-
-//IS THIS POSSIBLE?
-
-// Response*	CGI::invokeCGI(Request* request, Response* response){
-// 	int PID = fork();
-// 	if (PID == -1){
-// 		close(_fd0);
-// 		close(_fd1);
-// 		response->autoFillResponse("500 Internal Server Error: fork");
-// 		return ;
-// 	}
-// 	if (PID == 0){ //child (read from _fd0, write to _fd1)
-// 		if (request->_method_type == POST)
-// 			dup2(_fd0, STDIN_FILENO);
-// 		else if (request->_method_type == GET)
-// 			dup2(_fd0, STDOUT_FILENO);
-// 		dup2(_fd1, STDERR_FILENO);
-// 		close(_fd0);
-// 		close(_fd1);
-// 		response = CGI::executeScript(request, response); // into buffer and then to response or write errors to stderr(file)
-// 	}
-// 	else{ //parent (read from _fd1, write to _fd0)
-// 		if (request->_method_type == POST)
-// 			write(_fd0, request->getReqBody().data(), request->getReqBody().size());
-// 		else{
-// 			char buffer[BUFFER_SIZE];
-// 			int bytesRead = 0;
-// 			while ((bytesRead = read(_fd0, buffer, BUFFER_SIZE)) > 0)
-// 				response->setBody(std::vector<char>(buffer, buffer + bytesRead));
-// 		}
-// 		std::string errorMessage;
-// 		char errorBuffer[BUFFER_SIZE];
-// 		int bytesRead = 0;
-// 		while ((bytesRead = read(_fd0, errorBuffer, BUFFER_SIZE)) > 0)
-// 			errorMessage = std::string(errorBuffer, errorBuffer + bytesRead);
-// 		close(_fd1);
-// 		// waitpid(PID, NULL, 0); don't wait but timeout?
-// 	}
-// 	return response;
-// }
 
 Response*	CGI::invokeCGI(Request* request, Response* response){
 	int PID = fork();
@@ -64,7 +25,10 @@ Response*	CGI::invokeCGI(Request* request, Response* response){
 		dup2(_fd1, STDOUT_FILENO);
 		close(_fd0);
 		close(_fd1);
+		int status = 0;
 		response = CGI::executeScript(request, response); // into buffer and then to response or write errors to stderr(file)
+		//if something went wrong adjust status
+		exit(status);
 	}
 	else{ //parent (read from _fd1, write to _fd0)
 		if (request->_method_type == POST)
@@ -77,13 +41,14 @@ Response*	CGI::invokeCGI(Request* request, Response* response){
 
 		}
 		close(_fd1);
-		// waitpid(PID, NULL, 0); don't wait but timeout?
+		waitpid(PID, NULL, 0); //catch status
 	}
 	return response;
 }
 
 Response*	CGI::executeScript(Request* request, Response* response){
-	char* argv[] = {strdup(request->_filePath.c_str()), NULL};
+	// char* argv[] = {strdup(request->_filePath.c_str()), NULL};
+	char* argv[] = {strdup(request->_filePath.substr(request->_filePath.rfind("/") + 1).c_str()), NULL};
 	if (execve(request->_filePath.c_str(), argv, _envp.data()) == -1)
 		response->autoFillResponse("500 Internal Server Error: execve : " + std::string(strerror(errno)));
 	return response;

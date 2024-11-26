@@ -1,5 +1,9 @@
 #include "CGI.hpp"
 
+//next up: testing
+// write script
+// put reading and writing in a loop
+
 Response*	CGIHandler(Request* request, Response* response){
 	int	fd[2];
 
