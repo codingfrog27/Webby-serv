@@ -1,7 +1,7 @@
 #include "CGI.hpp"
 #include <wait.h>
 
-CGI::CGI(int fd0, int fd1) : _fd0(fd0), _fd1(fd1){
+CGI::CGI(int *fdIn, int *fdOut, int *fdError) : _fdIn(fdIn), _fdOut(fdOut), _fdError(fdError){
 	return ;
 }
 
@@ -11,37 +11,60 @@ CGI::~CGI(){
 	}
 }
 
+//needs refactoring
 Response*	CGI::invokeCGI(Request* request, Response* response){
 	int PID = fork();
 	if (PID == -1){
-		close(_fd0);
-		close(_fd1);
+		closePipes();
 		response->autoFillResponse("500 Internal Server Error: fork");
 		return ;
 	}
-	if (PID == 0){ //child (read from _fd0, write to _fd1)
-		if (request->_method_type == POST)
-			dup2(_fd0, STDIN_FILENO);
-		dup2(_fd1, STDOUT_FILENO);
-		close(_fd0);
-		close(_fd1);
+	if (PID == 0){ //child
+		dup2(_fdIn[0], STDIN_FILENO);
+		dup2(_fdOut[1], STDOUT_FILENO);
+		dup2(_fdError[1], STDERR_FILENO);
+		closePipes();
 		int status = 0;
 		response = CGI::executeScript(request, response); // into buffer and then to response or write errors to stderr(file)
 		//if something went wrong adjust status
 		exit(status);
 	}
-	else{ //parent (read from _fd1, write to _fd0)
+	else { //parent
+		close(_fdIn[0]);
+		close(_fdOut[1]);
+		close(_fdError[1]);
 		if (request->_method_type == POST)
-			write(_fd0, request->getReqBody().data(), request->getReqBody().size());
-		close(_fd0);
+			write(_fdIn[1], request->getReqBody().data(), request->getReqBody().size());
+		close(_fdIn[1]);
 		char buffer[BUFFER_SIZE];
 		int bytesRead = 0;
-		while ((bytesRead = read(_fd1, buffer, BUFFER_SIZE)) > 0){
+		while ((bytesRead = read(_fdOut[0], buffer, BUFFER_SIZE)) > 0){
 			response->setBody(std::vector<char>(buffer, buffer + bytesRead));
-
 		}
-		close(_fd1);
-		waitpid(PID, NULL, 0); //catch status
+		close(_fdOut[0]);
+		if (bytesRead == -1){
+			response->autoFillResponse("500 Internal Server Error: read");
+			close(_fdError[0]);
+			return response;
+		}
+		bytesRead = 0;
+		std::string error;
+		while ((bytesRead = read(_fdError[0], buffer, BUFFER_SIZE)) > 0){
+			error.append(buffer, bytesRead);
+		}
+		close(_fdError[0]);
+		if (bytesRead == -1){
+			response->autoFillResponse("500 Internal Server Error: read");
+			return response;
+		}
+		if (!error.empty()){
+			response->autoFillResponse("500 Internal Server Error: " + error);
+			return response;
+		}
+		if (waitpid(PID, NULL, 0) == -1){
+			response->autoFillResponse("500 Internal Server Error: waitpid");
+			return response;
+		}
 	}
 	return response;
 }
@@ -60,7 +83,7 @@ void CGI::setupCGIEnvironment(Request* request) {
 		if (request->_URI.find("?") != std::string::npos) {
 			CGI::addToEnvp("QUERY_STRING", request->_URI.substr(request->_URI.find("?") + 1));
 		}
-	} 
+	}
 	else if (request->_method_type == POST) {
 		CGI::addToEnvp("REQUEST_METHOD", "POST");
 		CGI::addToEnvp("CONTENT_TYPE", request->_headers["Content-Type"]);
@@ -79,10 +102,11 @@ void CGI::addToEnvp(std::string key, std::string value){
 	return ;
 }
 
-// int	CGI::getFDIn(void) const{
-// 	return _fdIn;
-// }
-
-// int	CGI::getFDOut(void) const{
-// 	return _fdOut;
-// }
+void	CGI::closePipes(){
+	for (int i = 0; i < 2; i++){
+		close(_fdIn[i]);
+		close(_fdOut[i]);
+		close(_fdError[i]);
+	}
+	return ;
+}

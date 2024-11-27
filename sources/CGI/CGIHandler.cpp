@@ -5,7 +5,9 @@
 // put reading and writing in a loop
 
 Response*	CGIHandler(Request* request, Response* response){
-	int	fd[2];
+	int	fdIn[2];
+	int	fdOut[2];
+	int fdError[2];
 
 	// should we even invoke CGI?
 	if (request->_method_type != GET || request->_method_type != POST){
@@ -22,11 +24,11 @@ Response*	CGIHandler(Request* request, Response* response){
 		return ;
 	}
 	// if yes
-	if (pipe(fd) == -1){
+	if (pipe(fdIn) == -1 || pipe(fdOut) == -1 || pipe(fdError) == -1){
 		response->autoFillResponse("500 Internal Server Error: pipe");
 		return ;
 	}
-	CGI* newCGI = new CGI(fd[0], fd[1]);
+	CGI* newCGI = new CGI(fdIn, fdOut, fdError);
 	newCGI->setupCGIEnvironment(request);
 	response = newCGI->invokeCGI(request, response);
 
