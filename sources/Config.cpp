@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/26 18:26:02 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/27 17:55:28 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,27 @@
 #include <memory>
 
 
-void	parseConfig(int argc, char ** argv, std::vector<std::unique_ptr<Config>> &configs)
+void	parseConfig(int argc, char ** argv, std::vector<Config> &configs)
 {
 	try
 	{
 		if (argc != 2)
-			throw Config::NoBlockFound("please provide a config file (and no other arguments)");
+			throw Config::NoBlockFound("please oprovide a config file (and no other arguments)");
 		configs = readConfigFile(argv[1]);
 	}
 	catch(const Config::NoBlockFound &e)
 	{
 		std::cerr << e.what() << "\n running with default config values" << std::endl;
-		configs.push_back(std::unique_ptr<Config>(new Config()));
+		configs.emplace_back();
 	}
 }
 
 
-std::vector<std::unique_ptr<Config>>	readConfigFile(const std::string fileName)
+std::vector<Config>	readConfigFile(const std::string fileName)
 {
-	std::vector<std::unique_ptr<Config>>	Configs;
-	std::string								line;
-	std::ifstream							file(fileName);
+	std::vector<Config>	Configs;
+	std::string			line;
+	std::ifstream		file(fileName);
 
 	if (!file.is_open())
 		throw std::invalid_argument("Error: Unable to open file" );
@@ -47,14 +47,14 @@ std::vector<std::unique_ptr<Config>>	readConfigFile(const std::string fileName)
 		if (line.find("server {") != std::string::npos)
 		{
 			// Configs.emplace_back(file, line);
-			Configs.push_back(std::unique_ptr<Config>(new Config(file, line)));
+			Configs.emplace_back(file, line);
 		}
 		// else
 			// throw std::invalid_argument("non comment text between server blocks! >:(");
 	}
 	if (Configs.empty())
 		throw Config::NoBlockFound("no server blocks found! be sure to start your block wit \"server {\"");
-	checkPortUniqueness(Configs);
+	// checkPortUniqueness(Configs);
 	return (Configs);
 }
 
@@ -62,6 +62,11 @@ Config::Config(std::ifstream &file, std::string &line)
 {
 	std::cout << GREEN << "config filestream constructor called" \
 	<< RESET << std::endl;
+	readBlock(file, line);
+}
+
+void	Config::readBlock(std::ifstream &file, std::string &line)
+{
 	while (std::getline(file, line))
 	{
 		if (line.empty() || line[i] == '#')
@@ -78,7 +83,6 @@ Config::Config(std::ifstream &file, std::string &line)
 	}
 	throw std::invalid_argument("no closing brace in server block!");
 }
-
 
 void	Config::mapToMembers()
 {	

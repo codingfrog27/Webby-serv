@@ -54,7 +54,8 @@ void	Server::setupAddrInfo(Config *config)
 	hints.ai_flags = AI_PASSIVE;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	status = getaddrinfo(config->_serverName.c_str(), config->_serverPort.c_str(), &hints, &_addrInfo); //?
+	status = getaddrinfo(config->_serverName.c_str(), config->_serverPort.c_str(), &hints, &_addrInfo);
+	std::cout << config->_serverName.c_str() << config->_serverPort.c_str() << std::endl;
 	if (status != 0)
 		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
 
@@ -87,7 +88,8 @@ void	Server::main_server_loop()
 {
 	int	size = _pollFDs.size();
 	
-	poll(_pollFDs.data(), size, TMP_POLL_TIME);
+	// poll(_pollFDs.data(), size, TMP_POLL_TIME);
+	poll(_pollFDs.data(), size, -1);
 	//get current time
 	for (size_t i = 0; i < size; ++i)
 	{		

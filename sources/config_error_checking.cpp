@@ -266,8 +266,10 @@ std::string Config::validateRoot()
 	for (auto i = 0; i < root_value.length(); i++)
 	{
 		if (root_value[0] != '/')
-			throw std::invalid_argument("Error: invalid root path directive");
-		if (!isdigit(root_value[i]) && !isalpha(root_value[i]) && root_value[i] != '/' && root_value[i] != '.' && root_value[i] != '_')
+			throw std::invalid_argument("Error: invalid root path directive:" \
+			"please start root with /"  + root_value);
+		if (!isdigit(root_value[i]) && !isalpha(root_value[i]) && root_value[i] \
+			!= '/' && root_value[i] != '.' && root_value[i] != '_')
 			throw std::invalid_argument("Error: invalid root path directive");
 	}
 	
