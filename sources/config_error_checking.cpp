@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   config_error_checking.cpp                          :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/11/06 19:41:53 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2024/11/21 12:20:49 by mstegema      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   config_error_checking.cpp                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
+/*  \\       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,4 +272,21 @@ std::string Config::validateRoot()
 	}
 	
 	return (root_value);
+}
+/**
+ * @brief A simple check to see if none of the server blocks are trying to listen on the same port
+ * 
+ * @param configs vector of config objects to check
+ */
+void	checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs)
+{
+	for (size_t i = 0; i < configs.size(); i++)
+	{
+		const std::string &port = configs[i]->getListen();
+		for (size_t j = i + 1; j < configs.size(); j++)
+		{
+			if (port == configs[j]->getListen())
+				throw (std::invalid_argument("Multiple server blocks listening to the same port!"));
+		}
+	}
 }

@@ -100,7 +100,7 @@ void	Server::main_server_loop()
 		}
 		else if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading)
 		{
-			responseHandler(&_Connections[i]._request);
+			responseHandler(&_Connections[i]._request, _Connections[i]._config);
 			if (_Connections[i]._keepOpen) 
 				_Connections[i]._request = Request(_Connections[i]._clientFD); 
 			else
