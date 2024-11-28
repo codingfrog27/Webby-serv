@@ -34,12 +34,13 @@ Response*	CGI::invokeCGI(Request* request, Response* response){
 		close(_fdOut[1]);
 		close(_fdError[1]);
 		if (request->_method_type == POST)
-			write(_fdIn[1], request->getReqBody().data(), request->getReqBody().size());
+			write(_fdIn[1], request->getBody().data(), request->getBody().size());
 		close(_fdIn[1]);
 		char buffer[BUFFER_SIZE];
 		int bytesRead = 0;
 		while ((bytesRead = read(_fdOut[0], buffer, BUFFER_SIZE)) > 0){
-			response->setBody(std::vector<char>(buffer, buffer + bytesRead));
+			// response->setBody(std::vector<char>(buffer, buffer + bytesRead));
+			response->setBody(std::string(buffer, bytesRead));
 		}
 		close(_fdOut[0]);
 		if (bytesRead == -1){
@@ -58,7 +59,7 @@ Response*	CGI::invokeCGI(Request* request, Response* response){
 			return response;
 		}
 		if (!error.empty()){
-			response->autoFillResponse("500 Internal Server Error: " + error);
+			response->autoFillResponse("500 Internal Server Error: script: " + error);
 			return response;
 		}
 		if (waitpid(PID, NULL, 0) == -1){
