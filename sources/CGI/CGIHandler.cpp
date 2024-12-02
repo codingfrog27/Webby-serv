@@ -34,8 +34,3 @@ Response*	CGIHandler(Request* request, Response* response){
 
 	return response;
 }
-
-//dup stdout to fd
-//raw request data to fd
-//dup stdin to fd
-//close fd
