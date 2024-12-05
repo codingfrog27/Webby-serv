@@ -24,6 +24,7 @@
 #include "libft.h"
 #include "ClientErrorExcept.hpp"
 #include "ConnectionClosedExcep.hpp"
+#include "Config.hpp"
 
 #define GREEN "\033[32m"
 #define RED "\033[31m"
@@ -56,18 +57,18 @@ enum Http_method
 class Request 
 {
 	private:
-		// Connection				*_config;
+		Config					*_config;
 		std::string				_reqBody;
 		std::string				_unsortedHeaders;
 		reading_status			reading_mode;
 		std::string				_boundary;
-		int						body_bytes_read;
+		size_t					body_bytes_read;
 		bool					_rnrnFound;
 		bool					_dataIsChunked;
 		bool					_headerAreParsed;
 		bool					_hasBody;
 		size_t					_contentLen; //need to put in init list
-		const int				_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
+		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
 
 
 		int						readSocket(int size);
@@ -84,6 +85,7 @@ class Request
 		void					parseFormData(std::string &content_type);
 		void					parseUrlEncoded();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
+		void					resolveFilePath();
 	public:
 		int							_clientFD;
 		std::vector<unsigned char>	_rawRequestData;
@@ -102,7 +104,7 @@ class Request
 		std::string					_statusCode;
 		// Constructors and Destructors
 						Request(void) = delete;
-						Request(int _clientFD);
+						Request(Config *config, int _clientFD);
 						Request(const Request &rhs);
 		Request 		&operator=(const Request &rhs);
 						~Request(void);

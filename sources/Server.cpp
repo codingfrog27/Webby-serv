@@ -21,13 +21,15 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Server::Server(const std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
+Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 {	
 	try
 	{
+		_Connections.reserve(100);
 		for (size_t i = 0; i < _serverBlocks.size(); ++i)
  		{
 			setupAddrInfo(&_serverBlocks[i]);
+			std::cout << "serblock" << i << "made" << std::endl;
 			_serverSockets.emplace_back(&_serverBlocks[i], _addrInfo);
 			_pollFDs.emplace_back(pollfd{_serverSockets[i]._socketFd, POLLIN | POLLERR,  0});
 			_Connections.emplace_back(&_serverBlocks[i], _serverSockets[i]._socketFd, true);
@@ -54,8 +56,8 @@ void	Server::setupAddrInfo(Config *config)
 	hints.ai_flags = AI_PASSIVE;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	status = getaddrinfo(config->_serverName.c_str(), config->_serverPort.c_str(), &hints, &_addrInfo);
-	std::cout << config->_serverName.c_str() << config->_serverPort.c_str() << std::endl;
+	status = getaddrinfo(config->_serverName.c_str(), config->_listen.c_str(), &hints, &_addrInfo);
+	// std::cout << config->_serverName.c_str() << config->_serverPort.c_str() << std::endl;
 	if (status != 0)
 		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
 
@@ -82,35 +84,38 @@ void	Server::close_connect(int i)
 }
 
 
-#define TMP_POLL_TIME 5000
+#define TMP_POLL_TIME 500000
 
 void	Server::main_server_loop()
 {
-	int	size = _pollFDs.size();
 	
-	// poll(_pollFDs.data(), size, TMP_POLL_TIME);
-	poll(_pollFDs.data(), size, -1);
-	//get current time
-	for (size_t i = 0; i < size; ++i)
-	{		
-		if (_pollFDs[i].revents & POLLIN)
-		{
-			if (_Connections[i]._isServerSocket) 
-				acceptNewConnects(i);
-			else
-				_Connections[i]._request.readRequest();
-		}
-		else if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading)
-		{
-			responseHandler(&_Connections[i]._request, _Connections[i]._config);
-			if (_Connections[i]._keepOpen) 
-				_Connections[i]._request = Request(_Connections[i]._clientFD); 
-			else
-				close_connect(i);
-		}
-		//else if (current_time - last_action_time > idle timeout)
-			// close_connect()
+	while (1)
+	{
+		size_t	size = _pollFDs.size();
+		poll(_pollFDs.data(), size, TMP_POLL_TIME);
+		//get current time
+		for (size_t i = 0; i < size; ++i)
+		{		
+			if (_pollFDs[i].revents & POLLIN)
+			{
+				if (_Connections[i]._isServerSocket) 
+					acceptNewConnects(i);
+				else 
+					_Connections[i]._request.readRequest();
+			}
+			else if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading)
+			{
+				responseHandler(&_Connections[i]._request, _Connections[i]._config);
+				if (_Connections[i]._keepOpen) 
+					std::cout << "tmp" << std::endl;
+				else
+					close_connect(i);
+			}
+			//else if (current_time - last_action_time > idle timeout)
+				// close_connect()
+		}	
 	}
+	// poll(_pollFDs.data(), size, TMP_POLL_TIME);
 }
 
 

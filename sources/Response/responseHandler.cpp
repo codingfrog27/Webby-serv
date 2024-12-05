@@ -3,6 +3,7 @@
 static Response*	getMethod(Request* request, Response* response, std::string filePath){
 	std::ifstream file;
 	size_t size = 0;
+	(void)request;
 
 	if (fileExists(filePath)){
 		response->setContentType(filePath);
@@ -37,6 +38,7 @@ static Response*	getMethod(Request* request, Response* response, std::string fil
 
 static Response*	postMethod(Request* request, Response* response, std::string filePath){
 	std::ofstream file;
+	(void)request;
 
 	// check for CGI??
 	if(getReadingMode(*response) == BINARY)
@@ -55,6 +57,7 @@ static Response*	postMethod(Request* request, Response* response, std::string fi
 
 static Response*	deleteMethod(Request* request, Response* response, std::string filePath){
 
+	(void)request;
 	if (fileExists(filePath)){
 		if (std::remove(filePath.c_str()) == 0)
 			response->autoFillResponse("200 OK");
@@ -69,7 +72,8 @@ static Response*	deleteMethod(Request* request, Response* response, std::string 
 void	responseHandler(Request* request, Config* config)
 {
 	Response *response = new Response(request);
-	std::string filePath = resolveFilePath(request, response, config);
+	// std::string filePath = resolveFilePath(request, response, config);
+	std::string &filePath = request->_filePath;
 	std::string responseText;
 
 	if (!request->getStatusCode().empty()) //if there was an error in (parsing) the request
@@ -88,4 +92,8 @@ void	responseHandler(Request* request, Config* config)
 	std::cout << responseText << std::endl;
 	write(request->_clientFD, responseText.c_str(), responseText.size()); //needs to be send back in a loop (see requestHandler)
 	return;
+	(void)config;
 }
+
+
+

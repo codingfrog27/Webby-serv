@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/27 17:55:28 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/05 19:09:04 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,9 @@ void	parseConfig(int argc, char ** argv, std::vector<Config> &configs)
 		if (argc != 2)
 			throw Config::NoBlockFound("please oprovide a config file (and no other arguments)");
 		configs = readConfigFile(argv[1]);
+		// printConfigs(configs);
 	}
-	catch(const Config::NoBlockFound &e)
+	catch(const Config::NoBlockFound &e) //general config error
 	{
 		std::cerr << e.what() << "\n running with default config values" << std::endl;
 		configs.emplace_back();

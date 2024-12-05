@@ -14,7 +14,7 @@
 
 Socket::Socket(Config *config, const struct addrinfo *addressInfo)
  : _addrInfo(addressInfo),_setYes(1), _hostname(config->_serverName), \
- _port(config->_serverPort), _socketFd(0), ip_address{0}
+ _port(config->_listen), ip_address{0}, _socketFd(0)
  {
 	try
 	{

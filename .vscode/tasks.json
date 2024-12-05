@@ -2,12 +2,10 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "make run",
+            "label": "make",
             "type": "shell",
             "command": "make",
-            "args": [
-                "run"
-            ],
+            "args": [ ],
             "group": {
                 "kind": "build",
                 "isDefault": true

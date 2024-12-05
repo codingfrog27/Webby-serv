@@ -18,8 +18,8 @@
 // ************************************************************************** //
 
 Connection::Connection(Config *config, int clientFD, bool isServerside): \
-_isServerSocket(isServerside), _clientFD(clientFD), _request(clientFD), \
-_keepOpen(false)
+_config(config), _request(config, clientFD), _isServerSocket(isServerside), \
+ _clientFD(clientFD), _keepOpen(false)
 {
 }
 

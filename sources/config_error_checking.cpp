@@ -83,7 +83,7 @@ std::unordered_map<std::string, std::string>		Config::validateErrorPage()
 	}
 	else 
 		throw std::invalid_argument("Error: error_page directive not found");
-	for (auto i = 0; i < errorPage_value.length(); i++)
+	for (size_t i = 0; i < errorPage_value.length(); i++)
 	{
 		if (isspace(errorPage_value[i]))
 		{
@@ -110,7 +110,6 @@ std::vector<std::string>		Config::ValidateIndex()
 	std::string tmp_value;
 	std::vector<std::string>  tmp_vector;
 	
-	int space_pos = 0;
 	static int space = 0;
 	
 	if (_rulemap.contains("index"))
@@ -120,14 +119,14 @@ std::vector<std::string>		Config::ValidateIndex()
 	}
 	else
 		throw std::invalid_argument("Error: index directive not found");
-	for (auto i = 0; i < index_value.length(); i++)
+	for (size_t i = 0; i < index_value.length(); i++)
 	{
 		if (isspace(index_value[i]))
 			i++;
 		if (!isalpha(index_value[i]) && !isdigit(index_value[i]) && index_value[i] != '-' && index_value[i] != '.')
 			throw std::invalid_argument("Error: invalid character in index directive");
 	}
-	for (auto i = 0; i < index_value.length(); i++)
+	for (size_t i = 0; i < index_value.length(); i++)
 	{
 		if (isspace(index_value[i]))
 			space++;
@@ -139,8 +138,8 @@ std::vector<std::string>		Config::ValidateIndex()
 	}
 	else
 	{
-		int j = 0;
-		for (int i = 0; i < index_value.length(); i++)
+		size_t j = 0;
+		for (size_t i = 0; i < index_value.length(); i++)
 		{
 			if (!isspace(index_value[i]))
 			{	
@@ -166,7 +165,7 @@ std::string	Config::validateListen()
 	}
 	else 	
 		throw std::invalid_argument("Error: listen directive not found");
-	for (auto i = 0; i < listen_value.length(); i++)
+	for (size_t i = 0; i < listen_value.length(); i++)
 	{
 		if (!isdigit(listen_value[i]))
 			throw std::invalid_argument("Error: invalid character in listen directive");
@@ -192,7 +191,7 @@ std::string Config::validateMaxBodySize()
 	else
 		throw std::invalid_argument("Error: invalid character in client_max_body_size directive");
 	
-	for(auto i = 0; i < maxBodySize_value.size(); i++)
+	for(size_t i = 0; i < maxBodySize_value.size(); i++)
 	{
 		if (!isdigit(maxBodySize_value[i]))
 			throw std::invalid_argument("Error: invalid character in client_max_body_size directive");
@@ -213,7 +212,7 @@ std::string Config::validateHost()
 	else 
 		throw std::invalid_argument("Error: host directive not found");
 	int dotCount = 0;
-	for(auto i = 0; i < host_value.length(); i++)
+	for(size_t i = 0; i < host_value.length(); i++)
 	{
 		if (host_value[i] == '.')
 		{
@@ -241,7 +240,7 @@ std::string Config::validateServerName()
 	}
 	else 
 		return ("Default name");
-	for(auto i = 0; i < serverName_value.length(); i++)
+	for(size_t i = 0; i < serverName_value.length(); i++)
 	{
 		if (!isalpha(serverName_value[i]) && !isdigit(serverName_value[i]) && \
 			serverName_value[i] != '-' && serverName_value[i] != '.' && serverName_value[i] != '_')
@@ -263,7 +262,7 @@ std::string Config::validateRoot()
 	}
 	else
 		throw std::invalid_argument("Error: root directive not found");
-	for (auto i = 0; i < root_value.length(); i++)
+	for (size_t i = 0; i < root_value.length(); i++)
 	{
 		if (root_value[0] != '/')
 			throw std::invalid_argument("Error: invalid root path directive:" \

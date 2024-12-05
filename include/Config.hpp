@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/26 18:51:43 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/05 16:22:05 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ class Config
 
 void	parseConfig(int argc, char ** argv, std::vector<Config> &configs);
 void	checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs);
-void	printConfigs(const std::vector<std::unique_ptr<Config>> &configs);
+void	printConfigs(const std::vector<Config> &configs);
 std::vector<Config>	readConfigFile(const std::string fileName);
 bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
