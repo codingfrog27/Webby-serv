@@ -32,7 +32,7 @@ class Response{
 		readingMode										Response::getReadingMode() const;
 
 	private:
-		const Http_method								_method_type;
+		// const Http_method								_method_type;
 		const std::string								_http_version;
 		std::string										_status;
 		std::unordered_map<std::string, std::string>	_headers;

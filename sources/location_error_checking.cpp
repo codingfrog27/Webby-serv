@@ -24,7 +24,7 @@ std::string	find_value_location(std::string& directive)
 std::string	normalize_space_location(std::string& str)
 {
 	int is_space = 0;
-	for (int i = 0; i < str.length(); i++)
+	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (isspace(str[i]))
 			is_space++;
@@ -48,7 +48,6 @@ std::vector<std::string> location::validateAllowMethods()
 	std::string tmp_value;
 	std::vector<std::string>  tmp_vector;
 	
-	int space_pos = 0;
 	static int space = 0;
 
     if (_rulemap.contains("allow_methods"))
@@ -58,14 +57,14 @@ std::vector<std::string> location::validateAllowMethods()
 	}
 	else 
 		return (tmp_vector);
-	for (auto i = 0; i < allow_methods_value.length(); i++)
+	for (size_t i = 0; i < allow_methods_value.length(); i++)
 	{
 		if (isspace(allow_methods_value[i]))
 			i++;
 		if (!isalpha(allow_methods_value[i]))
 			throw std::invalid_argument("Error: invalid character in allow_methods directive");
 	}
-	for (auto i = 0; i < allow_methods_value.length(); i++)
+	for (size_t i = 0; i < allow_methods_value.length(); i++)
 	{
 		if (isspace(allow_methods_value[i]))
 			space++;
@@ -80,38 +79,38 @@ std::vector<std::string> location::validateAllowMethods()
 	}
 	else
 	{
-		for (int i = 0; i < allow_methods_value.length();)
+		for (size_t i = 0; i < allow_methods_value.length();)
 		{
 			while (i < allow_methods_value.length() && isspace(allow_methods_value[i]))
-                i++;
+				i++;
 
-            int start = i;
-            while (i < allow_methods_value.length() && !isspace(allow_methods_value[i]))
-                i++;
+			size_t start = i;
+			while (i < allow_methods_value.length() && !isspace(allow_methods_value[i]))
+				i++;
 
-            if (start < i)
-            {
-                tmp_value = allow_methods_value.substr(start, i - start);
-                if (tmp_value == "POST" || tmp_value == "GET" || tmp_value == "DELETE")
+			if (start < i)
+			{
+				tmp_value = allow_methods_value.substr(start, i - start);
+				if (tmp_value == "POST" || tmp_value == "GET" || tmp_value == "DELETE")
 					tmp_vector.push_back(tmp_value);
 				else
 					throw std::invalid_argument("Error: invalid rule in autoindex directive");
-            }
+			}
 		}
 	}
-    return (tmp_vector);
-}    
+	return (tmp_vector);
+}	
 
 bool location::validateAutoindex()
 {
-    std::string autoindex_rule;
-    std::string autoindex_value;
+	std::string autoindex_rule;
+	std::string autoindex_value;
 
-    if (_rulemap.contains("autoindex"))
+	if (_rulemap.contains("autoindex"))
 	{
-    	autoindex_rule = normalize_space_location(_rulemap.at("autoindex"));
+		autoindex_rule = normalize_space_location(_rulemap.at("autoindex"));
 		autoindex_value = find_value_location(autoindex_rule);
-		for (auto i = 0; i < autoindex_value.length(); i++)
+		for (size_t i = 0; i < autoindex_value.length(); i++)
 		{
 			if (!isalpha(autoindex_value[i]))
 				throw std::invalid_argument("Error: invalid character in autoindex directive");
@@ -129,22 +128,22 @@ bool location::validateAutoindex()
 
 std::string location::validateAlias()
 {
-    std::string alias_rule;
-    std::string alias_value;
+	std::string alias_rule;
+	std::string alias_value;
 
-    if (_rulemap.contains("alias"))
+	if (_rulemap.contains("alias"))
 	{
-    	alias_rule = normalize_space_location(_rulemap.at("alias"));
+		alias_rule = normalize_space_location(_rulemap.at("alias"));
 		alias_value = find_value_location(alias_rule);
 	}
 	else 
 		return ("");
-	for (auto i = 0; i < alias_value.length(); i++)
+	for (size_t i = 0; i < alias_value.length(); i++)
 	{
 		if (!isalpha(alias_value[i]) && !isdigit(alias_value[i]) && alias_value[i] != '/' && alias_value[i] != '_' && alias_value[i] != '-' && alias_value[i] != '.')
 			throw std::invalid_argument("Error: invalid character in alias directive");
 	}
-    return (alias_value);
+	return (alias_value);
 }
 
 std::vector<std::string>		location::validateIndex()
@@ -154,7 +153,6 @@ std::vector<std::string>		location::validateIndex()
 	std::string tmp_value;
 	std::vector<std::string>  tmp_vector;
 	
-	int space_pos = 0;
 	static int space = 0;
 
 	if (_rulemap.contains("index"))
@@ -164,14 +162,14 @@ std::vector<std::string>		location::validateIndex()
 	}
 	else
 		return (tmp_vector);
-	for (auto i = 0; i < index_value.length(); i++)
+	for (size_t i = 0; i < index_value.length(); i++)
 	{
 		if (isspace(index_value[i]))
 			i++;
 		if (!isalpha(index_value[i]) && !isdigit(index_value[i]) && index_value[i] != '-' && index_value[i] != '.')
 			throw std::invalid_argument("Error: invalid character in index directive");
 	}
-	for (auto i = 0; i < index_value.length(); i++)
+	for (size_t i = 0; i < index_value.length(); i++)
 	{
 		if (isspace(index_value[i]))
 			space++;
@@ -183,8 +181,8 @@ std::vector<std::string>		location::validateIndex()
 	}
 	else
 	{
-		int j = 0;
-		for (int i = 0; i < index_value.length(); i++)
+		size_t j = 0;
+		for (size_t i = 0; i < index_value.length(); i++)
 		{
 			if (!isspace(index_value[i]))
 			{	
@@ -195,76 +193,75 @@ std::vector<std::string>		location::validateIndex()
 			}
 		}
 	}
-	// for (auto i = tmp_vector.begin(); i < tmp_vector.end(); i++)
+	// for (size_t i = tmp_vector.begin(); i < tmp_vector.end(); i++)
 	// 	std::cout << *i << std::endl;
 	return (tmp_vector);
 }
 
 std::string location::validateReturn()
 {
-    std::string return_rule;
-    std::string return_value;
+	std::string return_rule;
+	std::string return_value;
 
-    if (_rulemap.contains("return"))
+	if (_rulemap.contains("return"))
 	{
-    	return_rule = normalize_space_location(_rulemap.at("return"));
+		return_rule = normalize_space_location(_rulemap.at("return"));
 		return_value = find_value_location(return_rule);
 	}
 	else 
 		return ("");
-	for (auto i = 0; i < return_value.length(); i++)
+	for (size_t i = 0; i < return_value.length(); i++)
 	{
 		if (!isalpha(return_value[i]) && !isdigit(return_value[i]) && return_value[i] != '/' && return_value[i] != '_' && return_value[i] != '-' && return_value[i] != '.')
 			throw std::invalid_argument("Error: invalid character in return directive");
 	}
-    return (return_value);
+	return (return_value);
 }
 
 std::string location::validateRoot()
 {
-    std::string root_rule;
-    std::string root_value;
+	std::string root_rule;
+	std::string root_value;
 
-    if (_rulemap.contains("root"))
+	if (_rulemap.contains("root"))
 	{
-    	root_rule = normalize_space_location(_rulemap.at("root"));
+		root_rule = normalize_space_location(_rulemap.at("root"));
 		root_value = find_value_location(root_rule);
 	}
 	else 
 		return ("");
-	for (auto i = 0; i < root_value.length(); i++)
+	for (size_t i = 0; i < root_value.length(); i++)
 	{
 		if (!isalpha(root_value[i]) && !isdigit(root_value[i]) && root_value[i] != '/' && root_value[i] != '_' && root_value[i] != '-' && root_value[i] != '.')
 			throw std::invalid_argument("Error: invalid character in root directive");
 	}
-    return (root_value);
+	return (root_value);
 }
 
 std::vector<std::string> location::validateCgiPath()
 {
-    std::string cgi_path_rule;
-    std::string cgi_path_value;
+	std::string cgi_path_rule;
+	std::string cgi_path_value;
 	std::string tmp_value;
 	std::vector<std::string>  tmp_vector;
 	
-	int space_pos = 0;
-	static int space = 0;
+	static size_t space = 0;
 
-    if (_rulemap.contains("cgi_path"))
+	if (_rulemap.contains("cgi_path"))
 	{
-    	cgi_path_rule = normalize_space_location(_rulemap.at("cgi_path"));
+		cgi_path_rule = normalize_space_location(_rulemap.at("cgi_path"));
 		cgi_path_value = find_value_location(cgi_path_rule);
 	}
 	else 
 		return (tmp_vector);
-	for (auto i = 0; i < cgi_path_value.length(); i++)
+	for (size_t i = 0; i < cgi_path_value.length(); i++)
 	{
 		if (isspace(cgi_path_value[i]))
 			i++;
 		if (!isalpha(cgi_path_value[i]) && !isdigit(cgi_path_value[i]) && cgi_path_value[i] != '_' && cgi_path_value[i] != '/' && cgi_path_value[i] != '-' && cgi_path_value[i] != '.')
 			throw std::invalid_argument("Error: invalid character in cgi_path directive");
 	}
-	for (auto i = 0; i < cgi_path_value.length(); i++)
+	for (size_t i = 0; i < cgi_path_value.length(); i++)
 	{
 		if (isspace(cgi_path_value[i]))
 			space++;
@@ -276,50 +273,49 @@ std::vector<std::string> location::validateCgiPath()
 	}
 	else
 	{
-		for (int i = 0; i < cgi_path_value.length();)
+		for (size_t i = 0; i < cgi_path_value.length();)
 		{
 			while (i < cgi_path_value.length() && isspace(cgi_path_value[i]))
-                i++;
+				i++;
 
-            int start = i;
-            while (i < cgi_path_value.length() && !isspace(cgi_path_value[i]))
-                i++;
+			size_t start = i;
+			while (i < cgi_path_value.length() && !isspace(cgi_path_value[i]))
+				i++;
 
-            if (start < i)
-            {
-                tmp_value = cgi_path_value.substr(start, i - start);
-                tmp_vector.push_back(tmp_value);
-            }
+			if (start < i)
+			{
+				tmp_value = cgi_path_value.substr(start, i - start);
+				tmp_vector.push_back(tmp_value);
+			}
 		}
 	}
-    return (tmp_vector);
+	return (tmp_vector);
 }
 
 std::vector<std::string> location::validateCgiExt()
 {
-    std::string cgi_ext_rule;
-    std::string cgi_ext_value;
+	std::string cgi_ext_rule;
+	std::string cgi_ext_value;
 	std::string tmp_value;
 	std::vector<std::string>  tmp_vector;
 	
-	int space_pos = 0;
-	static int space = 0;
+	static size_t space = 0;
 
-    if (_rulemap.contains("cgi_ext"))
+	if (_rulemap.contains("cgi_ext"))
 	{
-    	cgi_ext_rule = normalize_space_location(_rulemap.at("cgi_ext"));
+		cgi_ext_rule = normalize_space_location(_rulemap.at("cgi_ext"));
 		cgi_ext_value = find_value_location(cgi_ext_rule);
 	}
 	else 
 		return (tmp_vector);
-	for (auto i = 0; i < cgi_ext_value.length(); i++)
+	for (size_t i = 0; i < cgi_ext_value.length(); i++)
 	{
 		if (isspace(cgi_ext_value[i]))
 			i++;
 		if (!isalpha(cgi_ext_value[i]) && !isdigit(cgi_ext_value[i]) && cgi_ext_value[i] != '_' && cgi_ext_value[i] != '/' && cgi_ext_value[i] != '-' && cgi_ext_value[i] != '.')
 			throw std::invalid_argument("Error: invalid character in cgi_extension directive");
 	}
-	for (auto i = 0; i < cgi_ext_value.length(); i++)
+	for (size_t i = 0; i < cgi_ext_value.length(); i++)
 	{
 		if (isspace(cgi_ext_value[i]))
 			space++;
@@ -331,21 +327,21 @@ std::vector<std::string> location::validateCgiExt()
 	}
 	else
 	{
-		for (int i = 0; i < cgi_ext_value.length();)
+		for (size_t i = 0; i < cgi_ext_value.length();)
 		{
 			while (i < cgi_ext_value.length() && isspace(cgi_ext_value[i]))
-                i++;
+				i++;
 
-            int start = i;
-            while (i < cgi_ext_value.length() && !isspace(cgi_ext_value[i]))
-                i++;
+			size_t start = i;
+			while (i < cgi_ext_value.length() && !isspace(cgi_ext_value[i]))
+				i++;
 
-            if (start < i)
-            {
-                tmp_value = cgi_ext_value.substr(start, i - start);
-                tmp_vector.push_back(tmp_value);
-            }
+			if (start < i)
+			{
+				tmp_value = cgi_ext_value.substr(start, i - start);
+				tmp_vector.push_back(tmp_value);
+			}
 		}
 	}
-    return (tmp_vector);
+	return (tmp_vector);
 }

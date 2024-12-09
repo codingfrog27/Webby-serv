@@ -6,16 +6,17 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/12 20:38:26 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/05 20:10:12 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-Request::Request(int clientFD):
-	 _clientFD(clientFD), _doneReading(false), reading_mode(NOT_STARTED), body_bytes_read(0), \
-	  _rnrnFound(false), _headerAreParsed(false), _hasBody(false), _method_type(NOT_PARSED_YET), \
-	  _keepOpen(true), _statusCode("0 Not started yet")
+Request::Request(Config *config, int clientFD): _config(config), \
+	reading_mode(NOT_STARTED), body_bytes_read(0), _rnrnFound(false), \
+	_headerAreParsed(false), _hasBody(false), _clientFD(clientFD), \
+	_method_type(NOT_PARSED_YET), _keepOpen(true), _doneReading(false), \
+	_statusCode("0 Not started yet")
 {
 	_rawRequestData.reserve(100);
 }

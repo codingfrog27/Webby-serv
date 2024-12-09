@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/19 19:31:48 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/05 20:30:37 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,26 @@ size_t	Request::parse_req_line(std::string req_line)
 
 	_method_type = which_method_type(req_line.substr(0, method_end));
 	_URI = req_line.substr(method_end + 1, uri_end - method_end - 1);
+	resolveFilePath();
 	_http_version = http_version(&req_line[uri_end + 1]);
 	return (line_end + 2);
+}
+
+void	Request::resolveFilePath()
+{
+	std::string resolved = _URI;
+
+	if (resolved.find("?") != std::string::npos)
+		resolved.erase(resolved.find("?"));
+	else if (resolved.find("#") != std::string::npos)
+		resolved.erase(resolved.find("#"));
+	if (resolved.find("https://") != std::string::npos || resolved.find("http://") != std::string::npos)
+		resolved.erase(0, resolved.find("//") + 2);
+	if (resolved.find(_config->_host) != std::string::npos)
+		resolved.erase(0, _config->_host.length());
+	if (resolved.find(_config->_listen) != std::string::npos)
+		resolved.erase(0, _config->_listen.length() + 1);
+	_filePath = _config->_rootDir + resolved;
 }
 
 void	Request::parse_headers(std::string header_str)

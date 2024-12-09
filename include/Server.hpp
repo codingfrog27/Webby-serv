@@ -22,7 +22,7 @@ class Server
 {
 	private:
 		std::vector<Socket> 	_serverSockets;
-		std::vector<Config> 	_serverBlocks;
+		std::vector<Config> 	&_serverBlocks;
 		std::vector<pollfd>		_pollFDs;
 		std::vector<Connection> _Connections;
 		struct	addrinfo		*_addrInfo;
@@ -32,8 +32,8 @@ class Server
 		void					acceptNewConnects(int i);
 		void					close_connect(int i);
 	public:
-								Server(const std::vector<Config>& vec);
-								Server(const Server &rhs) = delete;
+								Server(std::vector<Config>& vec);
+								Server(Server &rhs) = delete;
 								~Server(void);
 		Server					&operator=(const Server &rhs) = delete;
 		void					main_server_loop();

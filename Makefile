@@ -6,8 +6,8 @@ VERSION_FLAG = -std=c++20
 
 INCLUDE_FLAGS = -I include/ -I libft/include
 LIBFT_A			:=	./libft/libft.a
-Wflags := -g -fsanitize=address
-# Wflags := -Wall -Wextra -Werror -g -fsanitize=address
+# Wflags := -g -fsanitize=address
+Wflags := -Wall -Wextra -Werror -g #-fsanitize=address
 
 
 INCLDIR := include/
@@ -48,7 +48,7 @@ $(LIBFT_A):
 re: fclean $(NAME)
 
 run: $(NAME)
-	@./$(NAME)
+	@./$(NAME) example_config.conf
 
 clean:
 	@rm -rf $(OBJDIR)

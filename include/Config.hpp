@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/26 18:41:38 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/05 16:22:05 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ class Config
 	
 	
 	private:
+	void		readBlock(std::ifstream &file, std::string &line);
 	location	findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void		printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	void		parseRule(const std::string &line);
@@ -109,14 +110,14 @@ class Config
 	std::string validateServerName();
 };
 
-void	parseConfig(int argc, char ** argv, std::vector<std::unique_ptr<Config>> &configs);
+void	parseConfig(int argc, char ** argv, std::vector<Config> &configs);
 void	checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs);
-void	printConfigs(const std::vector<std::unique_ptr<Config>> &configs);
-std::ostream& operator<<(std::ostream& os, const Config& config);
-std::vector<std::unique_ptr<Config>>	readConfigFile(const std::string fileName);
+void	printConfigs(const std::vector<Config> &configs);
+std::vector<Config>	readConfigFile(const std::string fileName);
 bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 bool	checkstr(const std::string &line, const std::string &str);
 
 void	print_map(const std::unordered_map<std::string, std::string> map);
 std::string	normalize_space(std::string& str);
+std::ostream& 		operator<<(std::ostream& os, const Config& config);

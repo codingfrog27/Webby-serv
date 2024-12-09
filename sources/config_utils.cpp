@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:27:26 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/26 18:30:21 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/05 16:22:56 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	print_map(const std::unordered_map<std::string, std::string> map)
 {
 	for(auto i : map)
 	{
-		for (auto x : i.second)
+		// for (auto x : i.second)
 		std::cout << "Key: " << i.first << "\t" << "Value: " << i.second << std::endl;
 	}
 }
@@ -63,7 +63,7 @@ void	print_map(const std::unordered_map<std::string, std::string> map)
 std::string	normalize_space(std::string& str)
 {
 	int is_space = 0;
-	for (int i = 0; i < str.length(); i++)
+	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (isspace(str[i]))
 			is_space++;
@@ -80,16 +80,16 @@ std::string	normalize_space(std::string& str)
 	return (str);
 }
 
-void	printConfigs(const std::vector<std::unique_ptr<Config>> &configs)
+void	printConfigs(const std::vector<Config> &configs)
 {
 	for (size_t i = 0; i < configs.size(); i++){
-		std::cout << "server block:\n" << configs[i]->toString() << LINE << std::endl;
-		for (size_t j = 0; j < configs[i]->_newLocations.size(); j++){
-			std::cout << "location block:\n" << configs[i]->_newLocations[j]->toString() \
+		std::cout << "server block:\n" << configs[i].toString() << LINE << std::endl;
+		for (size_t j = 0; j < configs[i]._newLocations.size(); j++){
+			std::cout << "location block:\n" << configs[i]._newLocations[j]->toString() \
 			<< "---------------" << std::endl;
-			for (size_t k = 0; k < configs[i]->_newLocations[j]->_nestedLocations.size(); k++)
+			for (size_t k = 0; k < configs[i]._newLocations[j]->_nestedLocations.size(); k++)
 			{
-				std::cout << "NESTED location block:\n" << configs[i]->_newLocations[j]->_nestedLocations[0]->toString()\
+				std::cout << "NESTED location block:\n" << configs[i]._newLocations[j]->_nestedLocations[0]->toString()\
 					<< std::endl;
 			}
 		}

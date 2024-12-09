@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/26 18:42:38 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/05 19:54:35 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,11 @@
 
 int main(int argc, char ** argv) {
 	
-	std::vector<std::unique_ptr<Config>> configs;
+	std::vector<Config> configs;
 	try
 	{
 		parseConfig(argc, argv, configs);
+		printConfigs(configs);
 		Server _webbyserv(configs);
 		_webbyserv.main_server_loop();
 	}

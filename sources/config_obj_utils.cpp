@@ -35,7 +35,8 @@ Config::operator=(const Config &rhs)
 
 	if (this != &rhs)
 	{
-		_serverPort = rhs._serverPort;
+		// _serverPort = rhs._serverPort;
+		_listen = rhs._listen;
 		_serverName = rhs._serverName;
 		_maxConnects = rhs._maxConnects;
 		_timeout = rhs._timeout;

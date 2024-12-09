@@ -4,6 +4,7 @@
 static Response*	getMethod(Request* request, Response* response){
 	std::ifstream file;
 	size_t size = 0;
+	(void)request;
 
 	if (fileExists(request->_filePath)){
 		response->setContentType(request->_filePath);
@@ -38,6 +39,7 @@ static Response*	getMethod(Request* request, Response* response){
 
 static Response*	postMethod(Request* request, Response* response){
 	std::ofstream file;
+	(void)request;
 
 	// check for CGI??
 	if(response->getReadingMode(*request) == BINARY)
@@ -91,4 +93,8 @@ void	responseHandler(Request* request, Config* config)
 	std::cout << responseBuffer << std::endl;
 	write(request->_clientFD, responseBuffer.c_str(), responseBuffer.size()); //needs to be send back in a loop (see requestHandler)
 	return;
+	(void)config;
 }
+
+
+

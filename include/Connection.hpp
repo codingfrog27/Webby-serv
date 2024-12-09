@@ -26,10 +26,10 @@ class Connection
 		
 
 	public:
+		Config		*_config;
+		Request		_request;
 		bool		_isServerSocket;
 		int			_clientFD;
-		Request		_request;
-		Config		*_config;
 		bool		_keepOpen;
 		// bool		_doneReading;
 		// Response	*response;
