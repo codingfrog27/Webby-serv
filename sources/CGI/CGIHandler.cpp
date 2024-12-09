@@ -10,7 +10,7 @@ Response*	CGIHandler(Request* request, Response* response){
 	int fdError[2];
 
 	// should we even invoke CGI?
-	if (request->_method_type != GET || request->_method_type != POST){
+	if (request->_method_type != GET && request->_method_type != POST){
 		response->autoFillResponse("405 Method Not Allowed");
 		response->setHeaders("Allow", "GET, POST");
 		return ;
@@ -24,9 +24,23 @@ Response*	CGIHandler(Request* request, Response* response){
 		return ;
 	}
 	// if yes
-	if (pipe(fdIn) == -1 || pipe(fdOut) == -1 || pipe(fdError) == -1){
-		response->autoFillResponse("500 Internal Server Error: pipe");
-		return ;
+	if (pipe(fdIn) == -1) {
+		response->autoFillResponse("500 Internal Server Error: pipe fdIn");
+		return response;
+	}
+	if (pipe(fdOut) == -1) {
+		close(fdIn[0]);
+		close(fdIn[1]);
+		response->autoFillResponse("500 Internal Server Error: pipe fdOut");
+		return response;
+	}
+	if (pipe(fdError) == -1) {
+		close(fdIn[0]);
+		close(fdIn[1]);
+		close(fdOut[0]);
+		close(fdOut[1]);
+		response->autoFillResponse("500 Internal Server Error: pipe fdError");
+		return response;
 	}
 	CGI* newCGI = new CGI(fdIn, fdOut, fdError);
 	newCGI->setupCGIEnvironment(request);
