@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/05 20:10:12 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/09 18:27:22 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ Request::Request(Config *config, int clientFD): _config(config), \
 	_statusCode("0 Not started yet")
 {
 	_rawRequestData.reserve(100);
+	_timeoutTime = intToMsecs(30000); //30 secs TMP
+	_startTime = getStartTime();
 }
 
 Request::Request(const Request &rhs)

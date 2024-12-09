@@ -25,6 +25,7 @@
 #include "ClientErrorExcept.hpp"
 #include "ConnectionClosedExcep.hpp"
 #include "Config.hpp"
+#include "timeout.hpp"
 
 #define GREEN "\033[32m"
 #define RED "\033[31m"
@@ -69,6 +70,9 @@ class Request
 		bool					_hasBody;
 		size_t					_contentLen; //need to put in init list
 		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
+		t_msecs					_timeoutTime;
+		t_time					_startTime;
+		
 
 
 		int						readSocket(int size);

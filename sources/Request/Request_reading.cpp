@@ -26,7 +26,9 @@ void	Request::readRequest()
 			std::cout << "PARSING BODY" << std::endl;
 			parseBody();
 		}
-		//timeout check
+		if (isTimedOut(this->_startTime, this->_timeoutTime))
+			throw ClientErrorExcept(408, "Request Timeout");
+		
 	}
 	catch(ClientErrorExcept &e)
 	{

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/05 20:30:37 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/09 16:19:20 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ size_t	Request::parse_req_line(std::string req_line)
 		throw (std::invalid_argument("no space found after uri"));
 
 	_method_type = which_method_type(req_line.substr(0, method_end));
-	_URI = req_line.substr(method_end + 1, uri_end - method_end - 1);
+	_URI = req_line.substr(method_end + 2, uri_end - method_end - 1); //temp + 2??
 	resolveFilePath();
 	_http_version = http_version(&req_line[uri_end + 1]);
 	return (line_end + 2);
@@ -48,13 +48,16 @@ void	Request::resolveFilePath()
 		resolved.erase(resolved.find("?"));
 	else if (resolved.find("#") != std::string::npos)
 		resolved.erase(resolved.find("#"));
-	if (resolved.find("https://") != std::string::npos || resolved.find("http://") != std::string::npos)
+	if (resolved.find("https://") != std::string::npos || resolved.find("http://") != std::string::npos) //do we wanna handle https?
 		resolved.erase(0, resolved.find("//") + 2);
 	if (resolved.find(_config->_host) != std::string::npos)
 		resolved.erase(0, _config->_host.length());
 	if (resolved.find(_config->_listen) != std::string::npos)
 		resolved.erase(0, _config->_listen.length() + 1);
 	_filePath = _config->_rootDir + resolved;
+	// resolved.erase()
+	_filePath = "website/index.html";
+
 }
 
 void	Request::parse_headers(std::string header_str)
@@ -123,9 +126,6 @@ void	Request::checkBodyHeaders()
 	if (_contentLen > _max_body_size)
 		throw (ClientErrorExcept(413, "413 Payload too large"));
 }
-
-
-
 
 bool	Request::dechunkBody()
 {

@@ -31,6 +31,8 @@ class Connection
 		bool		_isServerSocket;
 		int			_clientFD;
 		bool		_keepOpen;
+		t_time		_startTime;
+		t_msecs		_TimeoutTime;
 		// bool		_doneReading;
 		// Response	*response;
 		

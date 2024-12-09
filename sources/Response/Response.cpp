@@ -86,6 +86,7 @@ void	Response::setContentType(std::string path){
 		_headers["Content-Type"] = "application/pdf";
 	else
 		_headers["Content-Type"] = "text/plain";
+	std::cout << "CONTENT TYPE IS" << _headers["Content-Type"] << std::endl;
 }
 
 void	Response::setHeaders(std::string key, std::string value){
@@ -108,5 +109,7 @@ void	Response::setBody(std::vector<char> body){
 /*	takes a string as key, finds it in the map and returns the value	*/
 std::string	Response::getHeader(std::string key) const{
 	auto it = _headers.find(key);
+	if (it == _headers.end())
+		return ("");
 	return it->second;
 }

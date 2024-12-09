@@ -5,6 +5,7 @@ static Response*	getMethod(Request* request, Response* response, std::string fil
 	size_t size = 0;
 	(void)request;
 
+	std::cout << "IN GET METHOD, filepath ==" << filePath << std::endl;
 	if (fileExists(filePath)){
 		response->setContentType(filePath);
 		if (getReadingMode(*response) == BINARY)

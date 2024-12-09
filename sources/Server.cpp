@@ -87,8 +87,7 @@ void	Server::close_connect(int i)
 #define TMP_POLL_TIME 500000
 
 void	Server::main_server_loop()
-{
-	
+{	
 	while (1)
 	{
 		size_t	size = _pollFDs.size();
@@ -106,13 +105,14 @@ void	Server::main_server_loop()
 			else if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading)
 			{
 				responseHandler(&_Connections[i]._request, _Connections[i]._config);
-				if (_Connections[i]._keepOpen) 
-					std::cout << "tmp" << std::endl;
+				if (_Connections[i]._keepOpen) //and donewriting
+					std::cout << "tmp" << std::endl; //update idle timeout renew request object
+					//and set 
 				else
-					close_connect(i);
+					close_connect(i); //segfault??
 			}
-			//else if (current_time - last_action_time > idle timeout)
-				// close_connect()
+			else if (isTimedOut(_Connections[i]._startTime, _Connections[i]._TimeoutTime))
+				close_connect(i); // has issues??
 		}	
 	}
 	// poll(_pollFDs.data(), size, TMP_POLL_TIME);
