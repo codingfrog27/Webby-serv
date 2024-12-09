@@ -4,7 +4,6 @@
 static Response*	getMethod(Request* request, Response* response){
 	std::ifstream file;
 	size_t size = 0;
-	(void)request;
 
 	if (fileExists(request->_filePath)){
 		response->setContentType(request->_filePath);
@@ -39,7 +38,6 @@ static Response*	getMethod(Request* request, Response* response){
 
 static Response*	postMethod(Request* request, Response* response){
 	std::ofstream file;
-	(void)request;
 
 	// check for CGI??
 	if(response->getReadingMode(*request) == BINARY)
@@ -69,6 +67,7 @@ static Response*	deleteMethod(Request* request, Response* response){
 	return response;
 }
 
+//config for timeout & max body size
 void	responseHandler(Request* request, Config* config)
 {
 	Response *response = new Response(request);
