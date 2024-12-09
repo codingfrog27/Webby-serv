@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/20 17:28:39 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/21 12:53:40 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class Config
 		std::string _autoindex;
 		std::string _autoIndexFilePath;
 		std::string _client_max_body_size;
-		std::unordered_map<std::string, std::string> _errorPage;
+		std::multimap<std::string, std::string> _errorPage;
 		std::string _host;
 		std::vector<std::string> _index;
 		std::string _listen;
@@ -46,7 +46,7 @@ class Config
 		std::vector<std::unique_ptr<location>> _newLocations;
 		std::vector<std::string> _locNames;
 		std::unordered_map<std::string, location> _locations;
-		std::unordered_map<std::string, std::string> _rulemap;
+		std::multimap<std::string, std::string> _rulemap;
 
 		// Constructors and Destructors
 		Config(void);
@@ -82,14 +82,14 @@ class Config
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	void	parseRule(const std::string &line);
 	
-	std::unordered_map<std::string, std::string> getErrorPage();
+	std::multimap<std::string, std::string> getErrorPage();
 	std::string	getMaxBodySize();
 	std::string	getHost();
 	std::vector<std::string> getIndex();
 	std::string	getListen();
 	std::string	getRoot();
 	std::string	getServerName();
-	void		setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap);
+	void		setErrorPage(const std::multimap<std::string, std::string> &errorPageMap);
 	void		setHost(const std::string &host);
 	void		setIndex(const std::vector<std::string> &index_vector);
 	void		setListen(const std::string &listen);
@@ -100,7 +100,7 @@ class Config
 
 	int			initializeServer();
 	int			mapToMembers();
-	std::unordered_map<std::string, std::string> validateErrorPage();
+	std::multimap<std::string, std::string> validateErrorPage();
 	std::string validateHost();
 	std::vector<std::string> ValidateIndex();
 	std::string	validateListen();
@@ -115,5 +115,5 @@ bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 bool	checkstr(const std::string &line, const std::string &str);
 
-void	print_map(const std::unordered_map<std::string, std::string> map);
+void	print_map(const std::multimap<std::string, std::string> map);
 std::string	normalize_space(std::string& str);

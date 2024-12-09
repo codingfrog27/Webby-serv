@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config_error_checking.cpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/20 17:19:12 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/02 12:24:17 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,40 +67,76 @@ std::string getErrorPageMapValue(std::string& errorPage_value)
 }
 
 
-//change the errorpage unordered_map in multi_map so like this we can have same key
-std::unordered_map<std::string, std::string>		Config::validateErrorPage()
+// std::multimap<std::string, std::string>		Config::validateErrorPage()
+// {
+// 	std::string errorPage_rule;
+// 	std::string errorPage_value;
+// 	std::multimap<std::string, std::string> tmpErrorPageMap;
+// 	size_t find_space = 0;
+// 	int space = 0;
+	
+// 	if (_rulemap.contains("error_page"))
+// 	{
+// 		auto found = _rulemap.find("error_page");
+// 		errorPage_rule = normalize_space(found->second);
+// 		// std::cout << "errorPage_rule: " << errorPage_rule << std::endl;
+// 		errorPage_value = find_value(errorPage_rule);
+// 	}
+// 	else 
+// 		throw std::invalid_argument("Error: error_page directive not found");
+// 	for (auto i = 0; i < errorPage_value.length(); i++)
+// 	{
+// 		if (isspace(errorPage_value[i]))
+// 		{
+// 			find_space = errorPage_value.find(' ');
+// 			if (errorPage_value[find_space + 1] != '/')
+// 				throw std::invalid_argument("Error: invalid path in error_page directive");
+// 			space++;
+// 			i++;
+// 		}
+// 		// if (space > 1)
+// 		// 	throw std::invalid_argument("Error: invalid character in error_page directive");
+// 	}
+	
+// 	std::string map_key = getErrorPageMapKey(errorPage_value);
+// 	std::string map_value = getErrorPageMapValue(errorPage_value);
+// 	tmpErrorPageMap.emplace(make_pair(map_key, map_value));
+// 	return (tmpErrorPageMap);
+// }
+
+
+//DA MODIFICARE!!!!!!!!!!!
+std::multimap<std::string, std::string> Config::validateErrorPage()
 {
-	std::string errorPage_rule;
-	std::string errorPage_value;
-	std::unordered_map<std::string, std::string> tmpErrorPageMap;
-	size_t find_space = 0;
-	int space = 0;
-	
-	if (_rulemap.contains("error_page"))
-	{
-		errorPage_rule = normalize_space(_rulemap.at("error_page"));
-		errorPage_value = find_value(errorPage_rule);
-	}
-	else 
-		throw std::invalid_argument("Error: error_page directive not found");
-	for (auto i = 0; i < errorPage_value.length(); i++)
-	{
-		if (isspace(errorPage_value[i]))
-		{
-			find_space = errorPage_value.find(' ');
-			if (errorPage_value[find_space + 1] != '/')
-				throw std::invalid_argument("Error: invalid path in error_page directive");
-			space++;
-			i++;
-		}
-		// if (space > 1)
-		// 	throw std::invalid_argument("Error: invalid character in error_page directive");
-	}
-	
-	std::string map_key = getErrorPageMapKey(errorPage_value);
-	std::string map_value = getErrorPageMapValue(errorPage_value);
-	tmpErrorPageMap.emplace(map_key, map_value);
-	return (tmpErrorPageMap);
+    std::multimap<std::string, std::string> tmpErrorPageMap;
+
+    auto range = _rulemap.equal_range("error_page");
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        std::string errorPage_rule = normalize_space(it->second);
+        std::istringstream iss(errorPage_rule);
+        std::string errorCode;
+        std::string errorPage;
+
+        while (iss >> errorCode >> errorPage)
+        {
+            // if (errorPage[0] != '/')
+            //     throw std::invalid_argument("Error: invalid path in error_page directive");
+
+            for (char c : errorPage)
+            {
+                if (!isdigit(c) && !isalpha(c) && c != '/' && c != '.' && c != '_')
+                    throw std::invalid_argument("Error: invalid character in error_page directive");
+            }
+
+            tmpErrorPageMap.emplace(errorCode, errorPage);
+        }
+    }
+
+    if (tmpErrorPageMap.empty())
+        throw std::invalid_argument("Error: no valid error_page directives found");
+
+    return tmpErrorPageMap;
 }
 
 std::vector<std::string>		Config::ValidateIndex()
@@ -109,13 +145,13 @@ std::vector<std::string>		Config::ValidateIndex()
 	std::string index_value;
 	std::string tmp_value;
 	std::vector<std::string>  tmp_vector;
-	
 	int space_pos = 0;
 	static int space = 0;
 	
 	if (_rulemap.contains("index"))
 	{
-		index_rule = normalize_space(_rulemap.at("index"));
+		auto found = _rulemap.find("index");
+		index_rule = normalize_space(found->second);
 		index_value = find_value(index_rule);
 	}
 	else
@@ -161,7 +197,8 @@ std::string	Config::validateListen()
 	
 	if (_rulemap.contains("listen"))
 	{
-		listen_rule = normalize_space (_rulemap.at("listen"));
+		auto found = _rulemap.find("listen");
+		listen_rule = normalize_space (found->second);
 		listen_value = find_value(listen_rule);
 	}
 	else 	
@@ -181,7 +218,8 @@ std::string Config::validateMaxBodySize()
 	
 	if (_rulemap.contains("client_max_body_size"))
 	{
-		maxBodySize_rule = normalize_space(_rulemap.at("client_max_body_size"));
+		auto found = _rulemap.find("client_max_body_size");
+		maxBodySize_rule = normalize_space(found->second);
 		maxBodySize_value = find_value(maxBodySize_rule);
 	}
 	else 
@@ -207,7 +245,8 @@ std::string Config::validateHost()
 	
 	if (_rulemap.contains("host"))
 	{
-		host_rule = normalize_space(_rulemap.at("host"));
+		auto found = _rulemap.find("host");
+		host_rule = normalize_space(found->second);
 		host_value = find_value(host_rule); 
 	}
 	else 
@@ -233,10 +272,10 @@ std::string Config::validateServerName()
 	std::string serverName_rule;
 	std::string serverName_value;
 	
-	
 	if (_rulemap.contains("server_name"))
 	{
-		serverName_rule = normalize_space(_rulemap.at("server_name"));
+		auto found = _rulemap.find("server_name");
+		serverName_rule = normalize_space(found->second);
 		serverName_value = find_value(serverName_rule);
 	}
 	else 
@@ -258,7 +297,8 @@ std::string Config::validateRoot()
 
 	if (_rulemap.contains("root"))
 	{
-		root_rule = normalize_space(_rulemap.at("root"));
+		auto found = _rulemap.find("root");
+		root_rule = normalize_space(found->second);
 		root_value = find_value(root_rule);
 	}
 	else
@@ -273,3 +313,4 @@ std::string Config::validateRoot()
 	
 	return (root_value);
 }
+

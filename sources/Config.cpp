@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/20 16:45:36 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/11/21 15:39:42 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName)
 			continue;
 		if (line.find("server {") != std::string::npos)
 		{
-			// Configs.emplace_back(file, line);
 			Configs.push_back(std::unique_ptr<Config>(new Config(file, line)));
 		}
 		// else
@@ -69,7 +68,7 @@ int	Config::mapToMembers()
 	setIndex(ValidateIndex());
 	setRoot(validateRoot());
 	setServerName(validateServerName());
-	
+
 	return (1);
 }
 
@@ -108,7 +107,6 @@ void	Config::parseRule(const std::string &line)
 	 	value_end++;
 	if (value_end == directive.end())
 		throw std::invalid_argument("Error: Missing semicolon.");
-	std::string tmp_value(value_begin, value_end);	
-	// std::cout << tmp_value << std::endl;
-	_rulemap.emplace(tmp_key, tmp_value);
+	std::string tmp_value(value_begin, value_end);
+	_rulemap.insert(make_pair(tmp_key, tmp_value));
 }

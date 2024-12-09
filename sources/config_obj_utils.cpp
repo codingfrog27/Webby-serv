@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/14 16:10:19 by asimone          ###   ########.fr       */
+/*   Updated: 2024/11/21 14:55:59 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,12 +105,12 @@ void	Config::setHost(const std::string &host)
 	this->_host = host;
 }
 
-std::unordered_map<std::string, std::string>	Config::getErrorPage()
+std::multimap<std::string, std::string>	Config::getErrorPage()
 {
 	return(this->_errorPage);
 }
 
-void	Config::setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap)
+void	Config::setErrorPage(const std::multimap<std::string, std::string> &errorPageMap)
 {
 	this->_errorPage = errorPageMap;
 }
