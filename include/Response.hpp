@@ -28,8 +28,8 @@ class Response{
 		void											setBody(std::vector<char>);
 
 		std::string										getHeader(std::string key) const;
-		readingMode										Response::getReadingMode(Request & request) const;
-		readingMode										Response::getReadingMode() const;
+		readingMode										getReadingModeFromRequest(Request & request) const;
+		readingMode										getReadingModeFromResponse() const;
 
 	private:
 		// const Http_method								_method_type;
@@ -42,4 +42,4 @@ class Response{
 void		responseHandler(Request* request, Config* config);
 bool		isCGIrequired(Request* request);
 bool		fileExists(std::string path);
-readingMode	getReadingMode(Response & response);
+

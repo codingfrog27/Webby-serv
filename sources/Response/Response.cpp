@@ -112,14 +112,14 @@ void	Response::setBody(std::vector<char> body){
 /*	getters	*/
 
 /* anything that's not text has to be handled as raw bits*/
-readingMode	Response::getReadingMode() const{
+readingMode	Response::getReadingModeFromResponse() const{
 	if (Response::getHeader("Content-type").find("text") != std::string::npos)
 		return TEXT;
 	else
 		return BINARY;
 }
 
-readingMode	Response::getReadingMode(Request & request) const{
+readingMode	Response::getReadingModeFromRequest(Request & request) const{
 	if (request._headers["Content-Type"].find("text") != std::string::npos)
 		return TEXT;
 	else
