@@ -90,12 +90,12 @@ void	Server::main_server_loop()
 {	
 	while (1)
 	{
+		//if poll timeout-> get current time
 		size_t	size = _pollFDs.size();
-		poll(_pollFDs.data(), size, TMP_POLL_TIME);
-		//get current time
+		poll(_pollFDs.data(), size, TMP_POLL_TIME); 
 		for (size_t i = 0; i < size; ++i)
 		{		
-			if (_pollFDs[i].revents & POLLIN)
+			if (_pollFDs[i].revents & POLLIN && !_Connections[i]._request._doneReading)
 			{
 				if (_Connections[i]._isServerSocket) 
 					acceptNewConnects(i);
@@ -115,7 +115,6 @@ void	Server::main_server_loop()
 				close_connect(i); // has issues??
 		}	
 	}
-	// poll(_pollFDs.data(), size, TMP_POLL_TIME);
 }
 
 

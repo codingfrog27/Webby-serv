@@ -17,7 +17,7 @@ void	Request::readRequest()
 	//update idle time
 	try
 	{
-		if (_statusCode == "0 Not started yet")
+		if (_statusCode == "0 Not started yet") //segfault!!
 			_statusCode = "102 Processing";
 		readSocket(0);
 		if (!_rnrnFound && headerEndFound())
@@ -32,7 +32,7 @@ void	Request::readRequest()
 	}
 	catch(ClientErrorExcept &e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << e.what() << std::endl; //response
 	}
 	catch (ConnectionClosedExcep &e)
 	{
