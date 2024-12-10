@@ -17,7 +17,7 @@ Response*	CGI::invokeCGI(Request* request, Response* response){
 	if (PID == -1){
 		closePipes();
 		response->autoFillResponse("500 Internal Server Error: fork");
-		return ;
+		return response;
 	}
 	if (PID == 0){ //child
 		dup2(_fdIn[0], STDIN_FILENO);

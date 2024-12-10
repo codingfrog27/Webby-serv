@@ -13,15 +13,15 @@ Response*	CGIHandler(Request* request, Response* response){
 	if (request->_method_type != GET && request->_method_type != POST){
 		response->autoFillResponse("405 Method Not Allowed");
 		response->setHeaders("Allow", "GET, POST");
-		return ;
+		return response;
 	}
 	if (request->_filePath.find("/cgi-bin/", 0) == std::string::npos){
 		response->autoFillResponse("403 Forbidden");
-		return ;
+		return response;
 	}
 	if (!fileExists(request->_filePath)){
 		response->autoFillResponse("404 Not Found");
-		return ;
+		return response;
 	}
 	// if yes
 	if (pipe(fdIn) == -1) {
