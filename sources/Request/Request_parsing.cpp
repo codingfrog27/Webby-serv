@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Request_parsing.cpp                                :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/05 20:30:37 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Request_parsing.cpp                                :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2024/12/10 17:48:28 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void	Request::resolveFilePath()
 	if (resolved.find(_config->_listen) != std::string::npos)
 		resolved.erase(0, _config->_listen.length() + 1);
 	_filePath = _config->_rootDir + resolved;
+	_filePath = "website/index.html";
 }
 
 void	Request::parse_headers(std::string header_str)

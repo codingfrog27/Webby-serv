@@ -129,5 +129,7 @@ readingMode	Response::getReadingModeFromRequest(Request & request) const{
 /*	takes a string as key, finds it in the map and returns the value	*/
 std::string	Response::getHeader(std::string key) const{
 	auto it = _headers.find(key);
+	if (it == _headers.end())
+		return "";
 	return it->second;
 }

@@ -62,7 +62,7 @@ Response*	CGI::invokeCGI(Request* request, Response* response){
 			response->autoFillResponse("500 Internal Server Error: script: " + error);
 			return response;
 		}
-		if (waitpid(PID, NULL, 0) == -1){
+		if (waitpid(PID, NULL, WNOHANG) == -1){
 			response->autoFillResponse("500 Internal Server Error: waitpid");
 			return response;
 		}
