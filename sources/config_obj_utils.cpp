@@ -68,6 +68,7 @@ std::string	Config::getRoot()
 
 void	Config::setRoot(const std::string &root)
 {
+	
 	this->_rootDir = root;
 }
 

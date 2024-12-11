@@ -120,7 +120,6 @@ void	Server::main_server_loop()
 
 void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
 {
-	std::cout << "hoii" << std::endl;
 	if (poll.revents & POLLIN && !connect._request._doneReading)
 	{
 		if (connect._isServerSocket) 
