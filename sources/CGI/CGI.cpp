@@ -14,6 +14,7 @@ CGI::~CGI(){
 
 //needs refactoring
 std::string	CGI::invokeCGI(Request* request, Response* response){
+	std::cout << MAGENTA "CGI Invoked" << std::endl;
 	int PID = fork();
 	if (PID == -1){
 		closePipes();
@@ -26,7 +27,7 @@ std::string	CGI::invokeCGI(Request* request, Response* response){
 		dup2(_fdError[1], STDERR_FILENO);
 		closePipes();
 		int status = 0;
-		response = CGI::executeScript(request, response); // into buffer and then to response or write errors to stderr(file)
+		response = CGI::executeScript(request, response);
 		//if something went wrong adjust status
 		exit(status);
 	}
@@ -40,11 +41,8 @@ std::string	CGI::invokeCGI(Request* request, Response* response){
 		char buffer[BUFFER_SIZE];
 		int bytesRead = 0;
 		std::string responseBuffer;
-		while ((bytesRead = read(_fdOut[0], buffer, BUFFER_SIZE)) > 0){
-			// response->setBody(std::vector<char>(buffer, buffer + bytesRead));
-			// response->setBody(std::string(buffer, bytesRead));
+		while ((bytesRead = read(_fdOut[0], buffer, BUFFER_SIZE)) > 0)
 			responseBuffer.append(buffer, bytesRead);
-		}
 		close(_fdOut[0]);
 		if (bytesRead == -1){
 			response->autoFillResponse("500 Internal Server Error: read");
