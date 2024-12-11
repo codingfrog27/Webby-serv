@@ -58,7 +58,7 @@ enum Http_method
 	NOT_PARSED_YET,
 };
 
-class Request 
+class Request
 {
 	private:
 		Config					*_config;
@@ -75,7 +75,7 @@ class Request
 		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
 		t_msecs					_timeoutTime;
 		t_time					_startTime;
-		
+
 
 
 		int						readSocket(int size);
@@ -105,7 +105,7 @@ class Request
 		<std::string, std::string>	_wwwFormEncodedPairs;
 		std::string					_http_version;
 		std::string					request_line;
-		std::string 				_URI; 
+		std::string 				_URI;
 		std::string					_filePath;
 		bool						_keepOpen;
 		bool						_doneReading;
@@ -130,4 +130,5 @@ class Request
 		void			printHeaders();
 };
 
+std::string trim(const std::string& str);
 //bleb

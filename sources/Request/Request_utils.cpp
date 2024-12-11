@@ -27,7 +27,7 @@ std::string	Request::getHeaderValue(std::string key)
 bool	Request::headerExists(std::string key)
 {
 	std::unordered_map<std::string, std::string>::iterator it;
-	
+
 	it = _headers.find(key);
 	if (it != _headers.end())
 		return (true);
@@ -47,7 +47,7 @@ void	Request::printHeaders()
 	}
 }
 
-Http_method Request::which_method_type(std::string str) 
+Http_method Request::which_method_type(std::string str)
 {
 	const char *Methods[] = {"GET", "POST", "DELETE"};
 	for (size_t i = 0; i < 3; i++)
@@ -61,7 +61,7 @@ Http_method Request::which_method_type(std::string str)
 std::string Request::http_version(const std::string &version)
 {
 	if (!version.compare(0, 8, "HTTP/1.1"))
-		return (version.substr(0, 8)); 
+		return (version.substr(0, 8));
 	else if (!version.compare(0, 6, "HTTP/1"))
 		return (version.substr(0, 6));
 	else
@@ -86,7 +86,7 @@ std::string	urlDecode(const std::string &encoded)
 {
 	std::string decodedStr;
 	char ch;
-	
+
 	for (size_t i = 0; encoded[i]; i++)
 	{
 		ch = encoded[i];
@@ -104,4 +104,10 @@ std::string	urlDecode(const std::string &encoded)
 const std::string &Request::getBody()
 {
 	return (_reqBody);
+}
+
+std::string trim(const std::string& str) {
+	auto start = str.find_first_not_of(" \n\r\t");
+	auto end = str.find_last_not_of(" \n\r\t");
+	return (start == std::string::npos) ? "" : str.substr(start, end - start + 1);
 }

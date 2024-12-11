@@ -6,7 +6,7 @@
 /*   By: mstegema <mstegema@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2024/12/11 22:12:44 by mstegema      ########   odam.nl         */
+/*   Updated: 2024/12/12 00:01:02 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,7 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_listen.length() + 1);
 	if (resolved.front() == '/')
 		resolved.erase(0, 1);
-	_filePath = _config->_rootDir + resolved;
-	// _filePath = "website/index.html";
-	// std::cout << "hoi" << _filePath << "doei" << std::endl;
-
+	_filePath = trim(_config->_rootDir) + trim(resolved);
 }
 
 void	Request::parse_headers(std::string header_str)
@@ -163,6 +160,7 @@ void	Request::parseBody()
 		parseFormData(content_type);
 	else if (content_type.compare("application/x-www-form-urlencoded") == 0)
 		parseUrlEncoded();
+	_reqBody = trim(_reqBody);
 	_doneReading = true;
 	_statusStr = "";
 }
