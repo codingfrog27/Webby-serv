@@ -94,29 +94,51 @@ void	Server::main_server_loop()
 		size_t	size = _pollFDs.size();
 		poll(_pollFDs.data(), size, TMP_POLL_TIME); 
 		for (size_t i = 0; i < size; ++i)
-		{		
-			if (_pollFDs[i].revents & POLLIN && !_Connections[i]._request._doneReading)
-			{
-				if (_Connections[i]._isServerSocket) 
-					acceptNewConnects(i);
-				else 
-					_Connections[i]._request.readRequest();
-			}
-			else if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading)
-			{
-				responseHandler(&_Connections[i]._request, _Connections[i]._config);
-				if (_Connections[i]._keepOpen) //and donewriting
-					std::cout << "tmp" << std::endl; //update idle timeout renew request object
-					//and set 
-				else
-					close_connect(i); //segfault??
-			}
-			else if (isTimedOut(_Connections[i]._startTime, _Connections[i]._TimeoutTime))
-				close_connect(i); // has issues??
+		{	
+			connectionAction(_Connections[i], _pollFDs[i], i);
+			// if (_pollFDs[i].revents & POLLIN && !_Connections[i]._request._doneReading)
+			// {
+			// 	if (_Connections[i]._isServerSocket) 
+			// 		acceptNewConnects(i);
+			// 	else 
+			// 		_Connections[i]._request.readRequest();
+			// }
+			// else if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading)
+			// {
+			// 	responseHandler(&_Connections[i]._request, _Connections[i]._config);
+			// 	if (_Connections[i]._keepOpen) //and donewriting
+			// 		std::cout << "tmp" << std::endl; //update idle timeout renew request object
+			// 		//and set 
+			// 	else
+			// 		close_connect(i); //segfault??
+			// }
+			// else if (isTimedOut(_Connections[i]._startTime, _Connections[i]._TimeoutTime))
+			// 	close_connect(i); // has issues??
 		}	
 	}
 }
 
+void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
+{
+	std::cout << "hoii" << std::endl;
+	if (poll.revents & POLLIN && !connect._request._doneReading)
+	{
+		if (connect._isServerSocket) 
+			acceptNewConnects(i);
+		else 
+			connect._CStatus = connect._request.readRequest();
+	}
+	else if ((poll.revents & POLLOUT) && connect._request._doneReading)
+	{
+		responseHandler(&connect._request, connect._config);
+		if (connect._keepOpen) //and donewriting
+			std::cout << "tmp" << std::endl; //update idle timeout renew request object
+		else
+			close_connect(i); //segfault??
+	}
+	else if (isTimedOut(connect._startTime, connect._TimeoutTime))
+		close_connect(i); // has issues??
+}
 
 void Server::acceptNewConnects(int i)
 {

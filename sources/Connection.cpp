@@ -23,6 +23,10 @@ _config(config), _request(config, clientFD), _isServerSocket(isServerside), \
 {
 	_startTime = getStartTime();
 	_TimeoutTime = intToMsecs(60000);
+	if (_isServerSocket)
+		_CStatus = connectStatus::SERV_SOCKET;
+	else
+		_CStatus = connectStatus::IDLE;
 }
 
 

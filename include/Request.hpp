@@ -21,6 +21,8 @@
 #include <algorithm>
 #include <unordered_map>
 #include <sys/socket.h>
+
+
 #include "libft.h"
 #include "ClientErrorExcept.hpp"
 #include "ConnectionClosedExcep.hpp"
@@ -36,6 +38,7 @@
 
 //unsigned char vector iterator
 typedef std::vector<unsigned char>::iterator t_ucit;
+enum class connectStatus;
 
 enum reading_status
 {
@@ -90,6 +93,8 @@ class Request
 		void					parseUrlEncoded();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 		void					resolveFilePath();
+
+
 	public:
 		int							_clientFD;
 		std::vector<unsigned char>	_rawRequestData;
@@ -103,9 +108,10 @@ class Request
 		std::string 				_URI; 
 		std::string					_filePath;
 		bool						_keepOpen;
-		bool						_error_occured;
 		bool						_doneReading;
-		std::string					_statusCode;
+		std::string					_statusStr;
+		int							_statusCode;
+		// bool						_error_occured;
 		// Constructors and Destructors
 						Request(void) = delete;
 						Request(Config *config, int _clientFD);
@@ -117,7 +123,7 @@ class Request
 		//get and setters
 		const std::string &getBody();
 		//public methods
-		void			readRequest();
+		connectStatus	readRequest();
 		std::string		getHeaderValue(std::string key);
 		bool			headerExists(std::string key);
 		std::string		getStatusCode();

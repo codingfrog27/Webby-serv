@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/09 16:19:20 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/11 18:03:04 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	Request::checkHeaders()
 	if (_method_type == GET)
 	{
 		_doneReading = true;
-		_statusCode = "";
+		_statusStr = "";
 	}
 	else
 		checkBodyHeaders();
@@ -161,6 +161,8 @@ void	Request::parseBody()
 		parseFormData(content_type);
 	else if (content_type.compare("application/x-www-form-urlencoded") == 0)
 		parseUrlEncoded();
+	_doneReading = true;
+	_statusStr = "";
 }
 
 std::string	urlDecode(const std::string &encoded);
