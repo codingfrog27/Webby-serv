@@ -92,7 +92,7 @@ void CGI::setupCGIEnvironment(Request* request) {
 	else if (request->_method_type == POST) {
 		CGI::addToEnvp("REQUEST_METHOD", "POST");
 		CGI::addToEnvp("CONTENT_TYPE", request->_headers["Content-Type"]);
-		CGI::addToEnvp("CONTENT_LENGTH", std::to_string(request->_headers["Content-Length"].length()));
+		CGI::addToEnvp("CONTENT_LENGTH", request->_headers["Content-Length"]);
 	}
 	CGI::addToEnvp("SCRIPT_FILENAME", request->_filePath);
 	CGI::addToEnvp("SERVER_PROTOCOL", "HTTP/1.1");
