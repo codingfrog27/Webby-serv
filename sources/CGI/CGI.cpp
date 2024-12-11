@@ -1,5 +1,6 @@
 #include "CGI.hpp"
-#include <wait.h>
+// #include <wait.h>
+#include <sys/wait.h>
 
 CGI::CGI(int *fdIn, int *fdOut, int *fdError) : _fdIn(fdIn), _fdOut(fdOut), _fdError(fdError){
 	return ;
@@ -12,12 +13,12 @@ CGI::~CGI(){
 }
 
 //needs refactoring
-Response*	CGI::invokeCGI(Request* request, Response* response){
+std::string	CGI::invokeCGI(Request* request, Response* response){
 	int PID = fork();
 	if (PID == -1){
 		closePipes();
 		response->autoFillResponse("500 Internal Server Error: fork");
-		return response;
+		return response->generateResponse();
 	}
 	if (PID == 0){ //child
 		dup2(_fdIn[0], STDIN_FILENO);
@@ -38,15 +39,17 @@ Response*	CGI::invokeCGI(Request* request, Response* response){
 		close(_fdIn[1]);
 		char buffer[BUFFER_SIZE];
 		int bytesRead = 0;
+		std::string responseBuffer;
 		while ((bytesRead = read(_fdOut[0], buffer, BUFFER_SIZE)) > 0){
 			// response->setBody(std::vector<char>(buffer, buffer + bytesRead));
-			response->setBody(std::string(buffer, bytesRead));
+			// response->setBody(std::string(buffer, bytesRead));
+			responseBuffer.append(buffer, bytesRead);
 		}
 		close(_fdOut[0]);
 		if (bytesRead == -1){
 			response->autoFillResponse("500 Internal Server Error: read");
 			close(_fdError[0]);
-			return response;
+			return response->generateResponse();
 		}
 		bytesRead = 0;
 		std::string error;
@@ -56,18 +59,19 @@ Response*	CGI::invokeCGI(Request* request, Response* response){
 		close(_fdError[0]);
 		if (bytesRead == -1){
 			response->autoFillResponse("500 Internal Server Error: read");
-			return response;
+			return response->generateResponse();
 		}
 		if (!error.empty()){
 			response->autoFillResponse("500 Internal Server Error: script: " + error);
-			return response;
+			return response->generateResponse();
 		}
 		if (waitpid(PID, NULL, WNOHANG) == -1){
 			response->autoFillResponse("500 Internal Server Error: waitpid");
-			return response;
+			return response->generateResponse();
 		}
+		return request->_http_version + " 200 OK\r\n" + responseBuffer;
 	}
-	return response;
+	return response->generateResponse();
 }
 
 Response*	CGI::executeScript(Request* request, Response* response){
