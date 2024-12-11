@@ -86,7 +86,6 @@ void	Response::setContentType(std::string path){
 		_headers["Content-Type"] = "application/pdf";
 	else
 		_headers["Content-Type"] = "text/plain";
-	std::cout << "CONTENT TYPE IS" << _headers["Content-Type"] << std::endl;
 }
 
 void	Response::setHeaders(std::string key, std::string value){

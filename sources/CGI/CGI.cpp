@@ -35,8 +35,10 @@ std::string	CGI::invokeCGI(Request* request, Response* response){
 		close(_fdIn[0]);
 		close(_fdOut[1]);
 		close(_fdError[1]);
-		if (request->_method_type == POST)
+		if (request->_method_type == POST){
+			std::cout << MAGENTA "Body:" << request->getBody() << std::endl;
 			write(_fdIn[1], request->getBody().data(), request->getBody().size());
+		}
 		close(_fdIn[1]);
 		char buffer[BUFFER_SIZE];
 		int bytesRead = 0;

@@ -20,7 +20,7 @@ std::string	CGIHandler(Request* request, Response* response){
 		return response->generateResponse();
 	}
 	if (!fileExists(request->_filePath)){
-		response->autoFillResponse("404 Not Found");
+		response->autoFillResponse("404 Not Found: CGI");
 		return response->generateResponse();
 	}
 	// if yes

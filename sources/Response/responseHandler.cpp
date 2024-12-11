@@ -29,7 +29,7 @@ static Response*	getMethod(Request* request, Response* response){
 			file.close();
 		}
 		else
-			response->autoFillResponse("500 Internal Server Error");
+			response->autoFillResponse("500 Internal Server Error: GET");
 	}
 	else
 		response->autoFillResponse("404 Not Found, AUTO INDEX SOON"); //ye
@@ -73,8 +73,8 @@ void	responseHandler(Request* request, Config* config)
 	Response *response = new Response(request);
 	std::string responseBuffer;
 
-	// if (!request->getStatusCode().empty()) //if there was an error in (parsing) the request{}
-	// 	response->autoFillResponse(request->getStatusCode());
+	if (!request->getStatusCode().empty()) //if there was an error in (parsing) the request{}
+		response->autoFillResponse(request->getStatusCode());
 	std::cout << MAGENTA "Method: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
 	std::cout << MAGENTA "Content-type: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
 	std::cout << MAGENTA "filepath: " << request->_filePath << RESET << std::endl;
@@ -89,7 +89,6 @@ void	responseHandler(Request* request, Config* config)
 			response = deleteMethod(request, response);
 		responseBuffer = response->generateResponse();
 	}
-	// std::cout << MAGENTA "\nResponse: " << responseBuffer << RESET << std::endl;
 	write(request->_clientFD, responseBuffer.c_str(), responseBuffer.size()); //needs to be send back in a loop (see requestHandler)
 	return;
 	(void)config;
