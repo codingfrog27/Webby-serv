@@ -11,14 +11,15 @@
 /* ************************************************************************** */
 
 #include "Request.hpp"
+#include "Connection.hpp"
 
-void	Request::readRequest()
+connectStatus	Request::readRequest()
 {
 	//update idle time
 	try
 	{
-		if (_statusCode == "0 Not started yet")
-			_statusCode = "102 Processing";
+		if (_statusStr.empty() || _statusStr == "0 Not started yet")
+			_statusStr = "102 Processing";
 		readSocket(0);
 		if (!_rnrnFound && headerEndFound())
 			parse_headers(_unsortedHeaders);
@@ -26,23 +27,38 @@ void	Request::readRequest()
 			std::cout << "PARSING BODY" << std::endl;
 			parseBody();
 		}
-		//timeout check
+		if (isTimedOut(this->_startTime, this->_timeoutTime))
+			throw ClientErrorExcept(408, "Request Timeout");
+		if (_doneReading)
+			return (connectStatus::DONE_READING);
+		return (connectStatus::READING);	
 	}
 	catch(ClientErrorExcept &e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << e.what() << std::endl; //response
+		_statusStr = e._errorMsg;
+		_statusCode = e._statusCode;
+		return (connectStatus::REQ_ERR);
 	}
 	catch (ConnectionClosedExcep &e)
 	{
 		std::cerr << "Client closed connection" << std::endl;
+		return (connectStatus::CONNECT_CLOSED);
 	}
+	//should maybe just make clienterr excepts?
 	catch(const std::ios_base::failure &e)
 	{
 		std::cerr << e.what() << std::endl;
+		_statusCode = 500;
+		_statusStr = _statusCode + ' ' + e.what();
+		return (connectStatus::REQ_ERR);
 	}
 	catch(std::invalid_argument &e)
 	{
 		std::cerr << e.what() << std::endl;
+		_statusCode = 400;
+		_statusStr = _statusCode + ' ' + e.what();
+		return (connectStatus::REQ_ERR);
 	}
 }
 
@@ -51,14 +67,13 @@ int	Request::readSocket(int size)
 	if (!size)
 		size = BUFFER_SIZE;
 	char buffer[size];
-	int	bytes_read = recv(_clientFD, buffer, size, MSG_DONTWAIT); //more flags
-	// int	bytes_read = read(_clientFD, buffer, size);
+	int	bytes_read = recv(_clientFD, buffer, size, MSG_DONTWAIT);
 	if (bytes_read <= 0)
 	{
 		if (bytes_read == 0)
 			throw(ConnectionClosedExcep(_clientFD));
 		else
-			throw (std::ios_base::failure("reading fail when reading from client socket"));
+			throw (std::ios_base::failure(" reading fail when reading from client socket"));
 	}
 	_rawRequestData.insert(_rawRequestData.end(), buffer, buffer + bytes_read);
 	if (_rnrnFound)

@@ -16,7 +16,6 @@
 std::string	Request::getHeaderValue(std::string key)
 {
 	std::unordered_map<std::string, std::string>::iterator it;
-	
 	it = _headers.find(key);
 	if (it != _headers.end())
 		return (it->second);
@@ -37,7 +36,7 @@ bool	Request::headerExists(std::string key)
 
 std::string		Request::getStatusCode()
 	{
-		return (_statusCode);
+		return (_statusStr);
 	}
 
 void	Request::printHeaders()

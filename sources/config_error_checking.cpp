@@ -273,7 +273,7 @@ std::string Config::validateRoot()
 			!= '/' && root_value[i] != '.' && root_value[i] != '_')
 			throw std::invalid_argument("Error: invalid root path directive");
 	}
-
+	root_value.erase(0, 1); //hi antonio im removing leading root / for correct filepathing :)
 	return (root_value);
 }
 /**

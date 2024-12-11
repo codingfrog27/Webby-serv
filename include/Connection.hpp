@@ -17,8 +17,19 @@
 #include "socket.hpp"
 #include "Config.hpp"
 
-// class Request;
-
+enum class connectStatus 
+{
+	SERV_SOCKET,
+	IDLE,
+	READING,
+	REQ_ERR,
+	CONNECT_CLOSED,
+	DONE_READING,
+	DONE_READING_CGI,
+	RESPONDING,
+	SERVER_ERR,
+	FINISHED
+};
 class Connection
 {
 	private:
@@ -26,11 +37,14 @@ class Connection
 		
 
 	public:
-		Config		*_config;
-		Request		_request;
-		bool		_isServerSocket;
-		int			_clientFD;
-		bool		_keepOpen;
+		connectStatus	_CStatus;
+		Config			*_config;
+		Request			_request;
+		bool			_isServerSocket;
+		int				_clientFD;
+		bool			_keepOpen;
+		t_time			_startTime;
+		t_msecs			_TimeoutTime;
 		// bool		_doneReading;
 		// Response	*response;
 		

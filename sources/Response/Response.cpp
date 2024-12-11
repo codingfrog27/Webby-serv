@@ -42,7 +42,7 @@ void	Response::autoFillResponse(std::string status){
 // 	std::ifstream file(page);
 // 	std::stringstream buffer;
 // 	if (!file.is_open())
-// 	throw std::runtime_error("Could not open file: " + page);	 
+// 	throw std::runtime_error("Could not open file: " + page);
 // 	buffer << file.rdbuf();
 // 	return buffer.str();
 // }
@@ -54,7 +54,7 @@ std::string	Response::generateResponse() const{
 	}
 	response += "\r\n";
 	response += std::string(_body.begin(), _body.end());
-	
+
 	return response;
 }
 
@@ -64,14 +64,14 @@ void	Response::setStatus(std::string status){
 	_status = status;
 	return ;
 }
-	
+
 void	Response::setContentType(std::string path){
 	if (path.find(".html") != std::string::npos || path.find(".htm") != std::string::npos)
 		_headers["Content-Type"] = "text/html";
 	else if (path.find(".css") != std::string::npos)
 		_headers["Content-Type"] = "text/css";
 	else if (path.find(".js") != std::string::npos)
-		_headers["Content-Type"] = "text/javascript";	
+		_headers["Content-Type"] = "text/javascript";
 	else if (path.find(".jpeg") != std::string::npos || path.find(".jpg") != std::string::npos)
 		_headers["Content-Type"] = "image/jpeg";
 	else if (path.find(".png") != std::string::npos)
@@ -86,6 +86,7 @@ void	Response::setContentType(std::string path){
 		_headers["Content-Type"] = "application/pdf";
 	else
 		_headers["Content-Type"] = "text/plain";
+	std::cout << "CONTENT TYPE IS" << _headers["Content-Type"] << std::endl;
 }
 
 void	Response::setHeaders(std::string key, std::string value){
@@ -130,6 +131,6 @@ readingMode	Response::getReadingModeFromRequest(Request & request) const{
 std::string	Response::getHeader(std::string key) const{
 	auto it = _headers.find(key);
 	if (it == _headers.end())
-		return "";
+		return ("");
 	return it->second;
 }

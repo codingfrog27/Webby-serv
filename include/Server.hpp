@@ -28,13 +28,14 @@ class Server
 		struct	addrinfo		*_addrInfo;
 		// const int	_max_clients;
 
-		void					setupAddrInfo(Config *config);
-		void					acceptNewConnects(int i);
-		void					close_connect(int i);
+		void		setupAddrInfo(Config *config);
+		void		acceptNewConnects(int i);
+		void		close_connect(int i);
 	public:
-								Server(std::vector<Config>& vec);
-								Server(Server &rhs) = delete;
-								~Server(void);
-		Server					&operator=(const Server &rhs) = delete;
-		void					main_server_loop();
+					Server(std::vector<Config>& vec);
+					Server(Server &rhs) = delete;
+					~Server(void);
+		Server		&operator=(const Server &rhs) = delete;
+		void		main_server_loop();
+		void		connectionAction(Connection &connect, pollfd &poll, size_t i);
 };
