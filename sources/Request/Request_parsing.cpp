@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   Request_parsing.cpp                                :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*   By: mstegema <mstegema@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2024/12/10 17:48:28 by mstegema      ########   odam.nl         */
+/*   Updated: 2024/12/11 14:48:42 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 size_t	Request::parse_req_line(std::string req_line)
 {
 	size_t	line_end, method_end, uri_end;
-	
+
 	line_end = req_line.find("\r\n");
 	if (line_end == 0)
 	{
@@ -55,7 +55,8 @@ void	Request::resolveFilePath()
 	if (resolved.find(_config->_listen) != std::string::npos)
 		resolved.erase(0, _config->_listen.length() + 1);
 	_filePath = _config->_rootDir + resolved;
-	_filePath = "website/index.html";
+	// _filePath = "website/index.html";
+	_filePath = "cgi-bin/form.py";
 }
 
 void	Request::parse_headers(std::string header_str)
@@ -132,7 +133,7 @@ bool	Request::dechunkBody()
 {
 	std::string	bodyStr(_rawRequestData.begin(), _rawRequestData.end());
 	size_t		bodySize = _rawRequestData.size();
-	size_t		bytesParsed = 0; 
+	size_t		bytesParsed = 0;
 	size_t		hexStrSize = 0;
 	size_t		chunkSize;
 	//assumes the starting rnrn of body is still there but also only last one
@@ -149,7 +150,7 @@ bool	Request::dechunkBody()
 		}
 		_reqBody += bodyStr.substr(rnPos + hexStrSize, chunkSize);
 	}
-	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + bytesParsed)); 
+	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + bytesParsed));
 	//do i have to remove 2 more if we're at the end? if so can make chunksize 2 :)
 	return (_doneReading);
 }
@@ -205,10 +206,8 @@ void	Request::parseFormData(std::string &content_type){
 		nextboundary = _reqBody.find(delimiter, i);
 		if (i == std::string::npos)
 			throw	ClientErrorExcept(400, "400 no closing boundary in multiform");
-		
 		//object.body = _reqBody.substr(boundary + delimiter.size(), nextboundary - boundary)
 
 	}
-	
 
 }
