@@ -16,12 +16,12 @@
 std::string	find_value(std::string& directive)
 {
 	std::string value;
-	
+
 	if (directive.length() == 0)
 		throw std::invalid_argument("Error: directive is empty");
-		
+
 	int i = 0;
-	
+
 	while (directive[i])
 	{
 		if (isspace(directive[i]))
@@ -39,6 +39,7 @@ std::string	getErrorPageMapKey(std::string& errorPage_value)
 	int digits = 0;
 	std::string	errorPage_key;
 
+	(void)digits;
 	for (auto i = 0; i < errorPage_value[i]; i++)
 	{
 		if (isspace(errorPage_value[i]))
@@ -75,13 +76,14 @@ std::unordered_map<std::string, std::string>		Config::validateErrorPage()
 	std::unordered_map<std::string, std::string> tmpErrorPageMap;
 	size_t find_space = 0;
 	int space = 0;
-	
+
+	(void)space;
 	if (_rulemap.contains("error_page"))
 	{
 		errorPage_rule = normalize_space(_rulemap.at("error_page"));
 		errorPage_value = find_value(errorPage_rule);
 	}
-	else 
+	else
 		throw std::invalid_argument("Error: error_page directive not found");
 	for (size_t i = 0; i < errorPage_value.length(); i++)
 	{
@@ -96,7 +98,7 @@ std::unordered_map<std::string, std::string>		Config::validateErrorPage()
 		// if (space > 1)
 		// 	throw std::invalid_argument("Error: invalid character in error_page directive");
 	}
-	
+
 	std::string map_key = getErrorPageMapKey(errorPage_value);
 	std::string map_value = getErrorPageMapValue(errorPage_value);
 	tmpErrorPageMap.emplace(map_key, map_value);
@@ -109,9 +111,9 @@ std::vector<std::string>		Config::ValidateIndex()
 	std::string index_value;
 	std::string tmp_value;
 	std::vector<std::string>  tmp_vector;
-	
+
 	static int space = 0;
-	
+
 	if (_rulemap.contains("index"))
 	{
 		index_rule = normalize_space(_rulemap.at("index"));
@@ -142,11 +144,11 @@ std::vector<std::string>		Config::ValidateIndex()
 		for (size_t i = 0; i < index_value.length(); i++)
 		{
 			if (!isspace(index_value[i]))
-			{	
+			{
 				for (j = i; !isspace(index_value[j]) && j < (index_value.length()); j++)
 					tmp_value = index_value.substr(i, j - i);
 				tmp_vector.push_back(tmp_value);
-				i = j;	
+				i = j;
 			}
 		}
 	}
@@ -157,13 +159,13 @@ std::string	Config::validateListen()
 {
 	std::string listen_rule;;
 	std::string listen_value;
-	
+
 	if (_rulemap.contains("listen"))
 	{
 		listen_rule = normalize_space (_rulemap.at("listen"));
 		listen_value = find_value(listen_rule);
 	}
-	else 	
+	else
 		throw std::invalid_argument("Error: listen directive not found");
 	for (size_t i = 0; i < listen_value.length(); i++)
 	{
@@ -177,20 +179,20 @@ std::string Config::validateMaxBodySize()
 {
 	std::string maxBodySize_rule;
 	std::string maxBodySize_value;
-	
+
 	if (_rulemap.contains("client_max_body_size"))
 	{
 		maxBodySize_rule = normalize_space(_rulemap.at("client_max_body_size"));
 		maxBodySize_value = find_value(maxBodySize_rule);
 	}
-	else 
+	else
 		throw std::invalid_argument("Error: client_max_body_size directive not found");
 	char lastChar = maxBodySize_value.back();
 	if (lastChar == 'k' || lastChar == 'K' || lastChar == 'm' || lastChar == 'M' || lastChar == 'g' || lastChar == 'G')
 		maxBodySize_value.pop_back();
 	else
 		throw std::invalid_argument("Error: invalid character in client_max_body_size directive");
-	
+
 	for(size_t i = 0; i < maxBodySize_value.size(); i++)
 	{
 		if (!isdigit(maxBodySize_value[i]))
@@ -203,13 +205,13 @@ std::string Config::validateHost()
 {
 	std::string host_rule;
 	std::string host_value;
-	
+
 	if (_rulemap.contains("host"))
 	{
 		host_rule = normalize_space(_rulemap.at("host"));
-		host_value = find_value(host_rule); 
+		host_value = find_value(host_rule);
 	}
-	else 
+	else
 		throw std::invalid_argument("Error: host directive not found");
 	int dotCount = 0;
 	for(size_t i = 0; i < host_value.length(); i++)
@@ -231,14 +233,14 @@ std::string Config::validateServerName()
 {
 	std::string serverName_rule;
 	std::string serverName_value;
-	
-	
+
+
 	if (_rulemap.contains("server_name"))
 	{
 		serverName_rule = normalize_space(_rulemap.at("server_name"));
 		serverName_value = find_value(serverName_rule);
 	}
-	else 
+	else
 		return ("Default name");
 	for(size_t i = 0; i < serverName_value.length(); i++)
 	{
@@ -271,12 +273,12 @@ std::string Config::validateRoot()
 			!= '/' && root_value[i] != '.' && root_value[i] != '_')
 			throw std::invalid_argument("Error: invalid root path directive");
 	}
-	
+
 	return (root_value);
 }
 /**
  * @brief A simple check to see if none of the server blocks are trying to listen on the same port
- * 
+ *
  * @param configs vector of config objects to check
  */
 void	checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs)
