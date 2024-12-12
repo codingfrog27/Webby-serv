@@ -7,10 +7,11 @@ CGI::CGI(int *fdIn, int *fdOut, int *fdError) : _fdIn(fdIn), _fdOut(fdOut), _fdE
 }
 
 CGI::~CGI(){
-	for (char* str : _envp){
-		delete[] str;
-	}
-	delete this;
+	// for (char* str : _envp){
+	// 	delete[] str;
+	// }
+	// delete this;
+	return ;
 }
 
 //needs refactoring

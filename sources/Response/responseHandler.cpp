@@ -20,11 +20,11 @@ static Response*	getMethod(Request* request, Response* response){
 				return response;
 			}
 			file.seekg(0, std::ios::beg);
-			std::vector<char> buffer(size);
-			if (file.read(buffer.data(), size)){
+			std::unique_ptr<std::vector<char>> buffer = std::make_unique<std::vector<char>>(size);
+			if (file.read(buffer->data(), size)){
 				response->setStatus("200 OK");
 				response->setHeaders("Content-Length", std::to_string(size));
-				response->setBody(buffer);
+				response->setBody(*buffer);
 			}
 			file.close();
 		}
@@ -78,7 +78,7 @@ void	responseHandler(Request* request, Config* config)
 		response->autoFillResponse(request->getStatusCode());
 	std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
 	std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
-	std::cout << MAGENTA "filepath		: " << request->_filePath << RESET << std::endl;
+	std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
 	if (isCGIrequired(request))
 		responseBuffer = CGIHandler(request, response);
 	else{
@@ -91,6 +91,7 @@ void	responseHandler(Request* request, Config* config)
 		responseBuffer = response->generateResponse();
 	}
 	write(request->_clientFD, responseBuffer.c_str(), responseBuffer.size()); //needs to be send back in a loop (see requestHandler)
+	delete response;
 	return;
 }
 

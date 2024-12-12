@@ -6,7 +6,7 @@ Response::Response(Request* request) : _http_version(request->_http_version){
 }
 
 Response::~Response(){
-	delete this;
+	return ;
 }
 
 void	Response::autoFillResponse(std::string status){
