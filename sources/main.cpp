@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/21 15:39:13 by asimone          ###   ########.fr       */
+/*   Updated: 2024/12/12 14:01:11 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,30 +22,30 @@ int main() {
 	{
 		if (!configs.empty()) {
 			for (size_t i = 0; i < configs.size(); i++){
-				std::cout << "server block:\n" << configs[i]->toString() << "---------" << std::endl;
+				// std::cout << "server block:\n" << configs[i]->toString() << "---------" << std::endl;
 				std::multimap<std::string, std::string>::iterator itr;
-				std::cout << "THIS IS THE ERROR PAGE MAP" << std::endl;
+				// std::cout << "THIS IS THE ERROR PAGE MAP" << std::endl;
 				for (itr = configs[i]->_errorPage.begin(); itr != configs[i]->_errorPage.end(); itr++)
-					std::cout << '\t' << itr->first << '\t' << itr->second << std::endl;
+					// std::cout << '\t' << itr->first << '\t' << itr->second << std::endl;
 				for (size_t j = 0; j < configs[i]->_newLocations.size(); j++){
-					std::cout << "location block:\n" << configs[i]->_newLocations[j]->toString() \
+					// std::cout << "location block:\n" << configs[i]->_newLocations[j]->toString() \
 					<< "---------------" << std::endl;
 					for (size_t k = 0; k < configs[i]->_newLocations[j]->_nestedLocations.size(); k++)
 					{
-						std::cout << "NESTED location block:\n" << configs[i]->_newLocations[j]->_nestedLocations[0]->toString()\
+						// std::cout << "NESTED location block:\n" << configs[i]->_newLocations[j]->_nestedLocations[0]->toString()\
 						 << std::endl;
 					}
 				}
 			}
-		if (noDoublePorts(configs))
-			std::cout << "Ciao" << std::endl;
-		else
-			std::cout << ":(((())))" << std::endl;
+		// if (noDoublePorts(configs))
+		// 	// std::cout << "Ciao" << std::endl;
+		// else
+		// 	std::cout << ":(((())))" << std::endl;
 			
 			// configs[0].setServer(0);
-			std::cout << configs[0]->_newLocations[1]->toString() << std::endl;
-		} else {
-			std::cout << "No configs found." << std::endl;
+		// 	std::cout << configs[0]->_newLocations[1]->toString() << std::endl;
+		// } else {
+		// 	std::cout << "No configs found." << std::endl;
 		}
 	}
 	catch(const std::exception& e)

@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/21 15:39:42 by asimone          ###   ########.fr       */
+/*   Updated: 2024/12/12 13:59:00 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "Config.hpp"
 #include "socket.hpp"
 #include <memory>
+#include <vector>
+#include <set>
 
 std::vector<std::unique_ptr<Config>>	parseConfigFile(const std::string fileName)
 {
@@ -58,16 +60,105 @@ Config::Config(std::ifstream &file, std::string &line)
 	}
 }
 
+int Config::mapToMembers()
+{
+	try 
+	{
+		std::vector<std::string> serverBlock {"client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name"};
+		std::set<std::string> uniqueKeys;
+		
+		for (const auto& [key, value] : _rulemap)
+			uniqueKeys.insert(key);
+		
+		std::vector<std::string> keys(uniqueKeys.begin(), uniqueKeys.end());
+		
+		std::sort(keys.begin(), keys.end());
+		std::sort(serverBlock.begin(), serverBlock.end());
+		serverBlock.erase(std::unique(serverBlock.begin(), serverBlock.end()), serverBlock.end());
+	
+		if (keys == serverBlock)
+		{
+			try 
+			{
+				setListen(validateListen()); 
+			}
+			catch (const std::exception& e) 
+			{
+				std::cerr << "Error in setListen: " << e.what() << std::endl;
+				return (-1);
+			}
 
-int	Config::mapToMembers()
-{	
-	setListen(validateListen());
-	setMaxBodySize(validateMaxBodySize());
-	setErrorPage(validateErrorPage());
-	setHost(validateHost());	
-	setIndex(ValidateIndex());
-	setRoot(validateRoot());
-	setServerName(validateServerName());
+			try 
+			{
+				setMaxBodySize(validateMaxBodySize());
+			} 
+			catch (const std::exception& e) 
+			{
+				std::cerr << "Error in setMaxBodySize: " << e.what() << std::endl;
+				return (-2);
+			}
+
+			try 
+			{
+				setErrorPage(validateErrorPage());
+			} 
+			catch (const std::exception& e) 
+			{
+				std::cerr << "Error in setErrorPage: " << e.what() << std::endl;
+				return (-3);
+			}
+
+			try 
+			{
+				setHost(validateHost());
+			} 
+			catch (const std::exception& e) 
+			{
+				std::cerr << "Error in setHost: " << e.what() << std::endl;
+				return (-4);
+			}
+
+			try 
+			{
+				setIndex(ValidateIndex());
+			} 
+			catch (const std::exception& e) 
+			{
+				std::cerr << "Error in setIndex: " << e.what() << std::endl;
+				return (-5);
+			}
+
+			try 
+			{
+				setRoot(validateRoot());
+			} 
+			catch (const std::exception& e) 
+			{
+				std::cerr << "Error in setRoot: " << e.what() << std::endl;
+				return (-6);
+			}
+
+			try 
+			{
+				setServerName(validateServerName());
+			} 
+			catch (const std::exception& e) 
+			{
+				std::cerr << "Error in setServerName: " << e.what() << std::endl;
+				return (-7);
+			}
+		}
+		else
+		{
+			std::cerr << "Keys do not match the expected serverBlock configuration" << std::endl;
+			return (0);
+		}
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Unexpected error in mapToMembers: " << e.what() << std::endl;
+		return (-8);
+	}
 
 	return (1);
 }

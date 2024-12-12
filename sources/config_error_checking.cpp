@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/02 12:24:17 by asimone          ###   ########.fr       */
+/*   Updated: 2024/12/12 11:56:54 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,46 +66,6 @@ std::string getErrorPageMapValue(std::string& errorPage_value)
 	return (errorPage_path);
 }
 
-
-// std::multimap<std::string, std::string>		Config::validateErrorPage()
-// {
-// 	std::string errorPage_rule;
-// 	std::string errorPage_value;
-// 	std::multimap<std::string, std::string> tmpErrorPageMap;
-// 	size_t find_space = 0;
-// 	int space = 0;
-	
-// 	if (_rulemap.contains("error_page"))
-// 	{
-// 		auto found = _rulemap.find("error_page");
-// 		errorPage_rule = normalize_space(found->second);
-// 		// std::cout << "errorPage_rule: " << errorPage_rule << std::endl;
-// 		errorPage_value = find_value(errorPage_rule);
-// 	}
-// 	else 
-// 		throw std::invalid_argument("Error: error_page directive not found");
-// 	for (auto i = 0; i < errorPage_value.length(); i++)
-// 	{
-// 		if (isspace(errorPage_value[i]))
-// 		{
-// 			find_space = errorPage_value.find(' ');
-// 			if (errorPage_value[find_space + 1] != '/')
-// 				throw std::invalid_argument("Error: invalid path in error_page directive");
-// 			space++;
-// 			i++;
-// 		}
-// 		// if (space > 1)
-// 		// 	throw std::invalid_argument("Error: invalid character in error_page directive");
-// 	}
-	
-// 	std::string map_key = getErrorPageMapKey(errorPage_value);
-// 	std::string map_value = getErrorPageMapValue(errorPage_value);
-// 	tmpErrorPageMap.emplace(make_pair(map_key, map_value));
-// 	return (tmpErrorPageMap);
-// }
-
-
-//DA MODIFICARE!!!!!!!!!!!
 std::multimap<std::string, std::string> Config::validateErrorPage()
 {
     std::multimap<std::string, std::string> tmpErrorPageMap;
@@ -128,7 +88,6 @@ std::multimap<std::string, std::string> Config::validateErrorPage()
                 if (!isdigit(c) && !isalpha(c) && c != '/' && c != '.' && c != '_')
                     throw std::invalid_argument("Error: invalid character in error_page directive");
             }
-
             tmpErrorPageMap.emplace(errorCode, errorPage);
         }
     }
