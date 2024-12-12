@@ -44,5 +44,6 @@ std::string	CGIHandler(Request* request, Response* response){
 	}
 	CGI* newCGI = new CGI(fdIn, fdOut, fdError);
 	newCGI->setupCGIEnvironment(request);
-	return newCGI->invokeCGI(request, response);
+	std::string result = newCGI->invokeCGI(request, response);
+	return result;
 }

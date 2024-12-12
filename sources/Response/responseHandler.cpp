@@ -73,11 +73,12 @@ void	responseHandler(Request* request, Config* config)
 	Response *response = new Response(request);
 	std::string responseBuffer;
 
+	(void)config;
 	if (!request->getStatusCode().empty()) //if there was an error in (parsing) the request{}
 		response->autoFillResponse(request->getStatusCode());
-	std::cout << MAGENTA "Method: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
-	std::cout << MAGENTA "Content-type: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
-	std::cout << MAGENTA "filepath: " << request->_filePath << RESET << std::endl;
+	std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
+	std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
+	std::cout << MAGENTA "filepath		: " << request->_filePath << RESET << std::endl;
 	if (isCGIrequired(request))
 		responseBuffer = CGIHandler(request, response);
 	else{
@@ -91,7 +92,6 @@ void	responseHandler(Request* request, Config* config)
 	}
 	write(request->_clientFD, responseBuffer.c_str(), responseBuffer.size()); //needs to be send back in a loop (see requestHandler)
 	return;
-	(void)config;
 }
 
 

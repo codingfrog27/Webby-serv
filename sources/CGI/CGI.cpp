@@ -10,11 +10,12 @@ CGI::~CGI(){
 	for (char* str : _envp){
 		delete[] str;
 	}
+	delete this;
 }
 
 //needs refactoring
 std::string	CGI::invokeCGI(Request* request, Response* response){
-	std::cout << MAGENTA "CGI Invoked" << std::endl;
+	std::cout << MAGENTA "~ CGI Invoked ~" << std::endl;
 	int PID = fork();
 	if (PID == -1){
 		closePipes();
@@ -36,7 +37,7 @@ std::string	CGI::invokeCGI(Request* request, Response* response){
 		close(_fdOut[1]);
 		close(_fdError[1]);
 		if (request->_method_type == POST){
-			std::cout << MAGENTA "Body:" << request->getBody() << std::endl;
+			std::cout << MAGENTA "Body:	" << request->getBody() << std::endl;
 			write(_fdIn[1], request->getBody().data(), request->getBody().size());
 		}
 		close(_fdIn[1]);
@@ -76,7 +77,9 @@ std::string	CGI::invokeCGI(Request* request, Response* response){
 
 Response*	CGI::executeScript(Request* request, Response* response){
 	// char* argv[] = {strdup(request->_filePath.c_str()), NULL};
-	char* argv[] = {strdup(request->_filePath.substr(request->_filePath.rfind("/") + 1).c_str()), NULL};
+	std::string arg = request->_filePath.substr(request->_filePath.rfind("/") + 1);
+	std::cout << MAGENTA "Arg		: " << arg << std::endl;
+	char* argv[] = {const_cast<char *>(arg.c_str()), NULL};
 	if (execve(request->_filePath.c_str(), argv, _envp.data()) == -1)
 		response->autoFillResponse("500 Internal Server Error: execve : " + std::string(strerror(errno)));
 	return response;
