@@ -38,7 +38,7 @@ std::string	CGI::invokeCGI(Request* request, Response* response){
 		close(_fdOut[1]);
 		close(_fdError[1]);
 		if (request->_method_type == POST){
-			std::cout << MAGENTA "Body:	" << request->getBody() << std::endl;
+			std::cout << MAGENTA "Req Body	: " << request->getBody() << std::endl;
 			write(_fdIn[1], request->getBody().data(), request->getBody().size());
 		}
 		close(_fdIn[1]);
@@ -48,6 +48,7 @@ std::string	CGI::invokeCGI(Request* request, Response* response){
 		while ((bytesRead = read(_fdOut[0], buffer, BUFFER_SIZE)) > 0)
 			responseBuffer.append(buffer, bytesRead);
 		close(_fdOut[0]);
+		std::cout << MAGENTA "Res Body	: " << responseBuffer << std::endl;
 		if (bytesRead == -1){
 			response->autoFillResponse("500 Internal Server Error: read");
 			close(_fdError[0]);
@@ -59,6 +60,7 @@ std::string	CGI::invokeCGI(Request* request, Response* response){
 			error.append(buffer, bytesRead);
 		}
 		close(_fdError[0]);
+		std::cout << MAGENTA "Err Body	: " << error << std::endl;
 		if (bytesRead == -1){
 			response->autoFillResponse("500 Internal Server Error: read");
 			return response->generateResponse();
@@ -79,7 +81,6 @@ std::string	CGI::invokeCGI(Request* request, Response* response){
 Response*	CGI::executeScript(Request* request, Response* response){
 	// char* argv[] = {strdup(request->_filePath.c_str()), NULL};
 	std::string arg = request->_filePath.substr(request->_filePath.rfind("/") + 1);
-	std::cout << MAGENTA "Arg		: " << arg << std::endl;
 	char* argv[] = {const_cast<char *>(arg.c_str()), NULL};
 	if (execve(request->_filePath.c_str(), argv, _envp.data()) == -1)
 		response->autoFillResponse("500 Internal Server Error: execve : " + std::string(strerror(errno)));
