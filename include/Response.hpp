@@ -28,16 +28,18 @@ class Response{
 		void											setBody(std::vector<char>);
 
 		std::string										getHeader(std::string key) const;
+		readingMode										getReadingModeFromRequest(Request & request) const;
+		readingMode										getReadingModeFromResponse() const;
 
 	private:
 		// const Http_method								_method_type;
 		const std::string								_http_version;
 		std::string										_status;
 		std::unordered_map<std::string, std::string>	_headers;
-		std::vector<char>								_body;
+		std::string										_body;
 };
 
 void		responseHandler(Request* request, Config* config);
-std::string	resolveFilePath(Request* request, Response* response, Config* config);
+bool		isCGIrequired(Request* request);
 bool		fileExists(std::string path);
-readingMode	getReadingMode(Response & response);
+

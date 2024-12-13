@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/13 15:04:49 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/13 17:53:44 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 size_t	Request::parse_req_line(std::string req_line)
 {
 	size_t	line_end, method_end, uri_end;
-	
+
 	line_end = req_line.find("\r\n");
 	if (line_end == 0)
 	{
@@ -56,11 +56,7 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_listen.length() + 1);
 	if (resolved.front() == '/')
 		resolved.erase(0, 1);
-	_filePath = (_config->_rootDir + resolved);
-	// _filePath = "website/index.html";
-	// website/index.html 
-	// std::cout << "hoi" << _filePath << "doei" << std::endl;
-
+	_filePath = trim(_config->_rootDir) + trim(resolved);
 }
 
 void	Request::parse_headers(std::string header_str)
@@ -134,7 +130,7 @@ bool	Request::dechunkBody()
 {
 	std::string	bodyStr(_rawRequestData.begin(), _rawRequestData.end());
 	size_t		bodySize = _rawRequestData.size();
-	size_t		bytesParsed = 0; 
+	size_t		bytesParsed = 0;
 	size_t		hexStrSize = 0;
 	size_t		chunkSize;
 	//assumes the starting rnrn of body is still there but also only last one
@@ -151,7 +147,7 @@ bool	Request::dechunkBody()
 		}
 		_reqBody += bodyStr.substr(rnPos + hexStrSize, chunkSize);
 	}
-	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + bytesParsed)); 
+	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + bytesParsed));
 	//do i have to remove 2 more if we're at the end? if so can make chunksize 2 :)
 	return (_doneReading);
 }
@@ -164,6 +160,7 @@ void	Request::parseBody()
 		parseFormData(content_type);
 	else if (content_type.compare("application/x-www-form-urlencoded") == 0)
 		parseUrlEncoded();
+	_reqBody = trim(_reqBody);
 	_doneReading = true;
 	_statusStr = "";
 }
@@ -209,10 +206,8 @@ void	Request::parseFormData(std::string &content_type){
 		nextboundary = _reqBody.find(delimiter, i);
 		if (i == std::string::npos)
 			throw	ClientErrorExcept(400, "400 no closing boundary in multiform");
-		
 		//object.body = _reqBody.substr(boundary + delimiter.size(), nextboundary - boundary)
 
 	}
-	
 
 }

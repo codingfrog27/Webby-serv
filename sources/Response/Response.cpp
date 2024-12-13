@@ -6,7 +6,7 @@ Response::Response(Request* request) : _http_version(request->_http_version){
 }
 
 Response::~Response(){
-	delete this;
+	return ;
 }
 
 void	Response::autoFillResponse(std::string status){
@@ -42,7 +42,7 @@ void	Response::autoFillResponse(std::string status){
 // 	std::ifstream file(page);
 // 	std::stringstream buffer;
 // 	if (!file.is_open())
-// 	throw std::runtime_error("Could not open file: " + page);	 
+// 	throw std::runtime_error("Could not open file: " + page);
 // 	buffer << file.rdbuf();
 // 	return buffer.str();
 // }
@@ -54,7 +54,7 @@ std::string	Response::generateResponse() const{
 	}
 	response += "\r\n";
 	response += std::string(_body.begin(), _body.end());
-	
+
 	return response;
 }
 
@@ -64,14 +64,14 @@ void	Response::setStatus(std::string status){
 	_status = status;
 	return ;
 }
-	
+
 void	Response::setContentType(std::string path){
 	if (path.find(".html") != std::string::npos || path.find(".htm") != std::string::npos)
 		_headers["Content-Type"] = "text/html";
 	else if (path.find(".css") != std::string::npos)
 		_headers["Content-Type"] = "text/css";
 	else if (path.find(".js") != std::string::npos)
-		_headers["Content-Type"] = "text/javascript";	
+		_headers["Content-Type"] = "text/javascript";
 	else if (path.find(".jpeg") != std::string::npos || path.find(".jpg") != std::string::npos)
 		_headers["Content-Type"] = "image/jpeg";
 	else if (path.find(".png") != std::string::npos)
@@ -86,7 +86,6 @@ void	Response::setContentType(std::string path){
 		_headers["Content-Type"] = "application/pdf";
 	else
 		_headers["Content-Type"] = "text/plain";
-	std::cout << "CONTENT TYPE IS" << _headers["Content-Type"] << std::endl;
 }
 
 void	Response::setHeaders(std::string key, std::string value){
@@ -95,16 +94,37 @@ void	Response::setHeaders(std::string key, std::string value){
 }
 
 void	Response::setBody(std::string body){
-	_body.assign(body.begin(), body.end());
+	if (_body.empty())
+		_body = body;
+	else
+		_body += body;
 	return ;
 }
 
 void	Response::setBody(std::vector<char> body){
-	_body = body;
+	if (_body.empty())
+		_body.assign(body.begin(), body.end());
+	else
+		_body.insert(_body.end(), body.begin(), body.end());
 	return ;
 }
 
 /*	getters	*/
+
+/* anything that's not text has to be handled as raw bits*/
+readingMode	Response::getReadingModeFromResponse() const{
+	if (Response::getHeader("Content-type").find("text") != std::string::npos)
+		return TEXT;
+	else
+		return BINARY;
+}
+
+readingMode	Response::getReadingModeFromRequest(Request & request) const{
+	if (request._headers["Content-Type"].find("text") != std::string::npos)
+		return TEXT;
+	else
+		return BINARY;
+}
 
 /*	takes a string as key, finds it in the map and returns the value	*/
 std::string	Response::getHeader(std::string key) const{
