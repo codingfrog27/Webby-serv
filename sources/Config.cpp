@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/12 13:59:00 by asimone          ###   ########.fr       */
+/*   Updated: 2024/12/13 16:58:34 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int Config::mapToMembers()
 {
 	try 
 	{
-		std::vector<std::string> serverBlock {"client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name"};
+		std::vector<std::string> serverBlock {"client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
 		std::set<std::string> uniqueKeys;
 		
 		for (const auto& [key, value] : _rulemap)
@@ -73,79 +73,23 @@ int Config::mapToMembers()
 		std::vector<std::string> keys(uniqueKeys.begin(), uniqueKeys.end());
 		
 		std::sort(keys.begin(), keys.end());
-		std::sort(serverBlock.begin(), serverBlock.end());
 		serverBlock.erase(std::unique(serverBlock.begin(), serverBlock.end()), serverBlock.end());
-	
 		if (keys == serverBlock)
 		{
-			try 
+			try
 			{
 				setListen(validateListen()); 
-			}
-			catch (const std::exception& e) 
-			{
-				std::cerr << "Error in setListen: " << e.what() << std::endl;
-				return (-1);
-			}
-
-			try 
-			{
-				setMaxBodySize(validateMaxBodySize());
-			} 
-			catch (const std::exception& e) 
-			{
-				std::cerr << "Error in setMaxBodySize: " << e.what() << std::endl;
-				return (-2);
-			}
-
-			try 
-			{
+				setMaxBodySize(validateMaxBodySize()); 
 				setErrorPage(validateErrorPage());
-			} 
-			catch (const std::exception& e) 
-			{
-				std::cerr << "Error in setErrorPage: " << e.what() << std::endl;
-				return (-3);
-			}
-
-			try 
-			{
 				setHost(validateHost());
-			} 
-			catch (const std::exception& e) 
-			{
-				std::cerr << "Error in setHost: " << e.what() << std::endl;
-				return (-4);
-			}
-
-			try 
-			{
 				setIndex(ValidateIndex());
-			} 
-			catch (const std::exception& e) 
-			{
-				std::cerr << "Error in setIndex: " << e.what() << std::endl;
-				return (-5);
-			}
-
-			try 
-			{
 				setRoot(validateRoot());
-			} 
-			catch (const std::exception& e) 
-			{
-				std::cerr << "Error in setRoot: " << e.what() << std::endl;
-				return (-6);
+				setTimeout(validateTimeout()); 
+				setServerName(validateServerName()); 
 			}
-
-			try 
+			catch(const std::exception& e)
 			{
-				setServerName(validateServerName());
-			} 
-			catch (const std::exception& e) 
-			{
-				std::cerr << "Error in setServerName: " << e.what() << std::endl;
-				return (-7);
+				std::cerr << e.what() << '\n';
 			}
 		}
 		else

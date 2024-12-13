@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/21 12:53:40 by asimone          ###   ########.fr       */
+/*   Updated: 2024/12/13 16:56:47 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <ctype.h>
 #include <memory>
 #include "location.hpp"
+#define MAX_TIMEOUT 60000
 
 class Config
 {
@@ -88,6 +89,7 @@ class Config
 	std::vector<std::string> getIndex();
 	std::string	getListen();
 	std::string	getRoot();
+	size_t		getTimeout();
 	std::string	getServerName();
 	void		setErrorPage(const std::multimap<std::string, std::string> &errorPageMap);
 	void		setHost(const std::string &host);
@@ -95,6 +97,7 @@ class Config
 	void		setListen(const std::string &listen);
 	void		setMaxBodySize(const std::string &maxBodySize);
 	void		setRoot(const std::string &root);
+	void		setTimeout(const size_t& timeout);
 	void		setServerName(const std::string &serverName);
 	void		setServer(const int rule);
 
@@ -106,6 +109,7 @@ class Config
 	std::string	validateListen();
 	std::string validateMaxBodySize();
 	std::string validateRoot();
+	size_t 		validateTimeout();
 	std::string validateServerName();
 	std::string toString() const;
 };

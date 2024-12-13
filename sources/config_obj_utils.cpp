@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/11/21 14:55:59 by asimone          ###   ########.fr       */
+/*   Updated: 2024/12/13 16:56:13 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,4 +133,14 @@ std::vector<std::string>	Config::getIndex()
 void	Config::setIndex(const std::vector<std::string> &index_vector)
 {
 	this->_index = index_vector;
+}
+
+size_t	Config::getTimeout()
+{
+	return(this->_timeout);
+}
+
+void	Config::setTimeout(const size_t& timeout)
+{
+	this->_timeout = timeout;
 }

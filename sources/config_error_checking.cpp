@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/12 11:56:54 by asimone          ###   ########.fr       */
+/*   Updated: 2024/12/13 17:01:24 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ std::string	Config::validateListen()
 		listen_value = find_value(listen_rule);
 	}
 	else 	
-		throw std::invalid_argument("Error: listen directive not found");
+		throw std::invalid_argument("port Error: listen directive not found");
 	for (auto i = 0; i < listen_value.length(); i++)
 	{
 		if (!isdigit(listen_value[i]))
@@ -224,6 +224,29 @@ std::string Config::validateHost()
 	if (dotCount != 3)
 		throw std::invalid_argument("Error: invalid host directive");
 	return (host_rule);
+}
+
+size_t Config::validateTimeout()
+{
+	std::string timeout_rule;
+	std::string timeout_value;
+	size_t		timeout_size_t;
+
+	if (_rulemap.contains("timeout"))
+	{
+		auto found = _rulemap.find("timeout");
+		timeout_rule = normalize_space(found->second);
+		timeout_value = find_value(timeout_rule);
+	}
+	else 
+		return (std::stoi("3000"));
+
+	timeout_size_t = stoi(timeout_value);
+	
+	if (timeout_size_t > MAX_TIMEOUT || timeout_size_t < 3000)
+		throw std::invalid_argument("Error: invalid parameter in timeout directive");
+	
+	return (timeout_size_t);
 }
 
 std::string Config::validateServerName()
