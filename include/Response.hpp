@@ -1,19 +1,16 @@
 #pragma once
 #include <fstream>
+#include <string.h>
 #include "Request.hpp"
-#include "everything.hpp"
 
 enum readingMode{
 	TEXT,
 	BINARY
 };
 
-// class Request;
-
 class Response{
 	public:
-		Response() = delete;
-		Response(Request* request);
+		Response();
 		Response(const Response &obj) = delete;
 		Response& operator=(const Response& obj) = delete;
 		~Response();
@@ -21,6 +18,7 @@ class Response{
 		void											autoFillResponse(std::string status);
 		std::string										generateResponse() const;
 
+		void											setHTTPVersion(std::string HTTPversion);
 		void											setStatus(std::string status);
 		void											setContentType(std::string path);
 		void											setHeaders(std::string key, std::string value);
@@ -32,14 +30,12 @@ class Response{
 		readingMode										getReadingModeFromResponse() const;
 
 	private:
-		// const Http_method								_method_type;
-		const std::string								_http_version;
+		std::string										_httpVersion;
 		std::string										_status;
 		std::unordered_map<std::string, std::string>	_headers;
 		std::string										_body;
 };
 
-void		responseHandler(Request* request, Config* config);
+void		responseHandler(Request* request, Response* response, Config* config);
 bool		isCGIrequired(Request* request);
 bool		fileExists(std::string path);
-

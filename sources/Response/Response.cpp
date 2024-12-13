@@ -1,7 +1,6 @@
 #include "Response.hpp"
 
-// _method_type(request->_method_type),
-Response::Response(Request* request) : _http_version(request->_http_version){
+Response::Response(){
 	return ;
 }
 
@@ -48,7 +47,7 @@ void	Response::autoFillResponse(std::string status){
 // }
 
 std::string	Response::generateResponse() const{
-	std::string response = _http_version + " " + _status + "\r\n";
+	std::string response = _httpVersion + " " + _status + "\r\n";
 	for (auto it = _headers.begin(); it != _headers.end(); it++){
 		response += it->first + ": " + it->second + "\r\n";
 	}
@@ -59,6 +58,11 @@ std::string	Response::generateResponse() const{
 }
 
 /*	Setters	*/
+
+void	Response::setHTTPVersion(std::string HTTPversion){
+	_httpVersion = HTTPversion;
+	return ;
+}
 
 void	Response::setStatus(std::string status){
 	_status = status;

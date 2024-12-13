@@ -129,7 +129,7 @@ void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
 	}
 	else if ((poll.revents & POLLOUT) && connect._request._doneReading)
 	{
-		responseHandler(&connect._request, connect._config);
+		responseHandler(&connect._request, &connect._response, connect._config);
 		if (connect._keepOpen) //and donewriting
 			std::cout << "tmp" << std::endl; //update idle timeout renew request object
 		else

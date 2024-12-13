@@ -74,6 +74,7 @@
         "ios": "cpp",
         "locale": "cpp",
         "mutex": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "set": "cpp"
     }
 }

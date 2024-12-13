@@ -68,11 +68,11 @@ static Response*	deleteMethod(Request* request, Response* response){
 }
 
 //config for timeout & max body size
-void	responseHandler(Request* request, Config* config)
+void	responseHandler(Request* request, Response* response, Config* config)
 {
-	Response *response = new Response(request);
 	std::string responseBuffer;
 
+	response->setHTTPVersion(request->_http_version);
 	(void)config;
 	if (!request->getStatusCode().empty()) //if there was an error in (parsing) the request{}
 		response->autoFillResponse(request->getStatusCode());
@@ -91,7 +91,6 @@ void	responseHandler(Request* request, Config* config)
 		responseBuffer = response->generateResponse();
 	}
 	write(request->_clientFD, responseBuffer.c_str(), responseBuffer.size()); //needs to be send back in a loop (see requestHandler)
-	delete response;
 	return;
 }
 
