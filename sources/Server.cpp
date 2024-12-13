@@ -135,7 +135,8 @@ void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
 		else
 			close_connect(i); //segfault??
 	}
-	else if (isTimedOut(connect._startTime, connect._TimeoutTime))
+	// isTimedOut(connect._startTime, connect._TimeoutTime)
+	else if (connect._CStatus == connectStatus::CONNECT_CLOSED) //causses segfault
 		close_connect(i); // has issues??
 }
 

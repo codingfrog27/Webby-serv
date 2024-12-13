@@ -94,6 +94,3 @@ void	responseHandler(Request* request, Config* config)
 	delete response;
 	return;
 }
-
-
-
