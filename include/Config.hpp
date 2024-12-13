@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/13 16:56:47 by asimone          ###   ########.fr       */
+/*   Updated: 2024/12/13 17:08:06 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class Config
 		
 
 	public:
-		std::string _autoindex;
+		bool 		_autoindex;
 		std::string _autoIndexFilePath;
 		std::string _client_max_body_size;
 		std::multimap<std::string, std::string> _errorPage;
@@ -83,6 +83,7 @@ class Config
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	void	parseRule(const std::string &line);
 	
+	bool		getAutoindex();
 	std::multimap<std::string, std::string> getErrorPage();
 	std::string	getMaxBodySize();
 	std::string	getHost();
@@ -91,6 +92,7 @@ class Config
 	std::string	getRoot();
 	size_t		getTimeout();
 	std::string	getServerName();
+	void		setAutoindex(const bool& autoIndex);
 	void		setErrorPage(const std::multimap<std::string, std::string> &errorPageMap);
 	void		setHost(const std::string &host);
 	void		setIndex(const std::vector<std::string> &index_vector);
@@ -103,6 +105,7 @@ class Config
 
 	int			initializeServer();
 	int			mapToMembers();
+	bool		validateAutoindex();
 	std::multimap<std::string, std::string> validateErrorPage();
 	std::string validateHost();
 	std::vector<std::string> ValidateIndex();

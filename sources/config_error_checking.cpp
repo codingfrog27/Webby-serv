@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/13 17:01:24 by asimone          ###   ########.fr       */
+/*   Updated: 2024/12/13 17:14:58 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,3 +296,26 @@ std::string Config::validateRoot()
 	return (root_value);
 }
 
+bool		Config::validateAutoindex()
+{
+	std::string _autoIndex;
+	std::string _autoIndex_value;
+
+	if (_rulemap.contains("autoindex"))
+	{
+		auto found = _rulemap.find("autoindex");
+		_autoIndex = normalize_space(found->second);
+		_autoIndex_value = find_value(_autoIndex);
+	}
+	else
+		return (true);
+
+	if (_autoIndex_value.compare("on") == 0)
+		return (true);
+	else if (_autoIndex_value.compare("off") == 0)
+		return (false);
+	else 
+		throw std::invalid_argument("Error: invalid character in autoindex directive");
+	
+	return (true);
+}

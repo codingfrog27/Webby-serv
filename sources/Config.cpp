@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/13 16:58:34 by asimone          ###   ########.fr       */
+/*   Updated: 2024/12/13 17:05:06 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int Config::mapToMembers()
 {
 	try 
 	{
-		std::vector<std::string> serverBlock {"client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
+		std::vector<std::string> serverBlock {"autoindex", "client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
 		std::set<std::string> uniqueKeys;
 		
 		for (const auto& [key, value] : _rulemap)
@@ -78,6 +78,7 @@ int Config::mapToMembers()
 		{
 			try
 			{
+				setAutoindex(validateAutoindex()); 
 				setListen(validateListen()); 
 				setMaxBodySize(validateMaxBodySize()); 
 				setErrorPage(validateErrorPage());
