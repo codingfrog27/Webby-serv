@@ -75,7 +75,6 @@ class Request
 		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
 		t_msecs					_timeoutTime;
 		t_time					_startTime;
-		
 
 
 		int						readSocket(int size);
@@ -111,6 +110,7 @@ class Request
 		bool						_doneReading;
 		std::string					_statusStr;
 		int							_statusCode;
+		bool						_CGIRequired;
 		// bool						_error_occured;
 		// Constructors and Destructors
 						Request(void) = delete;

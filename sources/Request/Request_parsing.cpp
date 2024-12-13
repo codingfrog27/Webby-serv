@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/11 18:47:34 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/13 15:04:49 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,9 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_listen.length() + 1);
 	if (resolved.front() == '/')
 		resolved.erase(0, 1);
-	_filePath = _config->_rootDir + resolved;
+	_filePath = (_config->_rootDir + resolved);
 	// _filePath = "website/index.html";
+	// website/index.html 
 	// std::cout << "hoi" << _filePath << "doei" << std::endl;
 
 }

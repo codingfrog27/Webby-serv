@@ -23,11 +23,10 @@ enum class connectStatus
 	IDLE,
 	READING,
 	REQ_ERR,
-	CONNECT_CLOSED,
 	DONE_READING,
-	DONE_READING_CGI,
 	RESPONDING,
 	SERVER_ERR,
+	CONNECT_CLOSED,
 	FINISHED
 };
 class Connection
@@ -40,6 +39,7 @@ class Connection
 		connectStatus	_CStatus;
 		Config			*_config;
 		Request			_request;
+		// Response		_response;
 		bool			_isServerSocket;
 		int				_clientFD;
 		bool			_keepOpen;
@@ -56,3 +56,11 @@ class Connection
 
 		// Public Methods
 } ;
+
+
+//`1 pointer maken en alloceren wanneer klaar om te lezen
+
+// 2 object maken en waardes initializen wanneer klaar om te lezen
+
+// 3 ^ 1 of 2 maar als deel van server of connection ipv in response handler
+
