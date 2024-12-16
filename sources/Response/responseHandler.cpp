@@ -70,17 +70,18 @@ static Response*	deleteMethod(Request* request, Response* response){
 //config for timeout & max body size
 void	responseHandler(Request* request, Response* response, Config* config)
 {
-	std::string responseBuffer;
-
-	response->setHTTPVersion(request->_http_version);
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::NOT_STARTED){
+		response->setResponseHandlerStatus(responseHandlerStatus::IN_PROGRESS);
+		response->setHTTPVersion(request->_http_version);
+	}
 	(void)config;
-	if (!request->getStatusCode().empty()) //if there was an error in (parsing) the request{}
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()) //if there was an error in (parsing) the request{}
 		response->autoFillResponse(request->getStatusCode());
 	std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
 	std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
 	std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
 	if (isCGIrequired(request))
-		responseBuffer = CGIHandler(request, response);
+		response->setResponseBuffer(CGIHandler(request, response));
 	else{
 		if (request->_method_type == GET)
 			response = getMethod(request, response);
@@ -88,11 +89,10 @@ void	responseHandler(Request* request, Response* response, Config* config)
 			response = postMethod(request, response);
 		else if (request->_method_type == DELETE)
 			response = deleteMethod(request, response);
-		responseBuffer = response->generateResponse();
+		response->setResponseBuffer(response->generateResponse());
 	}
-	write(request->_clientFD, responseBuffer.c_str(), responseBuffer.size()); //needs to be send back in a loop (see requestHandler)
+	write(request->_clientFD, response->getResponseBuffer().c_str(), response->getResponseBuffer().size()); //needs to be send back in a loop (see requestHandler)
 	return;
 }
-
 
 

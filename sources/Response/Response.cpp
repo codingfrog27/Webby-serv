@@ -1,6 +1,8 @@
 #include "Response.hpp"
 
 Response::Response(){
+	this->_responseHandlerStatus = responseHandlerStatus::NOT_STARTED;
+	this->_responseBuffer = "";
 	return ;
 }
 
@@ -64,6 +66,11 @@ void	Response::setHTTPVersion(std::string HTTPversion){
 	return ;
 }
 
+void	Response::setResponseHandlerStatus(responseHandlerStatus status){
+	_responseHandlerStatus = status;
+	return ;
+}
+
 void	Response::setStatus(std::string status){
 	_status = status;
 	return ;
@@ -113,7 +120,16 @@ void	Response::setBody(std::vector<char> body){
 	return ;
 }
 
+void	Response::setResponseBuffer(std::string buffer){
+	_responseBuffer += buffer;
+	return ;
+}
+
 /*	getters	*/
+
+responseHandlerStatus	Response::getResponseHandlerStatus() const{
+	return _responseHandlerStatus;
+}
 
 /* anything that's not text has to be handled as raw bits*/
 readingMode	Response::getReadingModeFromResponse() const{
@@ -136,4 +152,8 @@ std::string	Response::getHeader(std::string key) const{
 	if (it == _headers.end())
 		return ("");
 	return it->second;
+}
+
+std::string	Response::getResponseBuffer() const{
+	return _responseBuffer;
 }
