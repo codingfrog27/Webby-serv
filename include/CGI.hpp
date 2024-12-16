@@ -9,7 +9,7 @@ class CGI{
 		CGI& operator=(const CGI& obj) = delete;
 		~CGI();
 
-		std::string			invokeCGI(Request* request, Response* response);
+		void			invokeCGI(Request* request, Response* response);
 		Response*			executeScript(Request* request, Response* response);
 		void				closePipes();
 
@@ -24,4 +24,4 @@ class CGI{
 
 };
 
-std::string	CGIHandler(Request* request, Response* response);
+void	CGIHandler(Request* request, Response* response);

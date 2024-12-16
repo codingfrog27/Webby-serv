@@ -81,7 +81,7 @@ void	responseHandler(Request* request, Response* response, Config* config)
 	std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
 	std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
 	if (isCGIrequired(request))
-		response->setResponseBuffer(CGIHandler(request, response));
+		response->setResponseBuffer(CGIHandler(request, response)); //call in CGI handler HERE!!
 	else{
 		if (request->_method_type == GET)
 			response = getMethod(request, response);
@@ -89,10 +89,20 @@ void	responseHandler(Request* request, Response* response, Config* config)
 			response = postMethod(request, response);
 		else if (request->_method_type == DELETE)
 			response = deleteMethod(request, response);
-		response->setResponseBuffer(response->generateResponse());
+		response->setResponseBuffer(response->generateResponse()); //call in generateResponse
 	}
-	write(request->_clientFD, response->getResponseBuffer().c_str(), response->getResponseBuffer().size()); //needs to be send back in a loop (see requestHandler)
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE){
+		response->setResponseHandlerStatus(responseHandlerStatus::WRITING);
+		size_t bytesWritten = 0;
+		while (response->getBytesWritten() < response->getResponseBuffer().size()){
+			bytesWritten = write(request->_clientFD, response->getResponseBuffer().c_str() + bytesWritten, BUFFER_SIZE);
+			if (bytesWritten == -1){
+				response->autoFillResponse("500 Internal Server Error: write");//is this ok?
+				break;
+			}
+			response->setBytesWritten(bytesWritten);
+		}
+	if (response->getBytesWritten() == response->getResponseBuffer().size())
+		response->setResponseHandlerStatus(responseHandlerStatus::FINISHED);
 	return;
 }
-
-

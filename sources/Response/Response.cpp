@@ -3,6 +3,7 @@
 Response::Response(){
 	this->_responseHandlerStatus = responseHandlerStatus::NOT_STARTED;
 	this->_responseBuffer = "";
+	this->_bytesWritten = 0;
 	return ;
 }
 
@@ -35,6 +36,8 @@ void	Response::autoFillResponse(std::string status){
 			Response::setHeaders("Content-Length", std::to_string(status.length()));
 			Response::setBody(status);
 	}
+	Response::setResponseBuffer(Response::generateResponse());
+	_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 	return ;
 }
 
@@ -125,6 +128,11 @@ void	Response::setResponseBuffer(std::string buffer){
 	return ;
 }
 
+void	Response::setBytesWritten(size_t bytesWritten){
+	_bytesWritten += bytesWritten;
+	return ;
+}
+
 /*	getters	*/
 
 responseHandlerStatus	Response::getResponseHandlerStatus() const{
@@ -156,4 +164,8 @@ std::string	Response::getHeader(std::string key) const{
 
 std::string	Response::getResponseBuffer() const{
 	return _responseBuffer;
+}
+
+size_t	Response::getBytesWritten() const{
+	return _bytesWritten;
 }

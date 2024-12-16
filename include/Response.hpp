@@ -15,6 +15,7 @@ enum class responseHandlerStatus{
 	IN_GET,
 	IN_POST,
 	IN_DELETE,
+	READY_TO_WRITE,
 	WRITING,
 	FINISHED
 };
@@ -37,12 +38,14 @@ class Response{
 		void											setBody(std::string body);
 		void											setBody(std::vector<char>);
 		void											setResponseBuffer(std::string buffer);
+		void											setBytesWritten(size_t bytesWritten);
 
 		responseHandlerStatus							getResponseHandlerStatus() const;
 		std::string										getHeader(std::string key) const;
 		readingMode										getReadingModeFromRequest(Request & request) const;
 		readingMode										getReadingModeFromResponse() const;
 		std::string										getResponseBuffer() const;
+		size_t											getBytesWritten() const;
 
 	private:
 		responseHandlerStatus							_responseHandlerStatus;
@@ -51,6 +54,7 @@ class Response{
 		std::unordered_map<std::string, std::string>	_headers;
 		std::string										_body;
 		std::string										_responseBuffer;
+		size_t											_bytesWritten;
 };
 
 void		responseHandler(Request* request, Response* response, Config* config);

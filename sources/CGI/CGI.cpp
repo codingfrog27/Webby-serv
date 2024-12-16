@@ -15,13 +15,13 @@ CGI::~CGI(){
 }
 
 //needs refactoring
-std::string	CGI::invokeCGI(Request* request, Response* response){
+void	CGI::invokeCGI(Request* request, Response* response){
 	std::cout << MAGENTA "~ CGI Invoked ~" << std::endl;
 	int PID = fork();
 	if (PID == -1){
 		closePipes();
 		response->autoFillResponse("500 Internal Server Error: fork");
-		return response->generateResponse();
+		return ;
 	}
 	if (PID == 0){ //child
 		dup2(_fdIn[0], STDIN_FILENO);
@@ -44,15 +44,14 @@ std::string	CGI::invokeCGI(Request* request, Response* response){
 		close(_fdIn[1]);
 		char buffer[BUFFER_SIZE];
 		int bytesRead = 0;
-		std::string responseBuffer;
 		while ((bytesRead = read(_fdOut[0], buffer, BUFFER_SIZE)) > 0)
-			responseBuffer.append(buffer, bytesRead);
+			response->setResponseBuffer(std::string(buffer, bytesRead));
 		close(_fdOut[0]);
 		std::cout << MAGENTA "Res Body	: " << responseBuffer << std::endl;
 		if (bytesRead == -1){
 			response->autoFillResponse("500 Internal Server Error: read");
 			close(_fdError[0]);
-			return response->generateResponse();
+			return ;
 		}
 		bytesRead = 0;
 		std::string error;
@@ -63,19 +62,20 @@ std::string	CGI::invokeCGI(Request* request, Response* response){
 		std::cout << MAGENTA "Err Body	: " << error << std::endl;
 		if (bytesRead == -1){
 			response->autoFillResponse("500 Internal Server Error: read");
-			return response->generateResponse();
+			return ;
 		}
 		if (!error.empty()){
 			response->autoFillResponse("500 Internal Server Error: script: " + error);
-			return response->generateResponse();
+			return ;
 		}
 		if (waitpid(PID, NULL, WNOHANG) == -1){
 			response->autoFillResponse("500 Internal Server Error: waitpid");
-			return response->generateResponse();
+			return ;
 		}
 		return request->_http_version + " 200 OK\r\n" + responseBuffer;
 	}
-	return response->generateResponse();
+	response->setResponseBuffer(response->generateResponse());
+	return ;
 }
 
 Response*	CGI::executeScript(Request* request, Response* response){
