@@ -75,6 +75,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		return request->_http_version + " 200 OK\r\n" + responseBuffer;
 	}
 	response->setResponseBuffer(response->generateResponse());
+	// response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 	return ;
 }
 

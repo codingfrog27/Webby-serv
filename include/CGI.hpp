@@ -1,6 +1,16 @@
 #pragma once
 #include "Response.hpp"
 
+enum class CGIHandlerStatus{
+	NOT_STARTED,
+	IN_PROGRESS,
+	WRITING,
+	WAITING_FOR_CHILD,
+	READING_FDOUT,
+	READING_FDERROR,
+	FINISHED
+};
+
 class CGI{
 	public:
 		CGI() = delete;
