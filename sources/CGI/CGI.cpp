@@ -39,7 +39,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 			closePipes();
 			int status = 0;
 			response = CGI::executeScript(request, response);
-			exit(status);
+			exit(status); //might not be needed
 		}
 		else { //parent
 			close(_fdIn[0]);
