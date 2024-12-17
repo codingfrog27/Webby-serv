@@ -74,6 +74,11 @@ void	Response::setResponseHandlerStatus(responseHandlerStatus status){
 	return ;
 }
 
+void	Response::setCGI(CGI* cgi){
+	_cgi = cgi;
+	return ;
+}
+
 void	Response::setStatus(std::string status){
 	_status = status;
 	return ;
@@ -137,6 +142,10 @@ void	Response::setBytesWritten(size_t bytesWritten){
 
 responseHandlerStatus	Response::getResponseHandlerStatus() const{
 	return _responseHandlerStatus;
+}
+
+CGI*	Response::getCGI() const{
+	return _cgi;
 }
 
 /* anything that's not text has to be handled as raw bits*/

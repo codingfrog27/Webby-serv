@@ -24,31 +24,33 @@ void	CGIHandler(Request* request, Response* response){
 			response->autoFillResponse("404 Not Found: CGI");
 			return ;
 		}
-		response->setResponseHandlerStatus(responseHandlerStatus::IN_CGI);
+		// if yes
+		if (pipe(fdIn) == -1) {
+			response->autoFillResponse("500 Internal Server Error: pipe fdIn");
+			return ;
+		}
+		if (pipe(fdOut) == -1) {
+			close(fdIn[0]);
+			close(fdIn[1]);
+			response->autoFillResponse("500 Internal Server Error: pipe fdOut");
+			return ;
+		}
+		if (pipe(fdError) == -1) {
+			close(fdIn[0]);
+			close(fdIn[1]);
+			close(fdOut[0]);
+			close(fdOut[1]);
+			response->autoFillResponse("500 Internal Server Error: pipe fdError");
+			return ;
+		}
+		CGI* newCGI = new CGI(fdIn, fdOut, fdError);
+		newCGI->setupCGIEnvironment(request);
+		response->setCGI(newCGI);
 	}
-	// if yes
-	if (pipe(fdIn) == -1) {
-		response->autoFillResponse("500 Internal Server Error: pipe fdIn");
-		return ;
-	}
-	if (pipe(fdOut) == -1) {
-		close(fdIn[0]);
-		close(fdIn[1]);
-		response->autoFillResponse("500 Internal Server Error: pipe fdOut");
-		return ;
-	}
-	if (pipe(fdError) == -1) {
-		close(fdIn[0]);
-		close(fdIn[1]);
-		close(fdOut[0]);
-		close(fdOut[1]);
-		response->autoFillResponse("500 Internal Server Error: pipe fdError");
-		return ;
-	}
-	CGI* newCGI = new CGI(fdIn, fdOut, fdError);
-	newCGI->setupCGIEnvironment(request);
-	newCGI->invokeCGI(request, response);
-	delete newCGI;
+	CGI* CGI = response->getCGI();
+	CGI->invokeCGI(request, response);
+	if (CGI->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED && response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE){
+		delete CGI;
 	return ;
 }
 

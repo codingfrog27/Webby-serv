@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string.h>
 #include "Request.hpp"
+#include "CGI.hpp"
 
 enum readingMode{
 	TEXT,
@@ -32,6 +33,7 @@ class Response{
 
 		void											setHTTPVersion(std::string HTTPversion);
 		void											setResponseHandlerStatus(responseHandlerStatus status);
+		void											setCGI(CGI* cgi);
 		void											setStatus(std::string status);
 		void											setContentType(std::string path);
 		void											setHeaders(std::string key, std::string value);
@@ -41,6 +43,7 @@ class Response{
 		void											setBytesWritten(size_t bytesWritten);
 
 		responseHandlerStatus							getResponseHandlerStatus() const;
+		CGI*											getCGI() const;
 		std::string										getHeader(std::string key) const;
 		readingMode										getReadingModeFromRequest(Request & request) const;
 		readingMode										getReadingModeFromResponse() const;
@@ -50,6 +53,7 @@ class Response{
 	private:
 		responseHandlerStatus							_responseHandlerStatus;
 		std::string										_httpVersion;
+		CGI*											_cgi;
 		std::string										_status;
 		std::unordered_map<std::string, std::string>	_headers;
 		std::string										_body;

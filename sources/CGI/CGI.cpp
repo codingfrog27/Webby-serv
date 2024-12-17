@@ -2,7 +2,12 @@
 // #include <wait.h>
 #include <sys/wait.h>
 
+
+/*	Constructors & destructors	*/
 CGI::CGI(int *fdIn, int *fdOut, int *fdError) : _fdIn(fdIn), _fdOut(fdOut), _fdError(fdError){
+	_CGIHandlerStatus = CGIHandlerStatus::NOT_STARTED;
+	_bytesWrittenToChild = 0;
+	_scriptError = "";
 	return ;
 }
 
@@ -14,68 +19,112 @@ CGI::~CGI(){
 	return ;
 }
 
+/*	Member functions	*/
 //needs refactoring
 void	CGI::invokeCGI(Request* request, Response* response){
 	std::cout << MAGENTA "~ CGI Invoked ~" << std::endl;
-	int PID = fork();
-	if (PID == -1){
-		closePipes();
-		response->autoFillResponse("500 Internal Server Error: fork");
+	response->setResponseHandlerStatus(responseHandlerStatus::IN_CGI);
+	if (_CGIHandlerStatus == CGIHandlerStatus::NOT_STARTED){
+		_CGIHandlerStatus = CGIHandlerStatus::IN_PROGRESS;
+		_PID = fork();
+		if (_PID == -1){
+			closePipes();
+			response->autoFillResponse("500 Internal Server Error: fork");
+			return ;
+		}
+		if (_PID == 0){ //child
+			dup2(_fdIn[0], STDIN_FILENO);
+			dup2(_fdOut[1], STDOUT_FILENO);
+			dup2(_fdError[1], STDERR_FILENO);
+			closePipes();
+			int status = 0;
+			response = CGI::executeScript(request, response);
+			exit(status);
+		}
+		else { //parent
+			close(_fdIn[0]);
+			close(_fdOut[1]);
+			close(_fdError[1]);
+		}
 		return ;
 	}
-	if (PID == 0){ //child
-		dup2(_fdIn[0], STDIN_FILENO);
-		dup2(_fdOut[1], STDOUT_FILENO);
-		dup2(_fdError[1], STDERR_FILENO);
-		closePipes();
-		int status = 0;
-		response = CGI::executeScript(request, response);
-		//if something went wrong adjust status
-		exit(status);
+	if (_PID != 0) { //parent
+		if (_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS && request->_method_type == GET)
+			_CGIHandlerStatus = CGIHandlerStatus::WAITING_FOR_CHILD;
+		if ((_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS || _CGIHandlerStatus == CGIHandlerStatus::WRITING_TO_CHILD) && request->_method_type == POST){
+			_CGIHandlerStatus = CGIHandlerStatus::WRITING_TO_CHILD;
+			// std::cout << MAGENTA "Req Body	: " << request->getBody() << std::endl;
+			int bytes = write(_fdIn[1], request->getBody().data(), BUFFER_SIZE);
+			if (bytes == -1){
+				response->autoFillResponse("500 Internal Server Error: write");
+				close(_fdIn[1]);
+				close(_fdOut[0]);
+				close(_fdError[0]);
+				return ;
+			}
+			_bytesWrittenToChild += bytes;
+			if (_bytesWrittenToChild == request->getBody().size()){
+				close(_fdIn[1]);
+				_CGIHandlerStatus = CGIHandlerStatus::WAITING_FOR_CHILD;
+			}
+			return ;
+		}
+		if (_CGIHandlerStatus == CGIHandlerStatus::WAITING_FOR_CHILD){
+			int status = 0;
+			if (waitpid(_PID, &status, WNOHANG) == -1){
+				response->autoFillResponse("500 Internal Server Error: waitpid");
+				close(_fdOut[0]);
+				close(_fdError[0]);
+				return ;
+			}
+			if (WIFEXITED(status)){
+				_CGIHandlerStatus = CGIHandlerStatus::READING_FDOUT;
+				// response->setResponseBuffer(request->_http_version + " 200 OK\r\n"); needed if generate response doesnt work!
+			}
+			return ;
+		}
+		if (_CGIHandlerStatus == CGIHandlerStatus::READING_FDOUT){
+			char buffer[BUFFER_SIZE];
+			int bytes = read(_fdOut[0], buffer, BUFFER_SIZE);
+			if (bytes == -1){
+				response->autoFillResponse("500 Internal Server Error: read");
+				close(_fdOut[0]);
+				close(_fdError[0]);
+				return ;
+			}
+			response->setBody(std::string(buffer, bytes)); //setResponseBuffer if setBody is not working
+			if (bytes == 0){
+				close(_fdOut[0]);
+				_CGIHandlerStatus = CGIHandlerStatus::READING_FDERROR;
+			}
+			return ;
+		}
+		// std::cout << MAGENTA "Res Body	: " << responseBuffer << std::endl;
+		if (_CGIHandlerStatus == CGIHandlerStatus::READING_FDERROR){
+			char buffer[BUFFER_SIZE];
+			int bytes = read(_fdError[0], buffer, BUFFER_SIZE);
+			if (bytes == -1){
+				response->autoFillResponse("500 Internal Server Error: read");
+				close(_fdError[0]);
+				return ;
+			}
+			_scriptError.append(buffer, bytes);
+			if (bytes == 0){
+				close(_fdError[0]);
+				if (!_scriptError.empty()){
+					response->autoFillResponse("500 Internal Server Error: script: " + _scriptError);
+					return ;
+				}
+				_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
+			}
+			return ;
+		}
 	}
-	else { //parent
-		close(_fdIn[0]);
-		close(_fdOut[1]);
-		close(_fdError[1]);
-		if (request->_method_type == POST){
-			std::cout << MAGENTA "Req Body	: " << request->getBody() << std::endl;
-			write(_fdIn[1], request->getBody().data(), request->getBody().size());
-		}
-		close(_fdIn[1]);
-		char buffer[BUFFER_SIZE];
-		int bytesRead = 0;
-		while ((bytesRead = read(_fdOut[0], buffer, BUFFER_SIZE)) > 0)
-			response->setResponseBuffer(std::string(buffer, bytesRead));
-		close(_fdOut[0]);
-		std::cout << MAGENTA "Res Body	: " << responseBuffer << std::endl;
-		if (bytesRead == -1){
-			response->autoFillResponse("500 Internal Server Error: read");
-			close(_fdError[0]);
-			return ;
-		}
-		bytesRead = 0;
-		std::string error;
-		while ((bytesRead = read(_fdError[0], buffer, BUFFER_SIZE)) > 0){
-			error.append(buffer, bytesRead);
-		}
-		close(_fdError[0]);
-		std::cout << MAGENTA "Err Body	: " << error << std::endl;
-		if (bytesRead == -1){
-			response->autoFillResponse("500 Internal Server Error: read");
-			return ;
-		}
-		if (!error.empty()){
-			response->autoFillResponse("500 Internal Server Error: script: " + error);
-			return ;
-		}
-		if (waitpid(PID, NULL, WNOHANG) == -1){
-			response->autoFillResponse("500 Internal Server Error: waitpid");
-			return ;
-		}
-		return request->_http_version + " 200 OK\r\n" + responseBuffer;
+	if (_CGIHandlerStatus == CGIHandlerStatus::FINISHED){
+		response->setStatus("200 OK");
+		response->setResponseBuffer(response->generateResponse());
+		response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 	}
-	response->setResponseBuffer(response->generateResponse());
-	// response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 	return ;
 }
 
@@ -86,6 +135,15 @@ Response*	CGI::executeScript(Request* request, Response* response){
 	if (execve(request->_filePath.c_str(), argv, _envp.data()) == -1)
 		response->autoFillResponse("500 Internal Server Error: execve : " + std::string(strerror(errno)));
 	return response;
+}
+
+void	CGI::closePipes(){
+	for (int i = 0; i < 2; i++){
+		close(_fdIn[i]);
+		close(_fdOut[i]);
+		close(_fdError[i]);
+	}
+	return ;
 }
 
 void CGI::setupCGIEnvironment(Request* request) {
@@ -113,11 +171,13 @@ void CGI::addToEnvp(std::string key, std::string value){
 	return ;
 }
 
-void	CGI::closePipes(){
-	for (int i = 0; i < 2; i++){
-		close(_fdIn[i]);
-		close(_fdOut[i]);
-		close(_fdError[i]);
-	}
+
+/*	Setters & getters	*/
+void	CGI::setCGIHandlerStatus(CGIHandlerStatus status){
+	_CGIHandlerStatus = status;
 	return ;
+}
+
+CGIHandlerStatus	CGI::getCGIHandlerStatus() const{
+	return _CGIHandlerStatus;
 }

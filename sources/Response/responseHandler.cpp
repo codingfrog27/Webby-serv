@@ -77,12 +77,12 @@ void	responseHandler(Request* request, Response* response, Config* config)
 	(void)config;
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()) //if there was an error in (parsing) the request{}
 		response->autoFillResponse(request->getStatusCode());
-	std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
-	std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
-	std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
-	if (isCGIrequired(request))
-		response->setResponseBuffer(CGIHandler(request, response)); //call in CGI handler HERE!!
-	else{
+	// std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
+	// std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
+	// std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_CGI || isCGIrequired(request))
+		CGIHandler(request, response); //FINSIHED CGI
+	else{ //GET STARTED WITH POLLING METHODS
 		if (request->_method_type == GET)
 			response = getMethod(request, response);
 		else if (request->_method_type == POST)
@@ -102,6 +102,7 @@ void	responseHandler(Request* request, Response* response, Config* config)
 			}
 			response->setBytesWritten(bytesWritten);
 		}
+	}
 	if (response->getBytesWritten() == response->getResponseBuffer().size())
 		response->setResponseHandlerStatus(responseHandlerStatus::FINISHED);
 	return;
