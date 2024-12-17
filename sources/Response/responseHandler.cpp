@@ -107,15 +107,16 @@ static void	deleteMethod(Request* request, Response* response){
 }
 
 //config for timeout & max body size
-void	responseHandler(Request* request, Response* response, Config* config)
-{
+void	responseHandler(Request* request, Response* response, Config* config){
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::NOT_STARTED){
 		response->setResponseHandlerStatus(responseHandlerStatus::IN_PROGRESS);
 		response->setHTTPVersion(request->_http_version);
 	}
 	(void)config;
-	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()) //if there was an error in (parsing) the request{}
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()){ //if there was an error in (parsing) the request{}
 		response->autoFillResponse(request->getStatusCode());
+		return ;
+	}
 	// std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
 	// std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
 	// std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
