@@ -49,7 +49,7 @@ void	CGIHandler(Request* request, Response* response){
 	}
 	CGI* CGI = response->getCGI();
 	CGI->invokeCGI(request, response);
-	if (CGI->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED && response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE){
+	if (CGI->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED && response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE)
 		delete CGI;
 	return ;
 }

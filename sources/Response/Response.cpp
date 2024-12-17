@@ -79,6 +79,16 @@ void	Response::setCGI(CGI* cgi){
 	return ;
 }
 
+void	Response::setOutFile(std::ofstream* outFile){
+	_outFile = outFile;
+	return ;
+}
+
+void	Response::setInFile(std::ifstream* inFile){
+	_inFile = inFile;
+	return ;
+}
+
 void	Response::setStatus(std::string status){
 	_status = status;
 	return ;
@@ -134,7 +144,10 @@ void	Response::setResponseBuffer(std::string buffer){
 }
 
 void	Response::setBytesWritten(size_t bytesWritten){
-	_bytesWritten += bytesWritten;
+	if (bytesWritten == 0)
+		_bytesWritten = bytesWritten;
+	else
+		_bytesWritten += bytesWritten;
 	return ;
 }
 
