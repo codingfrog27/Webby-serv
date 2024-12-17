@@ -1,7 +1,7 @@
 #include "Response.hpp"
 #include "CGI.hpp"
 
-static Response*	getMethod(Request* request, Response* response){
+static void	getMethod(Request* request, Response* response){
 	std::ifstream file;
 	size_t size = 0;
 
@@ -17,7 +17,7 @@ static Response*	getMethod(Request* request, Response* response){
 			if (size == 0){
 				file.close();
 				response->autoFillResponse("204 No Content");
-				return response;
+				return ;
 			}
 			file.seekg(0, std::ios::beg);
 			std::unique_ptr<std::vector<char>> buffer = std::make_unique<std::vector<char>>(size);
@@ -33,28 +33,48 @@ static Response*	getMethod(Request* request, Response* response){
 	}
 	else
 		response->autoFillResponse("404 Not Found, AUTO INDEX SOON"); //ye
-	return (response);
+	return ;
 }
 
-static Response*	postMethod(Request* request, Response* response){
+static void	postMethod(Request* request, Response* response){
 	std::ofstream file;
 
 	// check for CGI??
-	if(response->getReadingModeFromRequest(*request) == BINARY)
-		file.open(request->_filePath, std::ios::binary);
-	else
-		file.open(request->_filePath);
-	if (file.is_open()){
-		file << request->getBody();
-		file.close();
-		response->autoFillResponse("201 Created");
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS){
+		if(response->getReadingModeFromRequest(*request) == BINARY)
+			file.open(request->_filePath, std::ios::binary);
+		else
+			file.open(request->_filePath);
+		if (!file.is_open()){
+			response->autoFillResponse("500 Internal Server Error: POST");
+			return ;
+		}
+		response->setOutFile(&file);
+		response->setResponseHandlerStatus(responseHandlerStatus::IN_POST);
+	}
+	file = response->getOutFile();
+	if (file.is_open() && response->getResponseHandlerStatus() == responseHandlerStatus::IN_POST){
+		file.write(request->getBody().c_str() + response->getBytesWritten(), BUFFER_SIZE);
+		if (file.fail()){
+			response->autoFillResponse("500 Internal Server Error: POST");
+			file.close();
+			return ;
+		}
+		response->setBytesWritten(BUFFER_SIZE);
+		if (response->getBytesWritten() >= request->getBody().size()){
+			file.close();
+			response->autoFillResponse("201 Created");
+			response->setBytesWritten(0);
+			response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
+		}
+		return ;
 	}
 	else
 		response->autoFillResponse("500 Internal Server Error");
-	return response;
+	return ;
 }
 
-static Response*	deleteMethod(Request* request, Response* response){
+static void	deleteMethod(Request* request, Response* response){
 
 	if (fileExists(request->_filePath)){
 		if (std::remove(request->_filePath.c_str()) == 0)
@@ -64,7 +84,7 @@ static Response*	deleteMethod(Request* request, Response* response){
 	}
 	else
 		response->autoFillResponse("404 Not Found");
-	return response;
+	return ;
 }
 
 //config for timeout & max body size
@@ -75,32 +95,42 @@ void	responseHandler(Request* request, Response* response, Config* config)
 		response->setHTTPVersion(request->_http_version);
 	}
 	(void)config;
-	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()) //if there was an error in (parsing) the request{}
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()){ //if there was an error in (parsing) the request{}
 		response->autoFillResponse(request->getStatusCode());
+		return ;
+	}
 	// std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
 	// std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
 	// std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
-	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_CGI || isCGIrequired(request))
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_CGI || isCGIrequired(request)){
 		CGIHandler(request, response); //FINSIHED CGI
+		return ;
+	}
 	else{ //GET STARTED WITH POLLING METHODS
-		if (request->_method_type == GET)
-			response = getMethod(request, response);
-		else if (request->_method_type == POST)
-			response = postMethod(request, response);
-		else if (request->_method_type == DELETE)
-			response = deleteMethod(request, response);
+		if ((request->_method_type == GET && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_GET){
+			getMethod(request, response);
+			return ;
+		}
+		else if ((request->_method_type == POST && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_POST){
+			postMethod(request, response);
+			return ;
+		}
+		else if ((request->_method_type == DELETE && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_DELETE){
+			deleteMethod(request, response);
+			return ;
+		}
 		response->setResponseBuffer(response->generateResponse()); //call in generateResponse
 	}
-	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE){
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE || response->getResponseHandlerStatus() == responseHandlerStatus::WRITING){
 		response->setResponseHandlerStatus(responseHandlerStatus::WRITING);
-		size_t bytesWritten = 0;
+		size_t bytes = 0;
 		while (response->getBytesWritten() < response->getResponseBuffer().size()){
-			bytesWritten = write(request->_clientFD, response->getResponseBuffer().c_str() + bytesWritten, BUFFER_SIZE);
-			if (bytesWritten == -1){
+			bytes = write(request->_clientFD, response->getResponseBuffer().c_str() + bytes, BUFFER_SIZE);
+			if (bytes == -1){
 				response->autoFillResponse("500 Internal Server Error: write");//is this ok?
 				break;
 			}
-			response->setBytesWritten(bytesWritten);
+			response->setBytesWritten(bytes);
 		}
 	}
 	if (response->getBytesWritten() == response->getResponseBuffer().size())
