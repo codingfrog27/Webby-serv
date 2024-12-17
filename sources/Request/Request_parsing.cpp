@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/13 17:53:44 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/17 13:34:50 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,6 +183,7 @@ void	Request::parseUrlEncoded()
 
 void	Request::parseFormData(std::string &content_type){
 	//assuming its there cause of header check
+	std::cout << "" << std::endl;
 	size_t nextboundary;
 		if (content_type.size() < 31) //meaning multiform without boundery!
 			throw(ClientErrorExcept(400, "400, Bad Request, empty boundary parameter"));
@@ -211,3 +212,19 @@ void	Request::parseFormData(std::string &content_type){
 	}
 
 }
+//parsefrom not currently supported so maybe shouldnt parse??
+std::unique_ptr<CustomConfig> &makeCustomconf(Config &conf, std::string &_filepath)
+{
+	std::unique_ptr<CustomConfig> config = std::make_unique<CustomConfig>();
+	while (conf._locNames[i])
+	{
+		/* code */
+	}
+	
+	if (_filepath.find())
+	{
+		/* code */
+	}
+	
+}
+

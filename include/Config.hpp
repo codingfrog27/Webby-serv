@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/05 16:22:05 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/17 13:26:40 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ class Config
 		std::string _serverPort;
 		size_t		_maxConnects;
 		size_t		_timeout; //general _timeout waiting for request/respond sending
-		
+
 		std::vector<std::unique_ptr<location>> _newLocations;
 		std::vector<std::string> _locNames;
 		std::unordered_map<std::string, location> _locations;

@@ -28,6 +28,7 @@
 #include "ConnectionClosedExcep.hpp"
 #include "Config.hpp"
 #include "timeout.hpp"
+#include "CustomConfig.hpp"
 
 #define GREEN "\033[32m"
 #define RED "\033[31m"
@@ -96,6 +97,8 @@ class Request
 
 
 	public:
+		std::unique_ptr\
+		<CustomConfig>				_customConf;
 		int							_clientFD;
 		std::vector<unsigned char>	_rawRequestData;
 		Http_method					_method_type;
