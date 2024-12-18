@@ -6,7 +6,7 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/18 17:29:32 by asimone          ###   ########.fr       */
+/*   Updated: 2024/12/18 17:42:19 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,14 @@
 #include <memory>
 #include <vector>
 #include <set>
+
+
+Config::NoBlockFound::NoBlockFound(std::string errMsg) : _errMsg(std::move(errMsg)) {}
+
+const char* Config::NoBlockFound::what() const noexcept 
+{
+   	return _errMsg.c_str();
+}
 
 void	parseConfig(int argc, char ** argv, std::vector<Config> &configs)
 {
