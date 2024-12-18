@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/05 16:22:05 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/18 17:33:44 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <memory>
 #include "location.hpp"
 #include "Colors.hpp"
+#define MAX_TIMEOUT 60000
 
 enum ServerRules
 {
@@ -40,10 +41,10 @@ enum ServerRules
 class Config
 {
 	public:
-		std::string _autoindex;
+	 	bool        _autoindex;
 		std::string _autoIndexFilePath;
 		std::string _client_max_body_size;
-		std::unordered_map<std::string, std::string> _errorPage;
+		std::multimap<std::string, std::string> _errorPage;
 		std::string _host;
 		std::vector<std::string> _index;
 		std::string _listen;
@@ -56,7 +57,7 @@ class Config
 		std::vector<std::unique_ptr<location>> _newLocations;
 		std::vector<std::string> _locNames;
 		std::unordered_map<std::string, location> _locations;
-		std::unordered_map<std::string, std::string> _rulemap;
+		std::multimap<std::string, std::string> _rulemap;
 
 		// Constructors and Destructors
 		Config(void);
@@ -64,8 +65,10 @@ class Config
 		Config(const Config &rhs);
 		Config &operator=(const Config &rhs);
 		~Config(void);
+
 	std::string toString() const;
-	std::unordered_map<std::string, std::string> getErrorPage();
+	bool	getAutoindex();
+	std::multimap<std::string, std::string> getErrorPage();
 	std::string	getMaxBodySize();
 	std::string	getHost();
 	std::vector<std::string> getIndex();
@@ -100,14 +103,24 @@ class Config
 	void		setServer(const int rule);
 
 	int			initializeServer();
-	void		mapToMembers();
-	std::unordered_map<std::string, std::string> validateErrorPage();
+	// void		mapToMembers();
+	// std::unordered_map<std::string, std::string> validateErrorPage();
 	std::string validateHost();
 	std::vector<std::string> ValidateIndex();
 	std::string	validateListen();
 	std::string validateMaxBodySize();
 	std::string validateRoot();
 	std::string validateServerName();
+
+	// std::string toString() const;
+	size_t          validateTimeout();
+	void            setTimeout(const size_t& timeout);
+	size_t          getTimeout();
+	void            setAutoindex(const bool& autoIndex);
+	void            setErrorPage(const std::multimap<std::string, std::string> &errorPageMap);
+	int             mapToMembers();
+	bool            validateAutoindex();
+	std::multimap<std::string, std::string> validateErrorPage();
 };
 
 void	parseConfig(int argc, char ** argv, std::vector<Config> &configs);
@@ -121,3 +134,11 @@ bool	checkstr(const std::string &line, const std::string &str);
 void	print_map(const std::unordered_map<std::string, std::string> map);
 std::string	normalize_space(std::string& str);
 std::ostream& 		operator<<(std::ostream& os, const Config& config);
+
+
+// location findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
+// void    printBlockValue(const std::multimap<std::string, std::string> &configFile);
+// void    parseRule(const std::string &line);
+
+// bool            getAutoindex();
+// std::multimap<std::string, std::string> getErrorPage();

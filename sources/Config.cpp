@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/05 19:09:04 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/18 17:29:32 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include "Config.hpp"
 #include "socket.hpp"
 #include <memory>
-
+#include <vector>
+#include <set>
 
 void	parseConfig(int argc, char ** argv, std::vector<Config> &configs)
 {
@@ -31,7 +32,6 @@ void	parseConfig(int argc, char ** argv, std::vector<Config> &configs)
 		configs.emplace_back();
 	}
 }
-
 
 std::vector<Config>	readConfigFile(const std::string fileName)
 {
@@ -85,15 +85,52 @@ void	Config::readBlock(std::ifstream &file, std::string &line)
 	throw std::invalid_argument("no closing brace in server block!");
 }
 
-void	Config::mapToMembers()
-{	
-	setListen(validateListen());
-	setMaxBodySize(validateMaxBodySize());
-	setErrorPage(validateErrorPage());
-	setHost(validateHost());	
-	setIndex(ValidateIndex());
-	setRoot(validateRoot());
-	setServerName(validateServerName());
+int Config::mapToMembers()
+{
+	try 
+	{
+		std::vector<std::string> serverBlock {"autoindex", "client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
+		std::set<std::string> uniqueKeys;
+		
+		for (const auto& [key, value] : _rulemap)
+			uniqueKeys.insert(key);
+		
+		std::vector<std::string> keys(uniqueKeys.begin(), uniqueKeys.end());
+		
+		std::sort(keys.begin(), keys.end());
+		serverBlock.erase(std::unique(serverBlock.begin(), serverBlock.end()), serverBlock.end());
+		if (keys == serverBlock)
+		{
+			try
+			{
+				setAutoindex(validateAutoindex()); 
+				setListen(validateListen()); 
+				setMaxBodySize(validateMaxBodySize()); 
+				setErrorPage(validateErrorPage());
+				setHost(validateHost());
+				setIndex(ValidateIndex());
+				setRoot(validateRoot());
+				setTimeout(validateTimeout()); 
+				setServerName(validateServerName()); 
+			}
+			catch(const std::exception& e)
+			{
+				std::cerr << e.what() << '\n';
+			}
+		}
+		else
+		{
+			std::cerr << "Keys do not match the expected serverBlock configuration" << std::endl;
+			return (0);
+		}
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Unexpected error in mapToMembers: " << e.what() << std::endl;
+		return (1);
+	}
+
+	return (1);
 }
 
 std::string Config::toString() const {
@@ -131,7 +168,6 @@ void	Config::parseRule(const std::string &line)
 	 	value_end++;
 	if (value_end == directive.end())
 		throw std::invalid_argument("Error: Missing semicolon.");
-	std::string tmp_value(value_begin, value_end);	
-	// std::cout << tmp_value << std::endl;
-	_rulemap.emplace(tmp_key, tmp_value);
+	std::string tmp_value(value_begin, value_end);
+	_rulemap.insert(make_pair(tmp_key, tmp_value));
 }

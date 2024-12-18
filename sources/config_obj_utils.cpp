@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   config_obj_utils.cpp                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
+/*   Updated: 2024/12/17 12:54:54 by asimone          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "Config.hpp"
 #include "Colors.hpp"
@@ -35,13 +45,7 @@ Config::operator=(const Config &rhs)
 
 	if (this != &rhs)
 	{
-		// _serverPort = rhs._serverPort;
-		_listen = rhs._listen;
-		_serverName = rhs._serverName;
-		_maxConnects = rhs._maxConnects;
-		_timeout = rhs._timeout;
-		_rootDir = rhs._rootDir;
-		_autoIndexFilePath = rhs._autoIndexFilePath;
+		// Perform deep copy
 	}
 
 	return (*this);
@@ -68,7 +72,6 @@ std::string	Config::getRoot()
 
 void	Config::setRoot(const std::string &root)
 {
-	
 	this->_rootDir = root;
 }
 
@@ -102,12 +105,12 @@ void	Config::setHost(const std::string &host)
 	this->_host = host;
 }
 
-std::unordered_map<std::string, std::string>	Config::getErrorPage()
+std::multimap<std::string, std::string>	Config::getErrorPage()
 {
 	return(this->_errorPage);
 }
 
-void	Config::setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap)
+void	Config::setErrorPage(const std::multimap<std::string, std::string> &errorPageMap)
 {
 	this->_errorPage = errorPageMap;
 }
@@ -132,10 +135,22 @@ void	Config::setIndex(const std::vector<std::string> &index_vector)
 	this->_index = index_vector;
 }
 
-Config::NoBlockFound::NoBlockFound(std::string errMsg) : _errMsg(errMsg)
-{}
-
-const char		*Config::NoBlockFound::what() const noexcept
+size_t	Config::getTimeout()
 {
-	return (_errMsg.c_str());
+	return(this->_timeout);
+}
+
+void	Config::setTimeout(const size_t& timeout)
+{
+	this->_timeout = timeout;
+}
+
+bool		Config::getAutoindex()
+{
+	return (this->_autoindex);
+}
+
+void Config::setAutoindex(const bool& autoIndex)
+{
+	this->_autoindex = autoIndex;
 }

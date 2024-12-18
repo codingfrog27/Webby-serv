@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:27:26 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/05 16:22:56 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/17 13:04:36 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ std::string	normalize_space(std::string& str)
 void	printConfigs(const std::vector<Config> &configs)
 {
 	for (size_t i = 0; i < configs.size(); i++){
-		std::cout << "server block:\n" << configs[i].toString() << LINE << std::endl;
+		std::cout << "server block:\n" << configs[i].toString() << std::endl;
 		for (size_t j = 0; j < configs[i]._newLocations.size(); j++){
 			std::cout << "location block:\n" << configs[i]._newLocations[j]->toString() \
 			<< "---------------" << std::endl;
