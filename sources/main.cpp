@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/05 19:54:35 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/18 16:57:03 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ int main(int argc, char ** argv) {
 	{
 		std::cerr << "Exception caught!" << e.what() << std::endl;
 	}
+	
 	return 0;
 }
 
@@ -41,4 +42,4 @@ int main(int argc, char ** argv) {
 //filepath string
 
 
-//
+//test
