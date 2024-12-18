@@ -1,5 +1,8 @@
 #pragma once
-#include "Response.hpp"
+#include <vector>
+
+class Request;
+class Response;
 
 enum class CGIHandlerStatus{
 	NOT_STARTED,
@@ -20,7 +23,7 @@ class CGI{
 		~CGI();
 
 		void				invokeCGI(Request* request, Response* response);
-		Response*			executeScript(Request* request, Response* response);
+		void				executeScript(Request* request, Response* response);
 		void				closePipes();
 
 		void				setupCGIEnvironment(Request* request);
@@ -36,7 +39,7 @@ class CGI{
 		int					*_fdError;
 		CGIHandlerStatus	_CGIHandlerStatus;
 		int					_PID;
-		int					_bytesWrittenToChild;
+		size_t				_bytesWrittenToChild;
 		std::string			_scriptError;
 };
 

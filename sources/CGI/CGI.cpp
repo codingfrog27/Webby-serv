@@ -1,6 +1,9 @@
 #include "CGI.hpp"
+#include "Response.hpp"
+#include "Request.hpp"
 // #include <wait.h>
-#include <sys/wait.h>
+// #include <sys/wait.h>
+
 
 
 /*	Constructors & destructors	*/
@@ -38,7 +41,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 			dup2(_fdError[1], STDERR_FILENO);
 			closePipes();
 			int status = 0;
-			response = CGI::executeScript(request, response);
+			CGI::executeScript(request, response);
 			exit(status); //might not be needed
 		}
 		else { //parent
@@ -128,13 +131,13 @@ void	CGI::invokeCGI(Request* request, Response* response){
 	return ;
 }
 
-Response*	CGI::executeScript(Request* request, Response* response){
+void	CGI::executeScript(Request* request, Response* response){
 	// char* argv[] = {strdup(request->_filePath.c_str()), NULL};
 	std::string arg = request->_filePath.substr(request->_filePath.rfind("/") + 1);
 	char* argv[] = {const_cast<char *>(arg.c_str()), NULL};
 	if (execve(request->_filePath.c_str(), argv, _envp.data()) == -1)
 		response->autoFillResponse("500 Internal Server Error: execve : " + std::string(strerror(errno)));
-	return response;
+	return ;
 }
 
 void	CGI::closePipes(){

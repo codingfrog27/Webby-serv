@@ -1,5 +1,5 @@
 #include "Response.hpp"
-#include <fstream>
+#include "Request.hpp"
 
 // static std::string	checkForRedirection(std::string filePath, Config* config){
 // 	if (config->_locNames.contains(filePath)){

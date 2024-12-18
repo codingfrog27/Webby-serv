@@ -1,18 +1,18 @@
 #include "Response.hpp"
+#include "Request.hpp"
 #include "CGI.hpp"
 
 static void	getMethod(Request* request, Response* response){
-	std::ifstream file;
 	size_t size = 0;
 
 	if(response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS){
 		if (fileExists(request->_filePath)){
 			response->setContentType(request->_filePath);
 			if (response->getReadingModeFromResponse() == BINARY)
-				file.open(request->_filePath, std::ios::binary);
+				response->getInFile().open(request->_filePath, std::ios::binary);
 			else
-				file.open(request->_filePath);
-			if (!file.is_open()){
+				response->getInFile().open(request->_filePath);
+			if (!response->getInFile().is_open()){
 				response->autoFillResponse("500 Internal Server Error: GET");
 				return ;
 			}
@@ -21,30 +21,28 @@ static void	getMethod(Request* request, Response* response){
 			response->autoFillResponse("404 Not Found");
 			return ;
 		}
-		file.seekg(0, std::ios::end);
-		size = file.tellg();
+		response->getInFile().seekg(0, std::ios::end);
+		size = response->getInFile().tellg();
 		if (size == 0){
-			file.close();
+			response->getInFile().close();
 			response->autoFillResponse("204 No Content");
 			return ;
 		}
-		file.seekg(0, std::ios::beg);
+		response->getInFile().seekg(0, std::ios::beg);
 		response->setHeaders("Content-Length", std::to_string(size));
-		response->setInFile(&file);
 		response->setResponseHandlerStatus(responseHandlerStatus::IN_GET);
 	}
-	file = response->getInFile();
-	if (file.is_open() && response->getResponseHandlerStatus() == responseHandlerStatus::IN_GET){
+	if (response->getInFile().is_open() && response->getResponseHandlerStatus() == responseHandlerStatus::IN_GET){
 		std::unique_ptr<std::vector<char>> buffer = std::make_unique<std::vector<char>>(BUFFER_SIZE);
-		file.read(buffer->data(), BUFFER_SIZE);
-		if (file.fail()){
-			file.close();
+		response->getInFile().read(buffer->data(), BUFFER_SIZE);
+		if (response->getInFile().fail()){
+			response->getInFile().close();
 			response->autoFillResponse("500 Internal Server Error: GET");
 			return ;
 		}
 		response->setBody(std::string(buffer->begin(), buffer->end()));
-		if (file.eof()){
-			file.close();
+		if (response->getInFile().eof()){
+			response->getInFile().close();
 			response->setStatus("200 OK");
 			response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 		}
@@ -55,32 +53,28 @@ static void	getMethod(Request* request, Response* response){
 }
 
 static void	postMethod(Request* request, Response* response){
-	std::ofstream file;
-
 	// check for CGI??
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS){
 		if(response->getReadingModeFromRequest(*request) == BINARY)
-			file.open(request->_filePath, std::ios::binary);
+			response->getOutFile().open(request->_filePath, std::ios::binary);
 		else
-			file.open(request->_filePath);
-		if (!file.is_open()){
+			response->getOutFile().open(request->_filePath);
+		if (!response->getOutFile().is_open()){
 			response->autoFillResponse("500 Internal Server Error: POST");
 			return ;
 		}
-		response->setOutFile(&file);
 		response->setResponseHandlerStatus(responseHandlerStatus::IN_POST);
 	}
-	file = response->getOutFile();
-	if (file.is_open() && response->getResponseHandlerStatus() == responseHandlerStatus::IN_POST){
-		file.write(request->getBody().c_str() + response->getBytesWritten(), BUFFER_SIZE);
-		if (file.fail()){
+	if (response->getOutFile().is_open() && response->getResponseHandlerStatus() == responseHandlerStatus::IN_POST){
+		response->getOutFile().write(request->getBody().c_str() + response->getBytesWritten(), BUFFER_SIZE);
+		if (response->getOutFile().fail()){
 			response->autoFillResponse("500 Internal Server Error: POST");
-			file.close();
+			response->getOutFile().close();
 			return ;
 		}
 		response->setBytesWritten(BUFFER_SIZE);
 		if (response->getBytesWritten() >= request->getBody().size()){
-			file.close();
+			response->getOutFile().close();
 			response->autoFillResponse("201 Created");
 			response->setBytesWritten(0);
 			response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
@@ -144,8 +138,10 @@ void	responseHandler(Request* request, Response* response, Config* config){
 			return ;
 		}
 		response->setBytesWritten(bytes);
-		if (response->getBytesWritten() == response->getResponseBuffer().size())
+		if (response->getBytesWritten() == response->getResponseBuffer().size()){
+			response->setBytesWritten(0);
 			response->setResponseHandlerStatus(responseHandlerStatus::FINISHED);
+		}
 	}
 	return;
 }

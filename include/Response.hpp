@@ -1,8 +1,11 @@
 #pragma once
 #include <fstream>
-#include <string.h>
-#include "Request.hpp"
-#include "CGI.hpp"
+#include <map>
+
+class Response;
+class Request;
+class Config;
+class CGI;
 
 enum readingMode{
 	TEXT,
@@ -34,8 +37,8 @@ class Response{
 		void											setHTTPVersion(std::string HTTPversion);
 		void											setResponseHandlerStatus(responseHandlerStatus status);
 		void											setCGI(CGI* cgi);
-		void											setOutFile(std::ofstream* outFile);
-		void											setInFile(std::ifstream* inFile);
+		// void											setOutFile(std::ofstream&& outFile);
+		// void											setInFile(std::ifstream&& inFile);
 		void											setStatus(std::string status);
 		void											setContentType(std::string path);
 		void											setHeaders(std::string key, std::string value);
@@ -46,8 +49,8 @@ class Response{
 
 		responseHandlerStatus							getResponseHandlerStatus() const;
 		CGI*											getCGI() const;
-		std::ofstream									getOutFile() const;
-		std::ifstream									getInFile() const;
+		std::ofstream&									getOutFile();
+		std::ifstream&									getInFile();
 		std::string										getHeader(std::string key) const;
 		readingMode										getReadingModeFromRequest(Request & request) const;
 		readingMode										getReadingModeFromResponse() const;
@@ -58,8 +61,8 @@ class Response{
 		responseHandlerStatus							_responseHandlerStatus;
 		std::string										_httpVersion;
 		CGI*											_cgi;
-		std::ofstream*									_outFile;
-		std::ifstream*									_inFile;
+		std::ofstream									_outFile;
+		std::ifstream									_inFile;
 		std::string										_status;
 		std::unordered_map<std::string, std::string>	_headers;
 		std::string										_body;

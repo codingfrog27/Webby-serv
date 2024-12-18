@@ -1,4 +1,6 @@
 #include "CGI.hpp"
+#include "Response.hpp"
+#include "Request.hpp"
 
 //next up: testing
 // write script

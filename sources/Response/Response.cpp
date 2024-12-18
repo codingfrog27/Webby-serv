@@ -1,4 +1,5 @@
 #include "Response.hpp"
+#include "Request.hpp"
 
 Response::Response(){
 	this->_responseHandlerStatus = responseHandlerStatus::NOT_STARTED;
@@ -79,15 +80,19 @@ void	Response::setCGI(CGI* cgi){
 	return ;
 }
 
-void	Response::setOutFile(std::ofstream* outFile){
-	_outFile = outFile;
-	return ;
-}
+// void	Response::setOutFile(std::ofstream&& outFile){
+// 	if (_outFile.is_open())
+// 		_outFile.close();
+// 	_outFile = std::move(outFile);
+// 	return ;
+// }
 
-void	Response::setInFile(std::ifstream* inFile){
-	_inFile = inFile;
-	return ;
-}
+// void	Response::setInFile(std::ifstream&& inFile){
+// 	if (_inFile.is_open())
+// 		_inFile.close();
+// 	_inFile = std::move(inFile);
+// 	return ;
+// }
 
 void	Response::setStatus(std::string status){
 	_status = status;
@@ -159,6 +164,18 @@ responseHandlerStatus	Response::getResponseHandlerStatus() const{
 
 CGI*	Response::getCGI() const{
 	return _cgi;
+}
+
+std::ofstream&	Response::getOutFile(){
+	// if (!_outFile.is_open())
+	// 	throw std::runtime_error("Outfile not set");
+	return _outFile;
+}
+
+std::ifstream&	Response::getInFile(){
+	// if (!_inFile.is_open())
+	// 	throw std::runtime_error("Infile not set");
+	return _inFile;
 }
 
 /* anything that's not text has to be handled as raw bits*/
