@@ -132,16 +132,20 @@ void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
 		responseHandler(&connect._request, &connect._response, connect._config);
 		if (connect._response.getResponseHandlerStatus() == responseHandlerStatus::FINISHED) //responseHandlerStatus::WRITING
 		{
+			std::cout << "response finished" << std::endl;
 			if (connect._keepOpen){ //and donewriting
+				connect.resetRequest(connect._config, connect._clientFD);
+				connect.resetResponse();
 				std::cout << "tmp" << std::endl; //update idle timeout renew request object
 				//delete objects and set to new
 			}
-			else
+			else{
 				close_connect(i); //segfault??
+			}
 		}
 	}
-	else if (isTimedOut(connect._startTime, connect._TimeoutTime))
-		close_connect(i); // has issues??
+	// else if (isTimedOut(connect._startTime, connect._TimeoutTime))
+	// 	close_connect(i); // has issues??
 }
 
 void Server::acceptNewConnects(int i)
@@ -156,3 +160,5 @@ void Server::acceptNewConnects(int i)
 	else
 		std::cout << "NOT ACCEPTED" << std::endl;
 }
+
+//exits webserve after 1 response

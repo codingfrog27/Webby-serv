@@ -35,15 +35,16 @@ static void	getMethod(Request* request, Response* response){
 	if (response->getInFile().is_open() && response->getResponseHandlerStatus() == responseHandlerStatus::IN_GET){
 		std::unique_ptr<std::vector<char>> buffer = std::make_unique<std::vector<char>>(BUFFER_SIZE);
 		response->getInFile().read(buffer->data(), BUFFER_SIZE);
-		if (response->getInFile().fail()){
-			response->getInFile().close();
-			response->autoFillResponse("500 Internal Server Error: GET");
-			return ;
-		}
+		// if (response->getInFile().fail()){ // is triggered after second read
+		// 	response->getInFile().close();
+		// 	response->autoFillResponse("500 Internal Server Error: GET");
+		// 	return ;
+		// }
 		response->setBody(std::string(buffer->begin(), buffer->end()));
 		if (response->getInFile().eof()){
 			response->getInFile().close();
 			response->setStatus("200 OK");
+			response->setResponseBuffer(response->generateResponse());
 			response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 		}
 	}
@@ -76,6 +77,7 @@ static void	postMethod(Request* request, Response* response){
 		if (response->getBytesWritten() >= request->getBody().size()){
 			response->getOutFile().close();
 			response->autoFillResponse("201 Created");
+			response->setResponseBuffer(response->generateResponse());
 			response->setBytesWritten(0);
 			response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 		}
@@ -132,7 +134,10 @@ void	responseHandler(Request* request, Response* response, Config* config){
 	}
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE || response->getResponseHandlerStatus() == responseHandlerStatus::WRITING){
 		response->setResponseHandlerStatus(responseHandlerStatus::WRITING);
-		int bytes = write(request->_clientFD, response->getResponseBuffer().c_str() + response->getBytesWritten(), BUFFER_SIZE); //send instead of write maybe? look at error handling
+		int bytes = write(request->_clientFD, response->getResponseBuffer().c_str() + response->getBytesWritten(), BUFFER_SIZE - response->getBytesWritten()); //send instead of write maybe? look at error handling
+		// ^ this somehow return 0 after second write, checking it out
+		
+		std::cout << MAGENTA "buffer written: \n" RESET <<  response->getResponseBuffer().c_str() + response->getBytesWritten() << std::endl;
 		if (bytes == -1){
 			response->autoFillResponse("500 Internal Server Error: write");//is this ok?
 			return ;

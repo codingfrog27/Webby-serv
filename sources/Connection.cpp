@@ -62,7 +62,18 @@ Connection::~Connection(void)
 //								Public methods							  //
 // ************************************************************************** //
 
-// int Connection::Create_Connection(void)
-// {
-	
-// }
+void Connection::resetRequest(Config *config, int clientFD) {
+	// Explicitly call the destructor
+	_request.~Request();
+
+	// Use placement new to reconstruct the object
+	new (&_request) Request(config, clientFD);
+}
+
+void Connection::resetResponse() {
+	// Explicitly call the destructor
+	_response.~Response();
+
+	// Use placement new to reconstruct the object
+	new (&_response) Response();
+}

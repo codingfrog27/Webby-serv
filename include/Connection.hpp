@@ -56,4 +56,6 @@ class Connection
 		~Connection();
 
 		// Public Methods
+		void	resetRequest(Config* config, int clientFD);
+		void	resetResponse();
 } ;
