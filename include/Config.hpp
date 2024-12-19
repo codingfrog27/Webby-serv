@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/05 16:22:05 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/18 18:14:49 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ class Config
 		Config &operator=(const Config &rhs);
 		~Config(void);
 	std::string toString() const;
-	std::unordered_map<std::string, std::string> getErrorPage();
 	std::string	getMaxBodySize();
 	std::string	getHost();
 	std::vector<std::string> getIndex();
@@ -90,24 +89,39 @@ class Config
 	location	findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void		printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	void		parseRule(const std::string &line);
-	void		setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap);
+
+	
+	std::multimap<std::string, std::string> getErrorPage();
+	std::string	getMaxBodySize();
+	std::string	getHost();
+	std::vector<std::string> getIndex();
+	std::string	getListen();
+	std::string	getRoot();
+	size_t		getTimeout();
+	std::string	getServerName();
+	void		setAutoindex(const bool& autoIndex);
+	void		setErrorPage(const std::multimap<std::string, std::string> &errorPageMap);
 	void		setHost(const std::string &host);
 	void		setIndex(const std::vector<std::string> &index_vector);
 	void		setListen(const std::string &listen);
 	void		setMaxBodySize(const std::string &maxBodySize);
 	void		setRoot(const std::string &root);
+	void		setTimeout(const size_t& timeout);
 	void		setServerName(const std::string &serverName);
 	void		setServer(const int rule);
 
 	int			initializeServer();
 	void		mapToMembers();
-	std::unordered_map<std::string, std::string> validateErrorPage();
+	std::multimap<std::string, std::string> \
+				validateErrorPage();
 	std::string validateHost();
 	std::vector<std::string> ValidateIndex();
 	std::string	validateListen();
 	std::string validateMaxBodySize();
 	std::string validateRoot();
 	std::string validateServerName();
+	size_t 		validateTimeout();
+	bool		validateAutoindex();
 };
 
 void	parseConfig(int argc, char ** argv, std::vector<Config> &configs);

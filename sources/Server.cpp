@@ -132,8 +132,8 @@ void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
 		responseHandler(&connect._request, connect._config);
 		if (connect._keepOpen) //and donewriting
 			std::cout << "tmp" << std::endl; //update idle timeout renew request object
-		else
-			close_connect(i); //segfault??
+		// else
+		// 	close_connect(i); //segfault??
 	}
 	// isTimedOut(connect._startTime, connect._TimeoutTime)
 	else if (connect._CStatus == connectStatus::CONNECT_CLOSED) //causses segfault
