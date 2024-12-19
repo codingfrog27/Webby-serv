@@ -1,6 +1,7 @@
 #include "Response.hpp"
 #include "Request.hpp"
 #include "CGI.hpp"
+#include "libft.h"
 
 static void	getMethod(Request* request, Response* response){
 	size_t size = 0;
@@ -134,9 +135,11 @@ void	responseHandler(Request* request, Response* response, Config* config){
 	}
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE || response->getResponseHandlerStatus() == responseHandlerStatus::WRITING){
 		response->setResponseHandlerStatus(responseHandlerStatus::WRITING);
-		int bytes = write(request->_clientFD, response->getResponseBuffer().c_str() + response->getBytesWritten(), BUFFER_SIZE - response->getBytesWritten()); //send instead of write maybe? look at error handling
+		size_t n = strlen(response->getResponseBuffer().c_str() + response->getBytesWritten());
+		if (n > BUFFER_SIZE)
+			n = BUFFER_SIZE;
+		int bytes = write(request->_clientFD, response->getResponseBuffer().c_str() + response->getBytesWritten(), n); //send instead of write maybe? look at error handling
 		// ^ this somehow return 0 after second write, checking it out
-		
 		std::cout << MAGENTA "buffer written: \n" RESET <<  response->getResponseBuffer().c_str() + response->getBytesWritten() << std::endl;
 		if (bytes == -1){
 			response->autoFillResponse("500 Internal Server Error: write");//is this ok?
