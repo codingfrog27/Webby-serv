@@ -1,8 +1,8 @@
 #include "CGI.hpp"
 #include "Response.hpp"
 #include "Request.hpp"
-// #include <wait.h>
-// #include <sys/wait.h>
+#include <cstring>
+#include <sys/wait.h>
 
 
 

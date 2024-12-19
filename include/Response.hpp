@@ -1,6 +1,7 @@
 #pragma once
 #include <fstream>
-#include <map>
+#include <unordered_map>
+#include <vector>
 
 class Response;
 class Request;
