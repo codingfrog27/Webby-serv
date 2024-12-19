@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/19 15:07:52 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/19 15:23:51 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ class Config
 		std::vector<std::unique_ptr<location>> _newLocations;
 		std::vector<std::string> _locNames;
 		std::unordered_map<std::string, location> _locations;
-		std::multimap<std::string, std::string> _rulemap;
+		std::unordered_map<std::string, std::string> _rulemap;
 
 		// Constructors and Destructors
 		Config(void);
@@ -65,12 +65,13 @@ class Config
 		Config(const Config &rhs);
 		Config &operator=(const Config &rhs);
 		~Config(void);
+		std::string	toString() const;
 
 	
 	// std::map<std::string, std::string> _configMap;
 
 	//these are all REQUIRED
-	size_t i = 0;
+	// size_t i = 0;
 	// size_t		_serverPort;
 	// std::vector<std::string> _locationName;
 	// std::vector<location> _location;
@@ -89,9 +90,8 @@ class Config
 	// std::unordered_map<std::string, std::string> custom_error_pages;
 	// std::unordered_map<std::string, std::string> access_control;
 	
-	location findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
+	// location findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
-	void	parseRule(const std::string &line);
 	
 	bool		getAutoindex();
 	std::multimap<std::string, std::string> getErrorPage();
@@ -112,13 +112,12 @@ class Config
 	};
 
 	//these are all REQUIRED
-	size_t i = 0;
 	
 	
 	private:
+	size_t i = 0;
 	void		readBlock(std::ifstream &file, std::string &line);
 	location	findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
-	void		printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	void		parseRule(const std::string &line);
 	void		setAutoindex(const bool& autoIndex);
 	void		setErrorPage(const std::multimap<std::string, std::string> &errorPageMap);
