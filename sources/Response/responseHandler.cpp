@@ -135,7 +135,7 @@ void	responseHandler(Request* request, Response* response, Config* config){
 	}
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE || response->getResponseHandlerStatus() == responseHandlerStatus::WRITING){
 		response->setResponseHandlerStatus(responseHandlerStatus::WRITING);
-		size_t n = strlen(response->getResponseBuffer().c_str() + response->getBytesWritten());
+		size_t n = response->getResponseBuffer().size() - response->getBytesWritten();
 		if (n > BUFFER_SIZE)
 			n = BUFFER_SIZE;
 		int bytes = write(request->_clientFD, response->getResponseBuffer().c_str() + response->getBytesWritten(), n); //send instead of write maybe? look at error handling
