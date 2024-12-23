@@ -139,8 +139,9 @@ void	responseHandler(Request* request, Response* response, Config* config){
 		if (n > BUFFER_SIZE)
 			n = BUFFER_SIZE;
 		int bytes = write(request->_clientFD, response->getResponseBuffer().c_str() + response->getBytesWritten(), n); //send instead of write maybe? look at error handling
-		// ^ this somehow return 0 after second write, checking it out
-		std::cout << MAGENTA "buffer written: \n" RESET <<  response->getResponseBuffer().c_str() + response->getBytesWritten() << std::endl;
+		std::cout << MAGENTA "buffer written: \n" RESET;
+		std::cout.write(response->getResponseBuffer().c_str() + response->getBytesWritten(), n);
+		std::cout << std::endl;
 		if (bytes == -1){
 			response->autoFillResponse("500 Internal Server Error: write");//is this ok?
 			return ;
