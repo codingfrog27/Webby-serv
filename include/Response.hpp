@@ -2,6 +2,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <vector>
+#include "NicePrint.hpp"
 
 class Response;
 class Request;
@@ -29,7 +30,7 @@ class Response{
 	public:
 		Response();
 		Response(const Response &obj) = delete;
-		Response& operator=(const Response& obj) = delete;
+		Response& operator=(const Response& obj);
 		~Response();
 
 		void											autoFillResponse(std::string status);

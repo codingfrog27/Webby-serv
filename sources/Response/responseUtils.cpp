@@ -28,6 +28,11 @@
 
 
 bool	isCGIrequired(Request* request){
+	if (request == nullptr || request->_filePath == "") {
+		std::cout << "AAHHH" << std::endl;
+		NicePrint::promptEnter();
+		return false;
+	}
 	if (request->_filePath.rfind(".py") == request->_filePath.length() - 3)
 		return true;
 	if (request->_headers["Content-Type"].find("multi-part/form-data") != std::string::npos)

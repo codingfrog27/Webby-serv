@@ -6,11 +6,12 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:27:26 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/05 16:22:56 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2024/12/23 15:43:54 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
+#include "NicePrint.hpp"
 
 std::ostream& operator<<(std::ostream& os, const Config& config)
 {

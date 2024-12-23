@@ -8,6 +8,26 @@ Response::Response(){
 	return ;
 }
 
+Response &
+Response::operator=(const Response &rhs)
+{
+	std::cout << GREEN << "Response: Assignment operator called" << RESET << std::endl;
+
+	if (this != &rhs)
+	{
+		_responseHandlerStatus = rhs._responseHandlerStatus;
+		if (_responseHandlerStatus == responseHandlerStatus::NOT_STARTED)
+			std::cout << "GOOD" << std::endl;
+		_responseBuffer = rhs._responseBuffer;
+		_bytesWritten = rhs._bytesWritten;
+		_status = rhs._status;
+		_headers = rhs._headers;
+		_body = rhs._body;
+	}
+
+	return (*this);
+}
+
 Response::~Response(){
 	return ;
 }

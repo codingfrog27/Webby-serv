@@ -78,6 +78,8 @@ Server::~Server(void)
 
 void	Server::close_connect(int i)
 {
+	std::cout << "CONNECT CLOSED??" << std::endl;
+	// NicePrint::promptEnter();
 	close(_Connections[i]._clientFD);
 	_Connections.erase(_Connections.begin() + i);
 	_pollFDs.erase(_pollFDs.begin() + i);
@@ -122,21 +124,37 @@ void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
 {
 	if (poll.revents & POLLIN && !connect._request._doneReading)
 	{
-		if (connect._isServerSocket)
+		if (connect._isServerSocket) {
 			acceptNewConnects(i);
+			return ;
+		}
 		else
 			connect._CStatus = connect._request.readRequest();
 	}
-	else if ((poll.revents & POLLOUT) && connect._request._doneReading)
+	if (connect._CStatus == connectStatus::CONNECT_CLOSED)
 	{
+		std::cout << "bruh??" << std::endl;
+		close_connect(i);
+		return;
+	}
+	if ((poll.revents & POLLOUT) && connect._request._doneReading) //crashes??
+	{
+		if (connect._CStatus == connectStatus::DONE_READING) {
+			connect._CStatus = connectStatus::RESPONDING;
+			if (connect._request.getHeaderValue("Connection") == "keep-alive")
+				connect._keepOpen = true;	
+		}
 		responseHandler(&connect._request, &connect._response, connect._config);
 		if (connect._response.getResponseHandlerStatus() == responseHandlerStatus::FINISHED) //responseHandlerStatus::WRITING
 		{
 			std::cout << "response finished" << std::endl;
-			if (connect._keepOpen){ //and donewriting
+			//NicePrint::promptEnter();
+			if (connect._keepOpen){
+				std::cout << "KEEPOPEN == ON" << std::endl;
+				//NicePrint::promptEnter(); //and donewriting
 				connect.resetRequest(connect._config, connect._clientFD);
 				connect.resetResponse();
-				std::cout << "tmp" << std::endl; //update idle timeout renew request object
+				connect._CStatus = connectStatus::IDLE; //update idle timeout renew request object
 				//delete objects and set to new
 			}
 			else{
@@ -148,13 +166,31 @@ void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
 	// 	close_connect(i); // has issues??
 }
 
+void writeClientFD(int clientFD)
+{
+    std::ofstream outFile("clientFD_log.txt", std::ios::app);
+    if (outFile.is_open())
+    {
+        outFile << "Accepted new connection with clientFD: " << clientFD << std::endl;
+        // Example of using the address of clientFD for logging or other purposes
+        // outFile << "Address of clientFD: " << &clientFD << std::endl;
+        outFile.close();
+    }
+    else
+    {
+        std::cerr << "Unable to open file for writing" << std::endl;
+    }
+}
+
+
 void Server::acceptNewConnects(int i)
 {
 	int clientFD = accept(_pollFDs[i].fd, nullptr, nullptr); //timeout check??
 	if (clientFD > 0)
 	{
-		std::cout << "new connection! :)" << std::endl;
-		_pollFDs.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
+		// NicePrint::promptEnter(); //and donewriting
+		writeClientFD(clientFD);
+		_pollFDs.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0}); //frees???
 		_Connections.emplace_back(_Connections[i]._config, clientFD, false);
 	}
 	else
