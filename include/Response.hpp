@@ -60,6 +60,7 @@ class Response{
 		readingMode										getReadingModeFromResponse() const;
 		std::string										getResponseBuffer() const;
 		size_t											getBytesWritten() const;
+		connectStatus									writeResponse(int FD);
 
 	private:
 		responseHandlerStatus							_responseHandlerStatus;
@@ -74,6 +75,6 @@ class Response{
 		size_t											_bytesWritten;
 };
 
-connectStatus	responseHandler(Request* request, Response* response, Config* config);
+connectStatus	responseHandler(Request* request, Response* response);
 bool			isCGIrequired(Request* request);
 bool			fileExists(std::string path);

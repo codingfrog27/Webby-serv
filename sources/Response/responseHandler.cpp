@@ -105,12 +105,11 @@ static void	deleteMethod(Request* request, Response* response){
 }
 
 //config for timeout & max body size
-connectStatus	responseHandler(Request* request, Response* response, Config* config){
+connectStatus	responseHandler(Request* request, Response* response){
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::NOT_STARTED){
 		response->setResponseHandlerStatus(responseHandlerStatus::IN_PROGRESS);
 		response->setHTTPVersion(request->_http_version);
 	}
-	(void)config;
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()){ //if there was an error in (parsing) the request{}
 		response->autoFillResponse(request->getStatusCode());
 		return connectStatus::RESPONDING;
@@ -132,30 +131,37 @@ connectStatus	responseHandler(Request* request, Response* response, Config* conf
 			return connectStatus::RESPONDING;
 		}
 		else if ((request->_method_type == DELETE && \
-		 response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) \
-		 || response->getResponseHandlerStatus() == responseHandlerStatus::IN_DELETE) {
+		 response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || \
+		  response->getResponseHandlerStatus() == responseHandlerStatus::IN_DELETE) {
 			deleteMethod(request, response);
 			return connectStatus::RESPONDING;
 		 }
 	}
-	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE || response->getResponseHandlerStatus() == responseHandlerStatus::WRITING){
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE || \
+	response->getResponseHandlerStatus() == responseHandlerStatus::WRITING) {
 		response->setResponseHandlerStatus(responseHandlerStatus::WRITING);
-		size_t n = response->getResponseBuffer().size() - response->getBytesWritten();
+		return (response->writeResponse(request->_clientFD));
+	}
+	return connectStatus::RESPONDING;
+}
+
+connectStatus Response::writeResponse(int FD)
+{
+	size_t n =_responseBuffer.size() - _bytesWritten;
 		if (n > BUFFER_SIZE)
 			n = BUFFER_SIZE;
-		int bytes = write(request->_clientFD, response->getResponseBuffer().c_str() + response->getBytesWritten(), n); //send instead of write maybe? look at error handling
-		// ^ this somehow return 0 after second write, checking it out
-		std::cout << MAGENTA "buffer written: \n" RESET <<  response->getResponseBuffer().c_str() + response->getBytesWritten() << std::endl;
-		if (bytes == -1){
-			response->autoFillResponse("500 Internal Server Error: write");//is this ok?
-			return connectStatus::RESPONDING;
-		}
-		response->setBytesWritten(bytes);
-		if (response->getBytesWritten() == response->getResponseBuffer().size()){
-			response->setBytesWritten(0);
-			response->setResponseHandlerStatus(responseHandlerStatus::FINISHED);
+		size_t bytes = write(FD, _responseBuffer.c_str() + _bytesWritten, n); 
+		std::ofstream outFile("Response written.txt", std::ios::app);
+		outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
+		_bytesWritten += bytes;
+
+		if (_bytesWritten >= _responseBuffer.size() || bytes < n) {
+			setResponseHandlerStatus(responseHandlerStatus::FINISHED);
 			return connectStatus::FINISHED;
 		}
-	}
-	return connectStatus::FINISHED;
+		return connectStatus::RESPONDING;
+		// if (bytes == -1){
+		// 	autoFillResponse("500 Internal Server Error: write");//is this ok?
+		// 	return connectStatus::RESPONDING; //false??
+		// }
 }

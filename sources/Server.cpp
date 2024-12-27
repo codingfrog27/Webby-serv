@@ -79,8 +79,8 @@ Server::~Server(void)
 void	Server::close_connect(int i)
 {
 	 std::ofstream outFile("clientFD_log.txt", std::ios::app);
-		outFile << "Accepted new connection with clientFD: " \
-		<< _Connections[i]._clientFD << " With index:" << i << std::endl;
+		outFile << "CLOSED CONNECT with FD: " \
+		<< _Connections[i]._clientFD << " With index: " << i << std::endl;
 	// NicePrint::promptEnter();
 	close(_Connections[i]._clientFD);
 	_Connections.erase(_Connections.begin() + i);
@@ -140,10 +140,9 @@ void	Server::connectionAction(Connection &connect, pollfd &poll)
 			connect._keepOpen = true;	
 	}
 	if ((poll.revents & POLLOUT) && connect._CStatus == connectStatus::RESPONDING) //crashes??
-		connect._CStatus = responseHandler(&connect._request, &connect._response, connect._config);
+		connect._CStatus = responseHandler(&connect._request, &connect._response);
 	if (connect._CStatus == connectStatus::FINISHED) //responseHandlerStatus::WRITING
 	{
-		std::cout << "response finished" << std::endl;
 		if (connect._keepOpen){
 			std::cout << "KEEPOPEN == ON" << std::endl;
 			connect.resetRequest(connect._config, connect._clientFD);
@@ -157,10 +156,11 @@ void	Server::connectionAction(Connection &connect, pollfd &poll)
 	// 	close_connect(i); // has issues??
 }
 
-void writeClientFD(int clientFD)
+void writeClientFD(int clientFD, int i)
 {
     std::ofstream outFile("clientFD_log.txt", std::ios::app);
-		outFile << "Accepted new connection with clientFD: " << clientFD << std::endl;
+		outFile << "Accepted new connection with clientFD: " << clientFD <<\
+		" on index" << i << std::endl;
         // Example of using the address of clientFD for logging or other purposes
         // outFile << "Address of clientFD: " << &clientFD << std::endl;
         outFile.close();
@@ -173,9 +173,9 @@ void Server::acceptNewConnects(int i)
 	if (clientFD > 0)
 	{
 		// NicePrint::promptEnter(); //and donewriting
-		writeClientFD(clientFD);
 		_pollFDs.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0}); //frees???
 		_Connections.emplace_back(_Connections[i]._config, clientFD, false);
+		writeClientFD(clientFD, _Connections.size() - 1);
 	}
 	else
 		std::cout << "NOT ACCEPTED" << std::endl;
