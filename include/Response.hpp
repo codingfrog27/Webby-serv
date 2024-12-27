@@ -26,6 +26,8 @@ enum class responseHandlerStatus{
 	FINISHED
 };
 
+enum class connectStatus;
+
 class Response{
 	public:
 		Response();
@@ -72,6 +74,6 @@ class Response{
 		size_t											_bytesWritten;
 };
 
-void		responseHandler(Request* request, Response* response, Config* config);
-bool		isCGIrequired(Request* request);
-bool		fileExists(std::string path);
+connectStatus	responseHandler(Request* request, Response* response, Config* config);
+bool			isCGIrequired(Request* request);
+bool			fileExists(std::string path);

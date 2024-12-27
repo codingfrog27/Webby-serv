@@ -78,7 +78,9 @@ Server::~Server(void)
 
 void	Server::close_connect(int i)
 {
-	std::cout << "CONNECT CLOSED??" << std::endl;
+	 std::ofstream outFile("clientFD_log.txt", std::ios::app);
+		outFile << "Accepted new connection with clientFD: " \
+		<< _Connections[i]._clientFD << " With index:" << i << std::endl;
 	// NicePrint::promptEnter();
 	close(_Connections[i]._clientFD);
 	_Connections.erase(_Connections.begin() + i);
@@ -94,38 +96,33 @@ void	Server::main_server_loop()
 	{
 		//if poll timeout-> get current time
 		size_t	size = _pollFDs.size();
-		poll(_pollFDs.data(), size, TMP_POLL_TIME);
+		poll(_pollFDs.data(), size, -1);
 		for (size_t i = 0; i < size; ++i)
 		{
-			connectionAction(_Connections[i], _pollFDs[i], i);
-			// if (_pollFDs[i].revents & POLLIN && !_Connections[i]._request._doneReading)
-			// {
-			// 	if (_Connections[i]._isServerSocket)
-			// 		acceptNewConnects(i);
-			// 	else
-			// 		_Connections[i]._request.readRequest();
-			// }
-			// else if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading)
-			// {
-			// 	responseHandler(&_Connections[i]._request, _Connections[i]._config);
-			// 	if (_Connections[i]._keepOpen) //and donewriting
-			// 		std::cout << "tmp" << std::endl; //update idle timeout renew request object
-			// 		//and set
-			// 	else
-			// 		close_connect(i); //segfault??
-			// }
-			// else if (isTimedOut(_Connections[i]._startTime, _Connections[i]._TimeoutTime))
-			// 	close_connect(i); // has issues??
+			connectionAction(_Connections[i], _pollFDs[i]);
+		}
+		for (size_t i = 0; i < size; i++)
+		{
+			if (_Connections[i]._wantsNewConnect == true) {
+				acceptNewConnects(i);
+				_Connections[i]._wantsNewConnect = false;
+			}
+		}
+		for (size_t i = 0; i < size; i++)
+		{
+			if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED || \
+				_Connections[i]._CStatus == connectStatus::FINISHED)
+				close_connect(i);
 		}
 	}
 }
 
-void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
+void	Server::connectionAction(Connection &connect, pollfd &poll)
 {
 	if (poll.revents & POLLIN && !connect._request._doneReading)
 	{
 		if (connect._isServerSocket) {
-			acceptNewConnects(i);
+			connect._wantsNewConnect = true;
 			return ;
 		}
 		else
@@ -133,34 +130,28 @@ void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
 	}
 	if (connect._CStatus == connectStatus::CONNECT_CLOSED)
 	{
-		std::cout << "bruh??" << std::endl;
-		close_connect(i);
 		return;
+		// std::cout << "bruh??" << std::endl;
+		// close_connect(i);
 	}
-	if ((poll.revents & POLLOUT) && connect._request._doneReading) //crashes??
+	if (connect._CStatus == connectStatus::DONE_READING) {
+		connect._CStatus = connectStatus::RESPONDING;
+		if (connect._request.getHeaderValue("Connection") == "keep-alive")
+			connect._keepOpen = true;	
+	}
+	if ((poll.revents & POLLOUT) && connect._CStatus == connectStatus::RESPONDING) //crashes??
+		connect._CStatus = responseHandler(&connect._request, &connect._response, connect._config);
+	if (connect._CStatus == connectStatus::FINISHED) //responseHandlerStatus::WRITING
 	{
-		if (connect._CStatus == connectStatus::DONE_READING) {
-			connect._CStatus = connectStatus::RESPONDING;
-			if (connect._request.getHeaderValue("Connection") == "keep-alive")
-				connect._keepOpen = true;	
+		std::cout << "response finished" << std::endl;
+		if (connect._keepOpen){
+			std::cout << "KEEPOPEN == ON" << std::endl;
+			connect.resetRequest(connect._config, connect._clientFD);
+			connect.resetResponse();
+			connect._CStatus = connectStatus::IDLE;
 		}
-		responseHandler(&connect._request, &connect._response, connect._config);
-		if (connect._response.getResponseHandlerStatus() == responseHandlerStatus::FINISHED) //responseHandlerStatus::WRITING
-		{
-			std::cout << "response finished" << std::endl;
-			//NicePrint::promptEnter();
-			if (connect._keepOpen){
-				std::cout << "KEEPOPEN == ON" << std::endl;
-				//NicePrint::promptEnter(); //and donewriting
-				connect.resetRequest(connect._config, connect._clientFD);
-				connect.resetResponse();
-				connect._CStatus = connectStatus::IDLE; //update idle timeout renew request object
-				//delete objects and set to new
-			}
-			else{
-				close_connect(i); //segfault??
-			}
-		}
+		else
+			connect._CStatus = connectStatus::FINISHED;
 	}
 	// else if (isTimedOut(connect._startTime, connect._TimeoutTime))
 	// 	close_connect(i); // has issues??
@@ -169,17 +160,10 @@ void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
 void writeClientFD(int clientFD)
 {
     std::ofstream outFile("clientFD_log.txt", std::ios::app);
-    if (outFile.is_open())
-    {
-        outFile << "Accepted new connection with clientFD: " << clientFD << std::endl;
+		outFile << "Accepted new connection with clientFD: " << clientFD << std::endl;
         // Example of using the address of clientFD for logging or other purposes
         // outFile << "Address of clientFD: " << &clientFD << std::endl;
         outFile.close();
-    }
-    else
-    {
-        std::cerr << "Unable to open file for writing" << std::endl;
-    }
 }
 
 

@@ -1,14 +1,5 @@
 Accepted new connection with clientFD: 4
-Accepted new connection with clientFD: 4
-Accepted new connection with clientFD: 4
 Accepted new connection with clientFD: 5
-Accepted new connection with clientFD: 4
-Accepted new connection with clientFD: 4
-Accepted new connection with clientFD: 6
-Accepted new connection with clientFD: 4
-Accepted new connection with clientFD: 6
-Accepted new connection with clientFD: 4
-Accepted new connection with clientFD: 6
+Accepted new connection with clientFD: 5 With index:2
 Accepted new connection with clientFD: 5
-Accepted new connection with clientFD: 6
-Accepted new connection with clientFD: 6
+Accepted new connection with clientFD: 4 With index:1

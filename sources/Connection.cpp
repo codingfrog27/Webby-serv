@@ -19,7 +19,7 @@
 
 Connection::Connection(Config *config, int clientFD, bool isServerside): \
 _config(config), _request(config, clientFD), _isServerSocket(isServerside), \
- _clientFD(clientFD), _keepOpen(false)
+_wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 {
 	_startTime = getStartTime();
 	_TimeoutTime = intToMsecs(60000);

@@ -2,6 +2,7 @@
 #include "Request.hpp"
 #include "CGI.hpp"
 #include "libft.h"
+#include "Connection.hpp"
 
 static void	getMethod(Request* request, Response* response){
 	size_t size = 0;
@@ -104,7 +105,7 @@ static void	deleteMethod(Request* request, Response* response){
 }
 
 //config for timeout & max body size
-void	responseHandler(Request* request, Response* response, Config* config){
+connectStatus	responseHandler(Request* request, Response* response, Config* config){
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::NOT_STARTED){
 		response->setResponseHandlerStatus(responseHandlerStatus::IN_PROGRESS);
 		response->setHTTPVersion(request->_http_version);
@@ -112,26 +113,30 @@ void	responseHandler(Request* request, Response* response, Config* config){
 	(void)config;
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()){ //if there was an error in (parsing) the request{}
 		response->autoFillResponse(request->getStatusCode());
-		return ;
+		return connectStatus::RESPONDING;
 	}
 	// std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
 	// std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
 	// std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_CGI || isCGIrequired(request)){
 		CGIHandler(request, response); //FINSIHED CGI
-		return ;
+		return connectStatus::RESPONDING;
 	}
 	else{
 		if ((request->_method_type == GET && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_GET){
 			getMethod(request, response);
-			return ;
+			return connectStatus::RESPONDING;
 		}
 		else if ((request->_method_type == POST && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_POST){
 			postMethod(request, response);
-			return ;
+			return connectStatus::RESPONDING;
 		}
-		else if ((request->_method_type == DELETE && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_DELETE)
+		else if ((request->_method_type == DELETE && \
+		 response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) \
+		 || response->getResponseHandlerStatus() == responseHandlerStatus::IN_DELETE) {
 			deleteMethod(request, response);
+			return connectStatus::RESPONDING;
+		 }
 	}
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE || response->getResponseHandlerStatus() == responseHandlerStatus::WRITING){
 		response->setResponseHandlerStatus(responseHandlerStatus::WRITING);
@@ -143,13 +148,14 @@ void	responseHandler(Request* request, Response* response, Config* config){
 		std::cout << MAGENTA "buffer written: \n" RESET <<  response->getResponseBuffer().c_str() + response->getBytesWritten() << std::endl;
 		if (bytes == -1){
 			response->autoFillResponse("500 Internal Server Error: write");//is this ok?
-			return ;
+			return connectStatus::RESPONDING;
 		}
 		response->setBytesWritten(bytes);
 		if (response->getBytesWritten() == response->getResponseBuffer().size()){
 			response->setBytesWritten(0);
 			response->setResponseHandlerStatus(responseHandlerStatus::FINISHED);
+			return connectStatus::FINISHED;
 		}
 	}
-	return;
+	return connectStatus::FINISHED;
 }
