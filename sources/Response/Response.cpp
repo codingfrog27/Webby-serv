@@ -1,15 +1,16 @@
 #include "Response.hpp"
 #include "Request.hpp"
+#include "Connection.hpp"
 
 Response::Response(){
 	this->_responseHandlerStatus = responseHandlerStatus::NOT_STARTED;
 	this->_responseBuffer = "";
 	this->_bytesWritten = 0;
+	this->_timesWriteFailed = 0;
 	return ;
 }
 
-Response &
-Response::operator=(const Response &rhs)
+Response &	Response::operator=(const Response &rhs)
 {
 	std::cout << GREEN << "Response: Assignment operator called" << RESET << std::endl;
 
@@ -36,6 +37,8 @@ void	Response::autoFillResponse(std::string status){
 	std::ifstream	file(path);
 
 	Response::setStatus(status);
+	if (!_body.empty())
+		_body.clear();
 	if (file.is_open()){
 		file.seekg(0, std::ios::end);
 		size = file.tellg();
@@ -79,6 +82,31 @@ std::string	Response::generateResponse() const{
 	response += std::string(_body.begin(), _body.end());
 
 	return response;
+}
+
+connectStatus Response::writeResponse(int FD){
+	size_t n =_responseBuffer.size() - _bytesWritten;
+	if (n > BUFFER_SIZE)
+		n = BUFFER_SIZE;
+	size_t bytes = write(FD, _responseBuffer.c_str() + _bytesWritten, n); 
+	std::ofstream outFile("Response written.txt", std::ios::app);
+	outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
+	_bytesWritten += bytes;
+	if (_bytesWritten >= _responseBuffer.size()){
+		setResponseHandlerStatus(responseHandlerStatus::FINISHED);
+		return connectStatus::FINISHED;
+	}
+	if (bytes < 0){
+		if (_timesWriteFailed == 2){
+			setResponseHandlerStatus(responseHandlerStatus::FINISHED);
+			return connectStatus::CONNECT_CLOSED;
+		}
+		autoFillResponse("500 Internal Server Error: write");//is this ok?
+		_timesWriteFailed++;
+		return connectStatus::RESPONDING;
+	}
+
+	return connectStatus::RESPONDING;
 }
 
 /*	Setters	*/

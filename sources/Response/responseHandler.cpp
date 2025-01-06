@@ -144,24 +144,3 @@ connectStatus	responseHandler(Request* request, Response* response){
 	}
 	return connectStatus::RESPONDING;
 }
-
-connectStatus Response::writeResponse(int FD)
-{
-	size_t n =_responseBuffer.size() - _bytesWritten;
-		if (n > BUFFER_SIZE)
-			n = BUFFER_SIZE;
-		size_t bytes = write(FD, _responseBuffer.c_str() + _bytesWritten, n); 
-		std::ofstream outFile("Response written.txt", std::ios::app);
-		outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
-		_bytesWritten += bytes;
-
-		if (_bytesWritten >= _responseBuffer.size() || bytes < n) {
-			setResponseHandlerStatus(responseHandlerStatus::FINISHED);
-			return connectStatus::FINISHED;
-		}
-		return connectStatus::RESPONDING;
-		// if (bytes == -1){
-		// 	autoFillResponse("500 Internal Server Error: write");//is this ok?
-		// 	return connectStatus::RESPONDING; //false??
-		// }
-}
