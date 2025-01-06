@@ -62,12 +62,40 @@ Connection::~Connection(void)
 //								Public methods							  //
 // ************************************************************************** //
 
-void Connection::resetRequest(Config *config, int clientFD) {
-	// Explicitly call the destructor
-	_request = Request(config, clientFD);
+void	Connection::connectionAction(const pollfd &poll)
+{
+	if (poll.revents & POLLIN && !_request._doneReading)
+	{
+		if (_isServerSocket) {
+			_wantsNewConnect = true;
+			return;
+		}
+		_CStatus = _request.readRequest();
+	}
+	if (_CStatus == connectStatus::CONNECT_CLOSED)
+		return;
+	if (_CStatus == connectStatus::DONE_READING || _CStatus == connectStatus::REQ_ERR)
+	{
+		_CStatus = connectStatus::RESPONDING;
+		if (_request.getHeaderValue("Connection") == "keep-alive")
+			_keepOpen = true; //move to request
+	}
+	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
+		_CStatus = responseHandler(&_request, &_response);
+	if (_CStatus == connectStatus::FINISHED)
+		_CStatus = refreshIfKeepAlive();
+	// else if (isTimedOut(connect._startTime, connect._TimeoutTime))
+	// 	close_connect(i); // has issues??
 }
 
-void Connection::resetResponse() {
+
+connectStatus Connection::refreshIfKeepAlive() {
 	// Explicitly call the destructor
+	if (!this->_keepOpen)
+		return (connectStatus::FINISHED);
+	std::cout << "before assign" << _request._clientFD << std::endl;
+	_request = Request(this->_config, this->_clientFD);
+	std::cout << "after assign" << _request._clientFD << std::endl;
 	_response = Response();
+	return (connectStatus::IDLE);
 }

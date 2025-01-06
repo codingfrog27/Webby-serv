@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/06 12:02:12 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/06 14:26:01 by asimone          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ Request::Request(Config *config, int clientFD): _config(config), \
 	reading_mode(NOT_STARTED), body_bytes_read(0), _rnrnFound(false), \
 	_headerAreParsed(false), _hasBody(false), _clientFD(clientFD), \
 	_method_type(NOT_PARSED_YET), _keepOpen(true), _doneReading(false), \
-	_statusStr("0 Not started yet")
+	_statusStr("0 Not started yet"), _statusCode(0)
 {
 	_rawRequestData.reserve(100);
 	_timeoutTime = intToMsecs(3000); //normal secs
@@ -32,7 +32,7 @@ Request::Request(const Request &rhs)
 Request &
 Request::operator=(const Request &rhs)
 {
-	std::cout << GREEN << "Request: Assignment operator called" << RESET << std::endl;
+	// std::cout << GREEN << "Request: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
@@ -83,5 +83,5 @@ Request::operator=(const Request &rhs)
 
 Request::~Request(void)
 {
-	std::cout << RED << "http_request: Destructor called" << RESET << std::endl;
+	// std::cout << RED << "http_request: Destructor called" << RESET << std::endl;
 }
