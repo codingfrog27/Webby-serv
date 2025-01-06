@@ -109,6 +109,10 @@ connectStatus	responseHandler(Request* request, Response* response){
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::NOT_STARTED){
 		response->setResponseHandlerStatus(responseHandlerStatus::IN_PROGRESS);
 		response->setHTTPVersion(request->_http_version);
+		if (request->_headers.find("Connection") != request->_headers.end() && request->_headers["Connection"] == "close")
+			response->setHeaders("Connection", "close");
+		else
+			response->setHeaders("Connection", "keep-alive");
 	}
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()){ //if there was an error in (parsing) the request{}
 		response->autoFillResponse(request->getStatusCode());
