@@ -50,7 +50,7 @@ connectStatus	Request::readRequest()
 	{
 		std::cerr << e.what() << std::endl;
 		_statusCode = 500;
-		// _statusStr = _statusCode + ' ' + e.what();
+		_statusStr = _statusCode + ' ' + e.what();
 		return (connectStatus::CONNECT_CLOSED);
 	}
 	catch(std::invalid_argument &e)
@@ -68,11 +68,11 @@ int	Request::readSocket(int size)
 		size = BUFFER_SIZE;
 	char buffer[size];
 	int	bytes_read = recv(_clientFD, buffer, size, MSG_DONTWAIT);
-	if (bytes_read <= 0)
+	if (bytes_read < 0)
 	{
-		if (bytes_read == 0)
-			throw(ConnectionClosedExcep(_clientFD));
-		else
+		// if (bytes_read == 0)
+		// 	throw(ConnectionClosedExcep(_clientFD));
+		// else
 			throw (std::ios_base::failure(" reading fail when reading from client socket"));
 	}
 	_rawRequestData.insert(_rawRequestData.end(), buffer, buffer + bytes_read);

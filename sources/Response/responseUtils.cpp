@@ -28,7 +28,7 @@
 
 
 bool	isCGIrequired(Request* request){
-	if (request == nullptr || request->_filePath == "") {
+	if (request == nullptr) {
 		std::cout << "AAHHH" << std::endl;
 		NicePrint::promptEnter();
 		return false;

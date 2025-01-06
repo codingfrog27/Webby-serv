@@ -92,27 +92,39 @@ void	Server::close_connect(int i)
 
 void	Server::main_server_loop()
 {
+	size_t	size;
+	size_t	i;
 	while (1)
 	{
 		//if poll timeout-> get current time
-		size_t	size = _pollFDs.size();
-		poll(_pollFDs.data(), size, -1);
-		for (size_t i = 0; i < size; ++i)
+		size = _pollFDs.size();
+		i = 0;
+		poll(_pollFDs.data(), size, 0);
+		while (i < size)
 		{
 			connectionAction(_Connections[i], _pollFDs[i]);
+			i++;
 		}
-		for (size_t i = 0; i < size; i++)
+		i = 0;
+		while (i < size)
 		{
 			if (_Connections[i]._wantsNewConnect == true) {
 				acceptNewConnects(i);
 				_Connections[i]._wantsNewConnect = false;
 			}
+			i++;
 		}
-		for (size_t i = 0; i < size; i++)
+		i = 0;
+		while (i < size)
 		{
 			if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED || \
 				_Connections[i]._CStatus == connectStatus::FINISHED)
-				close_connect(i);
+				{
+					close_connect(i);
+					size--;
+				}
+			else
+				i++;
 		}
 	}
 }
@@ -134,10 +146,11 @@ void	Server::connectionAction(Connection &connect, pollfd &poll)
 		// std::cout << "bruh??" << std::endl;
 		// close_connect(i);
 	}
-	if (connect._CStatus == connectStatus::DONE_READING) {
+	if (connect._CStatus == connectStatus::DONE_READING || \
+		connect._CStatus == connectStatus::REQ_ERR) {
 		connect._CStatus = connectStatus::RESPONDING;
 		if (connect._request.getHeaderValue("Connection") == "keep-alive")
-			connect._keepOpen = true;	
+			connect._keepOpen = true; //move to request
 	}
 	if ((poll.revents & POLLOUT) && connect._CStatus == connectStatus::RESPONDING) //crashes??
 		connect._CStatus = responseHandler(&connect._request, &connect._response);
