@@ -43,6 +43,7 @@ class Connection
 		Request			_request;
 		Response		_response;
 		bool			_isServerSocket;
+		bool			_wantsNewConnect;
 		int				_clientFD;
 		bool			_keepOpen;
 		t_time			_startTime;

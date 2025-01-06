@@ -19,7 +19,7 @@
 
 Connection::Connection(Config *config, int clientFD, bool isServerside): \
 _config(config), _request(config, clientFD), _isServerSocket(isServerside), \
- _clientFD(clientFD), _keepOpen(false)
+_wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 {
 	_startTime = getStartTime();
 	_TimeoutTime = intToMsecs(60000);
@@ -64,16 +64,10 @@ Connection::~Connection(void)
 
 void Connection::resetRequest(Config *config, int clientFD) {
 	// Explicitly call the destructor
-	_request.~Request();
-
-	// Use placement new to reconstruct the object
-	new (&_request) Request(config, clientFD);
+	_request = Request(config, clientFD);
 }
 
 void Connection::resetResponse() {
 	// Explicitly call the destructor
-	_response.~Response();
-
-	// Use placement new to reconstruct the object
-	new (&_response) Response();
+	_response = Response();
 }

@@ -2,6 +2,7 @@
 #include "Request.hpp"
 #include "CGI.hpp"
 #include "libft.h"
+#include "Connection.hpp"
 
 static void	getMethod(Request* request, Response* response){
 	size_t size = 0;
@@ -104,53 +105,63 @@ static void	deleteMethod(Request* request, Response* response){
 }
 
 //config for timeout & max body size
-void	responseHandler(Request* request, Response* response, Config* config){
+connectStatus	responseHandler(Request* request, Response* response){
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::NOT_STARTED){
 		response->setResponseHandlerStatus(responseHandlerStatus::IN_PROGRESS);
 		response->setHTTPVersion(request->_http_version);
 	}
-	(void)config;
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()){ //if there was an error in (parsing) the request{}
 		response->autoFillResponse(request->getStatusCode());
-		return ;
+		return connectStatus::RESPONDING;
 	}
 	// std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
 	// std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
 	// std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_CGI || (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && isCGIrequired(request))){
 		CGIHandler(request, response); //FINSIHED CGI
-		return ;
+		return connectStatus::RESPONDING;
 	}
 	else{
 		if ((request->_method_type == GET && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_GET){
 			getMethod(request, response);
-			return ;
+			return connectStatus::RESPONDING;
 		}
 		else if ((request->_method_type == POST && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_POST){
 			postMethod(request, response);
-			return ;
+			return connectStatus::RESPONDING;
 		}
-		else if ((request->_method_type == DELETE && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_DELETE)
+		else if ((request->_method_type == DELETE && \
+		 response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || \
+		  response->getResponseHandlerStatus() == responseHandlerStatus::IN_DELETE) {
 			deleteMethod(request, response);
+			return connectStatus::RESPONDING;
+		 }
 	}
-	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE || response->getResponseHandlerStatus() == responseHandlerStatus::WRITING){
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE || \
+	response->getResponseHandlerStatus() == responseHandlerStatus::WRITING) {
 		response->setResponseHandlerStatus(responseHandlerStatus::WRITING);
-		size_t n = response->getResponseBuffer().size() - response->getBytesWritten();
+		return (response->writeResponse(request->_clientFD));
+	}
+	return connectStatus::RESPONDING;
+}
+
+connectStatus Response::writeResponse(int FD)
+{
+	size_t n =_responseBuffer.size() - _bytesWritten;
 		if (n > BUFFER_SIZE)
 			n = BUFFER_SIZE;
-		int bytes = write(request->_clientFD, response->getResponseBuffer().c_str() + response->getBytesWritten(), n); //send instead of write maybe? look at error handling
-		std::cout << MAGENTA "buffer written: \n" RESET;
-		std::cout.write(response->getResponseBuffer().c_str() + response->getBytesWritten(), n);
-		std::cout << std::endl;
-		if (bytes == -1){
-			response->autoFillResponse("500 Internal Server Error: write");//is this ok?
-			return ;
+		size_t bytes = write(FD, _responseBuffer.c_str() + _bytesWritten, n); 
+		std::ofstream outFile("Response written.txt", std::ios::app);
+		outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
+		_bytesWritten += bytes;
+
+		if (_bytesWritten >= _responseBuffer.size() || bytes < n) {
+			setResponseHandlerStatus(responseHandlerStatus::FINISHED);
+			return connectStatus::FINISHED;
 		}
-		response->setBytesWritten(bytes);
-		if (response->getBytesWritten() == response->getResponseBuffer().size()){
-			response->setBytesWritten(0);
-			response->setResponseHandlerStatus(responseHandlerStatus::FINISHED);
-		}
-	}
-	return;
+		return connectStatus::RESPONDING;
+		// if (bytes == -1){
+		// 	autoFillResponse("500 Internal Server Error: write");//is this ok?
+		// 	return connectStatus::RESPONDING; //false??
+		// }
 }

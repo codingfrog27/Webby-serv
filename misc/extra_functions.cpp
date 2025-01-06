@@ -12,6 +12,25 @@
 
 #include "socket.hpp"
 
+	// if (_pollFDs[i].revents & POLLIN && !_Connections[i]._request._doneReading)
+			// {
+			// 	if (_Connections[i]._isServerSocket)
+			// 		acceptNewConnects(i);
+			// 	else
+			// 		_Connections[i]._request.readRequest();
+			// }
+			// else if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading)
+			// {
+			// 	responseHandler(&_Connections[i]._request, _Connections[i]._config);
+			// 	if (_Connections[i]._keepOpen) //and donewriting
+			// 		std::cout << "tmp" << std::endl; //update idle timeout renew request object
+			// 		//and set
+			// 	else
+			// 		close_connect(i); //segfault??
+			// }
+			// else if (isTimedOut(_Connections[i]._startTime, _Connections[i]._TimeoutTime))
+			// 	close_connect(i); // has issues??
+
 void sendHTMLPage(int client_socket, const std::string& file_path) 
 {
 	//Open the HTML file

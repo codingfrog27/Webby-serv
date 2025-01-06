@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include <sys/socket.h>
+#include "NicePrint.hpp"
 
 #include "socket.hpp"
 #include "Request.hpp"
