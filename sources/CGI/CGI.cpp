@@ -57,7 +57,10 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		if ((_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS || _CGIHandlerStatus == CGIHandlerStatus::WRITING_TO_CHILD) && request->_method_type == POST){
 			_CGIHandlerStatus = CGIHandlerStatus::WRITING_TO_CHILD;
 			// std::cout << MAGENTA "Req Body	: " << request->getBody() << std::endl;
-			int bytes = write(_fdIn[1], request->getBody().data() + _bytesWrittenToChild, BUFFER_SIZE);
+			size_t n = request->getBody().size() - _bytesWrittenToChild;
+			if (n > BUFFER_SIZE)
+				n = BUFFER_SIZE;
+			int bytes = write(_fdIn[1], request->getBody().data() + _bytesWrittenToChild, n);
 			if (bytes == -1){
 				response->autoFillResponse("500 Internal Server Error: write");
 				close(_fdIn[1]);
