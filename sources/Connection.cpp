@@ -75,11 +75,7 @@ void	Connection::connectionAction(const pollfd &poll)
 	if (_CStatus == connectStatus::CONNECT_CLOSED)
 		return;
 	if (_CStatus == connectStatus::DONE_READING || _CStatus == connectStatus::REQ_ERR)
-	{
 		_CStatus = connectStatus::RESPONDING;
-		if (_request.getHeaderValue("Connection") == "keep-alive")
-			_keepOpen = true; //move to request
-	}
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
 		_CStatus = responseHandler(&_request, &_response);
 	if (_CStatus == connectStatus::FINISHED)
@@ -90,12 +86,13 @@ void	Connection::connectionAction(const pollfd &poll)
 
 
 connectStatus Connection::refreshIfKeepAlive() {
-	// Explicitly call the destructor
-	if (!this->_keepOpen)
+	std::cout << "First response FINISHED" << std::endl;
+	// if (!this->_keepOpen)
+			// _keepOpen = true; //move to request
+	if (_request.getHeaderValue("Connection") != "keep-alive") //change to closed check
 		return (connectStatus::FINISHED);
-	std::cout << "before assign" << _request._clientFD << std::endl;
+	std::cout << "connection keepopen activate" << std::endl;
 	_request = Request(this->_config, this->_clientFD);
-	std::cout << "after assign" << _request._clientFD << std::endl;
 	_response = Response();
 	return (connectStatus::IDLE);
 }

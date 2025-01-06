@@ -1,0 +1,3 @@
+Accepted new connection with clientFD: 4 on index1
+Accepted new connection with clientFD: 4 on index1
+Accepted new connection with clientFD: 5 on index2

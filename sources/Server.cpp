@@ -79,7 +79,7 @@ Server::~Server(void)
 void	Server::close_connect(int i)
 {
 	 std::ofstream outFile("clientFD_log.txt", std::ios::app);
-		outFile << "CLOSED CONNECT with FD: " \
+		std::cout << "CLOSED CONNECT with FD: " \
 		<< _Connections[i]._clientFD << " With index: " << i << std::endl;
 	// NicePrint::promptEnter();
 	close(_Connections[i]._clientFD);
