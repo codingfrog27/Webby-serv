@@ -82,6 +82,7 @@ void	Server::close_connect(int i)
 		std::cout << "CLOSED CONNECT with FD: " \
 		<< _Connections[i]._clientFD << " With index: " << i << std::endl;
 	// NicePrint::promptEnter();
+	shutdown(_Connections[i]._clientFD, SHUT_RDWR); //!!!
 	close(_Connections[i]._clientFD);
 	_Connections.erase(_Connections.begin() + i);
 	_pollFDs.erase(_pollFDs.begin() + i);
