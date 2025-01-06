@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Accepted new connection with clientFD: 4 on index1
 Accepted new connection with clientFD: 5 on index2
 Accepted new connection with clientFD: 6 on index3
@@ -462,3 +463,5 @@ Accepted new connection with clientFD: 20 on index17
 Accepted new connection with clientFD: 21 on index18
 CLOSED CONNECT with FD: 20 With index: 17
 CLOSED CONNECT with FD: 21 With index: 17
+=======
+>>>>>>> 60f4fd8e4e043328a4997e06755efe22e1519348

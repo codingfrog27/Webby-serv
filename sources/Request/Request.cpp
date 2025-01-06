@@ -6,7 +6,11 @@
 /*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/01/06 14:05:15 by asimone          ###   ########.fr       */
+=======
+/*   Updated: 2025/01/06 13:48:45 by mde-cloe         ###   ########.fr       */
+>>>>>>> 60f4fd8e4e043328a4997e06755efe22e1519348
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +36,7 @@ Request::Request(const Request &rhs)
 Request &
 Request::operator=(const Request &rhs)
 {
-	std::cout << GREEN << "Request: Assignment operator called" << RESET << std::endl;
+	// std::cout << GREEN << "Request: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
@@ -83,5 +87,5 @@ Request::operator=(const Request &rhs)
 
 Request::~Request(void)
 {
-	std::cout << RED << "http_request: Destructor called" << RESET << std::endl;
+	// std::cout << RED << "http_request: Destructor called" << RESET << std::endl;
 }

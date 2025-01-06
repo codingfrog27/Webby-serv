@@ -138,7 +138,7 @@ connectStatus	responseHandler(Request* request, Response* response){
 		 }
 	}
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE || \
-	response->getResponseHandlerStatus() == responseHandlerStatus::WRITING) {
+		response->getResponseHandlerStatus() == responseHandlerStatus::WRITING) {
 		response->setResponseHandlerStatus(responseHandlerStatus::WRITING);
 		return (response->writeResponse(request->_clientFD));
 	}

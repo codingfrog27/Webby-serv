@@ -70,12 +70,19 @@ int	Request::readSocket(int size)
 		size = BUFFER_SIZE;
 	char buffer[size];
 	int	bytes_read = recv(_clientFD, buffer, size, MSG_DONTWAIT);
-	if (bytes_read < 0)
+	if (bytes_read <= 0)
 	{
+<<<<<<< HEAD
 		// if (bytes_read == 0)
 		// 	throw(ConnectionClosedExcep(_clientFD));
 		// else
 			throw (std::ios_base::failure("reading fail when reading from client socket"));
+=======
+		if (bytes_read == 0)
+			throw(ConnectionClosedExcep(_clientFD));
+		else
+			throw (std::ios_base::failure(" reading fail when reading from client socket"));
+>>>>>>> 60f4fd8e4e043328a4997e06755efe22e1519348
 	}
 	_rawRequestData.insert(_rawRequestData.end(), buffer, buffer + bytes_read);
 	if (_rnrnFound)

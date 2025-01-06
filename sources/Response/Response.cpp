@@ -11,7 +11,7 @@ Response::Response(){
 Response &
 Response::operator=(const Response &rhs)
 {
-	std::cout << GREEN << "Response: Assignment operator called" << RESET << std::endl;
+	// std::cout << GREEN << "Response: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
