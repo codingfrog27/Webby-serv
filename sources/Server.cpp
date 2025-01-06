@@ -102,7 +102,7 @@ void	Server::main_server_loop()
 		poll(_pollFDs.data(), size, 0);
 		while (i < size)
 		{
-			connectionAction(_Connections[i], _pollFDs[i]);
+			_Connections[i].connectionAction(_pollFDs[i]);
 			i++;
 		}
 		i = 0;
@@ -127,46 +127,6 @@ void	Server::main_server_loop()
 				i++;
 		}
 	}
-}
-
-void	Server::connectionAction(Connection &connect, pollfd &poll)
-{
-	if (poll.revents & POLLIN && !connect._request._doneReading)
-	{
-		if (connect._isServerSocket) {
-			connect._wantsNewConnect = true;
-			return ;
-		}
-		else
-			connect._CStatus = connect._request.readRequest();
-	}
-	if (connect._CStatus == connectStatus::CONNECT_CLOSED)
-	{
-		return;
-		// std::cout << "bruh??" << std::endl;
-		// close_connect(i);
-	}
-	if (connect._CStatus == connectStatus::DONE_READING || \
-		connect._CStatus == connectStatus::REQ_ERR) {
-		connect._CStatus = connectStatus::RESPONDING;
-		if (connect._request.getHeaderValue("Connection") == "keep-alive")
-			connect._keepOpen = true; //move to request
-	}
-	if ((poll.revents & POLLOUT) && connect._CStatus == connectStatus::RESPONDING) //crashes??
-		connect._CStatus = responseHandler(&connect._request, &connect._response);
-	if (connect._CStatus == connectStatus::FINISHED) //responseHandlerStatus::WRITING
-	{
-		if (connect._keepOpen){
-			std::cout << "KEEPOPEN == ON" << std::endl;
-			connect.resetRequest(connect._config, connect._clientFD);
-			connect.resetResponse();
-			connect._CStatus = connectStatus::IDLE;
-		}
-		else
-			connect._CStatus = connectStatus::FINISHED;
-	}
-	// else if (isTimedOut(connect._startTime, connect._TimeoutTime))
-	// 	close_connect(i); // has issues??
 }
 
 void writeClientFD(int clientFD, int i)

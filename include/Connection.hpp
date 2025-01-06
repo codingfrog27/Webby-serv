@@ -57,6 +57,8 @@ class Connection
 		~Connection();
 
 		// Public Methods
-		void	resetRequest(Config* config, int clientFD);
-		void	resetResponse();
+		// void	resetRequest(Config* config, int clientFD);
+		// void	resetResponse();
+		connectStatus	refreshIfKeepAlive();
+		void			connectionAction(const pollfd &poll);
 } ;
