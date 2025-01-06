@@ -12,6 +12,7 @@
 
 #include "Request.hpp"
 #include "Connection.hpp"
+#include <signal.h>
 
 connectStatus	Request::readRequest()
 {
@@ -27,6 +28,7 @@ connectStatus	Request::readRequest()
 			std::cout << "PARSING BODY" << std::endl;
 			parseBody();
 		}
+		signal(SIGPIPE, SIG_IGN);
 		if (isTimedOut(this->_startTime, this->_timeoutTime))
 			throw ClientErrorExcept(408, "Request Timeout");
 		if (_doneReading)
@@ -50,14 +52,14 @@ connectStatus	Request::readRequest()
 	{
 		std::cerr << e.what() << std::endl;
 		_statusCode = 500;
-		_statusStr = _statusCode + ' ' + e.what();
+		_statusStr = std::to_string(_statusCode) + ' ' + e.what();
 		return (connectStatus::CONNECT_CLOSED);
 	}
 	catch(std::invalid_argument &e)
 	{
 		std::cerr << e.what() << std::endl;
 		_statusCode = 400;
-		_statusStr = _statusCode + e.what();
+		_statusStr = std::to_string(_statusCode) + e.what();
 		return (connectStatus::REQ_ERR);
 	}
 }
@@ -73,7 +75,7 @@ int	Request::readSocket(int size)
 		// if (bytes_read == 0)
 		// 	throw(ConnectionClosedExcep(_clientFD));
 		// else
-			throw (std::ios_base::failure(" reading fail when reading from client socket"));
+			throw (std::ios_base::failure("reading fail when reading from client socket"));
 	}
 	_rawRequestData.insert(_rawRequestData.end(), buffer, buffer + bytes_read);
 	if (_rnrnFound)
