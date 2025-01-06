@@ -15,10 +15,8 @@ CGI::CGI(int *fdIn, int *fdOut, int *fdError) : _fdIn(fdIn), _fdOut(fdOut), _fdE
 }
 
 CGI::~CGI(){
-	// for (char* str : _envp){
-	// 	delete[] str;
-	// }
-	// delete this;
+	for (char* str : _envp)
+		free(str);
 	return ;
 }
 
@@ -85,7 +83,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 			}
 			if (WIFEXITED(status)){
 				_CGIHandlerStatus = CGIHandlerStatus::READING_FDOUT;
-				// response->setResponseBuffer(request->_http_version + " 200 OK\r\n"); needed if generate response doesnt work!
+				// response->setResponseBuffer(request->_http_version + " 200 OK\r\n"); //needed if generate response doesnt work!
 			}
 			return ;
 		}
@@ -98,6 +96,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 				close(_fdError[0]);
 				return ;
 			}
+			// std::cout << MAGENTA "~	Res Body ~ \n" RESET << buffer << std::endl;
 			response->setBody(std::string(buffer, bytes)); //setResponseBuffer if setBody is not working
 			if (bytes == 0){
 				close(_fdOut[0]);
