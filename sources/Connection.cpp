@@ -48,6 +48,12 @@ Connection::operator=(const Connection &rhs)
 		_config = rhs._config;
 		_clientFD = rhs._clientFD;
 		_keepOpen = rhs._keepOpen;
+		_CStatus = rhs._CStatus;
+        _request = rhs._request;
+        _response = rhs._response;
+        _startTime = rhs._startTime;
+        _TimeoutTime = rhs._TimeoutTime;
+        _wantsNewConnect = rhs._wantsNewConnect;
 	}
 
 	return (*this);

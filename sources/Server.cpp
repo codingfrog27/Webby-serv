@@ -86,6 +86,8 @@ void	Server::close_connect(int i)
 	close(_Connections[i]._clientFD);
 	_Connections.erase(_Connections.begin() + i);
 	_pollFDs.erase(_pollFDs.begin() + i);
+	// _Connections.shrink_to_fit();
+	// _pollFDs.shrink_to_fit();
 }
 
 
