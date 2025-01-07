@@ -76,18 +76,22 @@ Server::~Server(void)
 
 
 
+	// _Connections.shrink_to_fit();
+	// shutdown(_Connections[i]._clientFD, SHUT_RDWR); //!!!
 void	Server::close_connect(int i)
 {
 	 std::ofstream outFile("clientFD_log.txt", std::ios::app);
-		std::cout << "CLOSED CONNECT with FD: " \
+		outFile << "CLOSED CONNECT with FD: " \
 		<< _Connections[i]._clientFD << " With index: " << i << std::endl;
-	// NicePrint::promptEnter();
-	shutdown(_Connections[i]._clientFD, SHUT_RDWR); //!!!
+	if (_pollFDs[i].fd != _Connections[i]._clientFD)
+	{
+		std::cout << "FD MISMATACH OH NO" << std::endl;
+		NicePrint::promptEnter();
+	}
 	close(_Connections[i]._clientFD);
 	_Connections.erase(_Connections.begin() + i);
 	_pollFDs.erase(_pollFDs.begin() + i);
-	// _Connections.shrink_to_fit();
-	// _pollFDs.shrink_to_fit();
+
 }
 
 
@@ -97,12 +101,16 @@ void	Server::main_server_loop()
 {
 	size_t	size;
 	size_t	i;
+	size_t	eventsAmount;
 	while (1)
 	{
 		//if poll timeout-> get current time
 		size = _pollFDs.size();
+		eventsAmount = poll(_pollFDs.data(), size, 0);
+		if (eventsAmount == 0)
+			continue;
 		i = 0;
-		poll(_pollFDs.data(), size, 0);
+
 		while (i < size)
 		{
 			_Connections[i].connectionAction(_pollFDs[i]);

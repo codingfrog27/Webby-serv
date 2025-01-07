@@ -49,11 +49,11 @@ Connection::operator=(const Connection &rhs)
 		_clientFD = rhs._clientFD;
 		_keepOpen = rhs._keepOpen;
 		_CStatus = rhs._CStatus;
-        _request = rhs._request;
-        _response = rhs._response;
-        _startTime = rhs._startTime;
-        _TimeoutTime = rhs._TimeoutTime;
-        _wantsNewConnect = rhs._wantsNewConnect;
+		_request = rhs._request;
+		_response = rhs._response;
+		_startTime = rhs._startTime;
+		_TimeoutTime = rhs._TimeoutTime;
+		_wantsNewConnect = rhs._wantsNewConnect;
 	}
 
 	return (*this);
@@ -70,6 +70,22 @@ Connection::~Connection(void)
 
 void	Connection::connectionAction(const pollfd &poll)
 {
+	int error = 0;
+	socklen_t len = sizeof(error);
+	if (getsockopt(poll.fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
+		std::cout << "getsockopt failed" << std::endl;
+	if (error != 0) {
+		std::cout << RED "Socket error: " << strerror(error) << std::endl;
+		NicePrint::promptEnter();
+	}
+	if (poll.revents & POLLHUP) {
+		std::cout << "Client disconnected (POLLHUP)" << std::endl;
+	} 
+	else if (poll.revents & POLLERR) {
+		std::cout << "Socket error (POLLERR)" << std::endl;
+	}
+
+
 	if (poll.revents & POLLIN && !_request._doneReading)
 	{
 		if (_isServerSocket) {
@@ -91,8 +107,9 @@ void	Connection::connectionAction(const pollfd &poll)
 }
 
 
-connectStatus Connection::refreshIfKeepAlive() {
-	std::cout << "First response FINISHED" << std::endl;
+connectStatus Connection::refreshIfKeepAlive()
+{
+	std::cerr << "First response FINISHED" << std::endl;
 	// if (!this->_keepOpen)
 			// _keepOpen = true; //move to request
 	if (_request.getHeaderValue("Connection") != "keep-alive")
@@ -100,7 +117,7 @@ connectStatus Connection::refreshIfKeepAlive() {
 		std::cout << "close meee" << std::endl;
 		return (connectStatus::FINISHED);
 	} //change to closed check
-	std::cout << "connection keepopen activate" << std::endl;
+	std::cout << "connection keep open activate" << std::endl;
 	_request = Request(this->_config, this->_clientFD);
 	_response = Response();
 	return (connectStatus::IDLE);
