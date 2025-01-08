@@ -36,15 +36,15 @@ void	create_directory_listing_page(std::string html_page)
 	File.close();
 }
 
-void    Request::checkForRedirect(std::string _filePath)
-{
-    std::cout << "This is the _filePath: " << _filePath << std::endl;
+// void    Request::checkForRedirect(std::string _filePath)
+// {
+//     std::cout << "This is the _filePath: " << _filePath << std::endl;
 
-    if (_config != nullptr) 
-        // for (const auto& pair : _config->_newLocations)
-        //     std::cout << pair.first << '\t' << pair.second << std::endl;
-        for (const auto& pair : _config->_locations)
-            std::cout << pair << std::endl;
-    else if (_config == nullptr)
-        std::cerr << "Config is nullptr" << std::endl;
-}
+//     // if (_config != nullptr) 
+//     //     // for (const auto& pair : _config->_locations)
+//         //     std::cout << pair.first << '\t' << pair.second << std::endl;
+//         for (const auto& pair : _config->_locations)
+//             std::cout << pair << std::endl;
+//     else if (_config == nullptr)
+//         std::cerr << "Config is nullptr" << std::endl;
+// }

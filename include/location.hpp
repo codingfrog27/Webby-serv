@@ -33,8 +33,7 @@ class location
 		std::string				 _return;
 		std::string				 _root;
 
-		std::vector<std::unique_ptr<location>> _nestedLocations;
-		std::unordered_map<std::string, std::string> _locationBlock;
+		std::vector<location>   _nestedLocations;
 		std::unordered_map<std::string, std::string> _rulemap;
 		std::string _name;
 
