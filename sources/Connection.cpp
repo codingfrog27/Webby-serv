@@ -73,16 +73,22 @@ void	Connection::connectionAction(const pollfd &poll)
 	int error = 0;
 	socklen_t len = sizeof(error);
 	if (getsockopt(poll.fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
+	{
 		std::cout << "getsockopt failed" << std::endl;
-	if (error != 0) {
-		std::cout << RED "Socket error: " << strerror(error) << std::endl;
-		NicePrint::promptEnter();
+		return;
+
 	}
-	if (poll.revents & POLLHUP) {
+	else if (error != 0) {
+		std::cout << RED "Socket error: " << strerror(error) << std::endl;
+		// NicePrint::promptEnter();
+	}
+	else if (poll.revents & POLLHUP) {
 		std::cout << "Client disconnected (POLLHUP)" << std::endl;
+		return ;
 	} 
 	else if (poll.revents & POLLERR) {
 		std::cout << "Socket error (POLLERR)" << std::endl;
+		return ;
 	}
 
 
@@ -95,13 +101,20 @@ void	Connection::connectionAction(const pollfd &poll)
 		_CStatus = _request.readRequest();
 	}
 	if (_CStatus == connectStatus::CONNECT_CLOSED)
+	{
 		return;
-	if (_CStatus == connectStatus::DONE_READING || _CStatus == connectStatus::REQ_ERR)
+	}
+	else if (_CStatus == connectStatus::DONE_READING || _CStatus == connectStatus::REQ_ERR)
 		_CStatus = connectStatus::RESPONDING;
-	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
+	else if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
+	{
 		_CStatus = responseHandler(&_request, &_response);
-	if (_CStatus == connectStatus::FINISHED)
+	}
+	else if (_CStatus == connectStatus::FINISHED)
+	{
 		_CStatus = refreshIfKeepAlive();
+
+	}
 	// else if (isTimedOut(connect._startTime, connect._TimeoutTime))
 	// 	close_connect(i); // has issues??
 }
