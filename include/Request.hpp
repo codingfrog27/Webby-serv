@@ -122,7 +122,8 @@ class Request
 
 		//get and setters
 		const std::string &getBody();
-		//public methods
+		//public methods	
+		void			checkForRedirect(std::string _filePath);
 		connectStatus	readRequest();
 		std::string		getHeaderValue(std::string key);
 		bool			headerExists(std::string key);

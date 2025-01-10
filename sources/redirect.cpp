@@ -74,8 +74,6 @@ void    Request::checkForRedirect(std::string _filePath)
 
     if (_config != nullptr)
     {
-        // for (const auto& pair : _config->_locations)
-        //     std::cout << pair.toString() << std::endl;
         sendHTMLPage(_clientFD, _filePath);
     }
     else if (_config == nullptr)

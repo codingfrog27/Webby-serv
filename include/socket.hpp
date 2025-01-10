@@ -61,3 +61,5 @@ public:
 						~Socket();
 	int					createConnection();
 };
+	
+void sendHTMLPage(int client_socket, const std::string& file_path);

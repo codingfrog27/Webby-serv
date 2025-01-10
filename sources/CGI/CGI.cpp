@@ -40,9 +40,9 @@ void	CGI::invokeCGI(Request* request, Response* response){
 			dup2(_fdOut[1], STDOUT_FILENO);
 			dup2(_fdError[1], STDERR_FILENO);
 			closePipes();
-			int status = 0;
+			// int status = 0;
 			CGI::executeScript(request, response);
-			exit(status); //might not be needed
+			// exit(status); //might not be needed
 		}
 		else { //parent
 			close(_fdIn[0]);
