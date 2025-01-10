@@ -129,6 +129,8 @@ class Request
 		bool			headerExists(std::string key);
 		std::string		getStatusCode();
 		void			printHeaders();
+		
+		Config*			getConfig();
 };
 
 std::string trim(const std::string& str);

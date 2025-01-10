@@ -63,6 +63,24 @@ Config::Config(std::ifstream &file, std::string &line)
 	readBlock(file, line);
 }
 
+std::string	extractLocationName(std::string line)
+{
+	std::string location = normalize_space_location(line);
+	std::string location_name;
+
+    size_t startPos = location.find("/");
+    if (startPos != std::string::npos) 
+	{
+        size_t endPos = location.find_first_of(" {", startPos);
+        if (endPos == std::string::npos) 
+            endPos = location.length();
+    location_name = location.substr(startPos, endPos - startPos);
+	}
+	std::cout << location_name << std::endl;
+	return (location_name);
+}
+
+
 void	Config::readBlock(std::ifstream &file, std::string &line)
 {
 	while (std::getline(file, line))
@@ -70,7 +88,10 @@ void	Config::readBlock(std::ifstream &file, std::string &line)
 		if (line.empty() || line[i] == '#')
 			continue;
 		if (locationFound(line))
+		{
+			std::string location_name = extractLocationName(line);
 			_locations.emplace_back(file, line);
+		}
 		else if (checkCaracter(line, '}'))
 		{
 			mapToMembers();

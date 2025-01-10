@@ -47,7 +47,7 @@ bool	checkstr(const std::string &line, const std::string &str)
 
 bool	locationFound(std::string &line)
 {
-	if (checkstr(line, "location") && checkCaracter(line, '{'))
+	if (checkstr(line, "location") && checkCaracter(line, '{'))	
 		return (true);
 	return (false);
 }

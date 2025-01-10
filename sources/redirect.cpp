@@ -71,6 +71,9 @@ void sendHTMLPage(int client_socket, const std::string& file_path)
 void    Request::checkForRedirect(std::string _filePath)
 {
     std::cout << "This is the _filePath: " << _filePath << std::endl;
+    // Config *config = getConfig();
+
+    
 
     if (_config != nullptr)
     {

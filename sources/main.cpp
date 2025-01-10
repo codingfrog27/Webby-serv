@@ -20,7 +20,7 @@ int main(int argc, char ** argv) {
 	try
 	{
 		parseConfig(argc, argv, configs);
-		printConfigs(configs);
+		// printConfigs(configs);
 		Server _webbyserv(configs);
 		_webbyserv.main_server_loop();
 	}

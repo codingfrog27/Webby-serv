@@ -85,3 +85,10 @@ Request::~Request(void)
 {
 	// std::cout << RED << "http_request: Destructor called" << RESET << std::endl;
 }
+
+
+
+Config*	Request::getConfig()
+{
+        return (this->_config);
+}

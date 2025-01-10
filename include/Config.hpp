@@ -46,6 +46,7 @@ class Config
 		std::unordered_map<std::string, std::string> _errorPage;
 		std::string _host;
 		std::vector<std::string> _index;
+		std::string	_locationName;
 		std::string _listen;
 		std::string _rootDir;
 		std::string _serverName;
@@ -113,9 +114,9 @@ void	parseConfig(int argc, char ** argv, std::vector<Config> &configs);
 void	checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs);
 void	printConfigs(std::vector<Config> &configs);
 std::vector<Config>	readConfigFile(const std::string fileName);
-bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 bool	checkstr(const std::string &line, const std::string &str);
+bool	locationFound(std::string &line);
 
 void	print_map(const std::unordered_map<std::string, std::string> map);
 std::string	normalize_space(std::string& str);
