@@ -29,7 +29,7 @@ class Server
 		// const int	_max_clients;
 
 		void		setupAddrInfo(Config *config);
-		void		acceptNewConnects(int i);
+		void		acceptNewConnects(size_t size);
 		void		close_connect(int i);
 	public:
 					Server(std::vector<Config>& vec);

@@ -47,7 +47,7 @@ class Connection
 		int				_clientFD;
 		bool			_keepOpen;
 		t_time			_startTime;
-		t_msecs			_TimeoutTime;
+		t_secs			_IdleTimeout;
 		// bool		_doneReading;
 		
 		// Constructors and Destructors

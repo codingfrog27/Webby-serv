@@ -74,6 +74,42 @@ Server::~Server(void)
 //								Public methods							  //
 // ************************************************************************** //
 
+void	Server::main_server_loop()
+{
+	size_t	size;
+	size_t	i;
+	size_t	eventsAmount;
+	// signal(SIGPIPE, SIG_IGN);
+	while (1)
+	{
+		//if poll timeout-> get current time
+		size = _pollFDs.size();
+		// std::cout << "This is start size: "<< size << std::endl;
+		eventsAmount = poll(_pollFDs.data(), size, 0);
+		if (eventsAmount == 0)
+			continue;
+		i = 0;
+		while (i < size)
+		{
+			_Connections[i].connectionAction(_pollFDs[i]);
+			i++;
+		}
+		acceptNewConnects(size);
+		// PrintConnectionStatusses(size);
+		i = 0;
+		while (i < size)
+		{
+			if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED || \
+				_Connections[i]._CStatus == connectStatus::FINISHED)
+				{
+					close_connect(_Connections[i]._clientFD);
+					size--;
+				}
+			else
+				i++;
+		}
+	}
+}
 
 
 	// _Connections.shrink_to_fit();
@@ -121,51 +157,33 @@ void	Server::close_connect(int fd)
 #define TMP_POLL_TIME 500000
 // #include <signal.h>
 
-void	Server::main_server_loop()
+
+
+
+
+void Server::acceptNewConnects(int size)
 {
-	size_t	size;
-	size_t	i;
-	size_t	eventsAmount;
-	// signal(SIGPIPE, SIG_IGN);
-	while (1)
+	int clientFD = 0;
+	for (size_t i = 0; i < size; i++)
 	{
-		//if poll timeout-> get current time
-		size = _pollFDs.size();
-		// std::cout << "This is start size: "<< size << std::endl;
-		eventsAmount = poll(_pollFDs.data(), size, 0);
-		if (eventsAmount == 0)
-			continue;
-		i = 0;
-		while (i < size)
+		if (_Connections[i]._wantsNewConnect == true)
 		{
-			_Connections[i].connectionAction(_pollFDs[i]);
-			i++;
-		}
-		i = 0;
-		while (i < size)
-		{
-			if (_Connections[i]._wantsNewConnect == true) {
-				acceptNewConnects(i);
-				_Connections[i]._wantsNewConnect = false; //move
+			clientFD = accept(_pollFDs[i].fd, nullptr, nullptr);
+			if (clientFD <= 0)
+			{
+				std::cerr << "NOT ACCEPTED" << std::endl;
+				// throw 
+				break;
 			}
-			i++;
-		}
-		i = 0;
-		// PrintConnectionStatusses(size);
-		while (i < size)
-		{
-			if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED || \
-				_Connections[i]._CStatus == connectStatus::FINISHED)
-				{
-					close_connect(_Connections[i]._clientFD);
-					size--;
-				}
-			else
-				i++;
+			_pollFDs.emplace_back(\
+					pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
+			_Connections.emplace_back(\
+					_Connections[i]._config, clientFD, false);
+			writeClientFD(clientFD, i);
+			_Connections[i]._wantsNewConnect = false; //move
 		}
 	}
 }
-
 
 void writeClientFD(int clientFD, int i)
 {
@@ -176,22 +194,6 @@ void writeClientFD(int clientFD, int i)
         // outFile << "Address of clientFD: " << &clientFD << std::endl;
         outFile.close();
 }
-
-
-void Server::acceptNewConnects(int i)
-{
-	int clientFD = accept(_pollFDs[i].fd, nullptr, nullptr); //timeout check??
-	if (clientFD > 0)
-	{
-		// NicePrint::promptEnter(); //and donewriting
-		_pollFDs.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0}); //frees???
-		_Connections.emplace_back(_Connections[i]._config, clientFD, false);
-		writeClientFD(clientFD, _Connections.size() - 1);
-	}
-	else
-		std::cout << "NOT ACCEPTED" << std::endl;
-}
-
 //exits webserve after 1 response
 void Server::PrintConnectionStatusses(size_t size)
 {

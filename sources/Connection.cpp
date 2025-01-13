@@ -22,7 +22,8 @@ _config(config), _request(config, clientFD), _isServerSocket(isServerside), \
 _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 {
 	_startTime = getStartTime();
-	_TimeoutTime = intToMsecs(60000);
+	_IdleTimeout = intToMsecs(600);
+	// _IdleTimeout = intToMsecs(config->_timeout);
 	if (_isServerSocket)
 		_CStatus = connectStatus::SERV_SOCKET;
 	else
@@ -52,7 +53,7 @@ Connection::operator=(const Connection &rhs)
 		_request = rhs._request;
 		_response = rhs._response;
 		_startTime = rhs._startTime;
-		_TimeoutTime = rhs._TimeoutTime;
+		_IdleTimeout = rhs._IdleTimeout;
 		_wantsNewConnect = rhs._wantsNewConnect;
 	}
 
@@ -103,7 +104,7 @@ void	Connection::connectionAction(const pollfd &poll)
 		_CStatus = responseHandler(&_request, &_response);
 	if (_CStatus == connectStatus::FINISHED)
 		_CStatus = refreshIfKeepAlive();
-	// else if (isTimedOut(connect._startTime, connect._TimeoutTime))
+	// else if (isTimedOut(connect._startTime, connect._IdleTimeout))
 	// 	close_connect(i); // has issues??
 }
 

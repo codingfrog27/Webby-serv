@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/09 18:10:11 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/09 18:26:27 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/13 14:49:59 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 #include <iostream>
 
 typedef std::chrono::steady_clock::time_point t_time;
-typedef std::chrono::milliseconds t_msecs;
+typedef std::chrono::seconds t_secs;
 
 t_time getStartTime();
-bool isTimedOut(t_time startTime, t_msecs maxDuration);
-t_msecs intToMsecs(int ms);
+bool isTimedOut(t_time startTime, t_secs maxDuration);
+t_secs intToMsecs(int ms);
