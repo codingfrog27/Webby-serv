@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Request.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/17 19:39:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 13:51:50 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Request.cpp                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: asimone <asimone@student.42.fr>              +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/17 19:39:08 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/01/13 15:15:24 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ Request::Request(Config *config, int clientFD): _config(config), \
 	reading_mode(NOT_STARTED), body_bytes_read(0), _rnrnFound(false), \
 	_headerAreParsed(false), _hasBody(false), _clientFD(clientFD), \
 	_method_type(NOT_PARSED_YET), _keepOpen(true), _doneReading(false), \
-	_statusStr("0 Not started yet")
+	_statusStr("0 Not started yet"), _statusCode(0)
 {
 	_rawRequestData.reserve(100);
 	_timeoutTime = intToMsecs(30000); //normal secs

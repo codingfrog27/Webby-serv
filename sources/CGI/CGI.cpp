@@ -15,10 +15,8 @@ CGI::CGI(int *fdIn, int *fdOut, int *fdError) : _fdIn(fdIn), _fdOut(fdOut), _fdE
 }
 
 CGI::~CGI(){
-	// for (char* str : _envp){
-	// 	delete[] str;
-	// }
-	// delete this;
+	for (char* str : _envp)
+		free(str);
 	return ;
 }
 
@@ -57,7 +55,10 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		if ((_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS || _CGIHandlerStatus == CGIHandlerStatus::WRITING_TO_CHILD) && request->_method_type == POST){
 			_CGIHandlerStatus = CGIHandlerStatus::WRITING_TO_CHILD;
 			// std::cout << MAGENTA "Req Body	: " << request->getBody() << std::endl;
-			int bytes = write(_fdIn[1], request->getBody().data() + _bytesWrittenToChild, BUFFER_SIZE);
+			size_t n = request->getBody().size() - _bytesWrittenToChild;
+			if (n > BUFFER_SIZE)
+				n = BUFFER_SIZE;
+			int bytes = write(_fdIn[1], request->getBody().data() + _bytesWrittenToChild, n);
 			if (bytes == -1){
 				response->autoFillResponse("500 Internal Server Error: write");
 				close(_fdIn[1]);
@@ -82,7 +83,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 			}
 			if (WIFEXITED(status)){
 				_CGIHandlerStatus = CGIHandlerStatus::READING_FDOUT;
-				// response->setResponseBuffer(request->_http_version + " 200 OK\r\n"); needed if generate response doesnt work!
+				// response->setResponseBuffer(request->_http_version + " 200 OK\r\n"); //needed if generate response doesnt work!
 			}
 			return ;
 		}
@@ -95,6 +96,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 				close(_fdError[0]);
 				return ;
 			}
+			// std::cout << MAGENTA "~	Res Body ~ \n" RESET << buffer << std::endl;
 			response->setBody(std::string(buffer, bytes)); //setResponseBuffer if setBody is not working
 			if (bytes == 0){
 				close(_fdOut[0]);

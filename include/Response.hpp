@@ -32,8 +32,9 @@ class Response{
 	public:
 		Response();
 		Response(const Response &obj) = delete;
-		Response& operator=(const Response& obj);
 		~Response();
+		
+		Response &										operator=(const Response& obj);
 
 		void											autoFillResponse(std::string status);
 		std::string										generateResponse() const;
@@ -73,6 +74,7 @@ class Response{
 		std::string										_body;
 		std::string										_responseBuffer;
 		size_t											_bytesWritten;
+		size_t											_timesWriteFailed;
 };
 
 connectStatus	responseHandler(Request* request, Response* response);

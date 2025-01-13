@@ -121,7 +121,7 @@ connectStatus	responseHandler(Request* request, Response* response){
 	// std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
 	// std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
 	// std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
-	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_CGI || isCGIrequired(request)){
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_CGI || (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && isCGIrequired(request))){
 		CGIHandler(request, response); //FINSIHED CGI
 		return connectStatus::RESPONDING;
 	}
@@ -148,25 +148,4 @@ connectStatus	responseHandler(Request* request, Response* response){
 	}
 	return connectStatus::RESPONDING;
 }
-
-connectStatus Response::writeResponse(int FD)
-{
-	size_t n =_responseBuffer.size() - _bytesWritten;
-		if (n > BUFFER_SIZE)
-			n = BUFFER_SIZE;
-		// size_t bytes = write(FD, _responseBuffer.c_str() + _bytesWritten, n);
-		size_t bytes = write(FD, _responseBuffer.c_str(), _responseBuffer.size()); 
-		std::ofstream outFile("Response written.txt", std::ios::app);
-		outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
-		_bytesWritten += bytes;
-
-		if (_bytesWritten >= _responseBuffer.size() || bytes < n) {
-			setResponseHandlerStatus(responseHandlerStatus::FINISHED);
-			return connectStatus::FINISHED;
-		}
-		return connectStatus::RESPONDING;
-		// if (bytes == -1){
-		// 	autoFillResponse("500 Internal Server Error: write");//is this ok?
-		// 	return connectStatus::RESPONDING; //false??
-		// }
-}
+<<<<<<< HEAD
