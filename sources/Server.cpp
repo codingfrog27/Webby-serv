@@ -149,50 +149,27 @@ void	Server::main_server_loop()
 		i = 0;
 		while (i < size)
 		{
-			// std::cout << "This is i: " << i << std::endl;
-			// std::cout << "This is after close size: "<< size << std::endl;
-
-			// Checking each possible enum value
 			if (_Connections[i]._CStatus == connectStatus::SERV_SOCKET) {
-			    // Handle SERV_SOCKET status
+			    
 			    std::cout << "This is 1" << std::endl;
-				// Code for handling SERV_SOCKET
-			} else if (_Connections[i]._CStatus == connectStatus::IDLE) {
-			    // Handle IDLE status
+			} else if (_Connections[i]._CStatus == connectStatus::IDLE){
 			    std::cout << "This is 2" << std::endl;
-				// Code for handling IDLE
 			} else if (_Connections[i]._CStatus == connectStatus::READING) {
-			    // Handle READING status
 			    std::cout << "This is 3" << std::endl;
-				// Code for handling READING
 			} else if (_Connections[i]._CStatus == connectStatus::REQ_ERR) {
-			    // Handle REQ_ERR status
 			    std::cout << "This is 4" << std::endl;
-				// Code for handling REQ_ERR
 			} else if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED) {
-			    // Handle CONNECT_CLOSED status
 			    std::cout << "This is 5" << std::endl;
-				// Code for handling CONNECT_CLOSED
 			} else if (_Connections[i]._CStatus == connectStatus::DONE_READING) {
-			    // Handle DONE_READING status
 			    std::cout << "This is 6" << std::endl;
-				// Code for handling DONE_READING
 			} else if (_Connections[i]._CStatus == connectStatus::DONE_READING_CGI) {
-			    // Handle DONE_READING_CGI status
 			    std::cout << "This is 7" << std::endl;
-				// Code for handling DONE_READING_CGI
 			} else if (_Connections[i]._CStatus == connectStatus::RESPONDING) {
-			    // Handle RESPONDING status
 			    std::cout << "This is 8" << std::endl;
-				// Code for handling RESPONDING
 			} else if (_Connections[i]._CStatus == connectStatus::SERVER_ERR) {
-			    // Handle SERVER_ERR status
 			    std::cout << "This is 9" << std::endl;
-				// Code for handling SERVER_ERR
 			} else if (_Connections[i]._CStatus == connectStatus::FINISHED) {
-			    // Handle FINISHED status
 			    std::cout << "This is 10" << std::endl;
-				// Code for handling FINISHED
 			}
 			if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED || \
 				_Connections[i]._CStatus == connectStatus::FINISHED)

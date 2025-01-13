@@ -100,7 +100,7 @@ void	Connection::connectionAction(const pollfd &poll)
 		}
 		_CStatus = _request.readRequest();
 	}
-	if (_CStatus == connectStatus::CONNECT_CLOSED)
+	else if (_CStatus == connectStatus::CONNECT_CLOSED)
 	{
 		return;
 	}
