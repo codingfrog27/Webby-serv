@@ -13,6 +13,7 @@
 #include "Config.hpp"
 #include "Colors.hpp"
 #include <sstream>
+#include "NicePrint.hpp"
 
 // ************************************************************************** //
 //                        Constructors and Destructors                        //
@@ -31,7 +32,7 @@ location::location(std::ifstream &file, std::string &line)
 		if (line.empty() || line[i] == '#')
 			continue;
 		if (locationFound(line))
-			_nestedLocations.push_back(std::unique_ptr<location>(new location(file, line)));
+			_nestedLocations.emplace_back(file, line);
 		else if (checkCaracter(line, '}'))
 		{
 			initializeLocation();
@@ -45,9 +46,7 @@ location::location(std::ifstream &file, std::string &line)
 
 location::location(const location &rhs)
 {
-	std::cout << GREEN << "location: Copy constructor called" \
-	RED "WHICH HASNT BEEN MADE YET AHH" RESET << std::endl;
-
+	std::cout << GREEN << "location: Copy constructor called" RESET << std::endl;
 	*this = rhs;
 }
 
@@ -58,7 +57,17 @@ location::operator=(const location &rhs)
 
 	if (this != &rhs)
 	{
-		// Perform deep copy
+		 _alias = rhs._alias;
+		_allow_methods = rhs._allow_methods;
+		_autoindex = rhs._autoindex;
+		_cgi_extension = rhs._cgi_extension;
+		_cgi_path = rhs._cgi_path;
+		_index = rhs._index;
+		_return = rhs._return;
+		_root = rhs._root;
+		_nestedLocations = rhs._nestedLocations;
+		_rulemap = rhs._rulemap;
+		_name = rhs._name;
 	}
 
 	return (*this);
@@ -161,11 +170,7 @@ std::string location::toString() const
 {
     std::ostringstream oss;
 	oss << "Alias: " << _alias << "\n";
-	// oss << "Allow_methods: " << _allow_methods << "\n";
 	oss << "Autoindex: " << _autoindex << "\n";
-	// oss << "Cgi_extension: " << _cgi_extension << "\n";
-	// oss << "Cgi path: " << _cgi_path << "\n";
-	// oss << "Index: " << _index << "\n";
 	oss << "Return: " << _return << "\n";
 	oss << "Root: " << _root << "\n";
     return oss.str();
@@ -206,6 +211,5 @@ void   location::parseRule(const std::string &line)
 	if (value_end == directive.end())
 		throw std::invalid_argument("Error: Missing semicolon.");
 	std::string tmp_value(value_begin, value_end);	
-	// std::cout << tmp_value << std::endl;
 	_rulemap.emplace(tmp_key, tmp_value);
 }

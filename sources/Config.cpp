@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/19 15:13:10 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/13 12:08:23 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,7 @@ std::vector<Config>	readConfigFile(const std::string fileName)
 		if (line.empty() || checkCaracter(line, '#'))
 			continue;
 		if (line.find("server {") != std::string::npos)
-		{
-			// Configs.emplace_back(file, line);
 			Configs.emplace_back(file, line);
-		}
 		// else
 			// throw std::invalid_argument("non comment text between server blocks! >:(");
 	}
@@ -68,6 +65,24 @@ Config::Config(std::ifstream &file, std::string &line)
 	readBlock(file, line);
 }
 
+std::string	extractLocationName(std::string line)
+{
+	std::string location = normalize_space_location(line);
+	std::string location_name;
+
+    size_t startPos = location.find("/");
+    if (startPos != std::string::npos) 
+	{
+        size_t endPos = location.find_first_of(" {", startPos);
+        if (endPos == std::string::npos) 
+            endPos = location.length();
+    location_name = location.substr(startPos, endPos - startPos);
+	}
+	std::cout << location_name << std::endl;
+	return (location_name);
+}
+
+
 void	Config::readBlock(std::ifstream &file, std::string &line)
 {
 	while (std::getline(file, line))
@@ -75,7 +90,10 @@ void	Config::readBlock(std::ifstream &file, std::string &line)
 		if (line.empty() || line[i] == '#')
 			continue;
 		if (locationFound(line))
-			_newLocations.push_back(std::unique_ptr<location>(new location(file, line)));
+		{
+			std::string location_name = extractLocationName(line);
+			_locations.emplace_back(file, line);
+		}
 		else if (checkCaracter(line, '}'))
 		{
 			mapToMembers();
@@ -141,10 +159,7 @@ std::string Config::toString() const {
 	oss << "Root: " << _rootDir << "\n";
 	oss << "Listen: " << _listen << "\n";
 	oss << "Host: " << _host << "\n";
-	// oss << "Error Page: " << _errorPage << "\n";
-	// print_map(_errorPage);
 	oss << "Max Body Size: " << _client_max_body_size << "\n";
-	// oss << "Index: " << _index << "\n";
     return oss.str();
 }
 
@@ -170,6 +185,6 @@ void	Config::parseRule(const std::string &line)
 	 	value_end++;
 	if (value_end == directive.end())
 		throw std::invalid_argument("Error: Missing semicolon.");
-	std::string tmp_value(value_begin, value_end);
-	_rulemap.insert(make_pair(tmp_key, tmp_value));
+	std::string tmp_value(value_begin, value_end);	
+	_rulemap.emplace(tmp_key, tmp_value);
 }

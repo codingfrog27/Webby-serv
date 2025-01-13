@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 11:51:49 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/13 12:08:42 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ class Config
 		std::multimap<std::string, std::string> _errorPage;
 		std::string _host;
 		std::vector<std::string> _index;
+		std::string	_locationName;
 		std::string _listen;
 		std::string _rootDir;
 		std::string _serverName;
@@ -54,9 +55,8 @@ class Config
 		size_t		_maxConnects;
 		size_t		_timeout; //general _timeout waiting for request/respond sending
 		
-		std::vector<std::unique_ptr<location>> _newLocations;
+		std::vector<location> _locations;
 		std::vector<std::string> _locNames;
-		std::unordered_map<std::string, location> _locations;
 		std::unordered_map<std::string, std::string> _rulemap;
 
 		// Constructors and Destructors
@@ -145,11 +145,11 @@ class Config
 
 void	parseConfig(int argc, char ** argv, std::vector<Config> &configs);
 void	checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs);
-void	printConfigs(const std::vector<Config> &configs);
+void	printConfigs(std::vector<Config> &configs);
 std::vector<Config>	readConfigFile(const std::string fileName);
-bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 bool	checkstr(const std::string &line, const std::string &str);
+bool	locationFound(std::string &line);
 
 void	print_map(const std::multimap<std::string, std::string> map);
 std::string	normalize_space(std::string& str);

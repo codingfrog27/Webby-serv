@@ -33,8 +33,7 @@ class location
 		std::string				 _return;
 		std::string				 _root;
 
-		std::vector<std::unique_ptr<location>> _nestedLocations;
-		std::unordered_map<std::string, std::string> _locationBlock;
+		std::vector<location>   _nestedLocations;
 		std::unordered_map<std::string, std::string> _rulemap;
 		std::string _name;
 
@@ -81,5 +80,5 @@ class location
 		
 bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
-
+std::string	normalize_space_location(std::string& str);
 
