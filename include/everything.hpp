@@ -12,16 +12,17 @@
 
 #pragma once
 
+
 #include <algorithm>
 #include <fcntl.h>
 #include <unistd.h>
 #include <algorithm>
 #include <unordered_map>
 #include <sys/socket.h>
-
+#include "NicePrint.hpp"
+#include "Server.hpp"
 #include "socket.hpp"
 #include "Request.hpp"
-#include "Server.hpp"
 #include "Response.hpp"
 #include "Config.hpp"
 #include "Connection.hpp"

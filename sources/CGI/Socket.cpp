@@ -41,8 +41,8 @@ void	Socket::openSocket()
 	_socketFd = socket(_addrInfo->ai_family, _addrInfo->ai_socktype, _addrInfo->ai_protocol);
 	if (fcntl(_socketFd, F_SETFL, O_NONBLOCK) < 0)
 		throw std::runtime_error("Failed to set Socket to noblocking");
-	if (setsockopt(_socketFd, SOL_SOCKET,SO_REUSEADDR ,&_setYes, sizeof(_setYes)) == -1 || \
-		setsockopt(_socketFd, SOL_SOCKET, SO_REUSEPORT, &_setYes, sizeof(_setYes)) == -1)
+	if (setsockopt(_socketFd, SOL_SOCKET, SO_KEEPALIVE, &_setYes, sizeof(_setYes)) == -1 || \
+		 setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR ,&_setYes, sizeof(_setYes)) == -1)
 		throw std::runtime_error(std::string("setsockopt error: ") + strerror(errno));
 	if (bind(_socketFd, _addrInfo->ai_addr, _addrInfo->ai_addrlen) == -1)
 		throw std::runtime_error(std::string("Bind errorr: ") + strerror(errno));

@@ -1,5 +1,19 @@
 #pragma once
-#include "Response.hpp"
+#include <vector>
+#include <string>
+
+class Request;
+class Response;
+
+enum class CGIHandlerStatus{
+	NOT_STARTED,
+	IN_PROGRESS,
+	WRITING_TO_CHILD,
+	WAITING_FOR_CHILD,
+	READING_FDOUT,
+	READING_FDERROR,
+	FINISHED
+};
 
 class CGI{
 	public:
@@ -9,19 +23,25 @@ class CGI{
 		CGI& operator=(const CGI& obj) = delete;
 		~CGI();
 
-		std::string			invokeCGI(Request* request, Response* response);
-		Response*			executeScript(Request* request, Response* response);
+		void				invokeCGI(Request* request, Response* response);
+		void				executeScript(Request* request, Response* response);
 		void				closePipes();
 
 		void				setupCGIEnvironment(Request* request);
 		void 				addToEnvp(std::string key, std::string value);
+
+		void				setCGIHandlerStatus(CGIHandlerStatus status);
+		CGIHandlerStatus	getCGIHandlerStatus() const;
 
 	private:
 		std::vector<char*>	_envp;
 		int					*_fdIn;
 		int					*_fdOut;
 		int					*_fdError;
-
+		CGIHandlerStatus	_CGIHandlerStatus;
+		int					_PID;
+		size_t				_bytesWrittenToChild;
+		std::string			_scriptError;
 };
 
-std::string	CGIHandler(Request* request, Response* response);
+void	CGIHandler(Request* request, Response* response);

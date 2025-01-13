@@ -51,13 +51,13 @@ connectStatus	Request::readRequest()
 		std::cerr << e.what() << std::endl;
 		_statusCode = 500;
 		_statusStr = _statusCode + ' ' + e.what();
-		return (connectStatus::REQ_ERR);
+		return (connectStatus::CONNECT_CLOSED);
 	}
 	catch(std::invalid_argument &e)
 	{
 		std::cerr << e.what() << std::endl;
 		_statusCode = 400;
-		_statusStr = _statusCode + ' ' + e.what();
+		_statusStr = _statusCode + e.what();
 		return (connectStatus::REQ_ERR);
 	}
 }

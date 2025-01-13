@@ -1,50 +1,63 @@
 #include "CGI.hpp"
+#include "Response.hpp"
+#include "Request.hpp"
 
 //next up: testing
 // write script
 // put reading and writing in a loop
 
-std::string	CGIHandler(Request* request, Response* response){
+void	CGIHandler(Request* request, Response* response){
 	int	fdIn[2];
 	int	fdOut[2];
 	int fdError[2];
 
-	// should we even invoke CGI?
-	if (request->_method_type != GET && request->_method_type != POST){
-		response->autoFillResponse("405 Method Not Allowed");
-		response->setHeaders("Allow", "GET, POST");
-		return response->generateResponse();
+	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS){
+		// should we even invoke CGI?
+		if (request->_method_type != GET && request->_method_type != POST){
+			response->autoFillResponse("405 Method Not Allowed");
+			response->setHeaders("Allow", "GET, POST");
+			return ;
+		}
+		if (request->_filePath.find("cgi-bin/", 0) == std::string::npos){
+			response->autoFillResponse("403 Forbidden");
+			return ;
+		}
+		if (!fileExists(request->_filePath)){
+			response->autoFillResponse("404 Not Found: CGI");
+			return ;
+		}
+		// if yes
+		if (pipe(fdIn) == -1) {
+			response->autoFillResponse("500 Internal Server Error: pipe fdIn");
+			return ;
+		}
+		if (pipe(fdOut) == -1) {
+			close(fdIn[0]);
+			close(fdIn[1]);
+			response->autoFillResponse("500 Internal Server Error: pipe fdOut");
+			return ;
+		}
+		if (pipe(fdError) == -1) {
+			close(fdIn[0]);
+			close(fdIn[1]);
+			close(fdOut[0]);
+			close(fdOut[1]);
+			response->autoFillResponse("500 Internal Server Error: pipe fdError");
+			return ;
+		}
+		CGI* newCGI = new CGI(fdIn, fdOut, fdError);
+		newCGI->setupCGIEnvironment(request);
+		response->setCGI(newCGI);
 	}
-	if (request->_filePath.find("cgi-bin/", 0) == std::string::npos){
-		response->autoFillResponse("403 Forbidden");
-		return response->generateResponse();
-	}
-	if (!fileExists(request->_filePath)){
-		response->autoFillResponse("404 Not Found: CGI");
-		return response->generateResponse();
-	}
-	// if yes
-	if (pipe(fdIn) == -1) {
-		response->autoFillResponse("500 Internal Server Error: pipe fdIn");
-		return response->generateResponse();
-	}
-	if (pipe(fdOut) == -1) {
-		close(fdIn[0]);
-		close(fdIn[1]);
-		response->autoFillResponse("500 Internal Server Error: pipe fdOut");
-		return response->generateResponse();
-	}
-	if (pipe(fdError) == -1) {
-		close(fdIn[0]);
-		close(fdIn[1]);
-		close(fdOut[0]);
-		close(fdOut[1]);
-		response->autoFillResponse("500 Internal Server Error: pipe fdError");
-		return response->generateResponse();
-	}
-	CGI* newCGI = new CGI(fdIn, fdOut, fdError);
-	newCGI->setupCGIEnvironment(request);
-	std::string result = newCGI->invokeCGI(request, response);
-	delete newCGI;
-	return result;
+	CGI* CGI = response->getCGI();
+	CGI->invokeCGI(request, response);
+	if (CGI->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED && response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE)
+		delete CGI;
+	return ;
 }
+
+//move piping to if statement so it's only run once
+//in invokeCGI check if child is running
+// if no, fork
+//if yes, check if child is done
+// if child is done read & write from pipe

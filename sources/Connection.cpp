@@ -19,7 +19,7 @@
 
 Connection::Connection(Config *config, int clientFD, bool isServerside): \
 _config(config), _request(config, clientFD), _isServerSocket(isServerside), \
- _clientFD(clientFD), _keepOpen(false)
+_wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 {
 	_startTime = getStartTime();
 	_TimeoutTime = intToMsecs(60000);
@@ -48,6 +48,12 @@ Connection::operator=(const Connection &rhs)
 		_config = rhs._config;
 		_clientFD = rhs._clientFD;
 		_keepOpen = rhs._keepOpen;
+		_CStatus = rhs._CStatus;
+		_request = rhs._request;
+		_response = rhs._response;
+		_startTime = rhs._startTime;
+		_TimeoutTime = rhs._TimeoutTime;
+		_wantsNewConnect = rhs._wantsNewConnect;
 	}
 
 	return (*this);
@@ -62,7 +68,57 @@ Connection::~Connection(void)
 //								Public methods							  //
 // ************************************************************************** //
 
-// int Connection::Create_Connection(void)
-// {
-	
-// }
+void	Connection::connectionAction(const pollfd &poll)
+{
+	int error = 0;
+	socklen_t len = sizeof(error);
+	if (getsockopt(poll.fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
+		std::cout << "getsockopt failed" << std::endl;
+	if (error != 0) {
+		std::cout << RED "Socket error: " << strerror(error) << std::endl;
+		NicePrint::promptEnter();
+	}
+	if (poll.revents & POLLHUP) {
+		std::cout << "Client disconnected (POLLHUP)" << std::endl;
+	} 
+	else if (poll.revents & POLLERR) {
+		std::cout << "Socket error (POLLERR)" << std::endl;
+	}
+
+
+	if (poll.revents & POLLIN && !_request._doneReading) //double
+	{
+		if (_isServerSocket) {
+			_wantsNewConnect = true;
+			return;
+		}
+		_CStatus = _request.readRequest();
+	}
+	if (_CStatus == connectStatus::CONNECT_CLOSED)
+		return;
+	if (_CStatus == connectStatus::DONE_READING || _CStatus == connectStatus::REQ_ERR)
+		_CStatus = connectStatus::RESPONDING;
+	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
+		_CStatus = responseHandler(&_request, &_response);
+	if (_CStatus == connectStatus::FINISHED)
+		_CStatus = refreshIfKeepAlive();
+	// else if (isTimedOut(connect._startTime, connect._TimeoutTime))
+	// 	close_connect(i); // has issues??
+}
+
+
+connectStatus Connection::refreshIfKeepAlive()
+{
+	std::cerr << "First response FINISHED" << std::endl;
+	// if (!this->_keepOpen)
+			// _keepOpen = true; //move to request
+	if (_request.getHeaderValue("Connection") != "keep-alive")
+	{
+		std::cout << "close meee" << std::endl;
+		return (connectStatus::FINISHED);
+	} //change to closed check
+	std::cout << "connection keep open activate" << std::endl;
+	_request = Request(this->_config, this->_clientFD);
+	_response = Response();
+	return (connectStatus::IDLE);
+}

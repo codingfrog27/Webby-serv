@@ -1,5 +1,5 @@
 #include "Response.hpp"
-#include <fstream>
+#include "Request.hpp"
 
 // static std::string	checkForRedirection(std::string filePath, Config* config){
 // 	if (config->_locNames.contains(filePath)){
@@ -28,6 +28,11 @@
 
 
 bool	isCGIrequired(Request* request){
+	if (request == nullptr) {
+		std::cout << "AAHHH" << std::endl;
+		NicePrint::promptEnter();
+		return false;
+	}
 	if (request->_filePath.rfind(".py") == request->_filePath.length() - 3)
 		return true;
 	if (request->_headers["Content-Type"].find("multi-part/form-data") != std::string::npos)

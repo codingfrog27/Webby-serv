@@ -22,7 +22,7 @@
 // ************************************************************************** //
 
 Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
-{	
+{
 	try
 	{
 		_Connections.reserve(100);
@@ -76,79 +76,93 @@ Server::~Server(void)
 
 
 
+	// _Connections.shrink_to_fit();
+	// shutdown(_Connections[i]._clientFD, SHUT_RDWR); //!!!
 void	Server::close_connect(int i)
 {
+	 std::ofstream outFile("clientFD_log.txt", std::ios::app);
+		outFile << "CLOSED CONNECT with FD: " \
+		<< _Connections[i]._clientFD << " With index: " << i << std::endl;
+	if (_pollFDs[i].fd != _Connections[i]._clientFD)
+	{
+		std::cout << "FD MISMATACH OH NO" << std::endl;
+		NicePrint::promptEnter();
+	}
 	close(_Connections[i]._clientFD);
 	_Connections.erase(_Connections.begin() + i);
 	_pollFDs.erase(_pollFDs.begin() + i);
+
 }
 
 
 #define TMP_POLL_TIME 500000
 
 void	Server::main_server_loop()
-{	
+{
+	size_t	size;
+	size_t	i;
+	size_t	eventsAmount;
 	while (1)
 	{
 		//if poll timeout-> get current time
-		size_t	size = _pollFDs.size();
-		poll(_pollFDs.data(), size, TMP_POLL_TIME); 
-		for (size_t i = 0; i < size; ++i)
-		{	
-			connectionAction(_Connections[i], _pollFDs[i], i);
-			// if (_pollFDs[i].revents & POLLIN && !_Connections[i]._request._doneReading)
-			// {
-			// 	if (_Connections[i]._isServerSocket) 
-			// 		acceptNewConnects(i);
-			// 	else 
-			// 		_Connections[i]._request.readRequest();
-			// }
-			// else if ((_pollFDs[i].revents & POLLOUT) && _Connections[i]._request._doneReading)
-			// {
-			// 	responseHandler(&_Connections[i]._request, _Connections[i]._config);
-			// 	if (_Connections[i]._keepOpen) //and donewriting
-			// 		std::cout << "tmp" << std::endl; //update idle timeout renew request object
-			// 		//and set 
-			// 	else
-			// 		close_connect(i); //segfault??
-			// }
-			// else if (isTimedOut(_Connections[i]._startTime, _Connections[i]._TimeoutTime))
-			// 	close_connect(i); // has issues??
-		}	
+		size = _pollFDs.size();
+		eventsAmount = poll(_pollFDs.data(), size, 0);
+		if (eventsAmount == 0)
+			continue;
+		i = 0;
+
+		while (i < size)
+		{
+			_Connections[i].connectionAction(_pollFDs[i]);
+			i++;
+		}
+		i = 0;
+		while (i < size)
+		{
+			if (_Connections[i]._wantsNewConnect == true) {
+				acceptNewConnects(i);
+				_Connections[i]._wantsNewConnect = false; //move
+			}
+			i++;
+		}
+		i = 0;
+		while (i < size)
+		{
+			if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED || \
+				_Connections[i]._CStatus == connectStatus::FINISHED)
+				{
+					close_connect(i);
+					size--;
+				}
+			else
+				i++;
+		}
 	}
 }
 
-void	Server::connectionAction(Connection &connect, pollfd &poll, size_t i)
+void writeClientFD(int clientFD, int i)
 {
-	if (poll.revents & POLLIN && !connect._request._doneReading)
-	{
-		if (connect._isServerSocket) 
-			acceptNewConnects(i);
-		else 
-			connect._CStatus = connect._request.readRequest();
-	}
-	else if ((poll.revents & POLLOUT) && connect._request._doneReading)
-	{
-		responseHandler(&connect._request, connect._config);
-		if (connect._keepOpen) //and donewriting
-			std::cout << "tmp" << std::endl; //update idle timeout renew request object
-		else
-			close_connect(i); //segfault??
-	}
-	// isTimedOut(connect._startTime, connect._TimeoutTime)
-	else if (connect._CStatus == connectStatus::CONNECT_CLOSED) //causses segfault
-		close_connect(i); // has issues??
+    std::ofstream outFile("clientFD_log.txt", std::ios::app);
+		outFile << "Accepted new connection with clientFD: " << clientFD <<\
+		" on index" << i << std::endl;
+        // Example of using the address of clientFD for logging or other purposes
+        // outFile << "Address of clientFD: " << &clientFD << std::endl;
+        outFile.close();
 }
+
 
 void Server::acceptNewConnects(int i)
 {
 	int clientFD = accept(_pollFDs[i].fd, nullptr, nullptr); //timeout check??
 	if (clientFD > 0)
 	{
-		std::cout << "new connection! :)" << std::endl;
-		_pollFDs.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
+		// NicePrint::promptEnter(); //and donewriting
+		_pollFDs.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0}); //frees???
 		_Connections.emplace_back(_Connections[i]._config, clientFD, false);
+		writeClientFD(clientFD, _Connections.size() - 1);
 	}
 	else
 		std::cout << "NOT ACCEPTED" << std::endl;
 }
+
+//exits webserve after 1 response

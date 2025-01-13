@@ -14,6 +14,7 @@
 
 
 #include "Request.hpp"
+#include "Response.hpp"
 #include "socket.hpp"
 #include "Config.hpp"
 
@@ -40,13 +41,14 @@ class Connection
 		connectStatus	_CStatus;
 		Config			*_config;
 		Request			_request;
+		Response		_response;
 		bool			_isServerSocket;
+		bool			_wantsNewConnect;
 		int				_clientFD;
 		bool			_keepOpen;
 		t_time			_startTime;
 		t_msecs			_TimeoutTime;
 		// bool		_doneReading;
-		// Response	*response;
 		
 		// Constructors and Destructors
 		Connection(Config *config, int clientFD, bool isServerside);
@@ -55,4 +57,8 @@ class Connection
 		~Connection();
 
 		// Public Methods
+		// void	resetRequest(Config* config, int clientFD);
+		// void	resetResponse();
+		connectStatus	refreshIfKeepAlive();
+		void			connectionAction(const pollfd &poll);
 } ;

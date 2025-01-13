@@ -1,8 +1,29 @@
 #include "Response.hpp"
+#include "Request.hpp"
 
-// _method_type(request->_method_type),
-Response::Response(Request* request) : _http_version(request->_http_version){
+Response::Response(){
+	this->_responseHandlerStatus = responseHandlerStatus::NOT_STARTED;
+	this->_responseBuffer = "";
+	this->_bytesWritten = 0;
 	return ;
+}
+
+Response &
+Response::operator=(const Response &rhs)
+{
+	// std::cout << GREEN << "Response: Assignment operator called" << RESET << std::endl;
+
+	if (this != &rhs)
+	{
+		_responseHandlerStatus = rhs._responseHandlerStatus;
+		_responseBuffer = rhs._responseBuffer;
+		_bytesWritten = rhs._bytesWritten;
+		_status = rhs._status;
+		_headers = rhs._headers;
+		_body = rhs._body;
+	}
+
+	return (*this);
 }
 
 Response::~Response(){
@@ -34,6 +55,8 @@ void	Response::autoFillResponse(std::string status){
 			Response::setHeaders("Content-Length", std::to_string(status.length()));
 			Response::setBody(status);
 	}
+	Response::setResponseBuffer(Response::generateResponse());
+	_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 	return ;
 }
 
@@ -48,7 +71,7 @@ void	Response::autoFillResponse(std::string status){
 // }
 
 std::string	Response::generateResponse() const{
-	std::string response = _http_version + " " + _status + "\r\n";
+	std::string response = _httpVersion + " " + _status + "\r\n";
 	for (auto it = _headers.begin(); it != _headers.end(); it++){
 		response += it->first + ": " + it->second + "\r\n";
 	}
@@ -59,6 +82,35 @@ std::string	Response::generateResponse() const{
 }
 
 /*	Setters	*/
+
+void	Response::setHTTPVersion(std::string HTTPversion){
+	_httpVersion = HTTPversion;
+	return ;
+}
+
+void	Response::setResponseHandlerStatus(responseHandlerStatus status){
+	_responseHandlerStatus = status;
+	return ;
+}
+
+void	Response::setCGI(CGI* cgi){
+	_cgi = cgi;
+	return ;
+}
+
+// void	Response::setOutFile(std::ofstream&& outFile){
+// 	if (_outFile.is_open())
+// 		_outFile.close();
+// 	_outFile = std::move(outFile);
+// 	return ;
+// }
+
+// void	Response::setInFile(std::ifstream&& inFile){
+// 	if (_inFile.is_open())
+// 		_inFile.close();
+// 	_inFile = std::move(inFile);
+// 	return ;
+// }
 
 void	Response::setStatus(std::string status){
 	_status = status;
@@ -109,7 +161,40 @@ void	Response::setBody(std::vector<char> body){
 	return ;
 }
 
+void	Response::setResponseBuffer(std::string buffer){
+	_responseBuffer += buffer;
+	return ;
+}
+
+void	Response::setBytesWritten(size_t bytesWritten){
+	if (bytesWritten == 0)
+		_bytesWritten = bytesWritten;
+	else
+		_bytesWritten += bytesWritten;
+	return ;
+}
+
 /*	getters	*/
+
+responseHandlerStatus	Response::getResponseHandlerStatus() const{
+	return _responseHandlerStatus;
+}
+
+CGI*	Response::getCGI() const{
+	return _cgi;
+}
+
+std::ofstream&	Response::getOutFile(){
+	// if (!_outFile.is_open())
+	// 	throw std::runtime_error("Outfile not set");
+	return _outFile;
+}
+
+std::ifstream&	Response::getInFile(){
+	// if (!_inFile.is_open())
+	// 	throw std::runtime_error("Infile not set");
+	return _inFile;
+}
 
 /* anything that's not text has to be handled as raw bits*/
 readingMode	Response::getReadingModeFromResponse() const{
@@ -132,4 +217,12 @@ std::string	Response::getHeader(std::string key) const{
 	if (it == _headers.end())
 		return ("");
 	return it->second;
+}
+
+std::string	Response::getResponseBuffer() const{
+	return _responseBuffer;
+}
+
+size_t	Response::getBytesWritten() const{
+	return _bytesWritten;
 }
