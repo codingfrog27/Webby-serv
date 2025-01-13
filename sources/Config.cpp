@@ -112,6 +112,7 @@ void	Config::mapToMembers()
 	setIndex(ValidateIndex());
 	setRoot(validateRoot());
 	setServerName(validateServerName());
+	setTimeout(validateTimeout());
 }
 
 std::string Config::toString() const {

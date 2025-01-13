@@ -72,6 +72,7 @@ class Config
 	std::string	getListen();
 	std::string	getRoot();
 	std::string	getServerName();
+	size_t		getTimeout();
 
 	class NoBlockFound : public std::exception
 	{
@@ -98,6 +99,7 @@ class Config
 	void		setRoot(const std::string &root);
 	void		setServerName(const std::string &serverName);
 	void		setServer(const int rule);
+	void		setTimeout(const size_t &timeout);
 
 	int			initializeServer();
 	void		mapToMembers();
@@ -108,6 +110,7 @@ class Config
 	std::string validateMaxBodySize();
 	std::string validateRoot();
 	std::string validateServerName();
+	size_t		validateTimeout();
 };
 
 void	parseConfig(int argc, char ** argv, std::vector<Config> &configs);

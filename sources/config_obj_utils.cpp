@@ -127,6 +127,16 @@ std::vector<std::string>	Config::getIndex()
 	return(this->_index);
 }
 
+void	Config::setTimeout(const size_t &timeout)
+{
+	this->_timeout = timeout;
+}
+
+size_t	Config::getTimeout()
+{
+	return(this->_timeout);
+}
+
 void	Config::setIndex(const std::vector<std::string> &index_vector)
 {
 	this->_index = index_vector;

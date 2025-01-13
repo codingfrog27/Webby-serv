@@ -276,6 +276,39 @@ std::string Config::validateRoot()
 	root_value.erase(0, 1); //hi antonio im removing leading root / for correct filepathing :)
 	return (root_value);
 }
+
+size_t	Config::validateTimeout()
+{
+	std::string	timeout_rule;
+	std::string timeout_value_str;
+	size_t		timeout_value = 0;
+
+	if (_rulemap.contains("timeout"))
+	{
+		timeout_rule = normalize_space(_rulemap.at("timeout"));
+		timeout_value_str = find_value(timeout_rule);
+	}
+	else
+		throw std::invalid_argument("Error: timeout directive not found");
+
+	for(size_t i = 0; i < timeout_value_str.length(); i++)
+	{
+		if (!isdigit(timeout_value_str[i]))
+			throw std::invalid_argument("Error: invalid timeout path directive");
+	}
+
+  	try
+    {
+        timeout_value = std::stoi(timeout_value_str);
+    }
+    catch (const std::out_of_range& e)
+    {
+        throw std::invalid_argument("Error: timeout value out of range for size_t");
+    }
+
+	return (timeout_value);
+}
+
 /**
  * @brief A simple check to see if none of the server blocks are trying to listen on the same port
  *
