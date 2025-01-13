@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:27:26 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 12:08:38 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/13 13:32:45 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void printConfigs(std::vector<Config> &configs)
         }
 		std::cout << std::endl;
 
-		std::unordered_map<std::string, std::string> errorPage = configs[i].getErrorPage();
+		std::multimap<std::string, std::string> errorPage = configs[i].getErrorPage();
         std::cout << "Server ErrorPage: ";
         for (const auto &idx : errorPage) {
             std::cout << idx.first << " " << idx.second;

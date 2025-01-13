@@ -38,4 +38,5 @@ class Server
 		Server		&operator=(const Server &rhs) = delete;
 		void		main_server_loop();
 		void		connectionAction(Connection &connect, pollfd &poll);
+		void		PrintConnectionStatusses(size_t size);
 };

@@ -80,9 +80,6 @@ Server::~Server(void)
 	// shutdown(_Connections[i]._clientFD, SHUT_RDWR); //!!!
 void	Server::close_connect(int fd)
 {
-	//  std::ofstream outFile("clientFD_log.txt", std::ios::app);
-	// 	outFile << "CLOSED CONNECT with FD: " \
-	// 	<< _Connections[i]._clientFD << " With index: " << i << std::endl;
 	// if (_pollFDs[i].fd != _Connections[i]._clientFD)
 	// {
 	// 	std::cout << "FD MISMATACH OH NO" << std::endl;
@@ -91,6 +88,7 @@ void	Server::close_connect(int fd)
 	// close(_Connections[i]._clientFD);
 	// _Connections.erase(_Connections.begin() + i);
 	// _pollFDs.erase(_pollFDs.begin() + i);
+	std::ofstream outFile("clientFD_log.txt", std::ios::app);
 
 	std::vector<pollfd>::iterator it = _pollFDs.begin();
 	std::vector<Connection>::iterator itc = _Connections.begin();
@@ -108,7 +106,13 @@ void	Server::close_connect(int fd)
 	}
 	if (it == _pollFDs.end())
 	{
-		std::cout << "FUUUUUUUUCK" << std::endl;
+		outFile << "FUUUUUUUUCK \n can't close connect" << fd << std::endl;
+	}
+	else
+	{
+		outFile << "CLOSED CONNECT with FD: " \
+		<< fd << " With index: " << std::endl;
+		NicePrint::promptEnter();
 	}
 
 }
@@ -147,53 +151,9 @@ void	Server::main_server_loop()
 			i++;
 		}
 		i = 0;
+		// PrintConnectionStatusses(size);
 		while (i < size)
 		{
-			// std::cout << "This is i: " << i << std::endl;
-			// std::cout << "This is after close size: "<< size << std::endl;
-
-			// Checking each possible enum value
-			if (_Connections[i]._CStatus == connectStatus::SERV_SOCKET) {
-			    // Handle SERV_SOCKET status
-			    std::cout << "This is 1" << std::endl;
-				// Code for handling SERV_SOCKET
-			} else if (_Connections[i]._CStatus == connectStatus::IDLE) {
-			    // Handle IDLE status
-			    std::cout << "This is 2" << std::endl;
-				// Code for handling IDLE
-			} else if (_Connections[i]._CStatus == connectStatus::READING) {
-			    // Handle READING status
-			    std::cout << "This is 3" << std::endl;
-				// Code for handling READING
-			} else if (_Connections[i]._CStatus == connectStatus::REQ_ERR) {
-			    // Handle REQ_ERR status
-			    std::cout << "This is 4" << std::endl;
-				// Code for handling REQ_ERR
-			} else if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED) {
-			    // Handle CONNECT_CLOSED status
-			    std::cout << "This is 5" << std::endl;
-				// Code for handling CONNECT_CLOSED
-			} else if (_Connections[i]._CStatus == connectStatus::DONE_READING) {
-			    // Handle DONE_READING status
-			    std::cout << "This is 6" << std::endl;
-				// Code for handling DONE_READING
-			} else if (_Connections[i]._CStatus == connectStatus::DONE_READING_CGI) {
-			    // Handle DONE_READING_CGI status
-			    std::cout << "This is 7" << std::endl;
-				// Code for handling DONE_READING_CGI
-			} else if (_Connections[i]._CStatus == connectStatus::RESPONDING) {
-			    // Handle RESPONDING status
-			    std::cout << "This is 8" << std::endl;
-				// Code for handling RESPONDING
-			} else if (_Connections[i]._CStatus == connectStatus::SERVER_ERR) {
-			    // Handle SERVER_ERR status
-			    std::cout << "This is 9" << std::endl;
-				// Code for handling SERVER_ERR
-			} else if (_Connections[i]._CStatus == connectStatus::FINISHED) {
-			    // Handle FINISHED status
-			    std::cout << "This is 10" << std::endl;
-				// Code for handling FINISHED
-			}
 			if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED || \
 				_Connections[i]._CStatus == connectStatus::FINISHED)
 				{
@@ -205,6 +165,7 @@ void	Server::main_server_loop()
 		}
 	}
 }
+
 
 void writeClientFD(int clientFD, int i)
 {
@@ -232,3 +193,53 @@ void Server::acceptNewConnects(int i)
 }
 
 //exits webserve after 1 response
+void Server::PrintConnectionStatusses(size_t size)
+{
+	for (size_t i = 0; i < size; i++)
+	{
+		// std::cout << "This is i: " << i << std::endl;
+		// std::cout << "This is after close size: "<< size << std::endl;
+		// Checking each possible enum value
+		if (_Connections[i]._CStatus == connectStatus::SERV_SOCKET) {
+			// Handle SERV_SOCKET status
+			std::cout << "This is Server socket" << std::endl;
+			// Code for handling SERV_SOCKET
+		} else if (_Connections[i]._CStatus == connectStatus::IDLE) {
+			// Handle IDLE status
+			std::cout << "This is IDLE" << std::endl;
+			// Code for handling IDLE
+		} else if (_Connections[i]._CStatus == connectStatus::READING) {
+			// Handle READING status
+			std::cout << "This is 3" << std::endl;
+			// Code for handling READING
+		} else if (_Connections[i]._CStatus == connectStatus::REQ_ERR) {
+			// Handle REQ_ERR status
+			std::cout << "This is 4" << std::endl;
+			// Code for handling REQ_ERR
+		} else if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED) {
+			// Handle CONNECT_CLOSED status
+			std::cout << "This is 5" << std::endl;
+			// Code for handling CONNECT_CLOSED
+		} else if (_Connections[i]._CStatus == connectStatus::DONE_READING) {
+			// Handle DONE_READING status
+			std::cout << "This is 6" << std::endl;
+			// Code for handling DONE_READING
+		} else if (_Connections[i]._CStatus == connectStatus::DONE_READING_CGI) {
+			// Handle DONE_READING_CGI status
+			std::cout << "This is 7" << std::endl;
+			// Code for handling DONE_READING_CGI
+		} else if (_Connections[i]._CStatus == connectStatus::RESPONDING) {
+			// Handle RESPONDING status
+			std::cout << "This is 8" << std::endl;
+			// Code for handling RESPONDING
+		} else if (_Connections[i]._CStatus == connectStatus::SERVER_ERR) {
+			// Handle SERVER_ERR status
+			std::cout << "This is 9" << std::endl;
+			// Code for handling SERVER_ERR
+		} else if (_Connections[i]._CStatus == connectStatus::FINISHED) {
+			// Handle FINISHED status
+			std::cout << "This is 10" << std::endl;
+			// Code for handling FINISHED
+		}
+	}
+}

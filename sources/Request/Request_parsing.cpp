@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request_parsing.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/09 14:58:31 by asimone          ###   ########.fr       */
+/*   Updated: 2025/01/13 13:24:43 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,35 @@ void	Request::checkHeaders()
 	else
 		checkBodyHeaders();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void	Request::checkBodyHeaders()
 {

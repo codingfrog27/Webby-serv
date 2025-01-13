@@ -77,7 +77,8 @@ void    Request::checkForRedirect(std::string _filePath)
 
     if (_config != nullptr)
     {
-        sendHTMLPage(_clientFD, _filePath);
+		std::cout << "here??" << std::endl;
+        // sendHTMLPage(_clientFD, _filePath);
     }
     else if (_config == nullptr)
         std::cerr << "Config is nullptr" << std::endl;

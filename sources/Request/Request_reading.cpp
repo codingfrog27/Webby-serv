@@ -43,6 +43,7 @@ connectStatus	Request::readRequest()
 	catch (ConnectionClosedExcep &e)
 	{
 		std::cerr << "Client closed connection" << std::endl;
+		NicePrint::promptEnter();
 		return (connectStatus::CONNECT_CLOSED);
 	}
 	//should maybe just make clienterr excepts?
@@ -75,6 +76,8 @@ int	Request::readSocket(int size)
 		else
 			throw (std::ios_base::failure(" reading fail when reading from client socket"));
 	}
+	// std::cout << buffer << std::endl;
+	// NicePrint::promptEnter();
 	_rawRequestData.insert(_rawRequestData.end(), buffer, buffer + bytes_read);
 	if (_rnrnFound)
 		body_bytes_read += bytes_read;

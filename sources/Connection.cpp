@@ -77,6 +77,7 @@ void	Connection::connectionAction(const pollfd &poll)
 	if (error != 0) {
 		std::cout << RED "Socket error: " << strerror(error) << std::endl;
 		NicePrint::promptEnter();
+		_CStatus = connectStatus::CONNECT_CLOSED;
 	}
 	if (poll.revents & POLLHUP) {
 		std::cout << "Client disconnected (POLLHUP)" << std::endl;
