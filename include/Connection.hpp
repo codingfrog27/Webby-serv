@@ -61,4 +61,5 @@ class Connection
 		// void	resetResponse();
 		connectStatus	refreshIfKeepAlive();
 		void			connectionAction(const pollfd &poll);
+		void			checkConnectErrors(const pollfd &poll);
 } ;

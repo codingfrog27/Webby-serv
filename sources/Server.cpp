@@ -15,6 +15,8 @@
 #include <iostream>
 
 #define MAX_CLIENT 300
+void writeClientFD(int clientFD, int i);
+
 
 
 // ************************************************************************** //
@@ -112,8 +114,6 @@ void	Server::main_server_loop()
 }
 
 
-	// _Connections.shrink_to_fit();
-	// shutdown(_Connections[i]._clientFD, SHUT_RDWR); //!!!
 void	Server::close_connect(int fd)
 {
 	// if (_pollFDs[i].fd != _Connections[i]._clientFD)
@@ -161,7 +161,7 @@ void	Server::close_connect(int fd)
 
 
 
-void Server::acceptNewConnects(int size)
+void Server::acceptNewConnects(size_t size)
 {
 	int clientFD = 0;
 	for (size_t i = 0; i < size; i++)
@@ -171,8 +171,8 @@ void Server::acceptNewConnects(int size)
 			clientFD = accept(_pollFDs[i].fd, nullptr, nullptr);
 			if (clientFD <= 0)
 			{
-				std::cerr << "NOT ACCEPTED" << std::endl;
-				// throw 
+				std::cerr << "NOT ACCEPTED" << clientFD << std::endl;
+				NicePrint::promptEnter();
 				break;
 			}
 			_pollFDs.emplace_back(\
@@ -187,12 +187,12 @@ void Server::acceptNewConnects(int size)
 
 void writeClientFD(int clientFD, int i)
 {
-    std::ofstream outFile("clientFD_log.txt", std::ios::app);
+	std::ofstream outFile("clientFD_log.txt", std::ios::app);
 		outFile << "Accepted new connection with clientFD: " << clientFD <<\
 		" on index" << i << std::endl;
-        // Example of using the address of clientFD for logging or other purposes
-        // outFile << "Address of clientFD: " << &clientFD << std::endl;
-        outFile.close();
+		// Example of using the address of clientFD for logging or other purposes
+		// outFile << "Address of clientFD: " << &clientFD << std::endl;
+		outFile.close();
 }
 //exits webserve after 1 response
 void Server::PrintConnectionStatusses(size_t size)

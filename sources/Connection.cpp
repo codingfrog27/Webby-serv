@@ -71,33 +71,19 @@ Connection::~Connection(void)
 
 void	Connection::connectionAction(const pollfd &poll)
 {
-	int error = 0;
-	socklen_t len = sizeof(error);
-	if (getsockopt(poll.fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
-		std::cout << "getsockopt failed" << std::endl;
-	if (error != 0) {
-		std::cout << RED "Socket error: " << strerror(error) << std::endl;
-		NicePrint::promptEnter();
-		_CStatus = connectStatus::CONNECT_CLOSED;
-	}
-	if (poll.revents & POLLHUP) {
-		std::cout << "Client disconnected (POLLHUP)" << std::endl;
-	} 
-	else if (poll.revents & POLLERR) {
-		std::cout << "Socket error (POLLERR)" << std::endl;
-	}
-
-
-	if (poll.revents & POLLIN && !_request._doneReading) //double
+	if (_isServerSocket)
 	{
-		if (_isServerSocket) {
+		if (poll.revents & POLLIN)
 			_wantsNewConnect = true;
-			return;
-		}
-		_CStatus = _request.readRequest();
+		return;
 	}
+	checkConnectErrors(poll);
+	if (poll.revents & POLLIN && \
+	(_CStatus == connectStatus::IDLE || _CStatus == connectStatus::READING)) //double
+		_CStatus = _request.readRequest();
 	if (_CStatus == connectStatus::CONNECT_CLOSED)
 		return;
+	//done reading and req error could both just be responding to make things easier
 	if (_CStatus == connectStatus::DONE_READING || _CStatus == connectStatus::REQ_ERR)
 		_CStatus = connectStatus::RESPONDING;
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
@@ -106,6 +92,24 @@ void	Connection::connectionAction(const pollfd &poll)
 		_CStatus = refreshIfKeepAlive();
 	// else if (isTimedOut(connect._startTime, connect._IdleTimeout))
 	// 	close_connect(i); // has issues??
+}
+
+void	Connection::checkConnectErrors(const pollfd &poll)
+{
+	int error = 0;
+	socklen_t len = sizeof(error);
+	if (poll.revents & POLLHUP) {
+		std::cerr << "Client disconnected (POLLHUP)" << std::endl;
+	} 
+	if (poll.revents & POLLERR) {
+		std::cerr << "Socket error (POLLERR)" << std::endl;
+		if (getsockopt(poll.fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
+			std::cerr << "getsockopt failed" << std::endl;
+		if (error != 0)
+			std::cerr << RED "Socket error: " << strerror(error) << RESET << std::endl;
+			// NicePrint::promptEnter();
+		_CStatus = connectStatus::CONNECT_CLOSED;
+	}
 }
 
 
