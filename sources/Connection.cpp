@@ -86,7 +86,7 @@ void	Connection::connectionAction(const pollfd &poll)
 	}
 
 
-	if (poll.revents & POLLIN && !_request._doneReading)
+	if (poll.revents & POLLIN && !_request._doneReading) //double
 	{
 		if (_isServerSocket) {
 			_wantsNewConnect = true;

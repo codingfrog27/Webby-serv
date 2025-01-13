@@ -121,7 +121,7 @@ void	Server::main_server_loop()
 		{
 			if (_Connections[i]._wantsNewConnect == true) {
 				acceptNewConnects(i);
-				_Connections[i]._wantsNewConnect = false;
+				_Connections[i]._wantsNewConnect = false; //move
 			}
 			i++;
 		}
