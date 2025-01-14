@@ -70,7 +70,8 @@ void sendHTMLPage(int client_socket, const std::string& file_path)
 
 void    Request::checkForRedirect(std::string _filePath)
 {
-    std::cout << "This is the _filePath: " << _filePath << std::endl;
+    std::cout << "This is the _filePath: " << _filePath << std::endl \
+	<< "and this is the FD" << _clientFD << std::endl;
     // Config *config = getConfig();
 
     

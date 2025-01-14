@@ -140,11 +140,13 @@ void	Server::close_connect(int fd)
 		std::cout << RED "VECTOR SIZE MISMAtCH BRO" RESET << std::endl;
 	while (it != _pollFDs.end())
 	{
-		if (it->fd == fd)
+		if (itc->_clientFD == fd)
 		{
 			close(fd);
 			_pollFDs.erase(it);
 			_Connections.erase(itc);
+			std::cout << "CLOSED CONNECT with FD: " \
+			<< fd << " With index: " << std::endl;
 			break ;
 		}
 		it++;
@@ -153,14 +155,8 @@ void	Server::close_connect(int fd)
 	if (it == _pollFDs.end())
 	{
 		std::cout << "bro \nI can't close connect" << fd << std::endl;
-		NicePrint::promptEnter();
+		// NicePrint::promptEnter();
 	}
-	else
-	{
-		std::cout << "CLOSED CONNECT with FD: " \
-		<< fd << " With index: " << std::endl;
-	}
-
 }
 
 
@@ -178,6 +174,8 @@ void Server::acceptNewConnects(size_t size)
 				NicePrint::promptEnter();
 				break;
 			}
+			else
+			std::cout << GREEN "new connection!" RESET << clientFD <<  std::endl;
 			_Connections[i]._wantsNewConnect = false; //move
 			_pollFDs.emplace_back(\
 					pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
