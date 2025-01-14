@@ -24,7 +24,7 @@ Socket::Socket(Config *config, const struct addrinfo *addressInfo)
 	{
 		if(_socketFd)
 			close(_socketFd);
-		std::cerr << e.what() << '\n';
+		std::cout << e.what() << '\n';
 		exit(1); //think we can exit cause  server socket creation kinda vital?
 	}
 	

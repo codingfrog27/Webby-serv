@@ -18,16 +18,16 @@
 // ************************************************************************** //
 
 Connection::Connection(Config *config, int clientFD, bool isServerside): \
-_config(config), _request(config, clientFD), _isServerSocket(isServerside), \
+_config(config), _request(config, clientFD), _isClientSocket(isServerside), \
 _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 {
 	_startTime = getStartTime();
-	_IdleTimeout = intToMsecs(600);
-	// _IdleTimeout = intToMsecs(config->_timeout);
-	if (_isServerSocket)
-		_CStatus = connectStatus::SERV_SOCKET;
-	else
+	_IdleTimeout = setTimeout(2);
+	// _IdleTimeout = setTimeout(config->_timeout);
+	if (_isClientSocket)
 		_CStatus = connectStatus::IDLE;
+	else
+		_CStatus = connectStatus::SERV_SOCKET;
 }
 
 
@@ -45,7 +45,7 @@ Connection::operator=(const Connection &rhs)
 
 	if (this != &rhs)
 	{
-		_isServerSocket = rhs._isServerSocket;
+		_isClientSocket = rhs._isClientSocket;
 		_config = rhs._config;
 		_clientFD = rhs._clientFD;
 		_keepOpen = rhs._keepOpen;
@@ -69,53 +69,57 @@ Connection::~Connection(void)
 //								Public methods							  //
 // ************************************************************************** //
 
+	// if (_CStatus == connectStatus::CONNECT_CLOSED)
+	// 	return;
+	//done reading and req error could both just be responding to make things easier
+	// if (_CStatus == connectStatus::DONE_READING || _CStatus == connectStatus::REQ_ERR)
+	// 	_CStatus = connectStatus::RESPONDING;
+	// if (_isClientSocket)
+	// {
+	// 	if (poll.revents & POLLIN)
+	// 		_wantsNewConnect = true;
+	// 	return;
+	// }
 void	Connection::connectionAction(const pollfd &poll)
 {
-	if (_isServerSocket)
-	{
-		if (poll.revents & POLLIN)
-			_wantsNewConnect = true;
-		return;
-	}
-	checkConnectErrors(poll);
-	if (poll.revents & POLLIN && \
-	(_CStatus == connectStatus::IDLE || _CStatus == connectStatus::READING)) //double
+	_CStatus = checkConnectStatus(poll);
+	if (poll.revents & POLLIN && (_CStatus == connectStatus::IDLE || \
+									_CStatus == connectStatus::READING))
 		_CStatus = _request.readRequest();
-	if (_CStatus == connectStatus::CONNECT_CLOSED)
-		return;
-	//done reading and req error could both just be responding to make things easier
-	if (_CStatus == connectStatus::DONE_READING || _CStatus == connectStatus::REQ_ERR)
-		_CStatus = connectStatus::RESPONDING;
+
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
 		_CStatus = responseHandler(&_request, &_response);
+
 	if (_CStatus == connectStatus::FINISHED)
 		_CStatus = refreshIfKeepAlive();
-	// else if (isTimedOut(connect._startTime, connect._IdleTimeout))
-	// 	close_connect(i); // has issues??
 }
 
-void	Connection::checkConnectErrors(const pollfd &poll)
+//print to info log and or error log file
+	// if (poll.revents & POLLHUP) {
+	// 	std::cout << "Client disconnected (POLLHUP)" << std::endl;
+	// } 
+connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 {
 	int error = 0;
 	socklen_t len = sizeof(error);
-	if (poll.revents & POLLHUP) {
-		std::cerr << "Client disconnected (POLLHUP)" << std::endl;
-	} 
 	if (poll.revents & POLLERR) {
-		std::cerr << "Socket error (POLLERR)" << std::endl;
+		std::cout << "Socket error (POLLERR)" << std::endl;
 		if (getsockopt(poll.fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
-			std::cerr << "getsockopt failed" << std::endl;
+			std::cout << "getsockopt failed" << std::endl;
 		if (error != 0)
-			std::cerr << RED "Socket error: " << strerror(error) << RESET << std::endl;
+			std::cout << RED "Socket error: " << strerror(error) << RESET << std::endl;
 			// NicePrint::promptEnter();
-		_CStatus = connectStatus::CONNECT_CLOSED;
+		return (connectStatus::CONNECT_CLOSED); 
 	}
+	else if (isTimedOut(_startTime, _IdleTimeout) || poll.revents & POLLHUP)
+		return (connectStatus::CONNECT_CLOSED); 
+	return (_CStatus);
 }
 
 
 connectStatus Connection::refreshIfKeepAlive()
 {
-	std::cerr << "First response FINISHED" << std::endl;
+	// std::cout << "First response FINISHED" << std::endl;
 	// if (!this->_keepOpen)
 			// _keepOpen = true; //move to request
 	if (_request.getHeaderValue("Connection") != "keep-alive")

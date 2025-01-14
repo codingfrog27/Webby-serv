@@ -17,6 +17,15 @@
 #define MAX_CLIENT 300
 void writeClientFD(int clientFD, int i);
 
+void writeClientFD(int clientFD, int i)
+{
+	std::ofstream outFile("clientFD_log.txt", std::ios::app);
+		outFile << "Accepted new connection with clientFD: " << clientFD <<\
+		" on index" << i << std::endl;
+		// Example of using the address of clientFD for logging or other purposes
+		// outFile << "Address of clientFD: " << &clientFD << std::endl;
+		outFile.close();
+}
 
 
 // ************************************************************************** //
@@ -34,12 +43,12 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 			std::cout << "serblock" << i << "made" << std::endl;
 			_serverSockets.emplace_back(&_serverBlocks[i], _addrInfo);
 			_pollFDs.emplace_back(pollfd{_serverSockets[i]._socketFd, POLLIN | POLLERR,  0});
-			_Connections.emplace_back(&_serverBlocks[i], _serverSockets[i]._socketFd, true);
+			_Connections.emplace_back(&_serverBlocks[i], _serverSockets[i]._socketFd, false);
 		}
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cout << e.what() << '\n';
 	}
 	std::cout << GREEN << "Server is running :)" << RESET << std::endl;
 }
@@ -76,30 +85,29 @@ Server::~Server(void)
 //								Public methods							  //
 // ************************************************************************** //
 
+	// signal(SIGPIPE, SIG_IGN);
+
+	//refactor -> close connect loop 1 function, and for loops
+		//if poll timeout-> get current time
+		// std::cout << "This is start size: "<< size << std::endl;
+		// PrintConnectionStatusses(size);
 void	Server::main_server_loop()
 {
 	size_t	size;
-	size_t	i;
-	size_t	eventsAmount;
-	// signal(SIGPIPE, SIG_IGN);
 	while (1)
 	{
-		//if poll timeout-> get current time
 		size = _pollFDs.size();
-		// std::cout << "This is start size: "<< size << std::endl;
-		eventsAmount = poll(_pollFDs.data(), size, 0);
-		if (eventsAmount == 0)
-			continue;
-		i = 0;
-		while (i < size)
+		if (poll(_pollFDs.data(), size, 0) == 0)
+			continue; //throw server close error on >0
+		for (size_t i = 0; i < size; i++)
 		{
-			_Connections[i].connectionAction(_pollFDs[i]);
-			i++;
+			if (_Connections[i]._isClientSocket)
+				_Connections[i].connectionAction(_pollFDs[i]);	
+			else if (_pollFDs[i].revents & POLLIN)
+					_Connections[i]._wantsNewConnect = true;
 		}
-		acceptNewConnects(size);
-		// PrintConnectionStatusses(size);
-		i = 0;
-		while (i < size)
+		acceptNewConnects(size); //could mb be part of main loop after all?
+		for (size_t i = 0; i < size;)
 		{
 			if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED || \
 				_Connections[i]._CStatus == connectStatus::FINISHED)
@@ -114,21 +122,23 @@ void	Server::main_server_loop()
 }
 
 
+// if (_pollFDs[i].fd != _Connections[i]._clientFD)
+// {
+// 	std::cout << "FD MISMATACH OH NO" << std::endl;
+// 	NicePrint::promptEnter();
+// }
+// close(_Connections[i]._clientFD);
+// _Connections.erase(_Connections.begin() + i);
+// _pollFDs.erase(_pollFDs.begin() + i);
 void	Server::close_connect(int fd)
 {
-	// if (_pollFDs[i].fd != _Connections[i]._clientFD)
-	// {
-	// 	std::cout << "FD MISMATACH OH NO" << std::endl;
-	// 	NicePrint::promptEnter();
-	// }
-	// close(_Connections[i]._clientFD);
-	// _Connections.erase(_Connections.begin() + i);
-	// _pollFDs.erase(_pollFDs.begin() + i);
 	std::ofstream outFile("clientFD_log.txt", std::ios::app);
 
 	std::vector<pollfd>::iterator it = _pollFDs.begin();
 	std::vector<Connection>::iterator itc = _Connections.begin();
-	while ( it != _pollFDs.end())
+	if (_pollFDs.size() != _Connections.size())
+		std::cout << RED "VECTOR SIZE MISMAtCH BRO" RESET << std::endl;
+	while (it != _pollFDs.end())
 	{
 		if (it->fd == fd)
 		{
@@ -142,23 +152,16 @@ void	Server::close_connect(int fd)
 	}
 	if (it == _pollFDs.end())
 	{
-		outFile << "FUUUUUUUUCK \n can't close connect" << fd << std::endl;
+		std::cout << "bro \nI can't close connect" << fd << std::endl;
+		NicePrint::promptEnter();
 	}
 	else
 	{
-		outFile << "CLOSED CONNECT with FD: " \
+		std::cout << "CLOSED CONNECT with FD: " \
 		<< fd << " With index: " << std::endl;
-		NicePrint::promptEnter();
 	}
 
 }
-
-
-#define TMP_POLL_TIME 500000
-// #include <signal.h>
-
-
-
 
 
 void Server::acceptNewConnects(size_t size)
@@ -171,30 +174,21 @@ void Server::acceptNewConnects(size_t size)
 			clientFD = accept(_pollFDs[i].fd, nullptr, nullptr);
 			if (clientFD <= 0)
 			{
-				std::cerr << "NOT ACCEPTED" << clientFD << std::endl;
+				std::cout << "NOT ACCEPTED" << clientFD << std::endl;
 				NicePrint::promptEnter();
 				break;
 			}
+			_Connections[i]._wantsNewConnect = false; //move
 			_pollFDs.emplace_back(\
 					pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
-			_Connections.emplace_back(\
-					_Connections[i]._config, clientFD, false);
+			_Connections.emplace_back(_Connections[i]._config, clientFD, true);
 			writeClientFD(clientFD, i);
-			_Connections[i]._wantsNewConnect = false; //move
 		}
 	}
 }
 
-void writeClientFD(int clientFD, int i)
-{
-	std::ofstream outFile("clientFD_log.txt", std::ios::app);
-		outFile << "Accepted new connection with clientFD: " << clientFD <<\
-		" on index" << i << std::endl;
-		// Example of using the address of clientFD for logging or other purposes
-		// outFile << "Address of clientFD: " << &clientFD << std::endl;
-		outFile.close();
-}
-//exits webserve after 1 response
+
+
 void Server::PrintConnectionStatusses(size_t size)
 {
 	for (size_t i = 0; i < size; i++)

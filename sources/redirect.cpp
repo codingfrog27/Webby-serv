@@ -43,7 +43,7 @@ void sendHTMLPage(int client_socket, const std::string& file_path)
 	std::ifstream file(file_path);
 	if (!file) 
 	{
-		std::cerr << RED << "Error opening file: " << file_path << RESET << std::endl;
+		std::cout << RED << "Error opening file: " << file_path << RESET << std::endl;
 		return;
 	}
 
@@ -81,5 +81,5 @@ void    Request::checkForRedirect(std::string _filePath)
         // sendHTMLPage(_clientFD, _filePath);
     }
     else if (_config == nullptr)
-        std::cerr << "Config is nullptr" << std::endl;
+        std::cout << "Config is nullptr" << std::endl;
 }

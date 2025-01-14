@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/09 18:10:11 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 14:49:59 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/14 13:09:40 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,4 +21,4 @@ typedef std::chrono::seconds t_secs;
 
 t_time getStartTime();
 bool isTimedOut(t_time startTime, t_secs maxDuration);
-t_secs intToMsecs(int ms);
+t_secs setTimeout(int ms);

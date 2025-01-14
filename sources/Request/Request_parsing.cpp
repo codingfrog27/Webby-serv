@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 13:24:43 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/14 13:39:57 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,12 +142,12 @@ void	Request::checkBodyHeaders()
 	}
 	catch(const std::invalid_argument& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cout << e.what() << '\n';
 		throw (ClientErrorExcept(413, "413 Payload too large"));
 	}
 	catch(const std::out_of_range& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cout << e.what() << '\n';
 		throw (ClientErrorExcept(413, "413 Payload too large"));
 	}
 	if (_contentLen == 0)

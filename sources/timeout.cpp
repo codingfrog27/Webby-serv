@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/09 16:34:41 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 14:50:22 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/14 13:10:41 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ bool isTimedOut(t_time startTime, t_secs maxDuration)
 	return (false);
 }
 
-t_secs intToMsecs(int ms)
+//returns the amount of seconds passed as an int s t_secs (so it can be used w chrono)
+t_secs setTimeout(int secs)
 {
-	return (t_secs(ms));
+	return (t_secs(secs));
 }
