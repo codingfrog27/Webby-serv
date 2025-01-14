@@ -23,7 +23,7 @@ CGI::~CGI(){
 /*	Member functions	*/
 //needs refactoring
 void	CGI::invokeCGI(Request* request, Response* response){
-	std::cout << MAGENTA "~ CGI Invoked ~" << std::endl;
+	// std::cout << MAGENTA "~ CGI Invoked ~" << std::endl;
 	response->setResponseHandlerStatus(responseHandlerStatus::IN_CGI);
 	if (_CGIHandlerStatus == CGIHandlerStatus::NOT_STARTED){
 		_CGIHandlerStatus = CGIHandlerStatus::IN_PROGRESS;
@@ -54,6 +54,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 			_CGIHandlerStatus = CGIHandlerStatus::WAITING_FOR_CHILD;
 		if ((_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS || _CGIHandlerStatus == CGIHandlerStatus::WRITING_TO_CHILD) && request->_method_type == POST){
 			_CGIHandlerStatus = CGIHandlerStatus::WRITING_TO_CHILD;
+			std::cout << MAGENTA "Writing to child" RESET << std::endl;
 			// std::cout << MAGENTA "Req Body	: " << request->getBody() << std::endl;
 			size_t n = request->getBody().size() - _bytesWrittenToChild;
 			if (n > BUFFER_SIZE)
@@ -74,6 +75,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 			return ;
 		}
 		if (_CGIHandlerStatus == CGIHandlerStatus::WAITING_FOR_CHILD){
+			std::cout << MAGENTA "Waiting for child" RESET << std::endl;
 			int status = 0;
 			if (waitpid(_PID, &status, WNOHANG) == -1){
 				response->autoFillResponse("500 Internal Server Error: waitpid");
@@ -88,6 +90,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 			return ;
 		}
 		if (_CGIHandlerStatus == CGIHandlerStatus::READING_FDOUT){
+			std::cout << MAGENTA "Reading from child" RESET << std::endl;
 			char buffer[BUFFER_SIZE];
 			int bytes = read(_fdOut[0], buffer, BUFFER_SIZE);
 			if (bytes == -1){
@@ -97,7 +100,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 				return ;
 			}
 			// std::cout << MAGENTA "~	Res Body ~ \n" RESET << buffer << std::endl;
-			response->setBody(std::string(buffer, bytes)); //setResponseBuffer if setBody is not working
+			response->setResponseBuffer(std::string(buffer, bytes)); //setResponseBuffer if setBody is not working
 			if (bytes == 0){
 				close(_fdOut[0]);
 				_CGIHandlerStatus = CGIHandlerStatus::READING_FDERROR;
@@ -106,6 +109,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		}
 		// std::cout << MAGENTA "Res Body	: " << responseBuffer << std::endl;
 		if (_CGIHandlerStatus == CGIHandlerStatus::READING_FDERROR){
+			std::cout << MAGENTA "Reading fd error" RESET << std::endl;
 			char buffer[BUFFER_SIZE];
 			int bytes = read(_fdError[0], buffer, BUFFER_SIZE);
 			if (bytes == -1){
@@ -126,8 +130,9 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		}
 	}
 	if (_CGIHandlerStatus == CGIHandlerStatus::FINISHED){
-		response->setStatus("200 OK");
-		response->setResponseBuffer(response->generateResponse());
+		std::cout << MAGENTA "Ready to write\n" RESET << response->getResponseBuffer() << std::endl;
+		// response->setStatus("200 OK");
+		// response->setResponseBuffer(response->generateResponse());
 		response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 	}
 	return ;
