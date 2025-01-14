@@ -89,8 +89,8 @@ connectStatus Response::writeResponse(int FD){
 	if (n > BUFFER_SIZE)
 		n = BUFFER_SIZE;
 	size_t bytes = write(FD, _responseBuffer.c_str() + _bytesWritten, n); 
-	std::ofstream outFile("Response written.txt", std::ios::app);
-	outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
+	// std::ofstream outFile("Response written.txt", std::ios::app);
+	// outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
 	_bytesWritten += bytes;
 	if (_bytesWritten >= _responseBuffer.size()){
 		setResponseHandlerStatus(responseHandlerStatus::FINISHED);
