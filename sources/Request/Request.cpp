@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Request.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: asimone <asimone@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/17 19:39:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/06 14:26:01 by asimone          ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Request.cpp                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: asimone <asimone@student.42.fr>              +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/17 19:39:08 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/01/14 17:10:24 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Request::Request(Config *config, int clientFD): _config(config), \
 	_statusStr("0 Not started yet"), _statusCode(0)
 {
 	_rawRequestData.reserve(100);
-	_timeoutTime = intToMsecs(3000); //normal secs
+	_timeoutTime = setTimeout(30); //normal secs
 	_startTime = getStartTime();
 }
 
@@ -84,4 +84,11 @@ Request::operator=(const Request &rhs)
 Request::~Request(void)
 {
 	// std::cout << RED << "http_request: Destructor called" << RESET << std::endl;
+}
+
+
+
+Config*	Request::getConfig()
+{
+        return (this->_config);
 }

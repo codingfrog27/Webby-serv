@@ -73,7 +73,7 @@ class Request
 		bool					_hasBody;
 		size_t					_contentLen; //need to put in init list
 		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
-		t_msecs					_timeoutTime;
+		t_secs					_timeoutTime;
 		t_time					_startTime;
 
 
@@ -122,12 +122,15 @@ class Request
 
 		//get and setters
 		const std::string &getBody();
-		//public methods
+		//public methods	
+		void			checkForRedirect(std::string _filePath);
 		connectStatus	readRequest();
 		std::string		getHeaderValue(std::string key);
 		bool			headerExists(std::string key);
 		std::string		getStatusCode();
 		void			printHeaders();
+		
+		Config*			getConfig();
 };
 
 std::string trim(const std::string& str);

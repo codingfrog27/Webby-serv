@@ -42,12 +42,12 @@ class Connection
 		Config			*_config;
 		Request			_request;
 		Response		_response;
-		bool			_isServerSocket;
+		bool			_isClientSocket;
 		bool			_wantsNewConnect;
 		int				_clientFD;
 		bool			_keepOpen;
 		t_time			_startTime;
-		t_msecs			_TimeoutTime;
+		t_secs			_IdleTimeout;
 		// bool		_doneReading;
 		
 		// Constructors and Destructors
@@ -61,4 +61,5 @@ class Connection
 		// void	resetResponse();
 		connectStatus	refreshIfKeepAlive();
 		void			connectionAction(const pollfd &poll);
+		connectStatus	checkConnectStatus(const pollfd &poll);
 } ;

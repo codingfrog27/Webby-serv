@@ -32,32 +32,35 @@ connectStatus	Request::readRequest()
 		if (isTimedOut(this->_startTime, this->_timeoutTime))
 			throw ClientErrorExcept(408, "Request Timeout");
 		if (_doneReading)
-			return (connectStatus::DONE_READING);
+			return (connectStatus::RESPONDING);
+			// return (connectStatus::DONE_READING);
 		return (connectStatus::READING);	
 	}
 	catch(ClientErrorExcept &e)
 	{
-		std::cerr << e.what() << std::endl; //response
+		std::cout << e.what() << std::endl; //response
 		_statusStr = e._errorMsg;
 		_statusCode = e._statusCode;
-		return (connectStatus::REQ_ERR);
+		return (connectStatus::RESPONDING);
+		// return (connectStatus::REQ_ERR);
 	}
 	catch (ConnectionClosedExcep &e)
 	{
-		std::cerr << "Client closed connection" << std::endl;
+		std::cout << "Client closed connection" << std::endl;
+		// NicePrint::promptEnter();
 		return (connectStatus::CONNECT_CLOSED);
 	}
 	//should maybe just make clienterr excepts?
 	catch(const std::ios_base::failure &e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cout << e.what() << std::endl;
 		_statusCode = 500;
 		_statusStr = std::to_string(_statusCode) + ' ' + e.what();
 		return (connectStatus::CONNECT_CLOSED);
 	}
 	catch(std::invalid_argument &e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cout << e.what() << std::endl;
 		_statusCode = 400;
 		_statusStr = std::to_string(_statusCode) + e.what();
 		return (connectStatus::REQ_ERR);
@@ -77,6 +80,8 @@ int	Request::readSocket(int size)
 		else
 			throw (std::ios_base::failure(" reading fail when reading from client socket"));
 	}
+	// std::cout << buffer << std::endl;
+	// NicePrint::promptEnter();
 	_rawRequestData.insert(_rawRequestData.end(), buffer, buffer + bytes_read);
 	if (_rnrnFound)
 		body_bytes_read += bytes_read;

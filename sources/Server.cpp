@@ -15,6 +15,17 @@
 #include <iostream>
 
 #define MAX_CLIENT 300
+void writeClientFD(int clientFD, int i);
+
+void writeClientFD(int clientFD, int i)
+{
+	std::ofstream outFile("clientFD_log.txt", std::ios::app);
+		outFile << "Accepted new connection with clientFD: " << clientFD <<\
+		" on index" << i << std::endl;
+		// Example of using the address of clientFD for logging or other purposes
+		// outFile << "Address of clientFD: " << &clientFD << std::endl;
+		outFile.close();
+}
 
 
 // ************************************************************************** //
@@ -32,12 +43,12 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 			std::cout << "serblock" << i << "made" << std::endl;
 			_serverSockets.emplace_back(&_serverBlocks[i], _addrInfo);
 			_pollFDs.emplace_back(pollfd{_serverSockets[i]._socketFd, POLLIN | POLLERR,  0});
-			_Connections.emplace_back(&_serverBlocks[i], _serverSockets[i]._socketFd, true);
+			_Connections.emplace_back(&_serverBlocks[i], _serverSockets[i]._socketFd, false);
 		}
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cout << e.what() << '\n';
 	}
 	std::cout << GREEN << "Server is running :)" << RESET << std::endl;
 }
@@ -74,53 +85,34 @@ Server::~Server(void)
 //								Public methods							  //
 // ************************************************************************** //
 
+	// signal(SIGPIPE, SIG_IGN);
 
-
-void	Server::close_connect(int i)
-{
-	 std::ofstream outFile("clientFD_log.txt", std::ios::app);
-		outFile << "CLOSED CONNECT with FD: " \
-		<< _Connections[i]._clientFD << " With index: " << i << std::endl;
-	// NicePrint::promptEnter();
-	close(_Connections[i]._clientFD);
-	_Connections.erase(_Connections.begin() + i);
-	_pollFDs.erase(_pollFDs.begin() + i);
-}
-
-
-#define TMP_POLL_TIME 500000
-
+	//refactor -> close connect loop 1 function, and for loops
+		//if poll timeout-> get current time
+		// std::cout << "This is start size: "<< size << std::endl;
+		// PrintConnectionStatusses(size);
 void	Server::main_server_loop()
 {
 	size_t	size;
-	size_t	i;
 	while (1)
 	{
-		//if poll timeout-> get current time
 		size = _pollFDs.size();
-		i = 0;
-		poll(_pollFDs.data(), size, 0);
-		while (i < size)
+		if (poll(_pollFDs.data(), size, 0) == 0)
+			continue; //throw server close error on >0
+		for (size_t i = 0; i < size; i++)
 		{
-			_Connections[i].connectionAction(_pollFDs[i]);
-			i++;
+			if (_Connections[i]._isClientSocket)
+				_Connections[i].connectionAction(_pollFDs[i]);	
+			else if (_pollFDs[i].revents & POLLIN)
+					_Connections[i]._wantsNewConnect = true;
 		}
-		i = 0;
-		while (i < size)
-		{
-			if (_Connections[i]._wantsNewConnect == true) {
-				acceptNewConnects(i);
-				_Connections[i]._wantsNewConnect = false;
-			}
-			i++;
-		}
-		i = 0;
-		while (i < size)
+		acceptNewConnects(size); //could mb be part of main loop after all?
+		for (size_t i = 0; i < size;)
 		{
 			if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED || \
 				_Connections[i]._CStatus == connectStatus::FINISHED)
 				{
-					close_connect(i);
+					close_connect(_Connections[i]._clientFD);
 					size--;
 				}
 			else
@@ -129,29 +121,121 @@ void	Server::main_server_loop()
 	}
 }
 
-void writeClientFD(int clientFD, int i)
-{
-    std::ofstream outFile("clientFD_log.txt", std::ios::app);
-		outFile << "Accepted new connection with clientFD: " << clientFD <<\
-		" on index" << i << std::endl;
-        // Example of using the address of clientFD for logging or other purposes
-        // outFile << "Address of clientFD: " << &clientFD << std::endl;
-        outFile.close();
-}
 
-
-void Server::acceptNewConnects(int i)
+// if (_pollFDs[i].fd != _Connections[i]._clientFD)
+// {
+// 	std::cout << "FD MISMATACH OH NO" << std::endl;
+// 	NicePrint::promptEnter();
+// }
+// close(_Connections[i]._clientFD);
+// _Connections.erase(_Connections.begin() + i);
+// _pollFDs.erase(_pollFDs.begin() + i);
+void	Server::close_connect(int fd)
 {
-	int clientFD = accept(_pollFDs[i].fd, nullptr, nullptr); //timeout check??
-	if (clientFD > 0)
+	std::ofstream outFile("clientFD_log.txt", std::ios::app);
+
+	std::vector<pollfd>::iterator it = _pollFDs.begin();
+	std::vector<Connection>::iterator itc = _Connections.begin();
+	if (_pollFDs.size() != _Connections.size())
+		std::cout << RED "VECTOR SIZE MISMAtCH BRO" RESET << std::endl;
+	while (it != _pollFDs.end())
 	{
-		// NicePrint::promptEnter(); //and donewriting
-		_pollFDs.emplace_back(pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0}); //frees???
-		_Connections.emplace_back(_Connections[i]._config, clientFD, false);
-		writeClientFD(clientFD, _Connections.size() - 1);
+		if (it->fd == fd)
+		{
+			close(fd);
+			_pollFDs.erase(it);
+			_Connections.erase(itc);
+			break ;
+		}
+		it++;
+		itc++;
+	}
+	if (it == _pollFDs.end())
+	{
+		std::cout << "bro \nI can't close connect" << fd << std::endl;
+		NicePrint::promptEnter();
 	}
 	else
-		std::cout << "NOT ACCEPTED" << std::endl;
+	{
+		std::cout << "CLOSED CONNECT with FD: " \
+		<< fd << " With index: " << std::endl;
+	}
+
 }
 
-//exits webserve after 1 response
+
+void Server::acceptNewConnects(size_t size)
+{
+	int clientFD = 0;
+	for (size_t i = 0; i < size; i++)
+	{
+		if (_Connections[i]._wantsNewConnect == true)
+		{
+			clientFD = accept(_pollFDs[i].fd, nullptr, nullptr);
+			if (clientFD <= 0)
+			{
+				std::cout << "NOT ACCEPTED" << clientFD << std::endl;
+				NicePrint::promptEnter();
+				break;
+			}
+			_Connections[i]._wantsNewConnect = false; //move
+			_pollFDs.emplace_back(\
+					pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
+			_Connections.emplace_back(_Connections[i]._config, clientFD, true);
+			writeClientFD(clientFD, i);
+		}
+	}
+}
+
+
+
+void Server::PrintConnectionStatusses(size_t size)
+{
+	for (size_t i = 0; i < size; i++)
+	{
+		// std::cout << "This is i: " << i << std::endl;
+		// std::cout << "This is after close size: "<< size << std::endl;
+		// Checking each possible enum value
+		if (_Connections[i]._CStatus == connectStatus::SERV_SOCKET) {
+			// Handle SERV_SOCKET status
+			std::cout << "This is Server socket" << std::endl;
+			// Code for handling SERV_SOCKET
+		} else if (_Connections[i]._CStatus == connectStatus::IDLE) {
+			// Handle IDLE status
+			std::cout << "This is IDLE" << std::endl;
+			// Code for handling IDLE
+		} else if (_Connections[i]._CStatus == connectStatus::READING) {
+			// Handle READING status
+			std::cout << "This is 3" << std::endl;
+			// Code for handling READING
+		} else if (_Connections[i]._CStatus == connectStatus::REQ_ERR) {
+			// Handle REQ_ERR status
+			std::cout << "This is 4" << std::endl;
+			// Code for handling REQ_ERR
+		} else if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED) {
+			// Handle CONNECT_CLOSED status
+			std::cout << "This is 5" << std::endl;
+			// Code for handling CONNECT_CLOSED
+		} else if (_Connections[i]._CStatus == connectStatus::DONE_READING) {
+			// Handle DONE_READING status
+			std::cout << "This is 6" << std::endl;
+			// Code for handling DONE_READING
+		} else if (_Connections[i]._CStatus == connectStatus::DONE_READING_CGI) {
+			// Handle DONE_READING_CGI status
+			std::cout << "This is 7" << std::endl;
+			// Code for handling DONE_READING_CGI
+		} else if (_Connections[i]._CStatus == connectStatus::RESPONDING) {
+			// Handle RESPONDING status
+			std::cout << "This is 8" << std::endl;
+			// Code for handling RESPONDING
+		} else if (_Connections[i]._CStatus == connectStatus::SERVER_ERR) {
+			// Handle SERVER_ERR status
+			std::cout << "This is 9" << std::endl;
+			// Code for handling SERVER_ERR
+		} else if (_Connections[i]._CStatus == connectStatus::FINISHED) {
+			// Handle FINISHED status
+			std::cout << "This is 10" << std::endl;
+			// Code for handling FINISHED
+		}
+	}
+}

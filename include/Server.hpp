@@ -29,7 +29,7 @@ class Server
 		// const int	_max_clients;
 
 		void		setupAddrInfo(Config *config);
-		void		acceptNewConnects(int i);
+		void		acceptNewConnects(size_t size);
 		void		close_connect(int i);
 	public:
 					Server(std::vector<Config>& vec);
@@ -38,4 +38,5 @@ class Server
 		Server		&operator=(const Server &rhs) = delete;
 		void		main_server_loop();
 		void		connectionAction(Connection &connect, pollfd &poll);
+		void		PrintConnectionStatusses(size_t size);
 };

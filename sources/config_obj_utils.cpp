@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   config_obj_utils.cpp                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
+/*   Updated: 2025/01/13 13:32:14 by mde-cloe         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "Config.hpp"
 #include "Colors.hpp"
@@ -102,12 +112,12 @@ void	Config::setHost(const std::string &host)
 	this->_host = host;
 }
 
-std::unordered_map<std::string, std::string>	Config::getErrorPage()
+std::multimap<std::string, std::string>	Config::getErrorPage()
 {
 	return(this->_errorPage);
 }
 
-void	Config::setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap)
+void	Config::setErrorPage(const std::multimap<std::string, std::string> &errorPageMap)
 {
 	this->_errorPage = errorPageMap;
 }
@@ -130,6 +140,26 @@ std::vector<std::string>	Config::getIndex()
 void	Config::setIndex(const std::vector<std::string> &index_vector)
 {
 	this->_index = index_vector;
+}
+
+size_t	Config::getTimeout()
+{
+	return(this->_timeout);
+}
+
+void	Config::setTimeout(const size_t& timeout)
+{
+	this->_timeout = timeout;
+}
+
+bool		Config::getAutoindex()
+{
+	return (this->_autoindex);
+}
+
+void Config::setAutoindex(const bool& autoIndex)
+{
+	this->_autoindex = autoIndex;
 }
 
 Config::NoBlockFound::NoBlockFound(std::string errMsg) : _errMsg(errMsg)

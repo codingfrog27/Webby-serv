@@ -10,7 +10,8 @@ void	CGIHandler(Request* request, Response* response){
 	int	fdIn[2];
 	int	fdOut[2];
 	int fdError[2];
-
+	// std::cout << "in CGI???" << std::endl;
+	// NicePrint::promptEnter();
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS){
 		// should we even invoke CGI?
 		if (request->_method_type != GET && request->_method_type != POST){

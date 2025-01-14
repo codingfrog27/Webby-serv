@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/06 12:25:32 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/14 13:39:57 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ size_t	Request::parse_req_line(std::string req_line)
 	_method_type = which_method_type(req_line.substr(0, method_end));
 	_URI = req_line.substr(method_end + 2, uri_end - method_end - 1); //temp + 2??
 	resolveFilePath();
+	checkForRedirect(_filePath);
 	_http_version = http_version(&req_line[uri_end + 1]);
 	return (line_end + 2);
 }
@@ -94,6 +95,35 @@ void	Request::checkHeaders()
 		checkBodyHeaders();
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void	Request::checkBodyHeaders()
 {
 	_hasBody = true;
@@ -112,12 +142,12 @@ void	Request::checkBodyHeaders()
 	}
 	catch(const std::invalid_argument& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cout << e.what() << '\n';
 		throw (ClientErrorExcept(413, "413 Payload too large"));
 	}
 	catch(const std::out_of_range& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cout << e.what() << '\n';
 		throw (ClientErrorExcept(413, "413 Payload too large"));
 	}
 	if (_contentLen == 0)
