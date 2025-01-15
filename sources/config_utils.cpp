@@ -13,6 +13,7 @@
 #include "Config.hpp"
 #include "NicePrint.hpp"
 
+
 std::ostream& operator<<(std::ostream& os, const Config& config)
 {
 	os << "Server Name: " << config._serverName << "\n";
@@ -81,64 +82,65 @@ std::string	normalize_space(std::string& str)
 	return (str);
 }
 
-void printConfigs(std::vector<Config> &configs)
-{
-    for (size_t i = 0; i < configs.size(); i++) {
-        std::cout << "Server block:\n" << configs[i].toString();
+// void printConfigs(std::vector<Config> &configs)
+// {
+//     for (size_t i = 0; i < configs.size(); i++) {
+//         std::cout << "Server block:\n" << configs[i].toString();
 		
-		std::vector<std::string> serverIndex = configs[i].getIndex();
-        std::cout << "Server Index: ";
-        for (const auto &idx : serverIndex) {
-            std::cout << idx << ' ';
-        }
-		std::cout << std::endl;
+// 		std::vector<std::string> serverIndex = configs[i].getIndex();
+//         std::cout << "Server Index: ";
+//         for (const auto &idx : serverIndex) {
+//             std::cout << idx << ' ';
+//         }
+// 		std::cout << std::endl;
 
-		std::unordered_map<std::string, std::string> errorPage = configs[i].getErrorPage();
-        std::cout << "Server ErrorPage: ";
-        for (const auto &idx : errorPage) {
-            std::cout << idx.first << " " << idx.second;
-        }
-		std::cout << std::endl;
-		std::cout << LINE << std::endl;
+// 		std::unordered_map<std::string, std::string> errorPage = configs[i].getErrorPage();
+//         std::cout << "Server ErrorPage: ";
+//         for (const auto &idx : errorPage) {
+//             std::cout << idx.first << " " << idx.second;
+//         }
+// 		std::cout << std::endl;
+// 		std::cout << LINE << std::endl;
 
-        for (size_t j = 0; j < configs[i]._locations.size(); j++) {
-            std::cout << "Location block:\n" << configs[i]._locations[j].toString();
+//         for (size_t j = 0; j < configs[i]._locations.size(); j++) {
+//             std::cout << "Location block:\n" << configs[i]._locations[j].toString();
 
-            std::vector<std::string> locationAllowMethods = configs[i]._locations[j].getAllowMethods();
-            std::cout << "Allow Methods:";
-            for (const auto &method : locationAllowMethods) {
-                std::cout << method << ' ';
-            }
-			std::cout << std::endl;
+//             std::vector<Http_method> locationAllowMethods = configs[i]._locations[j].getAllowMethods();
+//             std::cout << "Allow Methods:";
+//             for (const auto &method : locationAllowMethods) {
+// 				if (method == Http_method::)
+//                 std::cout << (int)method << ' ';
+//             }
+// 			std::cout << std::endl;
 
-            std::vector<std::string> locationCgiExtensions = configs[i]._locations[j].getCgiExtension();
-            std::cout << "CGI Extensions: ";
-            for (const auto &extension : locationCgiExtensions) {
-                std::cout << extension << ' ';
-            }
-			std::cout << std::endl;
+//             std::vector<std::string> locationCgiExtensions = configs[i]._locations[j].getCgiExtension();
+//             std::cout << "CGI Extensions: ";
+//             for (const auto &extension : locationCgiExtensions) {
+//                 std::cout << extension << ' ';
+//             }
+// 			std::cout << std::endl;
 
-            std::vector<std::string> locationCgiPaths = configs[i]._locations[j].getCgiPath();
-            std::cout << "CGI Paths: ";
-            for (const auto &path : locationCgiPaths) {
-                std::cout << path << ' ';
-            }
-			std::cout << std::endl;
+//             std::vector<std::string> locationCgiPaths = configs[i]._locations[j].getCgiPath();
+//             std::cout << "CGI Paths: ";
+//             for (const auto &path : locationCgiPaths) {
+//                 std::cout << path << ' ';
+//             }
+// 			std::cout << std::endl;
 
-            std::vector<std::string> locationIndex = configs[i]._locations[j].getIndex();
-            std::cout << "Index: ";
-            for (const auto &idx : locationIndex) {
-                std::cout << idx << ' ';
-            }
-			std::cout << std::endl;
+//             std::vector<std::string> locationIndex = configs[i]._locations[j].getIndex();
+//             std::cout << "Index: ";
+//             for (const auto &idx : locationIndex) {
+//                 std::cout << idx << ' ';
+//             }
+// 			std::cout << std::endl;
 			
-			std::cout<< LINE << std::endl;
-			// std::cout << "This is the nestedLocations size: " << configs[i]._locations[j]._nestedLocations.size() << std::endl;
-            for (size_t k = 0; k < configs[i]._locations[j]._nestedLocations.size(); k++) {
-                std::cout << "NESTED location block: " 
-                          << configs[i]._locations[j]._nestedLocations[k].toString() << std::endl;
-			std::cout<< LINE << std::endl;
-            }
-        }
-    }
-}
+// 			std::cout<< LINE << std::endl;
+// 			// std::cout << "This is the nestedLocations size: " << configs[i]._locations[j]._nestedLocations.size() << std::endl;
+//             for (size_t k = 0; k < configs[i]._locations[j]._nestedLocations.size(); k++) {
+//                 std::cout << "NESTED location block: " 
+//                           << configs[i]._locations[j]._nestedLocations[k].toString() << std::endl;
+// 			std::cout<< LINE << std::endl;
+//             }
+//         }
+//     }
+// }

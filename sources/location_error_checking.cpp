@@ -41,12 +41,13 @@ std::string	normalize_space_location(std::string& str)
 	return (str);
 }
 
-std::vector<std::string> location::validateAllowMethods()
+std::vector<Http_method> location::validateAllowMethods() //enum
 {
 	std::string allow_methods_rule;
     std::string allow_methods_value;
 	std::string tmp_value;
-	std::vector<std::string>  tmp_vector;
+	std::vector<Http_method>  tmp_vector; //eunm
+	std::vector<std::string>  methods = {"POST", "GET", "DELETE"};
 	
 	static int space = 0;
 
@@ -72,9 +73,12 @@ std::vector<std::string> location::validateAllowMethods()
 	if (space == 0)
 	{
 		tmp_value = allow_methods_value.substr(0, allow_methods_value.length());
-		if (tmp_value == "POST" || tmp_value == "GET" || tmp_value == "DELETE") //|| isspace(tmp_value[space]) == 0)
-			tmp_vector.push_back(tmp_value);
-		else
+		for (size_t i = 0; i < methods.size(); i++)
+		{
+			if (tmp_value == methods[i])
+				tmp_vector.push_back((Http_method)i);
+		}
+		if (tmp_vector.empty())
 		 	throw std::invalid_argument("Error: invalid ruleeeee in allow_methods directive");
 	}
 	else
@@ -91,9 +95,12 @@ std::vector<std::string> location::validateAllowMethods()
 			if (start < i)
 			{
 				tmp_value = allow_methods_value.substr(start, i - start);
-				if (tmp_value == "POST" || tmp_value == "GET" || tmp_value == "DELETE")
-					tmp_vector.push_back(tmp_value);
-				else
+				for (size_t i = 0; i < methods.size(); i++)
+				{
+					if (tmp_value == methods[i])
+						tmp_vector.push_back((Http_method)i);
+				}
+				if (tmp_vector.empty())
 					throw std::invalid_argument("Error: invalid rule in autoindex directive");
 			}
 		}

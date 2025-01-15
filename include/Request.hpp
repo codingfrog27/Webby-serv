@@ -26,6 +26,7 @@
 #include "libft.h"
 #include "ClientErrorExcept.hpp"
 #include "ConnectionClosedExcep.hpp"
+#include "location.hpp"
 #include "Config.hpp"
 #include "timeout.hpp"
 
@@ -49,7 +50,7 @@ enum reading_status
 	FINISHED
 };
 
-enum Http_method
+enum class Http_method
 {
 	INVALID = -1,
 	GET,
@@ -131,6 +132,7 @@ class Request
 		void			printHeaders();
 		
 		Config*			getConfig();
+		void   			checkRules(location &rules);
 };
 
 std::string trim(const std::string& str);

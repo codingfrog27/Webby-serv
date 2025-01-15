@@ -15,7 +15,7 @@
 Request::Request(Config *config, int clientFD): _config(config), \
 	reading_mode(NOT_STARTED), body_bytes_read(0), _rnrnFound(false), \
 	_headerAreParsed(false), _hasBody(false), _clientFD(clientFD), \
-	_method_type(NOT_PARSED_YET), _keepOpen(true), _doneReading(false), \
+	_method_type(Http_method::NOT_PARSED_YET), _keepOpen(true), _doneReading(false), \
 	_statusStr("0 Not started yet")
 {
 	_rawRequestData.reserve(100);

@@ -15,7 +15,10 @@
 #include <map>
 #include <memory>
 #include <unordered_map>
+//  #include "Request.hpp"
 #include <vector>
+
+enum class Http_method;
 
 class location
 {
@@ -24,14 +27,14 @@ class location
 
 
 	public:
-		std::string				 _alias;
-		std::vector<std::string>	_allow_methods;
+		std::string				 	_alias;
+		std::vector<Http_method> 			_allow_methods;
 		bool						_autoindex;
 		std::vector<std::string>	_cgi_extension;
 		std::vector<std::string>	_cgi_path; 
 		std::vector<std::string>	_index;
-		std::string				 _return;
-		std::string				 _root;
+		std::string				 	_return;
+		std::string				 	_root;
 
 		std::vector<location>   _nestedLocations;
 		std::unordered_map<std::string, std::string> _rulemap;
@@ -49,7 +52,7 @@ class location
 		std::string getName() const;
 
 		std::string	getAlias();
-		std::vector<std::string>	getAllowMethods();
+		std::vector<Http_method> 	getAllowMethods();
 		bool		getAutoindex();
 		std::vector<std::string>	getCgiExtension();
 		std::vector<std::string>	getCgiPath();
@@ -57,7 +60,7 @@ class location
 		std::string	getReturn();
 		std::string	getRoot();
 		void	setAlias(const std::string &alias);
-		void	setAllowMethods(const std::vector<std::string> &allow_methods);
+		void	setAllowMethods(const std::vector<Http_method> &allow_methods);
 		void	setAutoindex(const bool &autoindex);
 		void	setCgiExtension(const std::vector<std::string> &cgi_extension);
 		void	setCgiPath(const std::vector<std::string> &cgi_path);
@@ -68,7 +71,7 @@ class location
 
 		std::string toString() const;
 		std::string validateAlias();
-		std::vector<std::string> validateAllowMethods();
+		std::vector<Http_method> validateAllowMethods();
 		bool validateAutoindex();
 		std::vector<std::string> validateIndex();
 		std::string validateReturn();

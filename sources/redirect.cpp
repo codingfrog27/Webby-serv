@@ -68,17 +68,103 @@ void sendHTMLPage(int client_socket, const std::string& file_path)
 	file.close();
 }
 
+void printConfig(Config *configs)
+{
+    // for (size_t i = 0; i < configs.size(); i++) {
+    //     std::cout << "Server block:\n" << configs[i].toString();
+		
+		std::vector<std::string> serverIndex = configs->getIndex();
+        std::cout << "Server Index: ";
+        for (const auto &idx : serverIndex) {
+            std::cout << idx << ' ';
+        }
+		std::cout << std::endl;
+
+		std::unordered_map<std::string, std::string> errorPage = configs->getErrorPage();
+        std::cout << "Server ErrorPage: ";
+        for (const auto &idx : errorPage) {
+            std::cout << idx.first << " " << idx.second;
+        }
+		std::cout << std::endl;
+		std::cout << LINE << std::endl;
+
+        for (size_t j = 0; j < configs->_locations.size(); j++) {
+            std::cout << "Location block:\n" << configs->_locations[j].toString();
+
+            std::vector<Http_method> locationAllowMethods = configs->_locations[j].getAllowMethods();
+            std::cout << "Allow Methods:";
+            for (const auto &method : locationAllowMethods) {
+                if (method == Http_method::GET)
+                    std::cout << "ayy its get" << ' ';
+            }
+			std::cout << std::endl;
+
+            std::vector<std::string> locationCgiExtensions = configs->_locations[j].getCgiExtension();
+            std::cout << "CGI Extensions: ";
+            for (const auto &extension : locationCgiExtensions) {
+                std::cout << extension << ' ';
+            }
+			std::cout << std::endl;
+
+            std::vector<std::string> locationCgiPaths = configs->_locations[j].getCgiPath();
+            std::cout << "CGI Paths: ";
+            for (const auto &path : locationCgiPaths) {
+                std::cout << path << ' ';
+            }
+			std::cout << std::endl;
+
+            std::vector<std::string> locationIndex = configs->_locations[j].getIndex();
+            std::cout << "Index: ";
+            for (const auto &idx : locationIndex) {
+                std::cout << idx << ' ';
+            }
+			std::cout << std::endl;
+			
+			std::cout<< LINE << std::endl;
+			// std::cout << "This is the nestedLocations size: " << configs->_locations[j]->_nestedLocations.size() << std::endl;
+            for (size_t k = 0; k < configs->_locations[j]._nestedLocations.size(); k++) {
+                std::cout << "NESTED location block: " 
+                          << configs->_locations[j]._nestedLocations[k].toString() << std::endl;
+			std::cout<< LINE << std::endl;
+            }
+        }
+    // }
+}
+
+
 void    Request::checkForRedirect(std::string _filePath)
 {
-    std::cout << "This is the _filePath: " << _filePath << std::endl;
+    (void) _filePath;
+    // std::cout << "This is the _filePath: " << _filePath << std::endl;
+
+    checkRules(this->_config->_locations[0]);
+    // if(this->_config->_locations[0]._nestedLocations[0]._return != "")
+    //     std::cout << "this is the Redirect" << this->_config->_locations[0]._nestedLocations[0]._return << std::endl;
+  
     // Config *config = getConfig();
+
+	// std::cout << "Hello!" << std::endl;
+	// printConfig(config);
 
     
 
     if (_config != nullptr)
     {
-        sendHTMLPage(_clientFD, _filePath);
+        // sendHTMLPage(_clientFD, _filePath);
     }
     else if (_config == nullptr)
         std::cerr << "Config is nullptr" << std::endl;
+}
+
+void    Request::checkRules(location &rules)
+{	//loop through allowed methods to check if is allowed
+
+    (void)rules;
+      Config *config = getConfig();
+     	// std::cout << "Hello!" << std::endl;
+	 printConfig(config);
+    // rules._allow_methods
+	//if redirect change path to redirect path
+	//if autoindex && filepath == folder change path to index
+	//alias?? maybe cgi??
 }

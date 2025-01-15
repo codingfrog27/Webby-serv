@@ -149,36 +149,37 @@ void	Server::main_server_loop()
 		i = 0;
 		while (i < size)
 		{
-			if (_Connections[i]._CStatus == connectStatus::SERV_SOCKET) {
-			    
-			    std::cout << "This is 1" << std::endl;
-			} else if (_Connections[i]._CStatus == connectStatus::IDLE){
-			    std::cout << "This is 2" << std::endl;
-			} else if (_Connections[i]._CStatus == connectStatus::READING) {
-			    std::cout << "This is 3" << std::endl;
-			} else if (_Connections[i]._CStatus == connectStatus::REQ_ERR) {
-			    std::cout << "This is 4" << std::endl;
-			} else if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED) {
-			    std::cout << "This is 5" << std::endl;
-			} else if (_Connections[i]._CStatus == connectStatus::DONE_READING) {
-			    std::cout << "This is 6" << std::endl;
-			} else if (_Connections[i]._CStatus == connectStatus::DONE_READING_CGI) {
-			    std::cout << "This is 7" << std::endl;
-			} else if (_Connections[i]._CStatus == connectStatus::RESPONDING) {
-			    std::cout << "This is 8" << std::endl;
-			} else if (_Connections[i]._CStatus == connectStatus::SERVER_ERR) {
-			    std::cout << "This is 9" << std::endl;
-			} else if (_Connections[i]._CStatus == connectStatus::FINISHED) {
-			    std::cout << "This is 10" << std::endl;
-			}
-			if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED || \
-				_Connections[i]._CStatus == connectStatus::FINISHED)
-				{
-					close_connect(_Connections[i]._clientFD);
-					size--;
-				}
-			else
-				i++;
+			// if (_Connections[i]._CStatus == connectStatus::SERV_SOCKET) 
+			// {    
+			//     std::cout << "This is 1" << std::endl;
+			// } else if (_Connections[i]._CStatus == connectStatus::IDLE){
+			//     std::cout << "This is 2" << std::endl;
+			// } else if (_Connections[i]._CStatus == connectStatus::READING) {
+			//     std::cout << "This is 3" << std::endl;
+			// } else if (_Connections[i]._CStatus == connectStatus::REQ_ERR) {
+			//     std::cout << "This is 4" << std::endl;
+			// } else if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED) {
+			//     std::cout << "This is 5" << std::endl;
+			// } else if (_Connections[i]._CStatus == connectStatus::DONE_READING) {
+			//     std::cout << "This is 6" << std::endl;
+			// } else if (_Connections[i]._CStatus == connectStatus::DONE_READING_CGI) {
+			//     std::cout << "This is 7" << std::endl;
+			// } else if (_Connections[i]._CStatus == connectStatus::RESPONDING) {
+			//     std::cout << "This is 8" << std::endl;
+			// } else if (_Connections[i]._CStatus == connectStatus::SERVER_ERR) {
+			//     std::cout << "This is 9" << std::endl;
+			// } else if (_Connections[i]._CStatus == connectStatus::FINISHED) {
+			//     std::cout << "This is 10" << std::endl;
+			// }
+				if (_Connections[i]._CStatus == connectStatus::CONNECT_CLOSED || \
+					_Connections[i]._CStatus == connectStatus::FINISHED)
+					{
+						close_connect(_Connections[i]._clientFD);
+						size--;
+					}
+				else
+					i++;
+			// }
 		}
 	}
 }

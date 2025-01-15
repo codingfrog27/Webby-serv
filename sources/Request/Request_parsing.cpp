@@ -36,7 +36,8 @@ size_t	Request::parse_req_line(std::string req_line)
 	_method_type = which_method_type(req_line.substr(0, method_end));
 	_URI = req_line.substr(method_end + 2, uri_end - method_end - 1); //temp + 2??
 	resolveFilePath();
-	checkForRedirect(_filePath);
+	std::string file_path = this->_filePath;
+	checkForRedirect(file_path);
 	_http_version = http_version(&req_line[uri_end + 1]);
 	return (line_end + 2);
 }
@@ -86,7 +87,7 @@ void	Request::checkHeaders()
 		throw(std::invalid_argument("400 bad request: Host missing"));
 	if (getHeaderValue("Connection") == "close")
 		_keepOpen = false;
-	if (_method_type == GET)
+	if (_method_type == Http_method::GET)
 	{
 		_doneReading = true;
 		_statusStr = "";
