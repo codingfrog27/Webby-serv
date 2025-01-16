@@ -2,7 +2,7 @@
 #include <filesystem>
 #include "socket.hpp"
 
-std::string generate_directory_listing(const std::string& _filePath) //should become response func 
+		std::string generate_directory_listing(const std::string& _filePath) //should become response func 
 {
 	std::ostringstream html;
 
@@ -89,18 +89,33 @@ void	Request::checkLocationMatch(std::vector<location> &locs, location &rulebloc
 	
 }
 
+void assignStrIfNonEmpty(std::string &dest, std::string &rhs)
+{
+	if (!rhs.empty())
+		dest = rhs;
+}
+
 void	Request::setLocRules(location &loc, location &ruleblock)
 {
-	if ()
-	ruleblock.
+	// assignStrIfNonEmpty(ruleblock._allow_methods, loc._allow_methods); //change after merge
+	// assignStrIfNonEmpty(ruleblock._index, loc._index);
+	assignStrIfNonEmpty(ruleblock._alias, loc._alias);
+	assignStrIfNonEmpty(ruleblock._return, loc._return);
+	assignStrIfNonEmpty(ruleblock._root, loc._root);
+	if (!loc._index.empty())
+		ruleblock._index = loc._index;
+	if (!loc._cgi_extension.empty())
+		ruleblock._cgi_extension = loc._cgi_extension;
+	if (!loc._cgi_path.empty())
+		ruleblock._cgi_path = loc._cgi_path;
 	checkLocationMatch(loc._nestedLocations, ruleblock);
-
 }
 
-checkLocRules(location &ruleblock)
-{
 
-}
+// checkLocRules(location &ruleblock)
+// {
+
+// }
 
 // void checkRules(location &rules)
 // {	//loop through allowed methods to check if is allowed

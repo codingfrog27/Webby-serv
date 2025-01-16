@@ -133,21 +133,24 @@ void	Server::main_server_loop()
 void	Server::close_connect(int fd)
 {
 	std::ofstream outFile("clientFD_log.txt", std::ios::app);
+	static	int counter;
 
 	std::vector<pollfd>::iterator it = _pollFDs.begin();
 	std::vector<Connection>::iterator itc = _Connections.begin();
 	if (_pollFDs.size() != _Connections.size())
 		std::cout << RED "VECTOR SIZE MISMAtCH BRO" RESET << std::endl;
+	std::cout << "call nbr " << counter << std::endl;
+	counter++;
 	while (it != _pollFDs.end())
 	{
-		if (itc->_clientFD == fd)
+		if (it->fd == fd)
 		{
 			close(fd);
 			_pollFDs.erase(it);
 			_Connections.erase(itc);
 			std::cout << "CLOSED CONNECT with FD: " \
 			<< fd << " With index: " << std::endl;
-			break ;
+			return;
 		}
 		it++;
 		itc++;
