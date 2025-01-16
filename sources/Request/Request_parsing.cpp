@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/16 14:58:49 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/16 16:09:14 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,6 +180,10 @@ std::string	urlDecode(const std::string &encoded);
 
 void	Request::parseUrlEncoded()
 {
+	if (_reqBody.size() < 2) {
+		std::cout << "url decode without body???" << std::endl;
+		return;
+	}
 	std::istringstream stream(_reqBody.substr(2));
 	std::string pair;
 
