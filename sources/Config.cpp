@@ -76,7 +76,6 @@ std::string	extractLocationName(std::string line)
             endPos = location.length();
     location_name = location.substr(startPos, endPos - startPos);
 	}
-	std::cout << location_name << std::endl;
 	return (location_name);
 }
 

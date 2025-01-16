@@ -21,12 +21,12 @@
 #include <algorithm>
 #include <unordered_map>
 #include <sys/socket.h>
+#include "location.hpp"
 
 
 #include "libft.h"
 #include "ClientErrorExcept.hpp"
 #include "ConnectionClosedExcep.hpp"
-#include "location.hpp"
 #include "Config.hpp"
 #include "timeout.hpp"
 
@@ -124,7 +124,6 @@ class Request
 		//get and setters
 		const std::string &getBody();
 		//public methods	
-		void			checkForRedirect(std::string _filePath);
 		connectStatus	readRequest();
 		std::string		getHeaderValue(std::string key);
 		bool			headerExists(std::string key);
@@ -132,7 +131,12 @@ class Request
 		void			printHeaders();
 		
 		Config*			getConfig();
-		void   			checkRules(location &rules);
+		void			checkLocations(std::string _filePath);
+		void			checkLocationMatch(std::vector<location> &locs, location &rules);
+		void			setLocRules(location &loc, location &ruleblock);
+		void    		checkForRedirect(std::string _filePath);
+		void  			checkRules(location &rules);
+		void			send_directory_listing_page(std::string html_page);
 };
 
 std::string trim(const std::string& str);

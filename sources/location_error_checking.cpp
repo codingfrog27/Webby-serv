@@ -41,12 +41,12 @@ std::string	normalize_space_location(std::string& str)
 	return (str);
 }
 
-std::vector<Http_method> location::validateAllowMethods() //enum
+std::vector<Http_method> location::validateAllowMethods()
 {
 	std::string allow_methods_rule;
     std::string allow_methods_value;
 	std::string tmp_value;
-	std::vector<Http_method>  tmp_vector; //eunm
+	std::vector<Http_method>  tmp_vector;
 	std::vector<std::string>  methods = {"POST", "GET", "DELETE"};
 	
 	static int space = 0;
@@ -194,7 +194,7 @@ std::vector<std::string>		location::validateIndex()
 			if (!isspace(index_value[i]))
 			{	
 				for (j = i; !isspace(index_value[j]) && j < (index_value.length()); j++)
-					tmp_value = index_value.substr(i, j - i);
+					tmp_value = index_value.substr(i, j - i + 1);
 				tmp_vector.push_back(tmp_value);
 				i = j;	
 			}
