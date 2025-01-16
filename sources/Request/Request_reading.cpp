@@ -28,7 +28,6 @@ connectStatus	Request::readRequest()
 			std::cout << "PARSING BODY" << std::endl;
 			parseBody();
 		}
-		signal(SIGPIPE, SIG_IGN); // Broken pipe error
 		if (isTimedOut(this->_startTime, this->_timeoutTime))
 			throw ClientErrorExcept(408, "Request Timeout");
 		if (_doneReading)
