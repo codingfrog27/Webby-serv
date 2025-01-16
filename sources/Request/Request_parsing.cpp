@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Request_parsing.cpp                                :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/16 14:58:49 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Request_parsing.cpp                                :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/01/16 16:32:23 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,9 @@ bool	Request::dechunkBody()
 void	Request::parseBody()
 {
 	std::string		content_type = getHeaderValue("Content-Type");
+	std::cout << "path " << _filePath << std::endl;
+	std::cout << "content type: " << content_type << std::endl;
+	std::cout << "body: " << _reqBody << std::endl;
 	if(content_type.compare("multipart/form-data; boundary=") == 0)
 		parseFormData(content_type);
 	else if (content_type.compare("application/x-www-form-urlencoded") == 0)

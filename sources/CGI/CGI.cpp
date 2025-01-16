@@ -47,7 +47,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 			close(_fdOut[1]);
 			close(_fdError[1]);
 		}
-		return ;
+		// return ;
 	}
 	if (_PID != 0) { //parent
 		if (_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS && request->_method_type == GET)
@@ -72,7 +72,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 				close(_fdIn[1]);
 				_CGIHandlerStatus = CGIHandlerStatus::WAITING_FOR_CHILD;
 			}
-			return ;
+			// return ;
 		}
 		if (_CGIHandlerStatus == CGIHandlerStatus::WAITING_FOR_CHILD){
 			std::cout << MAGENTA "Waiting for child" RESET << std::endl;
@@ -87,7 +87,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 				_CGIHandlerStatus = CGIHandlerStatus::READING_FDOUT;
 				// response->setResponseBuffer(request->_http_version + " 200 OK\r\n"); //needed if generate response doesnt work!
 			}
-			return ;
+			// return ;
 		}
 		if (_CGIHandlerStatus == CGIHandlerStatus::READING_FDOUT){
 			std::cout << MAGENTA "Reading from child" RESET << std::endl;
@@ -105,7 +105,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 				close(_fdOut[0]);
 				_CGIHandlerStatus = CGIHandlerStatus::READING_FDERROR;
 			}
-			return ;
+			// return ;
 		}
 		// std::cout << MAGENTA "Res Body	: " << responseBuffer << std::endl;
 		if (_CGIHandlerStatus == CGIHandlerStatus::READING_FDERROR){
@@ -126,7 +126,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 				}
 				_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 			}
-			return ;
+			// return ;
 		}
 	}
 	if (_CGIHandlerStatus == CGIHandlerStatus::FINISHED){
@@ -147,13 +147,12 @@ void	CGI::executeScript(Request* request, Response* response){
 	return ;
 }
 
-void	CGI::closePipes(){
+void CGI::closePipes(){
 	for (int i = 0; i < 2; i++){
-		close(_fdIn[i]);
-		close(_fdOut[i]);
-		close(_fdError[i]);
+		if (_fdIn[i] != -1) close(_fdIn[i]);
+		if (_fdOut[i] != -1) close(_fdOut[i]);
+		if (_fdError[i] != -1) close(_fdError[i]);
 	}
-	return ;
 }
 
 void CGI::setupCGIEnvironment(Request* request) {
@@ -161,6 +160,7 @@ void CGI::setupCGIEnvironment(Request* request) {
 		CGI::addToEnvp("REQUEST_METHOD", "GET");
 		if (request->_URI.find("?") != std::string::npos) {
 			CGI::addToEnvp("QUERY_STRING", request->_URI.substr(request->_URI.find("?") + 1));
+			std::cout << LILAC "QUERY_STRING: " << request->_URI.substr(request->_URI.find("?") + 1) << RESET << std::endl;
 		}
 	}
 	else if (request->_method_type == POST) {
