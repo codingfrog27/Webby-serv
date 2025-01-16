@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <poll.h>
 
 class Request;
 class Response;
@@ -25,19 +26,30 @@ class CGI{
 
 		void				invokeCGI(Request* request, Response* response);
 		void				executeScript(Request* request, Response* response);
-		void				closePipes();
+		void				closePipes(void);
 
+		// void				setupPollFds(void);
 		void				setupCGIEnvironment(Request* request);
 		void 				addToEnvp(std::string key, std::string value);
 
+		void				writeToCGI(Request* request, Response* response);
+		void				readFromCGI(Response* response);
+		void				readErrorFromCGI(Response* response);
+
 		void				setCGIHandlerStatus(CGIHandlerStatus status);
 		CGIHandlerStatus	getCGIHandlerStatus() const;
+		pollfd				*getPollFdIn(void);
+		pollfd				*getPollFdOut(void);
+		pollfd				*getPollFdError(void);
 
 	private:
 		std::vector<char*>	_envp;
 		int					*_fdIn;
 		int					*_fdOut;
 		int					*_fdError;
+		pollfd				_pollFdIn;
+		pollfd				_pollFdOut;
+		pollfd				_pollFdError;
 		CGIHandlerStatus	_CGIHandlerStatus;
 		int					_PID;
 		size_t				_bytesWrittenToChild;

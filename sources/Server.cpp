@@ -118,6 +118,7 @@ void	Server::main_server_loop()
 			else
 				i++;
 		}
+		handleCGIPollEvents();
 	}
 }
 
@@ -162,6 +163,24 @@ void	Server::close_connect(int fd)
 	}
 }
 
+void Server::handleCGIPollEvents() {
+	for (size_t i = 0; i < _Connections.size(); i++) {
+		CGI* cgi = _Connections[i]._response.getCGI();
+		Request* request = &_Connections[i]._request;
+		Response* response = &_Connections[i]._response;
+		if (cgi) {
+			if (cgi->getPollFdIn()->revents & POLLOUT) {
+				cgi->writeToCGI(request, response);
+			}
+			if (cgi->getPollFdOut()->revents & POLLIN) {
+				cgi->readFromCGI(response);
+			}
+			if (cgi->getPollFdError()->revents & POLLIN) {
+				cgi->readErrorFromCGI(response);
+			}
+		}
+	}
+}
 
 void Server::acceptNewConnects(size_t size)
 {

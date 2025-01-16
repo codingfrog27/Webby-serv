@@ -29,6 +29,7 @@ class Server
 		// const int	_max_clients;
 
 		void		setupAddrInfo(Config *config);
+		void		handleCGIPollEvents();
 		void		acceptNewConnects(size_t size);
 		void		close_connect(int i);
 	public:

@@ -49,6 +49,7 @@ void	CGIHandler(Request* request, Response* response){
 		CGI* newCGI = new CGI(fdIn, fdOut, fdError);
 		newCGI->setupCGIEnvironment(request);
 		response->setCGI(newCGI);
+		//how do i pushback the cgiPollFD's to the _pollFDs vector?
 	}
 	CGI* CGI = response->getCGI();
 	CGI->invokeCGI(request, response);
