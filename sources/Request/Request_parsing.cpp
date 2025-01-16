@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/14 13:39:57 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/16 14:58:49 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ size_t	Request::parse_req_line(std::string req_line)
 	_method_type = which_method_type(req_line.substr(0, method_end));
 	_URI = req_line.substr(method_end + 2, uri_end - method_end - 1); //temp + 2??
 	resolveFilePath();
-	checkForRedirect(_filePath);
+	// checkLocations(_filePath);
 	_http_version = http_version(&req_line[uri_end + 1]);
 	return (line_end + 2);
 }
@@ -82,6 +82,7 @@ void	Request::parse_headers(std::string header_str)
 
 void	Request::checkHeaders()
 {
+	
 	if (!headerExists("Host"))
 		throw(std::invalid_argument("400 bad request: Host missing"));
 	if (getHeaderValue("Connection") == "close")
@@ -94,26 +95,6 @@ void	Request::checkHeaders()
 	else
 		checkBodyHeaders();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

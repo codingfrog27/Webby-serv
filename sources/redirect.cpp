@@ -2,30 +2,30 @@
 #include <filesystem>
 #include "socket.hpp"
 
-std::string generate_directory_listing(const std::string& _filePath) 
+		std::string generate_directory_listing(const std::string& _filePath) //should become response func 
 {
-    std::ostringstream html;
+	std::ostringstream html;
 
-    html << "<html><head><title>Directory Listing</title></head><body>\n";
-    html << "<h1>Directory listing for " << _filePath << "</h1>\n";
-    html << "<ul>\n";
+	html << "<html><head><title>Directory Listing</title></head><body>\n";
+	html << "<h1>Directory listing for " << _filePath << "</h1>\n";
+	html << "<ul>\n";
 
-    if (std::filesystem::exists(_filePath) && std::filesystem::is_directory(_filePath))
-    {
-        for (const auto& it : std::filesystem::directory_iterator(_filePath)) 
-        {
-            std::string entry_name = it.path().filename().string();
-            if (it.is_directory()) 
-                html << "<li><a href='" << entry_name << "/'>" << entry_name << "/</a></li>\n";
-            else 
-                html << "<li><a href='" << entry_name << "'>" << entry_name << "</a></li>\n";
-        }
-    }
+	if (std::filesystem::exists(_filePath) && std::filesystem::is_directory(_filePath))
+	{
+		for (const auto& it : std::filesystem::directory_iterator(_filePath)) 
+		{
+			std::string entry_name = it.path().filename().string();
+			if (it.is_directory()) 
+				html << "<li><a href='" << entry_name << "/'>" << entry_name << "/</a></li>\n";
+			else 
+				html << "<li><a href='" << entry_name << "'>" << entry_name << "</a></li>\n";
+		}
+	}
 
-    html << "</ul>\n";
-    html << "</body></html>\n";
+	html << "</ul>\n";
+	html << "</body></html>\n";
 
-    return html.str();
+	return html.str();
 }
 
 void	create_directory_listing_page(std::string html_page)
@@ -61,25 +61,71 @@ void sendHTMLPage(int client_socket, const std::string& file_path)
 
 	//Send the HTTP header
 	send(client_socket, http_response.c_str(), http_response.size(), 0);
-	//Send the client file content      /// add html_content to http_response!!!!!!!
+	//Send the client file content	  /// add html_content to http_response!!!!!!!
 	send(client_socket, html_content.c_str(), html_content.size(), 0);
 	std::cout << YELLOW << "--------- HTML message sent ----------" << RESET << std::endl;
 
 	file.close();
 }
 
-void    Request::checkForRedirect(std::string _filePath)
+void	Request::checkLocations(std::string _filePath)
 {
-    std::cout << "This is the _filePath: " << _filePath << std::endl;
-    // Config *config = getConfig();
+	location	reqRules;
+	std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
+	<< "FD == " << _clientFD << std::endl;
+	checkLocationMatch(this->_config->_locations, reqRules);
 
-    
+		
 
-    if (_config != nullptr)
-    {
-		// std::cout << "here??" << std::endl;
-        // sendHTMLPage(_clientFD, _filePath);
-    }
-    else if (_config == nullptr)
-        std::cout << "Config is nullptr" << std::endl;
+   
 }
+void	Request::checkLocationMatch(std::vector<location> &locs, location &ruleblock)
+{ 
+	for (size_t i = 0; i < locs.size(); i++)
+	{
+		if (_filePath.find(locs[i].getRoot()))
+			setLocRules(locs[i], ruleblock);
+	}
+	
+}
+
+void assignStrIfNonEmpty(std::string &dest, std::string &rhs)
+{
+	if (!rhs.empty())
+		dest = rhs;
+}
+
+void	Request::setLocRules(location &loc, location &ruleblock)
+{
+	// assignStrIfNonEmpty(ruleblock._allow_methods, loc._allow_methods); //change after merge
+	// assignStrIfNonEmpty(ruleblock._index, loc._index);
+	assignStrIfNonEmpty(ruleblock._alias, loc._alias);
+	assignStrIfNonEmpty(ruleblock._return, loc._return);
+	assignStrIfNonEmpty(ruleblock._root, loc._root);
+	if (!loc._index.empty())
+		ruleblock._index = loc._index;
+	if (!loc._cgi_extension.empty())
+		ruleblock._cgi_extension = loc._cgi_extension;
+	if (!loc._cgi_path.empty())
+		ruleblock._cgi_path = loc._cgi_path;
+	checkLocationMatch(loc._nestedLocations, ruleblock);
+}
+
+
+// checkLocRules(location &ruleblock)
+// {
+
+// }
+
+// void checkRules(location &rules)
+// {	//loop through allowed methods to check if is allowed
+// 	for (size_t i = 0; i < count; i++)
+// 	{
+// 		/* code */
+// 	}
+// 	//if redirect change path to redirect path
+// 	//if autoindex && filepath == folder change path to index
+// 	//alias?? maybe cgi??
+// }
+
+

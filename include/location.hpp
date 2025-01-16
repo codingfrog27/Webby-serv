@@ -24,14 +24,14 @@ class location
 
 
 	public:
-		std::string				 _alias;
+		std::string				 	_alias;
 		std::vector<std::string>	_allow_methods;
 		bool						_autoindex;
 		std::vector<std::string>	_cgi_extension;
 		std::vector<std::string>	_cgi_path; 
 		std::vector<std::string>	_index;
-		std::string				 _return;
-		std::string				 _root;
+		std::string					 _return;
+		std::string					 _root;
 
 		std::vector<location>   _nestedLocations;
 		std::unordered_map<std::string, std::string> _rulemap;

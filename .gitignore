@@ -31,3 +31,8 @@
 *.out
 *.app
 webserv
+
+#log files
+clientFD_log.txt
+chunked_request.txt
+response_written.txt
