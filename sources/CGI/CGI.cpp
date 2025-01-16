@@ -49,26 +49,26 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		}
 		// return ;
 	}
-	if (_PID != 0) { //parent
+	if (_PID > 0) { //parent
 		if (_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS && request->_method_type == GET)
 			_CGIHandlerStatus = CGIHandlerStatus::WAITING_FOR_CHILD;
 		if ((_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS || _CGIHandlerStatus == CGIHandlerStatus::WRITING_TO_CHILD) && request->_method_type == POST){
 			_CGIHandlerStatus = CGIHandlerStatus::WRITING_TO_CHILD;
 			std::cout << MAGENTA "Writing to child" RESET << std::endl;
 			// std::cout << MAGENTA "Req Body	: " << request->getBody() << std::endl;
-			size_t n = request->getBody().size() - _bytesWrittenToChild;
-			if (n > BUFFER_SIZE)
-				n = BUFFER_SIZE;
-			int bytes = write(_fdIn[1], request->getBody().data() + _bytesWrittenToChild, n);
-			if (bytes == -1){
-				response->autoFillResponse("500 Internal Server Error: write");
-				close(_fdIn[1]);
-				close(_fdOut[0]);
-				close(_fdError[0]);
-				return ;
+			size_t bodySize = request->getBody().size();
+			size_t bytesWritten = 0;
+			while (bytesWritten < bodySize){
+				size_t bytesToWrite = std::min((size_t)BUFFER_SIZE, bodySize - bytesWritten);
+				size_t bytes = write(_fdIn[1], request->getBody().data() + bytesWritten, bytesToWrite);
+				if (bytes < 0){
+					response->autoFillResponse("500 Internal Server Error: write - to child");
+					closePipes();
+					return ;
+				}
+				bytesWritten += bytes;
 			}
-			_bytesWrittenToChild += bytes;
-			if (_bytesWrittenToChild == request->getBody().size()){
+			if (bytesWritten >= bodySize){
 				close(_fdIn[1]);
 				_CGIHandlerStatus = CGIHandlerStatus::WAITING_FOR_CHILD;
 			}
@@ -87,44 +87,48 @@ void	CGI::invokeCGI(Request* request, Response* response){
 				_CGIHandlerStatus = CGIHandlerStatus::READING_FDOUT;
 				// response->setResponseBuffer(request->_http_version + " 200 OK\r\n"); //needed if generate response doesnt work!
 			}
-			// return ;
+			return ;
 		}
 		if (_CGIHandlerStatus == CGIHandlerStatus::READING_FDOUT){
 			std::cout << MAGENTA "Reading from child" RESET << std::endl;
 			char buffer[BUFFER_SIZE];
-			int bytes = read(_fdOut[0], buffer, BUFFER_SIZE);
-			if (bytes == -1){
-				response->autoFillResponse("500 Internal Server Error: read");
-				close(_fdOut[0]);
-				close(_fdError[0]);
-				return ;
-			}
-			// std::cout << MAGENTA "~	Res Body ~ \n" RESET << buffer << std::endl;
-			response->setResponseBuffer(std::string(buffer, bytes)); //setResponseBuffer if setBody is not working
-			if (bytes == 0){
-				close(_fdOut[0]);
-				_CGIHandlerStatus = CGIHandlerStatus::READING_FDERROR;
+			while (1){
+				int bytes = read(_fdOut[0], buffer, BUFFER_SIZE);
+				if (bytes == -1){
+					response->autoFillResponse("500 Internal Server Error: read");
+					closePipes();
+					return ;
+				}
+				response->setResponseBuffer(std::string(buffer, bytes)); //setResponseBuffer if setBody is not working
+				if (bytes == 0){
+					close(_fdOut[0]);
+					_CGIHandlerStatus = CGIHandlerStatus::READING_FDERROR;
+					break ;
+				}
 			}
 			// return ;
 		}
 		// std::cout << MAGENTA "Res Body	: " << responseBuffer << std::endl;
 		if (_CGIHandlerStatus == CGIHandlerStatus::READING_FDERROR){
-			std::cout << MAGENTA "Reading fd error" RESET << std::endl;
+			std::cout << MAGENTA "Reading from child error" RESET << std::endl;
 			char buffer[BUFFER_SIZE];
-			int bytes = read(_fdError[0], buffer, BUFFER_SIZE);
-			if (bytes == -1){
-				response->autoFillResponse("500 Internal Server Error: read");
-				close(_fdError[0]);
-				return ;
-			}
-			_scriptError.append(buffer, bytes);
-			if (bytes == 0){
-				close(_fdError[0]);
-				if (!_scriptError.empty()){
-					response->autoFillResponse("500 Internal Server Error: script: " + _scriptError);
+			while (1){
+				int bytes = read(_fdError[0], buffer, BUFFER_SIZE);
+				if (bytes == -1){
+					response->autoFillResponse("500 Internal Server Error: read");
+					closePipes();
 					return ;
 				}
-				_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
+				_scriptError.append(buffer, bytes);
+				if (bytes == 0){
+					close(_fdError[0]);
+					if (!_scriptError.empty()){
+						response->autoFillResponse("500 Internal Server Error: script: " + _scriptError);
+						return ;
+					}
+					_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
+					break;
+				}
 			}
 			// return ;
 		}
