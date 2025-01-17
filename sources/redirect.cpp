@@ -73,20 +73,41 @@ void	Request::checkLocations(std::string _filePath)
 	location	reqRules;
 	std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
 	<< "FD == " << _clientFD << std::endl;
-	checkLocationMatch(this->_config->_locations, reqRules);
-
-		
-
+	reqRules = checkLocationMatch(this->_config->_locations, reqRules);
+	// while nested locs exist //check for any match and if match uset setlocrules to overwrite
+	
    
 }
-void	Request::checkLocationMatch(std::vector<location> &locs, location &ruleblock)
+
+location	Request::checkLocationMatch(std::vector<location> &locs, location &ruleblock)
 { 
-	for (size_t i = 0; i < locs.size(); i++)
+	// 1: Exact Match (=)
+	// 2: Longest Prefix Match
+	// 3: Regex Match
+	// 4: Default Location
+	size_t	bestMatchSize = 0;
+	size_t	newSize;
+	for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
 	{
-		if (_filePath.find(locs[i].getRoot()))
-			setLocRules(locs[i], ruleblock);
+		newSize = countPathMatch(_filePath, it->getName());
+		if (newSize == std::string::npos)
+			return *it;
+		if (newSize > bestMatchSize)
+		{
+			bestMatchSize = newSize;
+			ruleblock = *it;
+		}
 	}
-	
+	return (ruleblock);
+}
+
+size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath)
+{
+	size_t	size = 0;
+	for (size < reqpath.size() && size < locpath.size() && reqpath[size] == locpath[size]; size++;)
+	if (size == reqpath.size())
+		return (std::string::npos);
+	return (size);
 }
 
 void assignStrIfNonEmpty(std::string &dest, std::string &rhs)

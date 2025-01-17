@@ -132,8 +132,9 @@ class Request
 		
 		Config*			getConfig();
 		void			checkLocations(std::string _filePath);
-		void			checkLocationMatch(std::vector<location> &locs, location &rules);
+		location		checkLocationMatch(std::vector<location> &locs, location &rules);
 		void			setLocRules(location &loc, location &ruleblock);
+		size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath);
 };
 
 std::string trim(const std::string& str);
