@@ -16,7 +16,7 @@ Request::Request(Config *config, int clientFD): _config(config), \
 	reading_mode(NOT_STARTED), body_bytes_read(0), _rnrnFound(false), \
 	_headerAreParsed(false), _hasBody(false), _clientFD(clientFD), \
 	_method_type(Http_method::NOT_PARSED_YET), _keepOpen(true), _doneReading(false), \
-	_statusStr("0 Not started yet")
+        _statusStr("0 Not started yet"), _dirListing(false)
 {
 	_rawRequestData.reserve(100);
 	_timeoutTime = intToMsecs(3000); //normal secs

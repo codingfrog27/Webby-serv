@@ -1,5 +1,5 @@
 #include "everything.hpp"
-#include <filesystem>
+
 #include "socket.hpp"
 
 std::string generate_directory_listing(const std::string& _filePath) //should become response func 
@@ -124,11 +124,24 @@ void printConfig(Config *configs)
 
 // void   Request::checkLocationMatch(std::vector<location> &locs, location &ruleblock)
 // { 
-//     for (size_t i = 0; i < locs.size(); i++)
+//    // 1: Exact Match (=)
+//    // 2: Longest Prefix Match
+//    // 3: Regex Match
+//    // 4: Default Location
+//    size_t  bestMatchSize = 0;
+//    size_t  newSize;
+//    for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
 //    {
-//         if (_filePath.find(locs[i].getRoot()))
-//             setLocRules(locs[i], ruleblock);
+//         newSize = countPathMatch(_filePath, it>getName());
+//         if (newSize == std::string::npos)
+//             return *it;
+//         if (newSize > bestMatchSize)
+//         {
+//             bestMatchSize = newSize;
+//             ruleblock = *it;
+//         }
 //     }
+//     return (ruleblock);
 // }
 
 // void   Request::setLocRules(location &loc, location &ruleblock)
@@ -157,17 +170,15 @@ void  Request::checkRules(location &rules)
     }
     else if (!rules.getIndex().empty())
     {
-        size_t path_to_check = _filePath.rfind('/');
-        std::string string_to_check = _filePath.substr(path_to_check + 1);
-        if (!string_to_check.find(".html") || !string_to_check.find(".css") || !string_to_check.find(".gif"))
+        std::filesystem::path p = _filePath;
+        if (std::filesystem::is_directory(p))
         {
-            std::cout << "This is the string to check: " << string_to_check << std::endl;
             std::vector<std::string> rules_index = rules.getIndex();
-            std::string tmp = _filePath;
+            std::string tmp = this->_filePath;
 
             for (auto i : rules_index)
             {
-               tmp += i;
+                tmp += i;
                 if (fileExists(_filePath))
                 {
                     _filePath = tmp;
@@ -177,8 +188,8 @@ void  Request::checkRules(location &rules)
             }
             if (rules.getAutoindex())
             {
-                // std::cout << _filePath << std::endl;
-                //set extra this->dir_list = true;
+                this->_dirListing = true;
+                std::cout << _dirListing << std::endl;
                 send_directory_listing_page(_filePath);
             }
         }

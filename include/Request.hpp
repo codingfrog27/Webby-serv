@@ -112,6 +112,7 @@ class Request
 		bool						_doneReading;
 		std::string					_statusStr;
 		int							_statusCode;
+		bool						_dirListing;
 		// bool						_error_occured;
 		// Constructors and Destructors
 						Request(void) = delete;
