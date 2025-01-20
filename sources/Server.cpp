@@ -106,10 +106,10 @@ void	Server::close_connect(int fd)
 		it++;
 		itc++;
 	}
-	if (it == _pollFDs.end())
-	{
-		std::cout << "FUUUUUUUUCK" << std::endl;
-	}
+	// if (it == _pollFDs.end())
+	// {
+	// 	std::cout << "FUUUUUUUUCK" << std::endl;
+	// }
 
 }
 
