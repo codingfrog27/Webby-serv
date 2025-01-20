@@ -17,14 +17,14 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Connection::Connection(Config *config, int clientFD, bool isServerside): \
-_config(config), _request(config, clientFD), _isClientSocket(isServerside), \
+Connection::Connection(Config *config, int clientFD, connectType connectType): \
+_config(config), _request(config, clientFD), _cgi(0), _connectType(connectType), \
 _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 {
 	_startTime = getStartTime();
 	_IdleTimeout = setTimeout(2);
 	// _IdleTimeout = setTimeout(config->_timeout);
-	if (_isClientSocket)
+	if (_connectType == connectType::CLIENT)
 		_CStatus = connectStatus::IDLE;
 	else
 		_CStatus = connectStatus::SERV_SOCKET;
@@ -45,7 +45,7 @@ Connection::operator=(const Connection &rhs)
 
 	if (this != &rhs)
 	{
-		_isClientSocket = rhs._isClientSocket;
+		_connectType = rhs._connectType;
 		_config = rhs._config;
 		_clientFD = rhs._clientFD;
 		_keepOpen = rhs._keepOpen;

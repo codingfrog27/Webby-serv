@@ -121,10 +121,10 @@ void	Response::setResponseHandlerStatus(responseHandlerStatus status){
 	return ;
 }
 
-void	Response::setCGI(CGI* cgi){
-	_cgi = cgi;
-	return ;
-}
+// void	Response::setCGI(CGI* cgi){
+// 	_cgi = cgi;
+// 	return ;
+// }
 
 // void	Response::setOutFile(std::ofstream&& outFile){
 // 	if (_outFile.is_open())
@@ -208,9 +208,9 @@ responseHandlerStatus	Response::getResponseHandlerStatus() const{
 	return _responseHandlerStatus;
 }
 
-CGI*	Response::getCGI() const{
-	return _cgi;
-}
+// CGI*	Response::getCGI() const{
+// 	return _cgi;
+// }
 
 std::ofstream&	Response::getOutFile(){
 	// if (!_outFile.is_open())

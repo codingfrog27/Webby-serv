@@ -18,6 +18,13 @@
 #include "socket.hpp"
 #include "Config.hpp"
 
+enum class connectType
+{
+	SERVER,
+	CLIENT,
+	CGI
+};
+
 enum class connectStatus 
 {
 	SERV_SOCKET,
@@ -26,6 +33,7 @@ enum class connectStatus
 	REQ_ERR,
 	CONNECT_CLOSED,
 	DONE_READING,
+	CGI,
 	DONE_READING_CGI,
 	RESPONDING,
 	SERVER_ERR,
@@ -42,7 +50,8 @@ class Connection
 		Config			*_config;
 		Request			_request;
 		Response		_response;
-		bool			_isClientSocket;
+		CGI*			_cgi;
+		connectType		_connectType;
 		bool			_wantsNewConnect;
 		int				_clientFD;
 		bool			_keepOpen;
@@ -51,7 +60,7 @@ class Connection
 		// bool		_doneReading;
 		
 		// Constructors and Destructors
-		Connection(Config *config, int clientFD, bool isServerside);
+		Connection(Config *config, int clientFD, connectType connectType);
 		Connection(const Connection &rhs);
 		Connection &operator=(const Connection &rhs);
 		~Connection();

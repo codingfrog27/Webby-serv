@@ -121,10 +121,10 @@ connectStatus	responseHandler(Request* request, Response* response){
 	// std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
 	// std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
 	// std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
-	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_CGI || (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && isCGIrequired(request))){
-		CGIHandler(request, response); //FINSIHED CGI
-		return connectStatus::RESPONDING;
-	}
+	// if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_CGI || (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS && isCGIrequired(request))){
+	// 	CGIHandler(request, response); //FINSIHED CGI
+	// 	return connectStatus::RESPONDING;
+	// }
 	else{
 		if ((request->_method_type == GET && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_GET){
 			getMethod(request, response);

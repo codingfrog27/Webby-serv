@@ -1,22 +1,52 @@
 #include "CGI.hpp"
 #include "Response.hpp"
 #include "Request.hpp"
+#include "Connection.hpp"
 #include <cstring>
 #include <sys/wait.h>
 
 
 
 /*	Constructors & destructors	*/
-CGI::CGI(int *fdIn, int *fdOut, int *fdError) : _fdIn(fdIn), _fdOut(fdOut), _fdError(fdError){
+// CGI::CGI(int *fdIn, int *fdOut, int *fdError) : _fdIn(fdIn), _fdOut(fdOut), _fdError(fdError){
+// 	_CGIHandlerStatus = CGIHandlerStatus::NOT_STARTED;
+// 	// _bytesWrittenToChild = 0;
+// 	// _scriptError = "";
+// 	_pollFdIn.fd = _fdIn[1];
+// 	_pollFdIn.events = POLLOUT;
+// 	_pollFdOut.fd = _fdOut[0];
+// 	_pollFdOut.events = POLLIN;
+// 	_pollFdError.fd = _fdError[0];
+// 	_pollFdError.events = POLLIN;
+// 	return ;
+// }
+
+CGI::CGI(Connection* connection, std::vector<pollfd>* pollFDs) {
 	_CGIHandlerStatus = CGIHandlerStatus::NOT_STARTED;
-	// _bytesWrittenToChild = 0;
-	// _scriptError = "";
-	_pollFdIn.fd = _fdIn[1];
-	_pollFdIn.events = POLLOUT;
-	_pollFdOut.fd = _fdOut[0];
-	_pollFdOut.events = POLLIN;
-	_pollFdError.fd = _fdError[0];
-	_pollFdError.events = POLLIN;
+
+
+	if (pipe(_fdIn) == -1) {
+		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdIn");
+		return ;
+	}
+	if (pipe(_fdOut) == -1) {
+		closePipes();
+		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdOut");
+		return ;
+	}
+	if (pipe(_fdError) == -1) {
+		closePipes();
+		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdError");
+		return ;
+	}
+	pollfd pollFdIn = {_fdIn[1], POLLOUT, 0};
+	pollfd pollFdOut = {_fdOut[0], POLLIN, 0};
+	pollfd pollFdError = {_fdError[0], POLLIN, 0};
+	pollFDs->push_back(pollFdIn);
+	pollFDs->push_back(pollFdOut);
+	pollFDs->push_back(pollFdError);
+	
+	setupCGIEnvironment(connection->_request);
 	return ;
 }
 
@@ -155,9 +185,7 @@ void CGI::writeToCGI(Request* request, Response* response) {
 	int bytes = write(_fdIn[1], request->getBody().data() + _bytesWrittenToChild, n);
 	if (bytes == -1){
 		response->autoFillResponse("500 Internal Server Error: write");
-		close(_fdIn[1]);
-		close(_fdOut[0]);
-		close(_fdError[0]);
+		closePipes();
 		return ;
 	}
 	_bytesWrittenToChild += bytes;
@@ -170,13 +198,13 @@ void CGI::writeToCGI(Request* request, Response* response) {
 
 void CGI::readFromCGI(Response* response) {
 	char buffer[BUFFER_SIZE];
-	int bytes = read(_pollFdOut.fd, buffer, BUFFER_SIZE);
+	int bytes = read(_fdOut[0], buffer, BUFFER_SIZE);
 	if (bytes > 0) {
 		// Append the data to the response buffer
 		response->setResponseBuffer(std::string(buffer, bytes));
 	} else if (bytes == 0) {
 		// End of file
-		close(_pollFdOut.fd);
+		close(_fdOut[0]);
 		_CGIHandlerStatus = CGIHandlerStatus::READING_FDERROR;
 	} else {
 		// Handle error
@@ -187,13 +215,13 @@ void CGI::readFromCGI(Response* response) {
 
 void CGI::readErrorFromCGI(Response* response) {
 	char buffer[BUFFER_SIZE];
-	int bytes = read(_pollFdError.fd, buffer, BUFFER_SIZE);
+	int bytes = read(_fdError[0], buffer, BUFFER_SIZE);
 	if (bytes > 0) {
 		// Append the error data to the script error
 		_scriptError.append(buffer, bytes);
 	} else if (bytes == 0) {
 		// End of file
-		close(_pollFdError.fd);
+		close(_fdError[0]);
 		if (!_scriptError.empty()) {
 			response->autoFillResponse("500 Internal Server Error: script: " + _scriptError);
 		}
@@ -259,14 +287,14 @@ CGIHandlerStatus	CGI::getCGIHandlerStatus() const{
 	return _CGIHandlerStatus;
 }
 
-pollfd	*CGI::getPollFdIn(void){
-	return &_pollFdIn;
-}
+// pollfd	*CGI::getPollFdIn(void){
+// 	return &_pollFdIn;
+// }
 
-pollfd	*CGI::getPollFdOut(void){
-	return &_pollFdOut;
-}
+// pollfd	*CGI::getPollFdOut(void){
+// 	return &_pollFdOut;
+// }
 
-pollfd	*CGI::getPollFdError(void){
-	return &_pollFdError;
-}
+// pollfd	*CGI::getPollFdError(void){
+// 	return &_pollFdError;
+// }

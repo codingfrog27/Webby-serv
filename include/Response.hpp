@@ -66,7 +66,6 @@ class Response{
 	private:
 		responseHandlerStatus							_responseHandlerStatus;
 		std::string										_httpVersion;
-		CGI*											_cgi;
 		std::ofstream									_outFile;
 		std::ifstream									_inFile;
 		std::string										_status;

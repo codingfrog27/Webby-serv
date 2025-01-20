@@ -7,9 +7,9 @@
 // put reading and writing in a loop
 
 void	CGIHandler(Request* request, Response* response){
-	int	fdIn[2];
-	int	fdOut[2];
-	int fdError[2];
+	// int	fdIn[2];
+	// int	fdOut[2];
+	// int fdError[2];
 	// std::cout << "in CGI???" << std::endl;
 	// NicePrint::promptEnter();
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS){
@@ -28,27 +28,9 @@ void	CGIHandler(Request* request, Response* response){
 			return ;
 		}
 		// if yes
-		if (pipe(fdIn) == -1) {
-			response->autoFillResponse("500 Internal Server Error: pipe fdIn");
-			return ;
-		}
-		if (pipe(fdOut) == -1) {
-			close(fdIn[0]);
-			close(fdIn[1]);
-			response->autoFillResponse("500 Internal Server Error: pipe fdOut");
-			return ;
-		}
-		if (pipe(fdError) == -1) {
-			close(fdIn[0]);
-			close(fdIn[1]);
-			close(fdOut[0]);
-			close(fdOut[1]);
-			response->autoFillResponse("500 Internal Server Error: pipe fdError");
-			return ;
-		}
 		CGI* newCGI = new CGI(fdIn, fdOut, fdError);
-		newCGI->setupCGIEnvironment(request);
-		response->setCGI(newCGI);
+		// newCGI->setupCGIEnvironment(request);
+		// response->setCGI(newCGI);
 		//how do i pushback the cgiPollFD's to the _pollFDs vector?
 	}
 	CGI* CGI = response->getCGI();

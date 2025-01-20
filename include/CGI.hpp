@@ -5,6 +5,7 @@
 
 class Request;
 class Response;
+class Connection;
 
 enum class CGIHandlerStatus{
 	NOT_STARTED,
@@ -19,9 +20,10 @@ enum class CGIHandlerStatus{
 class CGI{
 	public:
 		CGI() = delete;
-		CGI(int *fdIn, int *fdOut, int *fdError); // what else do i need to pass?
 		CGI(const CGI &obj) = delete;
 		CGI& operator=(const CGI& obj) = delete;
+		// CGI(int *fdIn, int *fdOut, int *fdError); // what else do i need to pass?
+		CGI(Connection* connection, std::vector<pollfd>* pollFDs);
 		~CGI();
 
 		void				invokeCGI(Request* request, Response* response);
@@ -47,9 +49,9 @@ class CGI{
 		int					*_fdIn;
 		int					*_fdOut;
 		int					*_fdError;
-		pollfd				_pollFdIn;
-		pollfd				_pollFdOut;
-		pollfd				_pollFdError;
+		// pollfd				_pollFdIn;
+		// pollfd				_pollFdOut;
+		// pollfd				_pollFdError;
 		CGIHandlerStatus	_CGIHandlerStatus;
 		int					_PID;
 		size_t				_bytesWrittenToChild;

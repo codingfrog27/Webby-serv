@@ -101,7 +101,7 @@ void	Server::main_server_loop()
 			continue; //throw server close error on >0
 		for (size_t i = 0; i < size; i++)
 		{
-			if (_Connections[i]._isClientSocket) //can we check if cgi socket??
+			if (_Connections[i]._connectType == connectType::CLIENT) //can we check if cgi socket??
 				_Connections[i].connectionAction(_pollFDs[i]);	
 			else if (_pollFDs[i].revents & POLLIN)
 					_Connections[i]._wantsNewConnect = true;
