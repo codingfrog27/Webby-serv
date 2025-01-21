@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/16 16:09:14 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/21 14:18:48 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ void	Request::parse_headers(std::string header_str)
 		start = line_end + 2;
 		line_end = header_str.find("\r\n", start);
 	}
+	locationHandler();
 	checkHeaders();
 }
 

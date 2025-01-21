@@ -94,6 +94,10 @@ class Request
 		void					parseUrlEncoded();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 		void					resolveFilePath();
+		void					locationHandler();
+		location				*findLocationMatch(std::vector<location> &locs, size_t &matchCount);
+		void					setLocRules(location &loc, location &ruleblock);
+		size_t					countPathMatch(std::string &reqpath, std::string &locpath);
 
 
 	public:
@@ -131,11 +135,6 @@ class Request
 		void			printHeaders();
 		
 		Config*			getConfig();
-		void			checkLocations(std::string _filePath);
-		size_t			checkLocationMatch(std::vector<location> &locs, location &rules);
-		location		*Request::checkLocationMatch2(std::vector<location> &locs, size_t &matchCount);
-		void			setLocRules(location &loc, location &ruleblock);
-		size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath);
 };
 
 std::string trim(const std::string& str);
