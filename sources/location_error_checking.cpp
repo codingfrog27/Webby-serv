@@ -171,14 +171,18 @@ std::string location::validateLocationName(std::string line)
 		location_name_value = findLocationName(location_name_rule);
 	}
 	size_t size = location_name_value.size();
-	if (location_name_value[0] == '/' && location_name_value[size] == '/')
+	if (location_name_value[0] == '/' && location_name_value[size - 1] == '/')
 	{
-		for (size_t i = 0; location_name_value.length(); i++)
+		for (size_t i = 0; i < size; i++)
 		{
 			if (!isalpha(location_name_value[i]) && !isdigit(location_name_value[i]) && location_name_value[i] != '-' && location_name_value[i] != '/')
 				throw std::invalid_argument("Error: invalid character in location name");
+			if (location_name_value[i] == '/' && location_name_value[i + 1] == '/')
+				throw std::invalid_argument("Error: invalid character in location name");
 		}
 	}
+	else
+		throw std::invalid_argument("Error: invalid character in location name");
 	return (location_name_value);
 }
 
