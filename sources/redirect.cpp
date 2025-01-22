@@ -58,13 +58,6 @@ void sendHTMLPage(int client_socket, const std::string& file_path)
     std::cout << html_content << std::endl;
 }
 
-void	Request::send_directory_listing_page(std::string html_page)
-{
-    std::string html_to_send = generate_directory_listing(html_page);
-    sendHTMLPage(_clientFD, html_to_send);
-}
-
-
 void printConfig(Config *configs)
 {		
 	std::vector<std::string> serverIndex = configs->getIndex();
@@ -122,52 +115,100 @@ void printConfig(Config *configs)
        }
 }
 
-// void   Request::checkLocationMatch(std::vector<location> &locs, location &ruleblock)
-// { 
-//    // 1: Exact Match (=)
-//    // 2: Longest Prefix Match
-//    // 3: Regex Match
-//    // 4: Default Location
-//    size_t  bestMatchSize = 0;
-//    size_t  newSize;
-//    for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
-//    {
-//         newSize = countPathMatch(_filePath, it>getName());
-//         if (newSize == std::string::npos)
-//             return *it;
-//         if (newSize > bestMatchSize)
-//         {
-//             bestMatchSize = newSize;
-//             ruleblock = *it;
-//         }
-//     }
-//     return (ruleblock);
-// }
+void assignStrIfNonEmpty(std::string &dest, std::string &rhs)
+{
+       if (!rhs.empty())
+               dest = rhs;
+}
 
-// void   Request::setLocRules(location &loc, location &ruleblock)
-// {
-//     if ()
-//     ruleblock.
-//     checkLocationMatch(loc._nestedLocations, ruleblock);
+void   Request::setLocRules(location &loc, location &ruleblock)
+{
+       // assignStrIfNonEmpty(ruleblock._allow_methods, loc._allow_methods); //change after merge
+       // assignStrIfNonEmpty(ruleblock._index, loc._index);
+       assignStrIfNonEmpty(ruleblock._alias, loc._alias);
+       assignStrIfNonEmpty(ruleblock._return, loc._return);
+       assignStrIfNonEmpty(ruleblock._root, loc._root);
+       if (!loc._index.empty())
+               ruleblock._index = loc._index;
+       if (!loc._cgi_extension.empty())
+               ruleblock._cgi_extension = loc._cgi_extension;
+       if (!loc._cgi_path.empty())
+               ruleblock._cgi_path = loc._cgi_path;
+}
 
-// }
+size_t Request::countPathMatch(std::string &reqpath, const std::string &locpath)
+{
+       size_t  size = 0;
+       // while (locpath.at(size) == reqpath.at(size))
+       for (;size < reqpath.size() && size < locpath.size()\
+        && reqpath[size] == locpath[size]; size++)
+       if (size == reqpath.size())
+               return (std::string::npos);
+        return(size);
+}
+
+location       *Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
+{
+   size_t  newSize;
+   location *ret;
+   for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
+   {
+           newSize = countPathMatch(_filePath, it->getName());
+           if (newSize > matchCount) //?
+           {
+                   matchCount = newSize;
+                   ret = &(*it);
+                   if (newSize == std::string::npos)
+                           break;
+           }
+   }
+   if (matchCount == 0)
+           return (nullptr);
+   return (ret);
+}
+
+void   Request::locationHandler()
+{
+       location        *reqRules;
+       location        *nestRules;
+       size_t          matchCount = 0;
+       std::vector<location> &locVec = this->_config->_locations;
+       std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
+       << "FD == " << _clientFD << std::endl;
+       if (locVec.empty())
+               return;
+       reqRules = findLocationMatch(locVec, matchCount);
+       if (reqRules == nullptr)
+               return;
+       locVec = reqRules->_nestedLocations;
+       while (!locVec.empty())
+       {
+               nestRules = findLocationMatch(locVec, matchCount);
+               if (nestRules == nullptr)
+                       break;
+               setLocRules(*reqRules, *nestRules);
+               locVec = nestRules->_nestedLocations;
+       }
+       checkRules(*reqRules);
+}
 
 void  Request::checkRules(location &rules)
 {   //loop through allowed methods to check if is allowed
     // std::cout << "This is the rulemap: " << std::endl;
-    Response test;
-    
-    std::cout << this->_filePath << std::endl;
 
+    if (!rules.getRoot().empty())
+    {
+        _filePath.find(_config->_rootDir);
+        _filePath.replace(0, _config->_rootDir.size(), rules.getRoot());
+    }
     if (!rules.getReturn().empty())
     {
         this->_filePath = rules.getReturn();
         _statusCode = 301;
+        return;
     }
     else if (!rules.getAlias().empty())
-    {
         this->_filePath = rules.getAlias();
-    }
     else if (!rules.getIndex().empty())
     {
         std::filesystem::path p = _filePath;
@@ -187,32 +228,34 @@ void  Request::checkRules(location &rules)
                 tmp = _filePath;
             }
             if (rules.getAutoindex())
-            {
                 this->_dirListing = true;
-                std::cout << _dirListing << std::endl;
-                send_directory_listing_page(_filePath);
-            }
         }
-        else
-        {
-               
-       
-            // send html page!!!!
-            std::cout << "Ciao" << std::endl;
-        }
-            
     }
-    // if (!rules.getAlias().empty())
-    // {
-    //     this->_config->_locations.
-    // }
-    // for (size_t i = 0; i < count; i++)
-    // {
-    //         /* code */
-    // }
-    //if redirect change path to redirect path
-    //if autoindex && filepath == folder change path to index
-    //alias?? maybe cgi??
+    else if (!rules.getAllowMethods().empty())
+    {
+        std::vector<Http_method> allow_methods = rules.getAllowMethods();
+
+        for (auto i : allow_methods)
+        {
+            if (i == this->_method_type)
+                return;
+        }
+        throw (ClientErrorExcept(405, "Method not allowed"));
+    }
+    else if (!rules.getCgiExtension().empty())
+    {
+        std::vector<std::string> cgi_extension = rules.getCgiExtension();
+        size_t pos = _filePath.rfind('.');
+        std::string extension_to_compare = _filePath.substr(pos + 1);
+        std::cout << extension_to_compare << std::endl;
+
+        for (auto i : cgi_extension)
+        {
+            if (i == extension_to_compare)
+                return;
+        }
+        throw (ClientErrorExcept(500, "Internal Server Error"));
+    }
 }
 
 void    Request::checkForRedirect(std::string _filePath)

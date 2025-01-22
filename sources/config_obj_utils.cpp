@@ -57,7 +57,7 @@ Config::~Config(void)
 //								Get and setters								  //
 // ************************************************************************** //
 
-std::string location::getName() const { //location cpp?
+std::string location::getName() { //location cpp?
     return _name;
 }
 

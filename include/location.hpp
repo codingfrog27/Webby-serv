@@ -49,7 +49,7 @@ class location
 		void	printLocationValue(const location& loc) const;
 		void parseRule(const std::string &line);
 
-		std::string getName() const;
+		std::string getName();
 
 		std::string	getAlias();
 		std::vector<Http_method> 	getAllowMethods();
