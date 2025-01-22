@@ -195,7 +195,6 @@ void   Request::locationHandler()
 void  Request::checkRules(location &rules)
 {   //loop through allowed methods to check if is allowed
     // std::cout << "This is the rulemap: " << std::endl;
-
     if (!rules.getRoot().empty())
     {
         _filePath.find(_config->_rootDir);

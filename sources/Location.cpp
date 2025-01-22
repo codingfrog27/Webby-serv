@@ -27,6 +27,7 @@ location::location(void)
 location::location(std::ifstream &file, std::string &line)
 {
 	size_t i = 0;
+	setName(validateLocationName(line));
 	while (std::getline(file, line))
 	{
 		if (line.empty() || line[i] == '#')
@@ -63,6 +64,7 @@ location::operator=(const location &rhs)
 		_cgi_extension = rhs._cgi_extension;
 		_cgi_path = rhs._cgi_path;
 		_index = rhs._index;
+		_name = rhs._name;
 		_return = rhs._return;
 		_root = rhs._root;
 		_nestedLocations = rhs._nestedLocations;
@@ -81,6 +83,16 @@ location::~location(void)
 // ************************************************************************** //
 //								GETTER & SETTER								  //
 // ************************************************************************** //
+
+void	location::setName(const std::string &name)
+{
+	this->_name = name;
+}
+
+std::string	location::getName()
+{
+	return(this->_name);
+}
 
 std::string	location::getRoot()
 {
@@ -169,6 +181,7 @@ void	location::setReturn(const std::string &t_return)
 std::string location::toString() const 
 {
     std::ostringstream oss;
+	oss << "Name: " << _name << "\n";
 	oss << "Alias: " << _alias << "\n";
 	oss << "Autoindex: " << _autoindex << "\n";
 	oss << "Return: " << _return << "\n";

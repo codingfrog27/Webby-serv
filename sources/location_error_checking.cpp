@@ -153,6 +153,35 @@ std::string location::validateAlias()
 	return (alias_value);
 }
 
+std::string	findLocationName(std::string locationLine)
+{
+	size_t end = locationLine.rfind('{');
+	std::string locationName = locationLine.substr(10, end - 11);
+	return (locationName);
+}
+
+std::string location::validateLocationName(std::string line)
+{
+	std::string location_name_rule;
+	std::string location_name_value;
+
+	if (!line.empty())
+	{
+		location_name_rule = normalize_space_location(line);
+		location_name_value = findLocationName(location_name_rule);
+	}
+	size_t size = location_name_value.size();
+	if (location_name_value[0] == '/' && location_name_value[size] == '/')
+	{
+		for (size_t i = 0; location_name_value.length(); i++)
+		{
+			if (!isalpha(location_name_value[i]) && !isdigit(location_name_value[i]) && location_name_value[i] != '-' && location_name_value[i] != '/')
+				throw std::invalid_argument("Error: invalid character in location name");
+		}
+	}
+	return (location_name_value);
+}
+
 std::vector<std::string>		location::validateIndex()
 {
 	std::string index_rule;

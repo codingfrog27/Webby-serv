@@ -57,10 +57,6 @@ Config::~Config(void)
 //								Get and setters								  //
 // ************************************************************************** //
 
-std::string location::getName() { //location cpp?
-    return _name;
-}
-
 std::string	Config::getRoot()
 {
 	return(this->_rootDir);

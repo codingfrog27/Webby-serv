@@ -35,10 +35,10 @@ class location
 		std::vector<std::string>	_index;
 		std::string				 	_return;
 		std::string				 	_root;
+		std::string					_name;
 
 		std::vector<location>   _nestedLocations;
 		std::unordered_map<std::string, std::string> _rulemap;
-		std::string _name;
 
 		location(void);
 		location(std::ifstream &file, std::string &line);
@@ -49,14 +49,13 @@ class location
 		void	printLocationValue(const location& loc) const;
 		void parseRule(const std::string &line);
 
-		std::string getName();
-
 		std::string	getAlias();
 		std::vector<Http_method> 	getAllowMethods();
 		bool		getAutoindex();
 		std::vector<std::string>	getCgiExtension();
 		std::vector<std::string>	getCgiPath();
 		std::vector<std::string>	getIndex();
+		std::string	getName();
 		std::string	getReturn();
 		std::string	getRoot();
 		void	setAlias(const std::string &alias);
@@ -65,6 +64,7 @@ class location
 		void	setCgiExtension(const std::vector<std::string> &cgi_extension);
 		void	setCgiPath(const std::vector<std::string> &cgi_path);
 		void	setIndex(const std::vector<std::string> &index);
+		void	setName(const std::string &name);
 		void	setReturn(const std::string &t_return);
 		void	setRoot(const std::string &root);
 		void	initializeLocation();
@@ -74,6 +74,7 @@ class location
 		std::vector<Http_method> validateAllowMethods();
 		bool validateAutoindex();
 		std::vector<std::string> validateIndex();
+		std::string validateLocationName(std::string line);
 		std::string validateReturn();
 		std::string validateRoot();
 
