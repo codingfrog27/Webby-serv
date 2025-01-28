@@ -32,10 +32,10 @@ class location
 		std::vector<std::string>	_index;
 		std::string					 _return;
 		std::string					 _root;
+		std::string 				_name;
 
 		std::vector<location>   _nestedLocations;
 		std::unordered_map<std::string, std::string> _rulemap;
-		std::string _name;
 
 		location(void);
 		location(std::ifstream &file, std::string &line);
@@ -64,6 +64,8 @@ class location
 		void	setIndex(const std::vector<std::string> &index);
 		void	setReturn(const std::string &t_return);
 		void	setRoot(const std::string &root);
+		void	setName(const std::string &name);
+
 		void	initializeLocation();
 
 		std::string toString() const;

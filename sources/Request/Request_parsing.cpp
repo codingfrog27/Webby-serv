@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/21 14:18:48 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/22 15:19:25 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_listen.length() + 1);
 	if (resolved.front() == '/')
 		resolved.erase(0, 1);
-	_filePath = trim(_config->_rootDir) + trim(resolved);
+	_filePath = trim(resolved);
 }
 
 void	Request::parse_headers(std::string header_str)
@@ -78,6 +78,7 @@ void	Request::parse_headers(std::string header_str)
 		line_end = header_str.find("\r\n", start);
 	}
 	locationHandler();
+	_filePath = trim(_root) + _filePath;
 	checkHeaders();
 }
 

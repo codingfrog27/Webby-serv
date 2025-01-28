@@ -76,6 +76,7 @@ class Request
 		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
 		t_secs					_timeoutTime;
 		t_time					_startTime;
+		std::string				_root;
 
 
 

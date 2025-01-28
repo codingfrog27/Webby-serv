@@ -91,7 +91,8 @@ void	Request::locationHandler()
 		locVec = nestRules->_nestedLocations;
 	}
 	//antonio set rules
-	
+	// _filePath = _root + _filePath;
+	std::cout << YELLOW "FILEPATH==" << _filePath << RESET << std::endl;
 }
 
 location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
@@ -101,6 +102,7 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 	for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
 	{
 		newSize = countPathMatch(_filePath, it->getName());
+		// std::cout << YELLOW "locname ==" RESET << it->getName() << "04& size =" <	Az< newSize << std::endl;
 		if (newSize > matchCount) //?
 		{
 			matchCount = newSize;
