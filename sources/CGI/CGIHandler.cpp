@@ -7,12 +7,9 @@
 // put reading and writing in a loop
 
 void	CGIHandler(Request* request, Response* response){
-	// int	fdIn[2];
-	// int	fdOut[2];
-	// int fdError[2];
 	// std::cout << "in CGI???" << std::endl;
 	// NicePrint::promptEnter();
-	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS){
+	// if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS){
 		// should we even invoke CGI?
 		if (request->_method_type != GET && request->_method_type != POST){
 			response->autoFillResponse("405 Method Not Allowed");
@@ -32,9 +29,10 @@ void	CGIHandler(Request* request, Response* response){
 		// newCGI->setupCGIEnvironment(request);
 		// response->setCGI(newCGI);
 		//how do i pushback the cgiPollFD's to the _pollFDs vector?
-	}
+	// }
 	CGI* CGI = response->getCGI();
 	CGI->invokeCGI(request, response);
+	//set cgi in map
 	if (CGI->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED && response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE)
 		delete CGI;
 	return ;

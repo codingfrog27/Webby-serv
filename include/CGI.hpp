@@ -14,6 +14,7 @@ enum class CGIHandlerStatus{
 	WAITING_FOR_CHILD,
 	READING_FDOUT,
 	READING_FDERROR,
+	CHILD_IS_FINISHED,
 	FINISHED
 };
 
@@ -28,6 +29,7 @@ class CGI{
 
 		void				invokeCGI(Request* request, Response* response);
 		void				executeScript(Request* request, Response* response);
+		bool				childIsRunning(Response* response);
 		void				closePipes(void);
 
 		// void				setupPollFds(void);
@@ -40,9 +42,9 @@ class CGI{
 
 		void				setCGIHandlerStatus(CGIHandlerStatus status);
 		CGIHandlerStatus	getCGIHandlerStatus() const;
-		pollfd				*getPollFdIn(void);
-		pollfd				*getPollFdOut(void);
-		pollfd				*getPollFdError(void);
+		int					getFdIn(void);
+		int					getFdOut(void);
+		int					getFdError(void);
 
 	private:
 		std::vector<char*>	_envp;

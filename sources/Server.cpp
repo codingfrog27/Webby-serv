@@ -163,20 +163,27 @@ void	Server::close_connect(int fd)
 	}
 }
 
+
+//remove _CGIPollFDs[i] when finished in read or write function
 void Server::handleCGIPollEvents() {
-	for (size_t i = 0; i < _Connections.size(); i++) {
-		CGI* cgi = _Connections[i]._response.getCGI();
-		Request* request = &_Connections[i]._request;
-		Response* response = &_Connections[i]._response;
-		if (cgi) {
-			if (cgi->getPollFdIn()->revents & POLLOUT) {
-				cgi->writeToCGI(request, response);
-			}
-			if (cgi->getPollFdOut()->revents & POLLIN) {
-				cgi->readFromCGI(response);
-			}
-			if (cgi->getPollFdError()->revents & POLLIN) {
-				cgi->readErrorFromCGI(response);
+	size_t	size;
+	while (1)
+	{
+		size = _CGIPollFDs.size();
+		if (poll(_CGIPollFDs.data(), size, 0) == 0)
+			return ;
+		for (size_t i = 0; i < size; i++){
+			CGI *cgi = &_CGIMap[_CGIPollFDs[i].fd];
+			if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT)
+				cgi->writeToCGI(); //TO WHICH RESPONSE?
+			else if (_CGIPollFDs[i].fd == cgi->getFdOut() && _CGIPollFDs[i].revents & POLLIN)
+				cgi->readFromCGI();//TO WHICH RESPONSE?
+			else if (_CGIPollFDs[i].fd == cgi->getFdError() && _CGIPollFDs[i].revents & POLLIN)
+				cgi->readErrorFromCGI();//TO WHICH RESPONSE?
+			if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED){ //check this
+				cgi->closePipes();
+				_CGIMap.erase(_CGIPollFDs[i].fd);
+				_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
 			}
 		}
 	}

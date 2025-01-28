@@ -17,6 +17,7 @@
 #include "Request.hpp"
 #include "everything.hpp"
 
+class CGI;
 
 class Server
 {
@@ -24,7 +25,9 @@ class Server
 		std::vector<Socket> 	_serverSockets;
 		std::vector<Config> 	&_serverBlocks;
 		std::vector<pollfd>		_pollFDs;
+		std::vector<pollfd>		_CGIPollFDs;
 		std::vector<Connection> _Connections;
+		std::map<int, CGI>		_CGIMap;
 		struct	addrinfo		*_addrInfo;
 		// const int	_max_clients;
 
