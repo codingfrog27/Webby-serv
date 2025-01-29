@@ -6,11 +6,13 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/01/16 16:32:23 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/01/29 16:54:28 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
+#define YELLOW "\033[33m"
+#define RESET "\033[0m"
 
 size_t	Request::parse_req_line(std::string req_line)
 {
@@ -57,7 +59,9 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_listen.length() + 1);
 	if (resolved.front() == '/')
 		resolved.erase(0, 1);
-	_filePath = trim(_config->_rootDir) + trim(resolved);
+	_filePath = trim(resolved);
+	locationHandler();
+	_filePath = trim(_root) + _filePath;
 }
 
 void	Request::parse_headers(std::string header_str)
@@ -183,6 +187,10 @@ std::string	urlDecode(const std::string &encoded);
 
 void	Request::parseUrlEncoded()
 {
+	if (_reqBody.size() < 2) {
+		std::cout << "url decode without body???" << std::endl;
+		return;
+	}
 	std::istringstream stream(_reqBody.substr(2));
 	std::string pair;
 

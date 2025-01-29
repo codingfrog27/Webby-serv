@@ -68,25 +68,63 @@ void sendHTMLPage(int client_socket, const std::string& file_path)
 	file.close();
 }
 
-void	Request::checkLocations(std::string _filePath)
+void	Request::locationHandler()
 {
-	location	reqRules;
-	std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
-	<< "FD == " << _clientFD << std::endl;
-	checkLocationMatch(this->_config->_locations, reqRules);
-
-		
-
-   
-}
-void	Request::checkLocationMatch(std::vector<location> &locs, location &ruleblock)
-{ 
-	for (size_t i = 0; i < locs.size(); i++)
+	location	*reqRules;
+	location	*nestRules;
+	size_t		matchCount = 0;
+	std::vector<location> &locVec = this->_config->_locations;
+	// std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
+	// << "FD == " << _clientFD << std::endl;
+	if (locVec.empty())
+		return;
+	reqRules = findLocationMatch(locVec, matchCount);
+	if (reqRules == nullptr)
+		return;
+	locVec = reqRules->_nestedLocations;
+	while (!locVec.empty())
 	{
-		if (_filePath.find(locs[i].getRoot()))
-			setLocRules(locs[i], ruleblock);
+		nestRules = findLocationMatch(locVec, matchCount);
+		if (nestRules == nullptr)
+			break;
+		setLocRules(*reqRules, *nestRules);
+		locVec = nestRules->_nestedLocations;
 	}
-	
+	//antonio set rules
+	// _filePath = _root + _filePath;
+}
+
+location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
+{
+	size_t	newSize;
+	location *ret;
+	for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
+	{
+		newSize = countPathMatch(_filePath, it->getName());
+		// std::cout << YELLOW "locname ==" RESET << it->getName() << "04& size =" <	Az< newSize << std::endl;
+		if (newSize > matchCount) //?
+		{
+			matchCount = newSize;
+			ret = &(*it);
+			if (newSize == std::string::npos)
+				break;
+		}
+	}
+	if (matchCount == 0)
+		return (nullptr);
+	return (ret);
+}
+
+size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath)
+{
+	size_t	size = 0;
+	// while (locpath.at(size) == reqpath.at(size))
+	for (;size < reqpath.size() && size < locpath.size()\
+	 && reqpath[size] == locpath[size]; size++)
+	if (size == reqpath.size())
+		return (std::string::npos);
+		
+	return (size);
 }
 
 void assignStrIfNonEmpty(std::string &dest, std::string &rhs)
@@ -108,7 +146,6 @@ void	Request::setLocRules(location &loc, location &ruleblock)
 		ruleblock._cgi_extension = loc._cgi_extension;
 	if (!loc._cgi_path.empty())
 		ruleblock._cgi_path = loc._cgi_path;
-	checkLocationMatch(loc._nestedLocations, ruleblock);
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 13:32:14 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/17 16:06:32 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ Config::~Config(void)
 //								Get and setters								  //
 // ************************************************************************** //
 
-std::string location::getName() const { //location cpp?
+std::string &location::getName(){ //location cpp?
     return _name;
 }
 

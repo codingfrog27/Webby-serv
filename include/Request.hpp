@@ -76,6 +76,7 @@ class Request
 		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
 		t_secs					_timeoutTime;
 		t_time					_startTime;
+		std::string				_root;
 
 
 
@@ -94,6 +95,10 @@ class Request
 		void					parseUrlEncoded();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 		void					resolveFilePath();
+		void					locationHandler();
+		location				*findLocationMatch(std::vector<location> &locs, size_t &matchCount);
+		void					setLocRules(location &loc, location &ruleblock);
+		size_t					countPathMatch(std::string &reqpath, std::string &locpath);
 
 
 	public:
@@ -131,9 +136,6 @@ class Request
 		void			printHeaders();
 		
 		Config*			getConfig();
-		void			checkLocations(std::string _filePath);
-		void			checkLocationMatch(std::vector<location> &locs, location &rules);
-		void			setLocRules(location &loc, location &ruleblock);
 };
 
 std::string trim(const std::string& str);

@@ -26,7 +26,8 @@ class Server
 		std::vector<Config> 	&_serverBlocks;
 		std::vector<pollfd>		_pollFDs;
 		std::vector<pollfd>		_CGIPollFDs;
-		std::vector<Connection> _Connections;
+		// std::vector<Connection> _Connections;
+		std::unordered_map<int, Connection> _Connections;
 		std::map<int, CGI*>		_CGIMap;
 		struct	addrinfo		*_addrInfo;
 		// const int	_max_clients;

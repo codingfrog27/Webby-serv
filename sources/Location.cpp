@@ -92,6 +92,11 @@ void	location::setRoot(const std::string &root)
 	this->_root = root;
 }
 
+void	location::setName(const std::string &name)
+{
+	this->_name = name;
+}
+
 std::string	location::getAlias()
 {
 	return(this->_alias);
@@ -178,6 +183,9 @@ std::string location::toString() const
 
 void	location::initializeLocation()
 {
+	static int	count;
+	if (!count)
+		setName("loc1");
 	setAlias(validateAlias());
 	setAllowMethods(validateAllowMethods());
 	setAutoindex(validateAutoindex());
