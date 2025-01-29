@@ -274,3 +274,4 @@ void  Request::checkRules(location &rules)
         throw (ClientErrorExcept(500, "Internal Server Error"));
     }
 }
+
