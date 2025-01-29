@@ -74,8 +74,8 @@ void	Request::locationHandler()
 	location	*nestRules;
 	size_t		matchCount = 0;
 	std::vector<location> &locVec = this->_config->_locations;
-	std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
-	<< "FD == " << _clientFD << std::endl;
+	// std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
+	// << "FD == " << _clientFD << std::endl;
 	if (locVec.empty())
 		return;
 	reqRules = findLocationMatch(locVec, matchCount);
@@ -92,7 +92,6 @@ void	Request::locationHandler()
 	}
 	//antonio set rules
 	// _filePath = _root + _filePath;
-	std::cout << YELLOW "FILEPATH==" << _filePath << RESET << std::endl;
 }
 
 location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)

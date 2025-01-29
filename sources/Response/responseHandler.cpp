@@ -5,6 +5,7 @@
 #include "Connection.hpp"
 
 static void	getMethod(Request* request, Response* response){
+	
 	size_t size = 0;
 
 	if(response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS){

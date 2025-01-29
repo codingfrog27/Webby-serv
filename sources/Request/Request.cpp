@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/22 15:16:59 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/29 13:43:06 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,35 +48,35 @@ Request::operator=(const Request &rhs)
 		// reading_mode = rhs.reading_mode;
 		// _hasBody = rhs._hasBody;
 		   _config = rhs._config;
-        _reqBody = rhs._reqBody;
-        _unsortedHeaders = rhs._unsortedHeaders;
-        reading_mode = rhs.reading_mode;
-        _boundary = rhs._boundary;
-        body_bytes_read = rhs.body_bytes_read;
-        _rnrnFound = rhs._rnrnFound;
-        _dataIsChunked = rhs._dataIsChunked;
-        _headerAreParsed = rhs._headerAreParsed;
-        _hasBody = rhs._hasBody;
-        _contentLen = rhs._contentLen;
-        _timeoutTime = rhs._timeoutTime;
-        _startTime = rhs._startTime;
-        _clientFD = rhs._clientFD;
-        // _max_body_size = rhs._max_body_size;
-        _rawRequestData = rhs._rawRequestData;
-        _method_type = rhs._method_type;
-        _headers = rhs._headers;
-        _wwwFormEncodedPairs = rhs._wwwFormEncodedPairs;
-        _http_version = rhs._http_version;
-        request_line = rhs.request_line;
-        _URI = rhs._URI;
-        _filePath = rhs._filePath;
-        _keepOpen = rhs._keepOpen;
-        _doneReading = rhs._doneReading;
-        _statusStr = rhs._statusStr;
-        _statusCode = rhs._statusCode;
-		// _root = rhs._root;
-        // _CGIRequired = rhs._CGIRequired;
-        // _customConf = std::make_unique<CustomConfig>(*rhs._customConf);
+		_reqBody = rhs._reqBody;
+		_unsortedHeaders = rhs._unsortedHeaders;
+		reading_mode = rhs.reading_mode;
+		_boundary = rhs._boundary;
+		body_bytes_read = rhs.body_bytes_read;
+		_rnrnFound = rhs._rnrnFound;
+		_dataIsChunked = rhs._dataIsChunked;
+		_headerAreParsed = rhs._headerAreParsed;
+		_hasBody = rhs._hasBody;
+		_contentLen = rhs._contentLen;
+		_timeoutTime = rhs._timeoutTime;
+		_startTime = rhs._startTime;
+		_clientFD = rhs._clientFD;
+		_root = rhs._root;
+		// _max_body_size = rhs._max_body_size;
+		_rawRequestData = rhs._rawRequestData;
+		_method_type = rhs._method_type;
+		_headers = rhs._headers;
+		_wwwFormEncodedPairs = rhs._wwwFormEncodedPairs;
+		_http_version = rhs._http_version;
+		request_line = rhs.request_line;
+		_URI = rhs._URI;
+		_filePath = rhs._filePath;
+		_keepOpen = rhs._keepOpen;
+		_doneReading = rhs._doneReading;
+		_statusStr = rhs._statusStr;
+		_statusCode = rhs._statusCode;
+		// _CGIRequired = rhs._CGIRequired;
+		// _customConf = std::make_unique<CustomConfig>(*rhs._customConf);
 	}
 
 	return (*this);

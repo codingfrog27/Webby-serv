@@ -6,11 +6,13 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/22 15:19:25 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/29 13:49:10 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
+#define YELLOW "\033[33m"
+#define RESET "\033[0m"
 
 size_t	Request::parse_req_line(std::string req_line)
 {
@@ -58,6 +60,8 @@ void	Request::resolveFilePath()
 	if (resolved.front() == '/')
 		resolved.erase(0, 1);
 	_filePath = trim(resolved);
+	locationHandler();
+	_filePath = trim(_root) + _filePath;
 }
 
 void	Request::parse_headers(std::string header_str)
@@ -77,8 +81,6 @@ void	Request::parse_headers(std::string header_str)
 		start = line_end + 2;
 		line_end = header_str.find("\r\n", start);
 	}
-	locationHandler();
-	_filePath = trim(_root) + _filePath;
 	checkHeaders();
 }
 

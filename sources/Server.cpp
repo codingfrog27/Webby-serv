@@ -136,35 +136,28 @@ void	Server::main_server_loop()
 // _pollFDs.erase(_pollFDs.begin() + i);
 void	Server::close_connect(int fd)
 {
-	std::ofstream outFile("clientFD_log.txt", std::ios::app);
-	static	int counter;
-
 	std::vector<pollfd>::iterator it = _pollFDs.begin();
-	// std::vector<Connection>::iterator itc = _Connections.begin();
 	if (_pollFDs.size() != _Connections.size())
 		std::cout << RED "VECTOR SIZE MISMAtCH BRO" RESET << std::endl;
-	std::cout << "call nbr " << counter << std::endl;
-	counter++;
 	while (it != _pollFDs.end())
 	{
 		if (it->fd == fd)
 		{
 			close(fd);
 			_pollFDs.erase(it);
-			// _Connections.erase(itc);
-			_Connections.erase(fd);
-			std::cout << "CLOSED CONNECT with FD: " \
-			<< fd << " With index: " << std::endl;
-			return;
+			if (_Connections.at(fd)._clientFD != fd)
+				std::cout << "WHAT THE HELLL" << std::endl;
+			else {
+				_Connections.erase(fd);
+				std::cout << "CLOSED CONNECT with FD: " \
+				<< fd << " With index: " << std::endl;
+				return;
+			}
 		}
 		it++;
 		// itc++;
 	}
-	if (it == _pollFDs.end())
-	{
-		std::cout << "bro \nI can't close connect" << fd << std::endl;
-		// NicePrint::promptEnter();
-	}
+	std::cout << "bro \nI can't close connect" << fd << std::endl;
 }
 
 
