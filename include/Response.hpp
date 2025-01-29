@@ -35,7 +35,7 @@ class Response{
 		
 		Response &										operator=(const Response& obj);
 
-		connectStatus									responseHandler(Request* request, Response* response);
+		connectStatus									responseHandler(Request* request);
 		void											autoFillResponse(std::string status);
 		std::string										generateResponse() const;
 
@@ -75,9 +75,9 @@ class Response{
 		size_t											_bytesWritten;
 		size_t											_timesWriteFailed;
 
-		void											getMethod(Request* request, Response* response);
-		void											postMethod(Request* request, Response* response);
-		void											deleteMethod(Request* request, Response* response);
+		void											getMethod(Request* request);
+		void											postMethod(Request* request);
+		void											deleteMethod(Request* request);
 };
 
 bool			isCGIrequired(Request* request);

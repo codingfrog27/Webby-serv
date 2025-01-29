@@ -2,10 +2,14 @@
 #include <vector>
 #include <string>
 #include <poll.h>
+#include <unordered_map>
+#include <memory>
 
 class Request;
 class Response;
 class Connection;
+
+enum class connectStatus;
 
 enum class CGIHandlerStatus{
 	NOT_STARTED,
@@ -27,7 +31,7 @@ class CGI{
 		CGI(Connection* connection, std::vector<pollfd>* pollFDs);
 		~CGI();
 
-		connectStatus		CGIHandler(Connection* connection, std::vector<pollfd>* CGIPollFDs, std::map<int, CGI*> CGIMap);
+		connectStatus		CGIHandler(Connection* connection, std::vector<pollfd>* CGIPollFDs, std::unordered_map<int, std::shared_ptr<CGI>> CGIMap);
 		void				closePipes(void);
 		bool				childIsRunning(Response* response);
 
@@ -40,6 +44,7 @@ class CGI{
 		int					getFdIn(void);
 		int					getFdOut(void);
 		int					getFdError(void);
+		int					getClientFD(void);
 
 	private:
 		std::vector<char*>	_envp;
@@ -49,6 +54,7 @@ class CGI{
 		// pollfd				_pollFdIn;
 		// pollfd				_pollFdOut;
 		// pollfd				_pollFdError;
+		int					_clientFD;
 		CGIHandlerStatus	_CGIHandlerStatus;
 		int					_PID;
 		size_t				_bytesWrittenToChild;

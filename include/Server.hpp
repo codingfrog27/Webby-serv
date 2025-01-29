@@ -22,14 +22,14 @@ class CGI;
 class Server
 {
 	private:
-		std::vector<Socket> 	_serverSockets;
-		std::vector<Config> 	&_serverBlocks;
-		std::vector<pollfd>		_pollFDs;
-		std::vector<pollfd>		_CGIPollFDs;
+		std::vector<Socket> 							_serverSockets;
+		std::vector<Config> 							&_serverBlocks;
+		std::vector<pollfd>								_pollFDs;
+		std::vector<pollfd>								_CGIPollFDs;
 		// std::vector<Connection> _Connections;
-		std::unordered_map<int, Connection> _Connections;
-		std::unordered_map<int, std::shared_ptr<CGI>> _CGIs;
-		struct	addrinfo		*_addrInfo;
+		std::unordered_map<int, Connection> 			_Connections;
+		std::unordered_map<int, std::shared_ptr<CGI>>	_CGIMap;
+		struct	addrinfo								*_addrInfo;
 		// const int	_max_clients;
 
 		void		setupAddrInfo(Config *config);
@@ -45,4 +45,7 @@ class Server
 		void		main_server_loop();
 		void		connectionAction(Connection &connect, pollfd &poll);
 		void		PrintConnectionStatusses(size_t size);
+
+		std::vector<pollfd>								getCGIPollFDs(void);
+		std::unordered_map<int, std::shared_ptr<CGI>>	getCGIMap(void);
 };

@@ -123,7 +123,6 @@ void	Server::main_server_loop()
 				i++;
 		}
 		handleCGIPollEvents();
-		closeCGIConnects();
 	}
 }
 
@@ -172,7 +171,8 @@ void Server::handleCGIPollEvents() {
 		if (poll(_CGIPollFDs.data(), size, 0) == 0)
 			return ;
 		for (size_t i = 0; i < size; i++){
-			CGI *cgi = &_CGIMap[_CGIPollFDs[i].fd];
+			CGI *cgi = _CGIMap[_CGIPollFDs[i].fd].get();
+			Connection &connection = _Connections.at(cgi->getClientFD());
 			if (_CGIPollFDs[i].revents & POLLHUP){
 				_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
 				_CGIMap.erase(_CGIMap.find(_CGIPollFDs[i].fd));
@@ -181,12 +181,12 @@ void Server::handleCGIPollEvents() {
 				continue;
 			}
 			if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT)
-				cgi->writeToCGI(); //TO WHICH RESPONSE?
-			else if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED || !cgi->childIsRunning()){
+				cgi->writeToCGI(&connection._request, &connection._response); //TO WHICH RESPONSE?
+			else if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED || !cgi->childIsRunning(&connection._response)){
 				if (_CGIPollFDs[i].fd == cgi->getFdOut() && _CGIPollFDs[i].revents & POLLIN)
-					cgi->readFromCGI();//TO WHICH RESPONSE?
+					cgi->readFromCGI(&connection._response);//TO WHICH RESPONSE?
 				else if (_CGIPollFDs[i].fd == cgi->getFdError() && _CGIPollFDs[i].revents & POLLIN)
-					cgi->readErrorFromCGI();//TO WHICH RESPONSE?
+					cgi->readErrorFromCGI(&connection._response);//TO WHICH RESPONSE?
 			}
 		}
 	}
@@ -218,6 +218,16 @@ void Server::acceptNewConnects(size_t size)
 			}
 		}
 	}
+}
+
+std::vector<pollfd>	Server::getCGIPollFDs(void)
+{
+	return (_CGIPollFDs);
+}
+
+std::unordered_map<int, std::shared_ptr<CGI>>	Server::getCGIMap(void)
+{
+	return (_CGIMap);
 }
 
 

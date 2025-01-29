@@ -4,7 +4,7 @@
 #include "libft.h"
 #include "Connection.hpp"
 
-void	Response::getMethod(Request* request, Response* response){
+void	Response::getMethod(Request* request){
 	size_t size = 0;
 
 	if(_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS){
@@ -55,7 +55,7 @@ void	Response::getMethod(Request* request, Response* response){
 	return ;
 }
 
-void	Response::postMethod(Request* request, Response* response){
+void	Response::postMethod(Request* request){
 	// check for CGI??
 	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS){
 		if(getReadingModeFromRequest(*request) == BINARY)
@@ -90,7 +90,7 @@ void	Response::postMethod(Request* request, Response* response){
 	return ;
 }
 
-void	Response::deleteMethod(Request* request, Response* response){
+void	Response::deleteMethod(Request* request){
 	if(_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS)
 		_responseHandlerStatus = responseHandlerStatus::IN_DELETE;
 	if (fileExists(request->_filePath)){
@@ -105,7 +105,7 @@ void	Response::deleteMethod(Request* request, Response* response){
 }
 
 //config for timeout & max body size
-connectStatus	Response::responseHandler(Request* request, Response* response){
+connectStatus	Response::responseHandler(Request* request){
 	if (_responseHandlerStatus == responseHandlerStatus::NOT_STARTED){
 		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
 		setHTTPVersion(request->_http_version);
@@ -122,20 +122,20 @@ connectStatus	Response::responseHandler(Request* request, Response* response){
 	// std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;
 	// std::cout << MAGENTA "filepath	: " << request->_filePath << RESET << std::endl;
 	// if (_responseHandlerStatus == responseHandlerStatus::IN_CGI || (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && isCGIrequired(request))){
-	// 	CGIHandler(request, response); //FINSIHED CGI
+	// 	CGIHandler(request); //FINSIHED CGI
 	// 	return connectStatus::RESPONDING;
 	// }
 	else{
 		if ((request->_method_type == GET && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_GET){
-			getMethod(request, response);
+			getMethod(request);
 			return connectStatus::RESPONDING;
 		}
 		else if ((request->_method_type == POST && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_POST){
-			postMethod(request, response);
+			postMethod(request);
 			return connectStatus::RESPONDING;
 		}
 		else if ((request->_method_type == DELETE && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_DELETE) {
-			deleteMethod(request, response);
+			deleteMethod(request);
 			return connectStatus::RESPONDING;
 		 }
 	}

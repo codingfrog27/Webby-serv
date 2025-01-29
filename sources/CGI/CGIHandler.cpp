@@ -7,7 +7,7 @@
 // write script
 // put reading and writing in a loop
 
-connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd>* CGIPollFDs, std::map<int, CGI*> CGIMap){
+connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd>* CGIPollFDs, std::unordered_map<int, std::shared_ptr<CGI>> CGIMap){
 	Response* response = &connection->_response;
 	Request* request = &connection->_request;
 
@@ -27,7 +27,7 @@ connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd>* CGIPo
 			return connectStatus::RESPONDING;
 		}
 		// if yes
-		CGI* newCGI = new CGI(connection, CGIPollFDs);
+		std::shared_ptr<CGI> newCGI = std::make_shared<CGI>(connection, CGIPollFDs);
 		connection->_cgi = newCGI;
 		CGIMap[newCGI->getFdIn()] = newCGI;
 		CGIMap[newCGI->getFdOut()] = newCGI;

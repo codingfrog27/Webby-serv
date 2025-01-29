@@ -12,6 +12,7 @@
 
 #include "Connection.hpp"
 #include "CGI.hpp"
+#include "Server.hpp"
 
 
 // ************************************************************************** //
@@ -87,10 +88,12 @@ void	Connection::connectionAction(const pollfd &poll, Server &server)
 	if (poll.revents & POLLIN && (_CStatus == connectStatus::IDLE || \
 									_CStatus == connectStatus::READING))
 		_CStatus = _request.readRequest();
-	if(_CStatus == connectStatus::CGI_REQUIRED)
-		_CStatus = _cgi->CGIHandler(this, &CGIPollFDs, CGIMap);
+	if(_CStatus == connectStatus::CGI_REQUIRED){
+		auto cgiPollFDs = server.getCGIPollFDs();
+		_CStatus = _cgi->CGIHandler(this, &cgiPollFDs, server.getCGIMap());
+	}
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
-		_CStatus = _response.responseHandler(&_request, &_response);
+		_CStatus = _response.responseHandler(&_request);
 
 	if (_CStatus == connectStatus::FINISHED)
 		_CStatus = refreshIfKeepAlive();

@@ -22,7 +22,7 @@
 // 	return ;
 // }
 
-CGI::CGI(Connection* connection, std::vector<pollfd>* CGIPollFDs) {
+CGI::CGI(Connection* connection, std::vector<pollfd>* CGIPollFDs) : _clientFD(connection->_clientFD){
 	_CGIHandlerStatus = CGIHandlerStatus::NOT_STARTED;
 
 	if (pipe(_fdIn) == -1) {
@@ -248,7 +248,6 @@ bool	CGI::childIsRunning(Response* response){
 		response->autoFillResponse("500 Internal Server Error: waitpid");
 		closePipes();
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
-		return false;
 	} 
 	else if (result == 0) {
 		// Child is still running
@@ -256,8 +255,8 @@ bool	CGI::childIsRunning(Response* response){
 	} 
 	else if (WIFEXITED(status)) {
 		_CGIHandlerStatus = CGIHandlerStatus::CHILD_IS_FINISHED;
-		return false;
 	}
+	return false;
 }
 
 void	CGI::executeScript(Request* request, Response* response){
@@ -324,4 +323,8 @@ int	CGI::getFdOut(void){
 
 int	CGI::getFdError(void){
 	return _fdError[0];
+}
+
+int	CGI::getClientFD(void){
+	return _clientFD;
 }

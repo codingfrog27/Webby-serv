@@ -41,11 +41,11 @@ class Connection
 		
 
 	public:
-		connectStatus	_CStatus;
-		Config			*_config;
-		Request			_request;
-		Response		_response;
-		CGI*			_cgi;
+		connectStatus					_CStatus;
+		Config							*_config;
+		Request							_request;
+		Response						_response;
+		std::shared_ptr<CGI>			_cgi;
 		bool			_isClientSocket;
 		bool			_wantsNewConnect;
 		int				_clientFD;
