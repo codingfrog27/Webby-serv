@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:27:26 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 13:32:45 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/29 18:01:44 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,10 +104,10 @@ void printConfigs(std::vector<Config> &configs)
         for (size_t j = 0; j < configs[i]._locations.size(); j++) {
             std::cout << "Location block:\n" << configs[i]._locations[j].toString();
 
-            std::vector<std::string> locationAllowMethods = configs[i]._locations[j].getAllowMethods();
+            std::vector<Http_method> locationAllowMethods = configs[i]._locations[j].getAllowMethods();
             std::cout << "Allow Methods:";
             for (const auto &method : locationAllowMethods) {
-                std::cout << method << ' ';
+                std::cout << (int)method << ' ';
             }
 			std::cout << std::endl;
 

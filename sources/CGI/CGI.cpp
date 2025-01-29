@@ -52,9 +52,9 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		return ;
 	}
 	if (_PID != 0) { //parent
-		if (_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS && request->_method_type == GET)
+		if (_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS && request->_method_type == Http_method::GET)
 			_CGIHandlerStatus = CGIHandlerStatus::WAITING_FOR_CHILD;
-		if ((_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS || _CGIHandlerStatus == CGIHandlerStatus::WRITING_TO_CHILD) && request->_method_type == POST){
+		if ((_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS || _CGIHandlerStatus == CGIHandlerStatus::WRITING_TO_CHILD) && request->_method_type == Http_method::POST){
 			_CGIHandlerStatus = CGIHandlerStatus::WRITING_TO_CHILD;
 			// std::cout << MAGENTA "Req Body	: " << request->getBody() << std::endl;
 			int bytes = write(_fdIn[1], request->getBody().data() + _bytesWrittenToChild, BUFFER_SIZE);
@@ -150,13 +150,13 @@ void	CGI::closePipes(){
 }
 
 void CGI::setupCGIEnvironment(Request* request) {
-	if (request->_method_type == GET) {
+	if (request->_method_type == Http_method::GET) {
 		CGI::addToEnvp("REQUEST_METHOD", "GET");
 		if (request->_URI.find("?") != std::string::npos) {
 			CGI::addToEnvp("QUERY_STRING", request->_URI.substr(request->_URI.find("?") + 1));
 		}
 	}
-	else if (request->_method_type == POST) {
+	else if (request->_method_type == Http_method::POST) {
 		CGI::addToEnvp("REQUEST_METHOD", "POST");
 		CGI::addToEnvp("CONTENT_TYPE", request->_headers["Content-Type"]);
 		CGI::addToEnvp("CONTENT_LENGTH", request->_headers["Content-Length"]);

@@ -41,12 +41,13 @@ std::string	normalize_space_location(std::string& str)
 	return (str);
 }
 
-std::vector<std::string> location::validateAllowMethods()
+std::vector<Http_method> location::validateAllowMethods()
 {
 	std::string allow_methods_rule;
     std::string allow_methods_value;
 	std::string tmp_value;
-	std::vector<std::string>  tmp_vector;
+	std::vector<Http_method>  tmp_vector;
+	std::vector<std::string>  methods = {"POST", "GET", "DELETE"};
 	
 	static int space = 0;
 
@@ -72,9 +73,12 @@ std::vector<std::string> location::validateAllowMethods()
 	if (space == 0)
 	{
 		tmp_value = allow_methods_value.substr(0, allow_methods_value.length());
-		if (tmp_value == "POST" || tmp_value == "GET" || tmp_value == "DELETE") //|| isspace(tmp_value[space]) == 0)
-			tmp_vector.push_back(tmp_value);
-		else
+		for (size_t i = 0; i < methods.size(); i++)
+		{
+			if (tmp_value == methods[i])
+				tmp_vector.push_back((Http_method)i);
+		}
+		if (tmp_vector.empty())
 		 	throw std::invalid_argument("Error: invalid ruleeeee in allow_methods directive");
 	}
 	else
@@ -91,15 +95,18 @@ std::vector<std::string> location::validateAllowMethods()
 			if (start < i)
 			{
 				tmp_value = allow_methods_value.substr(start, i - start);
-				if (tmp_value == "POST" || tmp_value == "GET" || tmp_value == "DELETE")
-					tmp_vector.push_back(tmp_value);
-				else
+				for (size_t i = 0; i < methods.size(); i++)
+				{
+					if (tmp_value == methods[i])
+						tmp_vector.push_back((Http_method)i);
+				}
+				if (tmp_vector.empty())
 					throw std::invalid_argument("Error: invalid rule in autoindex directive");
 			}
 		}
 	}
 	return (tmp_vector);
-}	
+}
 
 bool location::validateAutoindex()
 {
@@ -145,6 +152,40 @@ std::string location::validateAlias()
 	}
 	return (alias_value);
 }
+
+std::string	location::findLocationName(std::string locationLine)
+{
+	size_t end = locationLine.rfind('{');
+	std::string locationName = locationLine.substr(10, end - 11);
+	return (locationName);
+}
+
+std::string location::validateLocationName(std::string line)
+{
+	std::string location_name_rule;
+	std::string location_name_value;
+
+	if (!line.empty())
+	{
+		location_name_rule = normalize_space_location(line);
+		location_name_value = findLocationName(location_name_rule);
+	}
+	size_t size = location_name_value.size();
+	if (location_name_value[0] == '/' && location_name_value[size - 1] == '/')
+	{
+		for (size_t i = 0; i < size; i++)
+		{
+			if (!isalpha(location_name_value[i]) && !isdigit(location_name_value[i]) && location_name_value[i] != '-' && location_name_value[i] != '/')
+				throw std::invalid_argument("Error: invalid character in location name");
+			if (location_name_value[i] == '/' && location_name_value[i + 1] == '/')
+				throw std::invalid_argument("Error: invalid character in location name");
+		}
+	}
+	else
+		throw std::invalid_argument("Error: invalid character in location name");
+	return (location_name_value);
+}
+
 
 std::vector<std::string>		location::validateIndex()
 {

@@ -33,7 +33,7 @@ _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 
 Connection::Connection(const Connection &rhs) : _request(rhs._request)
 {
-	std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
+	// std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
 
 	*this = rhs;
 }
@@ -41,7 +41,7 @@ Connection::Connection(const Connection &rhs) : _request(rhs._request)
 Connection &
 Connection::operator=(const Connection &rhs)
 {
-	std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
+	// std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
@@ -62,7 +62,7 @@ Connection::operator=(const Connection &rhs)
 
 Connection::~Connection(void)
 {
-	std::cout << RED << "Connection: Destructor called" << RESET << std::endl;
+	// std::cout << RED << "Connection: Destructor called" << RESET << std::endl;
 }
 
 // ************************************************************************** //

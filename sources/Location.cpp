@@ -27,6 +27,7 @@ location::location(void)
 location::location(std::ifstream &file, std::string &line)
 {
 	size_t i = 0;
+	setName(validateLocationName(line));
 	while (std::getline(file, line))
 	{
 		if (line.empty() || line[i] == '#')
@@ -46,7 +47,7 @@ location::location(std::ifstream &file, std::string &line)
 
 location::location(const location &rhs)
 {
-	std::cout << GREEN << "location: Copy constructor called" RESET << std::endl;
+	// std::cout << GREEN << "location: Copy constructor called" RESET << std::endl;
 	*this = rhs;
 }
 
@@ -75,7 +76,7 @@ location::operator=(const location &rhs)
 
 location::~location(void)
 {
-	std::cout << RED << "location: Destructor called" << RESET << std::endl;
+	// std::cout << RED << "location: Destructor called" << RESET << std::endl;
 }
 
 // ************************************************************************** //
@@ -107,15 +108,16 @@ void	location::setAlias(const std::string &alias)
 	this->_alias = alias;
 }
 
-std::vector<std::string>	location::getAllowMethods()
+std::vector<Http_method>	location::getAllowMethods()
 {
 	return(this->_allow_methods);
 }
 
-void	location::setAllowMethods(const std::vector<std::string> &allow_methods)
+void	location::setAllowMethods(const std::vector<Http_method>  &allow_methods)
 {
 	this->_allow_methods = allow_methods;
 }
+
 
 bool	location::getAutoindex()
 {
@@ -183,9 +185,6 @@ std::string location::toString() const
 
 void	location::initializeLocation()
 {
-	static int	count;
-	if (!count)
-		setName("loc1");
 	setAlias(validateAlias());
 	setAllowMethods(validateAllowMethods());
 	setAutoindex(validateAutoindex());

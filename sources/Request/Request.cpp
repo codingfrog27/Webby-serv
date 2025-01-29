@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/29 13:43:06 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/29 18:04:35 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 Request::Request(Config *config, int clientFD): _config(config), \
 	reading_mode(NOT_STARTED), body_bytes_read(0), _rnrnFound(false), \
 	_headerAreParsed(false), _hasBody(false), _root(config->_rootDir), \
-	 _clientFD(clientFD), _method_type(NOT_PARSED_YET), _keepOpen(true),\
-	  _doneReading(false), _statusStr("0 Not started yet")
+	 _clientFD(clientFD), _method_type(Http_method::NOT_PARSED_YET), _keepOpen(true),\
+	  _doneReading(false), _statusStr("0 Not started yet"), _dirListing(false)
 {
 	_rawRequestData.reserve(100);
 	_timeoutTime = setTimeout(30); //normal secs

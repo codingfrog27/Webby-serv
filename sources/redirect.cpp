@@ -74,8 +74,8 @@ void	Request::locationHandler()
 	location	*nestRules;
 	size_t		matchCount = 0;
 	std::vector<location> &locVec = this->_config->_locations;
-	// std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
-	// << "FD == " << _clientFD << std::endl;
+	std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
+	<< "FD == " << _clientFD << std::endl;
 	if (locVec.empty())
 		return;
 	reqRules = findLocationMatch(locVec, matchCount);
@@ -90,6 +90,9 @@ void	Request::locationHandler()
 		setLocRules(*reqRules, *nestRules);
 		locVec = nestRules->_nestedLocations;
 	}
+	checkRules(*reqRules);
+		std::cout << "FILEPATH AFTER CHECK " << _filePath << std::endl \
+	<< "FD == " << _clientFD << std::endl;
 	//antonio set rules
 	// _filePath = _root + _filePath;
 }
@@ -98,21 +101,25 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 {
 	size_t	newSize;
 	location *ret;
+	bool	matchFound = false;
 	for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
 	{
 		newSize = countPathMatch(_filePath, it->getName());
+		std::cout << "filepath == " << _filePath << "loc ==" << it->getName() \
+		<< "\n matchcount ==" << newSize << std::endl;
 		// std::cout << YELLOW "locname ==" RESET << it->getName() << "04& size =" <	Az< newSize << std::endl;
 		if (newSize > matchCount) //?
 		{
 			matchCount = newSize;
+			matchFound = true;
 			ret = &(*it);
 			if (newSize == std::string::npos)
 				break;
 		}
 	}
-	if (matchCount == 0)
-		return (nullptr);
-	return (ret);
+	if (matchFound)
+		return (ret);
+	return (nullptr);
 }
 
 size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath)
@@ -149,20 +156,68 @@ void	Request::setLocRules(location &loc, location &ruleblock)
 }
 
 
-// checkLocRules(location &ruleblock)
-// {
+void  Request::checkRules(location &rules)
+{   
+	if (!rules.getReturn().empty())
+	{
+		this->_filePath = rules.getReturn();
+		_statusCode = 301;
+		return;
+	}
+	else if (!rules.getAllowMethods().empty())
+	{
+		std::vector<Http_method> allow_methods = rules.getAllowMethods();
 
-// }
+		for (auto i : allow_methods)
+		{
+			if (i == this->_method_type)
+				return;
+		}
+		throw (ClientErrorExcept(405, "Method not allowed"));
+	}
+	else if (!rules.getRoot().empty())
+	{
+		_filePath.find(_config->_rootDir);
+		_filePath.replace(0, _config->_rootDir.size(), rules.getRoot());
+	}
+	else if (!rules.getAlias().empty())
+		this->_filePath = rules.getAlias();
+	else if (!rules.getIndex().empty())
+	{
+		std::filesystem::path p = _filePath;
+		if (std::filesystem::is_directory(p))
+		{
+			std::vector<std::string> rules_index = rules.getIndex();
+			std::string tmp = this->_filePath;
 
-// void checkRules(location &rules)
-// {	//loop through allowed methods to check if is allowed
-// 	for (size_t i = 0; i < count; i++)
-// 	{
-// 		/* code */
-// 	}
-// 	//if redirect change path to redirect path
-// 	//if autoindex && filepath == folder change path to index
-// 	//alias?? maybe cgi??
-// }
+			for (auto i : rules_index)
+			{
+				tmp += i;
+				if (fileExists(_filePath))
+				{
+					_filePath = tmp;
+					return;
+				}
+				tmp = _filePath;
+				if (rules.getAutoindex())
+					this->_dirListing = true;
+			}
+		}
+	}
+	else if (!rules.getCgiExtension().empty())
+	{
+		std::vector<std::string> cgi_extension = rules.getCgiExtension();
+		size_t pos = _filePath.rfind('.');
+		std::string extension_to_compare = _filePath.substr(pos + 1);
+		std::cout << extension_to_compare << std::endl;
+
+		for (auto i : cgi_extension)
+		{
+			if (i == extension_to_compare)
+				return;
+		}
+		throw (ClientErrorExcept(500, "Internal Server Error"));
+	}
+}
 
 

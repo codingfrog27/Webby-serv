@@ -17,15 +17,19 @@
 #include <unordered_map>
 #include <vector>
 
+enum class Http_method;
 class location
 {
 	private:
-		// std::string _locationName;
+		std::string	findLocationName(std::string locationLine);
+		std::string	validateLocationName(std::string line);
+		
+
 
 
 	public:
 		std::string				 	_alias;
-		std::vector<std::string>	_allow_methods;
+		std::vector<Http_method> 	_allow_methods;
 		bool						_autoindex;
 		std::vector<std::string>	_cgi_extension;
 		std::vector<std::string>	_cgi_path; 
@@ -49,7 +53,7 @@ class location
 		std::string &getName();
 
 		std::string	getAlias();
-		std::vector<std::string>	getAllowMethods();
+		std::vector<Http_method>	getAllowMethods();
 		bool		getAutoindex();
 		std::vector<std::string>	getCgiExtension();
 		std::vector<std::string>	getCgiPath();
@@ -57,7 +61,7 @@ class location
 		std::string	getReturn();
 		std::string	getRoot();
 		void	setAlias(const std::string &alias);
-		void	setAllowMethods(const std::vector<std::string> &allow_methods);
+		void	setAllowMethods(const std::vector<Http_method> &allow_methods);
 		void	setAutoindex(const bool &autoindex);
 		void	setCgiExtension(const std::vector<std::string> &cgi_extension);
 		void	setCgiPath(const std::vector<std::string> &cgi_path);
@@ -70,7 +74,7 @@ class location
 
 		std::string toString() const;
 		std::string validateAlias();
-		std::vector<std::string> validateAllowMethods();
+		std::vector<Http_method> validateAllowMethods();
 		bool validateAutoindex();
 		std::vector<std::string> validateIndex();
 		std::string validateReturn();

@@ -14,7 +14,7 @@ void	CGIHandler(Request* request, Response* response){
 	// NicePrint::promptEnter();
 	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS){
 		// should we even invoke CGI?
-		if (request->_method_type != GET && request->_method_type != POST){
+		if (request->_method_type != Http_method::GET && request->_method_type != Http_method::POST){
 			response->autoFillResponse("405 Method Not Allowed");
 			response->setHeaders("Allow", "GET, POST");
 			return ;

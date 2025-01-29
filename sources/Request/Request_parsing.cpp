@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/29 13:49:10 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/29 18:33:16 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ size_t	Request::parse_req_line(std::string req_line)
 void	Request::resolveFilePath()
 {
 	std::string resolved = _URI;
+	std::cout << "FILEPATH B4 RESOLVE" << _URI << std::endl;
 
 	if (resolved.find("?") != std::string::npos)
 		resolved.erase(resolved.find("?"));
@@ -57,9 +58,9 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_host.length());
 	if (resolved.find(_config->_listen) != std::string::npos)
 		resolved.erase(0, _config->_listen.length() + 1);
-	if (resolved.front() == '/')
-		resolved.erase(0, 1);
-	_filePath = trim(resolved);
+	// if (resolved.front() == '/')
+	// 	resolved.erase(0, 1);
+	_filePath = "/" + trim(resolved);
 	locationHandler();
 	_filePath = trim(_root) + _filePath;
 }
@@ -91,7 +92,7 @@ void	Request::checkHeaders()
 		throw(std::invalid_argument("400 bad request: Host missing"));
 	if (getHeaderValue("Connection") == "close")
 		_keepOpen = false;
-	if (_method_type == GET)
+	if (_method_type == Http_method::GET)
 	{
 		_doneReading = true;
 		_statusStr = "";
