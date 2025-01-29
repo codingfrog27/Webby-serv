@@ -18,6 +18,8 @@
 #include "socket.hpp"
 #include "Config.hpp"
 
+class Server;
+
 enum class connectStatus 
 {
 	SERV_SOCKET,
@@ -26,7 +28,7 @@ enum class connectStatus
 	REQ_ERR,
 	CONNECT_CLOSED,
 	DONE_READING,
-	DONE_READING_CGI,
+	CGI_REQUIRED,
 	RESPONDING,
 	SERVER_ERR,
 	FINISHED
@@ -60,6 +62,6 @@ class Connection
 		// void	resetRequest(Config* config, int clientFD);
 		// void	resetResponse();
 		connectStatus	refreshIfKeepAlive();
-		void			connectionAction(const pollfd &poll);
+		void			connectionAction(const pollfd &poll, Server &server);
 		connectStatus	checkConnectStatus(const pollfd &poll);
 } ;

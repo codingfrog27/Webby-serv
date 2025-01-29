@@ -28,14 +28,14 @@
 	return html.str();
 }
 
-void	create_directory_listing_page(std::string html_page)
-{
-	std::fstream	File;
+// void	create_directory_listing_page(std::string html_page)
+// {
+// 	std::fstream	File;
 
-	File.open("directory_listing.html", std::ios::out);
-	File << html_page;
-	File.close();
-}
+// 	File.open("directory_listing.html", std::ios::out);
+// 	File << html_page;
+// 	File.close();
+// }
 
 void sendHTMLPage(int client_socket, const std::string& file_path) 
 {

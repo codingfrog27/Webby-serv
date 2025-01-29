@@ -80,13 +80,15 @@ Connection::~Connection(void)
 	// 		_wantsNewConnect = true;
 	// 	return;
 	// }
-void	Connection::connectionAction(const pollfd &poll)
+void	Connection::connectionAction(const pollfd &poll, Server &server)
 {
 	_CStatus = checkConnectStatus(poll);
 	if (poll.revents & POLLIN && (_CStatus == connectStatus::IDLE || \
 									_CStatus == connectStatus::READING))
 		_CStatus = _request.readRequest();
 
+	if (_CStatus == connectStatus::CGI_REQUIRED)
+		(void)server;
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
 		_CStatus = responseHandler(&_request, &_response);
 
