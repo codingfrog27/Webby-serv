@@ -51,7 +51,7 @@ class Connection
 		Request			_request;
 		Response		_response;
 		CGI*			_cgi;
-		connectType		_connectType;
+		bool			_isClientSocket;
 		bool			_wantsNewConnect;
 		int				_clientFD;
 		bool			_keepOpen;
@@ -60,7 +60,7 @@ class Connection
 		// bool		_doneReading;
 		
 		// Constructors and Destructors
-		Connection(Config *config, int clientFD, connectType connectType);
+		Connection(Config *config, int clientFD, bool isServerside);
 		Connection(const Connection &rhs);
 		Connection &operator=(const Connection &rhs);
 		~Connection();
@@ -69,6 +69,6 @@ class Connection
 		// void	resetRequest(Config* config, int clientFD);
 		// void	resetResponse();
 		connectStatus	refreshIfKeepAlive();
-		void			connectionAction(const pollfd &poll, std::vector<pollfd> &CGIPollFDs, std::map<int, CGI*> CGIMap);
+		void			connectionAction(const pollfd &poll);
 		connectStatus	checkConnectStatus(const pollfd &poll);
 } ;

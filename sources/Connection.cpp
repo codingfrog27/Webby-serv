@@ -18,14 +18,14 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Connection::Connection(Config *config, int clientFD, connectType connectType): \
-_config(config), _request(config, clientFD), _cgi(0), _connectType(connectType), \
+Connection::Connection(Config *config, int clientFD, bool isServerside): \
+_config(config), _request(config, clientFD), _cgi(0), _isClientSocket(isServerside), \
 _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 {
 	_startTime = getStartTime();
 	_IdleTimeout = setTimeout(2);
 	// _IdleTimeout = setTimeout(config->_timeout);
-	if (_connectType == connectType::CLIENT)
+	if (_isClientSocket)
 		_CStatus = connectStatus::IDLE;
 	else
 		_CStatus = connectStatus::SERV_SOCKET;
@@ -46,7 +46,7 @@ Connection::operator=(const Connection &rhs)
 
 	if (this != &rhs)
 	{
-		_connectType = rhs._connectType;
+		_isClientSocket = rhs._isClientSocket;
 		_config = rhs._config;
 		_clientFD = rhs._clientFD;
 		_keepOpen = rhs._keepOpen;
@@ -81,7 +81,8 @@ Connection::~Connection(void)
 	// 		_wantsNewConnect = true;
 	// 	return;
 	// }
-void	Connection::connectionAction(const pollfd &poll, std::vector<pollfd> &CGIPollFDs, std::map<int, CGI*> CGIMap)
+
+void	Connection::connectionAction(const pollfd &poll)
 {
 	_CStatus = checkConnectStatus(poll);
 	if (poll.revents & POLLIN && (_CStatus == connectStatus::IDLE || \
