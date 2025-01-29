@@ -105,7 +105,7 @@ void	Server::main_server_loop()
 			Connection &current = _Connections.at(_pollFDs[i].fd);
 			//should be find to check for nonexisting connects (though also shouldnt happen)
 			if (current._isClientSocket)
-				current.connectionAction(_pollFDs[i]);	
+				current.connectionAction(_pollFDs[i], *this);	
 			else if (_pollFDs[i].revents & POLLIN)
 					current._wantsNewConnect = true;
 		}
@@ -253,10 +253,10 @@ void Server::acceptNewConnects(size_t size)
 // 			// Handle DONE_READING status
 // 			std::cout << "This is 6" << std::endl;
 // 			// Code for handling DONE_READING
-// 		} else if (_Connections[i]._CStatus == connectStatus::DONE_READING_CGI) {
-// 			// Handle DONE_READING_CGI status
+// 		} else if (_Connections[i]._CStatus == connectStatus::CGI_REQUIRED) {
+// 			// Handle CGI_REQUIRED status
 // 			std::cout << "This is 7" << std::endl;
-// 			// Code for handling DONE_READING_CGI
+// 			// Code for handling CGI_REQUIRED
 // 		} else if (_Connections[i]._CStatus == connectStatus::RESPONDING) {
 // 			// Handle RESPONDING status
 // 			std::cout << "This is 8" << std::endl;
