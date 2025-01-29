@@ -59,23 +59,26 @@ void	CGI::invokeCGI(Request* request, Response* response){
 	// response->setResponseHandlerStatus(responseHandlerStatus::IN_CGI);
 	// if (_CGIHandlerStatus == CGIHandlerStatus::NOT_STARTED){
 	// 	_CGIHandlerStatus = CGIHandlerStatus::IN_PROGRESS;
-		_PID = fork();
-		if (_PID == -1){
-			closePipes();
-			response->autoFillResponse("500 Internal Server Error: fork");
-			return ;	// }
-			dup2(_fdError[1], STDERR_FILENO);
-			closePipes();
-			int status = 0;
-			CGI::executeScript(request, response);
-			exit(status); //might not be needed
-		}
-		else { //parent
-			close(_fdIn[0]);
-			close(_fdOut[1]);
-			close(_fdError[1]);
-		}
-		return ;
+	_PID = fork();
+	if (_PID == -1){
+		closePipes();
+		response->autoFillResponse("500 Internal Server Error: fork");
+		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
+		return ;	// }
+	}
+	if (_PID == 0){ //child
+		dup2(_fdError[1], STDERR_FILENO);
+		closePipes();
+		int status = 0;
+		CGI::executeScript(request, response);
+		exit(status); //might not be needed
+	}
+	else { //parent
+		close(_fdIn[0]);
+		close(_fdOut[1]);
+		close(_fdError[1]);
+	}
+	return ;
 	// }
 	// if (_PID > 0) { //parent
 	// 	if (_CGIHandlerStatus == CGIHandlerStatus::IN_PROGRESS && request->_method_type == GET)
@@ -171,27 +174,28 @@ void	CGI::invokeCGI(Request* request, Response* response){
 }
 
 void CGI::writeToCGI(Request* request, Response* response) {
+	_CGIHandlerStatus = CGIHandlerStatus::WRITING_TO_CHILD;
 	size_t n = request->getBody().size() - _bytesWrittenToChild;
 	if (n > BUFFER_SIZE)
 		n = BUFFER_SIZE;
 	int bytes = write(_fdIn[1], request->getBody().data() + _bytesWrittenToChild, n);
 	if (bytes == -1){
+		// Handle error
 		response->autoFillResponse("500 Internal Server Error: write");
 		closePipes();
+		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 		return ;
 	}
 	_bytesWrittenToChild += bytes;
 	if (_bytesWrittenToChild == request->getBody().size()){
+		// End of file
 		close(_fdIn[1]);
-		_CGIHandlerStatus = CGIHandlerStatus::WAITING_FOR_CHILD;
-	}
-	if (_CGIHandlerStatus != CGIHandlerStatus::CHILD_IS_FINISHED && !childIsRunning(response)) {
-	_CGIHandlerStatus = CGIHandlerStatus::CHILD_IS_FINISHED;
 	}
 	return ;
 }
 
 void CGI::readFromCGI(Response* response) {
+	_CGIHandlerStatus = CGIHandlerStatus::READING_FDOUT;
 	char buffer[BUFFER_SIZE];
 	int bytes = read(_fdOut[0], buffer, BUFFER_SIZE);
 	if (bytes > 0) {
@@ -207,13 +211,13 @@ void CGI::readFromCGI(Response* response) {
 		// Handle error
 		response->autoFillResponse("500 Internal Server Error: read");
 		closePipes();
+		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 	}
-	if (_CGIHandlerStatus != CGIHandlerStatus::CHILD_IS_FINISHED && !childIsRunning(response)) {
-		_CGIHandlerStatus = CGIHandlerStatus::CHILD_IS_FINISHED;
-	}
+	return ;
 }
 
 void CGI::readErrorFromCGI(Response* response) {
+	_CGIHandlerStatus = CGIHandlerStatus::READING_FDERROR;
 	char buffer[BUFFER_SIZE];
 	int bytes = read(_fdError[0], buffer, BUFFER_SIZE);
 	if (bytes > 0) {
@@ -232,10 +236,9 @@ void CGI::readErrorFromCGI(Response* response) {
 		// Handle error
 		response->autoFillResponse("500 Internal Server Error: read");
 		closePipes();
+		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 	}
-	if (_CGIHandlerStatus != CGIHandlerStatus::CHILD_IS_FINISHED && !childIsRunning(response)) {
-		_CGIHandlerStatus = CGIHandlerStatus::CHILD_IS_FINISHED;
-	}
+	return ;
 }
 
 bool	CGI::childIsRunning(Response* response){
@@ -244,6 +247,7 @@ bool	CGI::childIsRunning(Response* response){
 	if (result == -1) {
 		response->autoFillResponse("500 Internal Server Error: waitpid");
 		closePipes();
+		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 		return false;
 	} 
 	else if (result == 0) {
@@ -251,6 +255,7 @@ bool	CGI::childIsRunning(Response* response){
 		return true;
 	} 
 	else if (WIFEXITED(status)) {
+		_CGIHandlerStatus = CGIHandlerStatus::CHILD_IS_FINISHED;
 		return false;
 	}
 }

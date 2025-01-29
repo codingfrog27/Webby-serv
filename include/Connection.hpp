@@ -33,8 +33,8 @@ enum class connectStatus
 	REQ_ERR,
 	CONNECT_CLOSED,
 	DONE_READING,
+	CGI_REQUIRED,
 	CGI,
-	DONE_READING_CGI,
 	RESPONDING,
 	SERVER_ERR,
 	FINISHED
@@ -69,6 +69,6 @@ class Connection
 		// void	resetRequest(Config* config, int clientFD);
 		// void	resetResponse();
 		connectStatus	refreshIfKeepAlive();
-		void			connectionAction(const pollfd &poll);
+		void			connectionAction(const pollfd &poll, std::vector<pollfd> &CGIPollFDs, std::map<int, CGI*> CGIMap);
 		connectStatus	checkConnectStatus(const pollfd &poll);
 } ;

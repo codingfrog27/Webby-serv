@@ -27,14 +27,9 @@ class CGI{
 		CGI(Connection* connection, std::vector<pollfd>* pollFDs);
 		~CGI();
 
-		void				invokeCGI(Request* request, Response* response);
-		void				executeScript(Request* request, Response* response);
-		bool				childIsRunning(Response* response);
+		connectStatus		CGIHandler(Connection* connection, std::vector<pollfd>* CGIPollFDs, std::map<int, CGI*> CGIMap);
 		void				closePipes(void);
-
-		// void				setupPollFds(void);
-		void				setupCGIEnvironment(Request* request);
-		void 				addToEnvp(std::string key, std::string value);
+		bool				childIsRunning(Response* response);
 
 		void				writeToCGI(Request* request, Response* response);
 		void				readFromCGI(Response* response);
@@ -58,6 +53,12 @@ class CGI{
 		int					_PID;
 		size_t				_bytesWrittenToChild;
 		std::string			_scriptError;
+
+		void				invokeCGI(Request* request, Response* response);
+		void				executeScript(Request* request, Response* response);
+
+		// void				setupPollFds(void);
+		void				setupCGIEnvironment(Request* request);
+		void 				addToEnvp(std::string key, std::string value);
 };
 
-void	CGIHandler(Request* request, Response* response);

@@ -102,7 +102,7 @@ void	Server::main_server_loop()
 		for (size_t i = 0; i < size; i++)
 		{
 			if (_Connections[i]._connectType == connectType::CLIENT) //can we check if cgi socket??
-				_Connections[i].connectionAction(_pollFDs[i]);	
+				_Connections[i].connectionAction(_pollFDs[i], _CGIPollFDs, _CGIMap);	
 			else if (_pollFDs[i].revents & POLLIN)
 					_Connections[i]._wantsNewConnect = true;
 		}
@@ -119,6 +119,7 @@ void	Server::main_server_loop()
 				i++;
 		}
 		handleCGIPollEvents();
+		closeCGIConnects();
 	}
 }
 
@@ -174,16 +175,20 @@ void Server::handleCGIPollEvents() {
 			return ;
 		for (size_t i = 0; i < size; i++){
 			CGI *cgi = &_CGIMap[_CGIPollFDs[i].fd];
+			if (_CGIPollFDs[i].revents & POLLHUP){
+				_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
+				_CGIMap.erase(_CGIMap.find(_CGIPollFDs[i].fd));
+				size--;
+				i--;
+				continue;
+			}
 			if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT)
 				cgi->writeToCGI(); //TO WHICH RESPONSE?
-			else if (_CGIPollFDs[i].fd == cgi->getFdOut() && _CGIPollFDs[i].revents & POLLIN)
-				cgi->readFromCGI();//TO WHICH RESPONSE?
-			else if (_CGIPollFDs[i].fd == cgi->getFdError() && _CGIPollFDs[i].revents & POLLIN)
-				cgi->readErrorFromCGI();//TO WHICH RESPONSE?
-			if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED){ //check this
-				cgi->closePipes();
-				_CGIMap.erase(_CGIPollFDs[i].fd);
-				_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
+			else if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED || !cgi->childIsRunning()){
+				if (_CGIPollFDs[i].fd == cgi->getFdOut() && _CGIPollFDs[i].revents & POLLIN)
+					cgi->readFromCGI();//TO WHICH RESPONSE?
+				else if (_CGIPollFDs[i].fd == cgi->getFdError() && _CGIPollFDs[i].revents & POLLIN)
+					cgi->readErrorFromCGI();//TO WHICH RESPONSE?
 			}
 		}
 	}
@@ -247,10 +252,10 @@ void Server::PrintConnectionStatusses(size_t size)
 			// Handle DONE_READING status
 			std::cout << "This is 6" << std::endl;
 			// Code for handling DONE_READING
-		} else if (_Connections[i]._CStatus == connectStatus::DONE_READING_CGI) {
-			// Handle DONE_READING_CGI status
+		} else if (_Connections[i]._CStatus == connectStatus::CGI_REQUIRED) {
+			// Handle CGI_REQUIRED status
 			std::cout << "This is 7" << std::endl;
-			// Code for handling DONE_READING_CGI
+			// Code for handling CGI_REQUIRED
 		} else if (_Connections[i]._CStatus == connectStatus::RESPONDING) {
 			// Handle RESPONDING status
 			std::cout << "This is 8" << std::endl;

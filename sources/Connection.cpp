@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Connection.hpp"
+#include "CGI.hpp"
 
 
 // ************************************************************************** //
@@ -80,15 +81,16 @@ Connection::~Connection(void)
 	// 		_wantsNewConnect = true;
 	// 	return;
 	// }
-void	Connection::connectionAction(const pollfd &poll)
+void	Connection::connectionAction(const pollfd &poll, std::vector<pollfd> &CGIPollFDs, std::map<int, CGI*> CGIMap)
 {
 	_CStatus = checkConnectStatus(poll);
 	if (poll.revents & POLLIN && (_CStatus == connectStatus::IDLE || \
 									_CStatus == connectStatus::READING))
 		_CStatus = _request.readRequest();
-
+	if(_CStatus == connectStatus::CGI_REQUIRED)
+		_CStatus = _cgi->CGIHandler(this, &CGIPollFDs, CGIMap);
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
-		_CStatus = responseHandler(&_request, &_response);
+		_CStatus = _response.responseHandler(&_request, &_response);
 
 	if (_CStatus == connectStatus::FINISHED)
 		_CStatus = refreshIfKeepAlive();

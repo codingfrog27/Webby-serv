@@ -27,7 +27,7 @@ class Server
 		std::vector<pollfd>		_pollFDs;
 		std::vector<pollfd>		_CGIPollFDs;
 		std::vector<Connection> _Connections;
-		std::map<int, CGI>		_CGIMap;
+		std::map<int, CGI*>		_CGIMap;
 		struct	addrinfo		*_addrInfo;
 		// const int	_max_clients;
 
@@ -35,6 +35,7 @@ class Server
 		void		handleCGIPollEvents();
 		void		acceptNewConnects(size_t size);
 		void		close_connect(int i);
+		void		closeCGIConnects();
 	public:
 					Server(std::vector<Config>& vec);
 					Server(Server &rhs) = delete;

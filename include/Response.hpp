@@ -17,7 +17,6 @@ enum readingMode{
 enum class responseHandlerStatus{
 	NOT_STARTED,
 	IN_PROGRESS,
-	IN_CGI,
 	IN_GET,
 	IN_POST,
 	IN_DELETE,
@@ -36,14 +35,12 @@ class Response{
 		
 		Response &										operator=(const Response& obj);
 
+		connectStatus									responseHandler(Request* request, Response* response);
 		void											autoFillResponse(std::string status);
 		std::string										generateResponse() const;
 
 		void											setHTTPVersion(std::string HTTPversion);
 		void											setResponseHandlerStatus(responseHandlerStatus status);
-		void											setCGI(CGI* cgi);
-		// void											setOutFile(std::ofstream&& outFile);
-		// void											setInFile(std::ifstream&& inFile);
 		void											setStatus(std::string status);
 		void											setContentType(std::string path);
 		void											setHeaders(std::string key, std::string value);
@@ -51,9 +48,11 @@ class Response{
 		void											setBody(std::vector<char>);
 		void											setResponseBuffer(std::string buffer);
 		void											setBytesWritten(size_t bytesWritten);
+		// void											setCGI(CGI* cgi);
+		// void											setOutFile(std::ofstream&& outFile);
+		// void											setInFile(std::ifstream&& inFile);
 
 		responseHandlerStatus							getResponseHandlerStatus() const;
-		CGI*											getCGI() const;
 		std::ofstream&									getOutFile();
 		std::ifstream&									getInFile();
 		std::string										getHeader(std::string key) const;
@@ -62,6 +61,7 @@ class Response{
 		std::string										getResponseBuffer() const;
 		size_t											getBytesWritten() const;
 		connectStatus									writeResponse(int FD);
+		// CGI*											getCGI() const;
 
 	private:
 		responseHandlerStatus							_responseHandlerStatus;
@@ -74,8 +74,11 @@ class Response{
 		std::string										_responseBuffer;
 		size_t											_bytesWritten;
 		size_t											_timesWriteFailed;
+
+		void											getMethod(Request* request, Response* response);
+		void											postMethod(Request* request, Response* response);
+		void											deleteMethod(Request* request, Response* response);
 };
 
-connectStatus	responseHandler(Request* request, Response* response);
 bool			isCGIrequired(Request* request);
 bool			fileExists(std::string path);
