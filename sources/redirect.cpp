@@ -19,6 +19,7 @@ std::string generate_directory_listing(const std::string& _filePath) //should be
 	    http_response += "Content-Length: " + std::to_string(html_content.size()) + "\r\n";
 	    http_response += "Connection: close\r\n";
 	    http_response += "\r\n";
+        return http_response + html_content;
     }
 
     html << "<html><head><title>Directory Listing</title></head><body>\n";
@@ -41,21 +42,44 @@ std::string generate_directory_listing(const std::string& _filePath) //should be
     return html.str();
 }
 
+void	create_directory_listing_page(std::string html_page)
+{
+	std::fstream	File;
+
+	File.open("directory_listing.html", std::ios::out);
+	File << html_page;
+	File.close();
+}
+
 void sendHTMLPage(int client_socket, const std::string& file_path) 
 {
-	std::string html_content = file_path;
+	//Open the HTML file
+	std::ifstream file(file_path);
+	if (!file) 
+	{
+		std::cout << RED << "Error opening file: " << file_path << RESET << std::endl;
+		return;
+	}
 
+	//Read the file content, store it in buffer and covert it into a string
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	std::string html_content = buffer.str();
+
+	//HTTP Response Headers
 	std::string http_response = "HTTP/1.1 200 OK\r\n";
 	http_response += "Content-Type: text/html\r\n";
 	http_response += "Content-Length: " + std::to_string(html_content.size()) + "\r\n";
 	http_response += "Connection: close\r\n";
 	http_response += "\r\n";
 
+	//Send the HTTP header
 	send(client_socket, http_response.c_str(), http_response.size(), 0);
-	/// add html_content to http_response!!!!!!!
+	//Send the client file content	  /// add html_content to http_response!!!!!!!
 	send(client_socket, html_content.c_str(), html_content.size(), 0);
 	std::cout << YELLOW << "--------- HTML message sent ----------" << RESET << std::endl;
-    std::cout << html_content << std::endl;
+
+	file.close();
 }
 
 void printConfig(Config *configs)
@@ -125,15 +149,21 @@ void   Request::setLocRules(location &loc, location &ruleblock)
 {
        // assignStrIfNonEmpty(ruleblock._allow_methods, loc._allow_methods); //change after merge
        // assignStrIfNonEmpty(ruleblock._index, loc._index);
-       assignStrIfNonEmpty(ruleblock._alias, loc._alias);
-       assignStrIfNonEmpty(ruleblock._return, loc._return);
-       assignStrIfNonEmpty(ruleblock._root, loc._root);
-       if (!loc._index.empty())
-               ruleblock._index = loc._index;
-       if (!loc._cgi_extension.empty())
-               ruleblock._cgi_extension = loc._cgi_extension;
-       if (!loc._cgi_path.empty())
-               ruleblock._cgi_path = loc._cgi_path;
+       
+        // assignStrIfNonEmpty(ruleblock._autoindex, loc._autoindex);
+        assignStrIfNonEmpty(ruleblock._alias, loc._alias);
+        assignStrIfNonEmpty(ruleblock._return, loc._return);
+        assignStrIfNonEmpty(ruleblock._root, loc._root);
+        if (loc.getAutoindex())
+            ruleblock.setAutoindex(true);
+        if (!loc.getAllowMethods().empty())
+            ruleblock.setAllowMethods(loc.getAllowMethods());
+        if (!loc._index.empty())
+                ruleblock._index = loc._index;
+        if (!loc._cgi_extension.empty())
+                ruleblock._cgi_extension = loc._cgi_extension;
+        if (!loc._cgi_path.empty())
+                ruleblock._cgi_path = loc._cgi_path;
 }
 
 size_t Request::countPathMatch(std::string &reqpath, const std::string &locpath)
@@ -147,22 +177,34 @@ size_t Request::countPathMatch(std::string &reqpath, const std::string &locpath)
         return(size);
 }
 
-location       *Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
+location       *Request::findLocationMatch(std::vector<location> &locs)//, size_t &matchCount)
 {
    size_t  newSize;
    location *ret;
-   for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
+   std::string tmp = _filePath;
+   std::string filepath_to_check;
+
+    auto first_ws = tmp.find_first_of('/');
+    if (first_ws == std::string::npos)
+        return (nullptr);
+    auto word_begin = tmp.find_first_not_of('/', first_ws);
+    if (first_ws == std::string::npos)
+        return (nullptr);
+    auto word_end = tmp.find_first_of('/', word_begin);
+    filepath_to_check = tmp.substr(word_begin - 1, word_end - word_begin + 2);
+
+    for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
    {
-           newSize = countPathMatch(_filePath, it->getName());
-           if (newSize > matchCount) //?
+           newSize = countPathMatch(filepath_to_check, it->getName());
+           if (newSize)// > matchCount) //?
            {
-                   matchCount = newSize;
-                   ret = &(*it);
-                   if (newSize == std::string::npos)
-                           break;
+                //    matchCount = newSize;
+                ret = &(*it);
+                if (newSize == std::string::npos)
+                    break;
            }
    }
-   if (matchCount == 0)
+   if (newSize == 0)
            return (nullptr);
    return (ret);
 }
@@ -171,40 +213,66 @@ void   Request::locationHandler()
 {
        location        *reqRules;
        location        *nestRules;
-       size_t          matchCount = 0;
+    //    size_t          matchCount = 0;
        std::vector<location> &locVec = this->_config->_locations;
        std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
        << "FD == " << _clientFD << std::endl;
        if (locVec.empty())
                return;
-       reqRules = findLocationMatch(locVec, matchCount);
+       reqRules = findLocationMatch(locVec);//, matchCount);
        if (reqRules == nullptr)
-               return;
+            return;
+        if (reqRules->getAutoindex() && std::filesystem::is_directory(_filePath))
+        {
+        std::cout << "Directory requested: Generating directory listing for " << _filePath << std::endl;
+        // Genera la risposta HTML con l'elenco della directory
+        std::string html_content = generate_directory_listing(_filePath);
+
+        // Invia la risposta HTTP con l'elenco generato della directory
+        sendHTMLPage(_clientFD, html_content);
+        }
        locVec = reqRules->_nestedLocations;
        while (!locVec.empty())
        {
-               nestRules = findLocationMatch(locVec, matchCount);
-               if (nestRules == nullptr)
-                       break;
-               setLocRules(*reqRules, *nestRules);
-               locVec = nestRules->_nestedLocations;
+            nestRules = findLocationMatch(locVec);//, matchCount);
+            if (nestRules == nullptr)
+                break;
+            checkRules(*nestRules);
+            setLocRules(*reqRules, *nestRules);
+            locVec = nestRules->_nestedLocations;
        }
-       checkRules(*reqRules);
+    checkRules(*reqRules);
+    // setLocRules(*reqRules, *nestRules);
 }
 
 void  Request::checkRules(location &rules)
-{   //loop through allowed methods to check if is allowed
-    // std::cout << "This is the rulemap: " << std::endl;
-    if (!rules.getRoot().empty())
-    {
-        _filePath.find(_config->_rootDir);
-        _filePath.replace(0, _config->_rootDir.size(), rules.getRoot());
-    }
+{   
+    // std::vector<std::string> tmp_vector = rules.getCgiExtension();
+    // for (auto i = tmp_vector.begin(); i < tmp_vector.end(); i++)
+    // {
+    //     std::cout << *i << std::endl;
+    // }
     if (!rules.getReturn().empty())
     {
         this->_filePath = rules.getReturn();
         _statusCode = 301;
         return;
+    }
+    else if (!rules.getAllowMethods().empty())
+    {
+        std::vector<Http_method> allow_methods = rules.getAllowMethods();
+
+        for (auto i : allow_methods)
+        {
+            if (i == this->_method_type)
+                return;
+        }
+        throw (ClientErrorExcept(405, "Method not allowed"));
+    }
+    else if (!rules.getRoot().empty())
+    {
+        _filePath.find(_config->_rootDir);
+        _filePath.replace(0, _config->_rootDir.size(), rules.getRoot());
     }
     else if (!rules.getAlias().empty())
         this->_filePath = rules.getAlias();
@@ -225,58 +293,47 @@ void  Request::checkRules(location &rules)
                     return;
                 }
                 tmp = _filePath;
+                if (rules.getAutoindex())
+                    this->_dirListing = true;
             }
-            if (rules.getAutoindex())
-                this->_dirListing = true;
         }
     }
-    else if (!rules.getAllowMethods().empty())
-    {
-        std::vector<Http_method> allow_methods = rules.getAllowMethods();
+    // else if (!rules.getCgiExtension().empty())
+    // {
+    //     std::vector<std::string> cgi_extension = rules.getCgiExtension();
+    //     size_t pos = _filePath.rfind('.');
+    //     std::string extension_to_compare = _filePath.substr(pos + 1);
+    //     std::cout << extension_to_compare << std::endl;
 
-        for (auto i : allow_methods)
-        {
-            if (i == this->_method_type)
-                return;
-        }
-        throw (ClientErrorExcept(405, "Method not allowed"));
-    }
-    else if (!rules.getCgiExtension().empty())
-    {
-        std::vector<std::string> cgi_extension = rules.getCgiExtension();
-        size_t pos = _filePath.rfind('.');
-        std::string extension_to_compare = _filePath.substr(pos + 1);
-        std::cout << extension_to_compare << std::endl;
-
-        for (auto i : cgi_extension)
-        {
-            if (i == extension_to_compare)
-                return;
-        }
-        throw (ClientErrorExcept(500, "Internal Server Error"));
-    }
+    //     for (auto i : cgi_extension)
+    //     {
+    //         if (i == extension_to_compare)
+    //             return;
+    //     }
+    //     throw (ClientErrorExcept(500, "Internal Server Error"));
+    // }
 }
 
-void    Request::checkForRedirect(std::string _filePath)
-{
-    (void) _filePath;
-    // std::cout << "This is the _filePath: " << _filePath << std::endl;
+// void    Request::checkForRedirect(std::string _filePath)
+// {
+//     (void) _filePath;
+//     // std::cout << "This is the _filePath: " << _filePath << std::endl;
 
-    checkRules(this->_config->_locations[0]);
-    // if(this->_config->_locations[0]._nestedLocations[0]._return != "")
-    //     std::cout << "this is the Redirect" << this->_config->_locations[0]._nestedLocations[0]._return << std::endl;
+//     checkRules(this->_config->_locations[0]);
+//     // if(this->_config->_locations[0]._nestedLocations[0]._return != "")
+//     //     std::cout << "this is the Redirect" << this->_config->_locations[0]._nestedLocations[0]._return << std::endl;
   
-    // Config *config = getConfig();
+//     // Config *config = getConfig();
 
-	// std::cout << "Hello!" << std::endl;
-	// printConfig(config);
+// 	// std::cout << "Hello!" << std::endl;
+// 	// printConfig(config);
 
     
 
-    // if (_config != nullptr)
-    // {
-    //     // sendHTMLPage(_clientFD, _filePath);
-    // }
-    // else if (_config == nullptr)
-    //     std::cerr << "Config is nullptr" << std::endl;
-}
+//     // if (_config != nullptr)
+//     // {
+//     //     // sendHTMLPage(_clientFD, _filePath);
+//     // }
+//     // else if (_config == nullptr)
+//     //     std::cerr << "Config is nullptr" << std::endl;
+// }

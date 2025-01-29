@@ -139,7 +139,7 @@ class Request
 		void  			checkRules(location &rules);
 		void			send_directory_listing_page(std::string html_page);
 		void   			locationHandler();
-		location       *findLocationMatch(std::vector<location> &locs, size_t &matchCount);
+		location       *findLocationMatch(std::vector<location> &locs);//, size_t &matchCount);
 		size_t 			countPathMatch(std::string &reqpath, const std::string &locpath);
 };
 
