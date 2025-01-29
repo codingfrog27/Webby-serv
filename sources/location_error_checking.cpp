@@ -117,7 +117,6 @@ bool location::validateAutoindex()
 	{
 		autoindex_rule = normalize_space_location(_rulemap.at("autoindex"));
 		autoindex_value = find_value_location(autoindex_rule);
-		std::cout << "This is the autoindex_value: " << autoindex_value << std::endl;
 		for (size_t i = 0; i < autoindex_value.length(); i++)
 		{
 			if (!isalpha(autoindex_value[i]))

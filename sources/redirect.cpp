@@ -2,84 +2,54 @@
 
 #include "socket.hpp"
 
-std::string generate_directory_listing(const std::string& _filePath) //should become response func 
-{
+void sendDirectoryListing(int client_socket, const std::string& _filePath) {
     std::ostringstream html;
+    std::ostringstream http_response;
 
-    if (!std::filesystem::exists(_filePath)) {
-        std::cout << _filePath << std::endl;
-        return "<html><body><h1>Directory not found</h1></body></html>\n";
-    }
-    
-    if (!std::filesystem::is_directory(_filePath)) {
-        std::string html_content = "<html><body><h1>Not a directory</h1></body></html>\n";
-
-        std::string http_response = "HTTP/1.1 200 OK\r\n";
-	    http_response += "Content-Type: text/html\r\n";
-	    http_response += "Content-Length: " + std::to_string(html_content.size()) + "\r\n";
-	    http_response += "Connection: close\r\n";
-	    http_response += "\r\n";
-        return http_response + html_content;
-    }
-
-    html << "<html><head><title>Directory Listing</title></head><body>\n";
-    html << "<h1>Directory listing for " << _filePath << "</h1>\n";
-    html << "<ul>\n";
-    
-    if (std::filesystem::exists(_filePath) && std::filesystem::is_directory(_filePath))
+    if (!std::filesystem::exists(_filePath)) 
     {
-         for (const auto& it : std::filesystem::directory_iterator(_filePath)) 
-         {
-                 std::string entry_name = it.path().filename().string();
-                 if (it.is_directory()) 
-                         html << "<li><a href='" << entry_name << "/'>" << entry_name << "/</a></li>\n";
-                 else
-                         html << "<li><a href='" << entry_name << "'>" << entry_name << "</a></li>\n";
-         }
+        http_response << "HTTP/1.1 404 Not Found\r\n";
+        http_response << "Content-Type: text/html\r\n";
+        http_response << "Content-Length: 25\r\n";
+        http_response << "Connection: close\r\n";
+        http_response << "\r\n";
+        html << "<html><body><h1>Directory not found</h1></body></html>\n";
     }
-    html << "</ul>\n";
-    html << "</body></html>\n";
-    return html.str();
-}
+    else if (!std::filesystem::is_directory(_filePath)) 
+    {
+        http_response << "HTTP/1.1 400 Bad Request\r\n";
+        http_response << "Content-Type: text/html\r\n";
+        http_response << "Content-Length: 21\r\n";
+        http_response << "Connection: close\r\n";
+        http_response << "\r\n";
+        html << "<html><body><h1>Not a directory</h1></body></html>\n";
+    } 
+    else 
+    {
+        http_response << "HTTP/1.1 200 OK\r\n";
+        http_response << "Content-Type: text/html\r\n";
+        html << "<html><head><title>Directory Listing</title></head><body>\n";
+        html << "<h1>Directory listing for " << _filePath << "</h1>\n";
+        html << "<ul>\n";
+        
+        for (const auto& entry : std::filesystem::directory_iterator(_filePath)) {
+            std::string entry_name = entry.path().filename().string();
+            if (entry.is_directory()) {
+                html << "<li><a href='" << entry_name << "/'>" << entry_name << "/</a></li>\n";
+            } else {
+                html << "<li><a href='" << entry_name << "'>" << entry_name << "</a></li>\n";
+            }
+        }
+        
+        html << "</ul>\n";
+        html << "</body></html>\n";
+    }
+    std::string html_content = html.str();
+    http_response << "Content-Length: " + std::to_string(html_content.size()) + "\r\n";
+    http_response << "\r\n";
 
-void	create_directory_listing_page(std::string html_page)
-{
-	std::fstream	File;
-
-	File.open("directory_listing.html", std::ios::out);
-	File << html_page;
-	File.close();
-}
-
-void sendHTMLPage(int client_socket, const std::string& file_path) 
-{
-	//Open the HTML file
-	std::ifstream file(file_path);
-	if (!file) 
-	{
-		std::cout << RED << "Error opening file: " << file_path << RESET << std::endl;
-		return;
-	}
-
-	//Read the file content, store it in buffer and covert it into a string
-	std::stringstream buffer;
-	buffer << file.rdbuf();
-	std::string html_content = buffer.str();
-
-	//HTTP Response Headers
-	std::string http_response = "HTTP/1.1 200 OK\r\n";
-	http_response += "Content-Type: text/html\r\n";
-	http_response += "Content-Length: " + std::to_string(html_content.size()) + "\r\n";
-	http_response += "Connection: close\r\n";
-	http_response += "\r\n";
-
-	//Send the HTTP header
-	send(client_socket, http_response.c_str(), http_response.size(), 0);
-	//Send the client file content	  /// add html_content to http_response!!!!!!!
-	send(client_socket, html_content.c_str(), html_content.size(), 0);
-	std::cout << YELLOW << "--------- HTML message sent ----------" << RESET << std::endl;
-
-	file.close();
+    send(client_socket, http_response.str().c_str(), http_response.str().size(), 0);
+    send(client_socket, html_content.c_str(), html_content.size(), 0);
 }
 
 void printConfig(Config *configs)
@@ -150,7 +120,6 @@ void   Request::setLocRules(location &loc, location &ruleblock)
        // assignStrIfNonEmpty(ruleblock._allow_methods, loc._allow_methods); //change after merge
        // assignStrIfNonEmpty(ruleblock._index, loc._index);
        
-        // assignStrIfNonEmpty(ruleblock._autoindex, loc._autoindex);
         assignStrIfNonEmpty(ruleblock._alias, loc._alias);
         assignStrIfNonEmpty(ruleblock._return, loc._return);
         assignStrIfNonEmpty(ruleblock._root, loc._root);
@@ -177,7 +146,7 @@ size_t Request::countPathMatch(std::string &reqpath, const std::string &locpath)
         return(size);
 }
 
-location       *Request::findLocationMatch(std::vector<location> &locs)//, size_t &matchCount)
+location       *Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
 {
    size_t  newSize;
    location *ret;
@@ -196,9 +165,9 @@ location       *Request::findLocationMatch(std::vector<location> &locs)//, size_
     for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
    {
            newSize = countPathMatch(filepath_to_check, it->getName());
-           if (newSize)// > matchCount) //?
+           if (newSize > matchCount)
            {
-                //    matchCount = newSize;
+                matchCount = newSize;
                 ret = &(*it);
                 if (newSize == std::string::npos)
                     break;
@@ -219,22 +188,19 @@ void   Request::locationHandler()
        << "FD == " << _clientFD << std::endl;
        if (locVec.empty())
                return;
-       reqRules = findLocationMatch(locVec);//, matchCount);
+       reqRules = findLocationMatch(locVec, matchCount);
        if (reqRules == nullptr)
             return;
-        if (reqRules->getAutoindex() && std::filesystem::is_directory(_filePath))
+        std::cout << std::filesystem::is_directory(_filePath) << std::endl;
+        if (!reqRules->getAutoindex() && std::filesystem::is_directory(_filePath))
         {
-        std::cout << "Directory requested: Generating directory listing for " << _filePath << std::endl;
-        // Genera la risposta HTML con l'elenco della directory
-        std::string html_content = generate_directory_listing(_filePath);
-
-        // Invia la risposta HTTP con l'elenco generato della directory
-        sendHTMLPage(_clientFD, html_content);
+            std::cout << "Directory requested: Generating directory listing for " << _filePath << std::endl;
+            sendDirectoryListing(_clientFD, _filePath);
         }
        locVec = reqRules->_nestedLocations;
        while (!locVec.empty())
        {
-            nestRules = findLocationMatch(locVec);//, matchCount);
+            nestRules = findLocationMatch(locVec, matchCount);
             if (nestRules == nullptr)
                 break;
             checkRules(*nestRules);
@@ -247,11 +213,6 @@ void   Request::locationHandler()
 
 void  Request::checkRules(location &rules)
 {   
-    // std::vector<std::string> tmp_vector = rules.getCgiExtension();
-    // for (auto i = tmp_vector.begin(); i < tmp_vector.end(); i++)
-    // {
-    //     std::cout << *i << std::endl;
-    // }
     if (!rules.getReturn().empty())
     {
         this->_filePath = rules.getReturn();
@@ -298,42 +259,18 @@ void  Request::checkRules(location &rules)
             }
         }
     }
-    // else if (!rules.getCgiExtension().empty())
-    // {
-    //     std::vector<std::string> cgi_extension = rules.getCgiExtension();
-    //     size_t pos = _filePath.rfind('.');
-    //     std::string extension_to_compare = _filePath.substr(pos + 1);
-    //     std::cout << extension_to_compare << std::endl;
+    else if (!rules.getCgiExtension().empty())
+    {
+        std::vector<std::string> cgi_extension = rules.getCgiExtension();
+        size_t pos = _filePath.rfind('.');
+        std::string extension_to_compare = _filePath.substr(pos + 1);
+        std::cout << extension_to_compare << std::endl;
 
-    //     for (auto i : cgi_extension)
-    //     {
-    //         if (i == extension_to_compare)
-    //             return;
-    //     }
-    //     throw (ClientErrorExcept(500, "Internal Server Error"));
-    // }
+        for (auto i : cgi_extension)
+        {
+            if (i == extension_to_compare)
+                return;
+        }
+        throw (ClientErrorExcept(500, "Internal Server Error"));
+    }
 }
-
-// void    Request::checkForRedirect(std::string _filePath)
-// {
-//     (void) _filePath;
-//     // std::cout << "This is the _filePath: " << _filePath << std::endl;
-
-//     checkRules(this->_config->_locations[0]);
-//     // if(this->_config->_locations[0]._nestedLocations[0]._return != "")
-//     //     std::cout << "this is the Redirect" << this->_config->_locations[0]._nestedLocations[0]._return << std::endl;
-  
-//     // Config *config = getConfig();
-
-// 	// std::cout << "Hello!" << std::endl;
-// 	// printConfig(config);
-
-    
-
-//     // if (_config != nullptr)
-//     // {
-//     //     // sendHTMLPage(_clientFD, _filePath);
-//     // }
-//     // else if (_config == nullptr)
-//     //     std::cerr << "Config is nullptr" << std::endl;
-// }
