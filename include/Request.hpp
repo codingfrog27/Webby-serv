@@ -97,7 +97,7 @@ class Request
 		void					resolveFilePath();
 		void					locationHandler();
 		location				*findLocationMatch(std::vector<location> &locs, size_t &matchCount);
-		void					setLocRules(location &loc, location &ruleblock);
+		void					setLocRules(location &ruleblock, location &loc);
 		size_t					countPathMatch(std::string &reqpath, std::string &locpath);
 		void  					checkRules(location &rules);
 

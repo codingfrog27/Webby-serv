@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/29 18:04:35 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/30 18:19:47 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,18 +36,7 @@ Request::operator=(const Request &rhs)
 
 	if (this != &rhs)
 	{
-		// _clientFD = rhs._clientFD;
-		// _URI = rhs._URI;
-		// _method_type = rhs._method_type;
-		// _http_version = rhs._http_version;
-		// _headers = rhs._headers;
-		// _rawRequestData = rhs._rawRequestData;
-		// _unsortedHeaders = rhs._unsortedHeaders;
-		// _rnrnFound = rhs._rnrnFound;
-		// body_bytes_read = rhs.body_bytes_read;
-		// reading_mode = rhs.reading_mode;
-		// _hasBody = rhs._hasBody;
-		   _config = rhs._config;
+		_config = rhs._config;
 		_reqBody = rhs._reqBody;
 		_unsortedHeaders = rhs._unsortedHeaders;
 		reading_mode = rhs.reading_mode;
@@ -62,7 +51,7 @@ Request::operator=(const Request &rhs)
 		_startTime = rhs._startTime;
 		_clientFD = rhs._clientFD;
 		_root = rhs._root;
-		// _max_body_size = rhs._max_body_size;
+		// _max_body_size = rhs._max_body_size; //IMPLEMENT ME PLS
 		_rawRequestData = rhs._rawRequestData;
 		_method_type = rhs._method_type;
 		_headers = rhs._headers;
@@ -76,7 +65,7 @@ Request::operator=(const Request &rhs)
 		_statusStr = rhs._statusStr;
 		_statusCode = rhs._statusCode;
 		// _CGIRequired = rhs._CGIRequired;
-		// _customConf = std::make_unique<CustomConfig>(*rhs._customConf);
+		_dirListing = rhs._dirListing;
 	}
 
 	return (*this);

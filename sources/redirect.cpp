@@ -74,27 +74,24 @@ void	Request::locationHandler()
 	location	*nestRules;
 	size_t		matchCount = 0;
 	std::vector<location> &locVec = this->_config->_locations;
-	std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
-	<< "FD == " << _clientFD << std::endl;
+	// std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
+	// << "FD == " << _clientFD << std::endl;
 	if (locVec.empty())
 		return;
 	reqRules = findLocationMatch(locVec, matchCount);
 	if (reqRules == nullptr)
 		return;
-	locVec = reqRules->_nestedLocations;
-	while (!locVec.empty())
+	std::cout << "reqrules name before nested loops ==" << reqRules->getName() << std::endl;
+	std::vector<location> &nestVec = reqRules->_nestedLocations;
+	while (!nestVec.empty())
 	{
-		nestRules = findLocationMatch(locVec, matchCount);
+		nestRules = findLocationMatch(nestVec, matchCount);
 		if (nestRules == nullptr)
 			break;
 		setLocRules(*reqRules, *nestRules);
-		locVec = nestRules->_nestedLocations;
+		nestVec = nestRules->_nestedLocations;
 	}
-	checkRules(*reqRules);
-		std::cout << "FILEPATH AFTER CHECK " << _filePath << std::endl \
-	<< "FD == " << _clientFD << std::endl;
-	//antonio set rules
-	// _filePath = _root + _filePath;
+		checkRules(*reqRules);
 }
 
 location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
@@ -105,9 +102,6 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 	for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
 	{
 		newSize = countPathMatch(_filePath, it->getName());
-		std::cout << "filepath == " << _filePath << "loc ==" << it->getName() \
-		<< "\n matchcount ==" << newSize << std::endl;
-		// std::cout << YELLOW "locname ==" RESET << it->getName() << "04& size =" <	Az< newSize << std::endl;
 		if (newSize > matchCount) //?
 		{
 			matchCount = newSize;
@@ -128,7 +122,7 @@ size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath)
 	// while (locpath.at(size) == reqpath.at(size))
 	for (;size < reqpath.size() && size < locpath.size()\
 	 && reqpath[size] == locpath[size]; size++)
-	if (size == reqpath.size())
+	if (size == locpath.size() && size == reqpath.size())
 		return (std::string::npos);
 		
 	return (size);
@@ -140,19 +134,23 @@ void assignStrIfNonEmpty(std::string &dest, std::string &rhs)
 		dest = rhs;
 }
 
-void	Request::setLocRules(location &loc, location &ruleblock)
+void	Request::setLocRules(location &ruleblock, location &loc)
 {
 	// assignStrIfNonEmpty(ruleblock._allow_methods, loc._allow_methods); //change after merge
 	// assignStrIfNonEmpty(ruleblock._index, loc._index);
 	assignStrIfNonEmpty(ruleblock._alias, loc._alias);
+	assignStrIfNonEmpty(ruleblock._name, loc._name);
 	assignStrIfNonEmpty(ruleblock._return, loc._return);
 	assignStrIfNonEmpty(ruleblock._root, loc._root);
 	if (!loc._index.empty())
 		ruleblock._index = loc._index;
+	if (!loc._allow_methods.empty())
+		ruleblock._allow_methods = loc._allow_methods;
 	if (!loc._cgi_extension.empty())
 		ruleblock._cgi_extension = loc._cgi_extension;
 	if (!loc._cgi_path.empty())
 		ruleblock._cgi_path = loc._cgi_path;
+	ruleblock._autoindex = loc._autoindex; //default on extra
 }
 
 

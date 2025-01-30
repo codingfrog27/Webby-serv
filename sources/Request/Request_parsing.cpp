@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/29 18:33:16 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/30 17:49:16 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ void	Request::resolveFilePath()
 	_filePath = "/" + trim(resolved);
 	locationHandler();
 	_filePath = trim(_root) + _filePath;
+	std::cout << "FILEPATH AFTER CHECK " << _filePath << std::endl;
 }
 
 void	Request::parse_headers(std::string header_str)

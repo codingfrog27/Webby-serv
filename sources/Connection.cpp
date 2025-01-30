@@ -125,11 +125,8 @@ connectStatus Connection::refreshIfKeepAlive()
 	// if (!this->_keepOpen)
 			// _keepOpen = true; //move to request
 	if (_request.getHeaderValue("Connection") != "keep-alive")
-	{
-		std::cout << "close meee" << std::endl;
 		return (connectStatus::FINISHED);
-	} //change to closed check
-	std::cout << "connection keep open activate" << std::endl;
+	std::cout << "connection stays open" << std::endl;
 	_request = Request(this->_config, this->_clientFD);
 	_response = Response();
 	return (connectStatus::IDLE);
