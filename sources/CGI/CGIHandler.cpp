@@ -8,6 +8,11 @@
 // put reading and writing in a loop
 
 connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd>* CGIPollFDs, std::unordered_map<int, std::shared_ptr<CGI>> CGIMap){
+	if (connection == nullptr || CGIPollFDs == nullptr) {
+		std::cerr << "Null pointer detected in CGIHandler" << std::endl;
+		return connectStatus::SERVER_ERR;
+	}
+
 	Response* response = &connection->_response;
 	Request* request = &connection->_request;
 

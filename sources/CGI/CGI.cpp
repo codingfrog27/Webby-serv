@@ -39,7 +39,12 @@ CGI::CGI(Connection* connection, std::vector<pollfd>* CGIPollFDs) : _clientFD(co
 		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdError");
 		return ;
 	}
-	CGIPollFDs->emplace_back(pollfd{_fdIn[1], POLLOUT, 0});
+	if (connection->_request._method_type == POST){
+		CGIPollFDs->emplace_back(pollfd{_fdIn[1], POLLOUT, 0});
+	}
+	else {
+		close(_fdIn[1]);
+	}
 	CGIPollFDs->emplace_back(pollfd{_fdOut[0], POLLIN, 0});
 	CGIPollFDs->emplace_back(pollfd{_fdError[0], POLLIN, 0});
 	setupCGIEnvironment(&connection->_request);
@@ -201,12 +206,13 @@ void CGI::readFromCGI(Response* response) {
 	if (bytes > 0) {
 		// Append the data to the response buffer
 		response->setResponseBuffer(std::string(buffer, bytes));
-	} 
+	}
 	else if (bytes == 0) {
 		// End of file
 		close(_fdOut[0]);
 		_CGIHandlerStatus = CGIHandlerStatus::READING_FDERROR;
-	} 
+		response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
+	}
 	else {
 		// Handle error
 		response->autoFillResponse("500 Internal Server Error: read");
@@ -223,7 +229,7 @@ void CGI::readErrorFromCGI(Response* response) {
 	if (bytes > 0) {
 		// Append the error data to the script error
 		_scriptError.append(buffer, bytes);
-	} 
+	}
 	else if (bytes == 0) {
 		// End of file
 		close(_fdError[0]);
@@ -231,7 +237,8 @@ void CGI::readErrorFromCGI(Response* response) {
 			response->autoFillResponse("500 Internal Server Error: script: " + _scriptError);
 		}
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
-	} 
+		response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
+	}
 	else {
 		// Handle error
 		response->autoFillResponse("500 Internal Server Error: read");
@@ -248,11 +255,11 @@ bool	CGI::childIsRunning(Response* response){
 		response->autoFillResponse("500 Internal Server Error: waitpid");
 		closePipes();
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
-	} 
+	}
 	else if (result == 0) {
 		// Child is still running
 		return true;
-	} 
+	}
 	else if (WIFEXITED(status)) {
 		_CGIHandlerStatus = CGIHandlerStatus::CHILD_IS_FINISHED;
 	}

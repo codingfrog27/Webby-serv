@@ -86,6 +86,7 @@ class Request
 		bool					headerEndFound();
 		size_t					parse_req_line(std::string req_line);
 		bool					bodyIsRead();
+		bool					isCGIrequired();
 		bool					dechunkBody();
 		std::string				http_version(const std::string &version);
 		void					checkHeaders();
@@ -128,13 +129,13 @@ class Request
 
 		//get and setters
 		const std::string &getBody();
-		//public methods	
+		//public methods
 		connectStatus	readRequest();
 		std::string		getHeaderValue(std::string key);
 		bool			headerExists(std::string key);
 		std::string		getStatusCode();
 		void			printHeaders();
-		
+
 		Config*			getConfig();
 };
 

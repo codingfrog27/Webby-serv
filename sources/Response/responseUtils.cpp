@@ -27,22 +27,22 @@
 // }
 
 
-bool	isCGIrequired(Request* request){
-	if (request == nullptr) {
-		std::cout << "AAHHH" << std::endl;
-		NicePrint::promptEnter();
-		return false;
-	}
-	if (request->_filePath.rfind(".py") == request->_filePath.length() - 3)
-		return true;
-	if (request->_headers["Content-Type"].find("multi-part/form-data") != std::string::npos)
-		return true;
-	if (request->_headers["Content-Type"].find("application/x-www-form-urlencoded") != std::string::npos)
-		return true;
-	// if (request->_headers["Content-Type"].find("application/json") != std::string::npos)
-	// 	return true;
-	return false;
-}
+// bool	isCGIrequired(Request* request){
+// 	if (request == nullptr) {
+// 		std::cout << "AAHHH" << std::endl;
+// 		NicePrint::promptEnter();
+// 		return false;
+// 	}
+// 	if (request->_filePath.rfind(".py") == request->_filePath.length() - 3)
+// 		return true;
+// 	if (request->_headers["Content-Type"].find("multi-part/form-data") != std::string::npos)
+// 		return true;
+// 	if (request->_headers["Content-Type"].find("application/x-www-form-urlencoded") != std::string::npos)
+// 		return true;
+// 	// if (request->_headers["Content-Type"].find("application/json") != std::string::npos)
+// 	// 	return true;
+// 	return false;
+// }
 
 bool	fileExists(std::string path){
 	std::ifstream file(path);

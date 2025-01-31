@@ -105,7 +105,7 @@ void	Server::main_server_loop()
 			Connection &current = _Connections.at(_pollFDs[i].fd);
 			//should be find to check for nonexisting connects (though also shouldnt happen)
 			if (current._isClientSocket)
-				current.connectionAction(_pollFDs[i], *this);	
+				current.connectionAction(_pollFDs[i], *this);
 			else if (_pollFDs[i].revents & POLLIN)
 					current._wantsNewConnect = true;
 		}
@@ -180,13 +180,13 @@ void Server::handleCGIPollEvents() {
 				i--;
 				continue;
 			}
-			if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT)
-				cgi->writeToCGI(&connection._request, &connection._response); //TO WHICH RESPONSE?
+			else if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT)
+				cgi->writeToCGI(&connection._request, &connection._response);
 			else if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED || !cgi->childIsRunning(&connection._response)){
 				if (_CGIPollFDs[i].fd == cgi->getFdOut() && _CGIPollFDs[i].revents & POLLIN)
-					cgi->readFromCGI(&connection._response);//TO WHICH RESPONSE?
+					cgi->readFromCGI(&connection._response);
 				else if (_CGIPollFDs[i].fd == cgi->getFdError() && _CGIPollFDs[i].revents & POLLIN)
-					cgi->readErrorFromCGI(&connection._response);//TO WHICH RESPONSE?
+					cgi->readErrorFromCGI(&connection._response);
 			}
 		}
 	}

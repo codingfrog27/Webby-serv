@@ -30,10 +30,13 @@ connectStatus	Request::readRequest()
 		}
 		if (isTimedOut(this->_startTime, this->_timeoutTime))
 			throw ClientErrorExcept(408, "Request Timeout");
-		if (_doneReading)
+		if (_doneReading){
+			if (isCGIrequired())
+				return (connectStatus::CGI_REQUIRED);
 			return (connectStatus::RESPONDING);
 			// return (connectStatus::DONE_READING);
-		return (connectStatus::READING);	
+		}
+		return (connectStatus::READING);
 	}
 	catch(ClientErrorExcept &e)
 	{
@@ -110,7 +113,7 @@ bool	Request::bodyIsRead()
 	if (_dataIsChunked && dechunkBody() == true)
 		return(true);
 	else if (body_bytes_read >= _contentLen)
-	{	
+	{
 		_doneReading = true;
 		reading_mode = FINISHED;
 		_reqBody = std::string(_rawRequestData.begin(), (_rawRequestData.begin() + _contentLen + 2));
@@ -118,4 +121,20 @@ bool	Request::bodyIsRead()
 		return (true);
 	}
 	return (_doneReading);
+}
+bool	Request::isCGIrequired(){
+	// if (this == nullptr) {
+	// 	std::cout << "AAHHH" << std::endl;
+	// 	NicePrint::promptEnter();
+	// 	return false;
+	// }
+	if (this->_filePath.rfind(".py") == this->_filePath.length() - 3)
+		return true;
+	if (this->_headers["Content-Type"].find("multi-part/form-data") != std::string::npos)
+		return true;
+	if (this->_headers["Content-Type"].find("application/x-www-form-urlencoded") != std::string::npos)
+		return true;
+	// if (this->_headers["Content-Type"].find("application/json") != std::string::npos)
+	// 	return true;
+	return false;
 }

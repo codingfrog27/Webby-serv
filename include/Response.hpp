@@ -32,7 +32,7 @@ class Response{
 		Response();
 		Response(const Response &obj) = delete;
 		~Response();
-		
+
 		Response &										operator=(const Response& obj);
 
 		connectStatus									responseHandler(Request* request);
@@ -80,5 +80,4 @@ class Response{
 		void											deleteMethod(Request* request);
 };
 
-bool			isCGIrequired(Request* request);
 bool			fileExists(std::string path);

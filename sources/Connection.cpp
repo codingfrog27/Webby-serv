@@ -102,7 +102,7 @@ void	Connection::connectionAction(const pollfd &poll, Server &server)
 //print to info log and or error log file
 	// if (poll.revents & POLLHUP) {
 	// 	std::cout << "Client disconnected (POLLHUP)" << std::endl;
-	// } 
+	// }
 connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 {
 	int error = 0;
@@ -114,10 +114,10 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 		if (error != 0)
 			std::cout << RED "Socket error: " << strerror(error) << RESET << std::endl;
 			// NicePrint::promptEnter();
-		return (connectStatus::CONNECT_CLOSED); 
+		return (connectStatus::CONNECT_CLOSED);
 	}
 	else if (isTimedOut(_startTime, _IdleTimeout) || poll.revents & POLLHUP)
-		return (connectStatus::CONNECT_CLOSED); 
+		return (connectStatus::CONNECT_CLOSED);
 	return (_CStatus);
 }
 
