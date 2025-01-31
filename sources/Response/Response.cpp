@@ -99,7 +99,7 @@ connectStatus Response::writeResponse(int FD){
 	if (bytes < 0){
 		if (_timesWriteFailed == 2){
 			setResponseHandlerStatus(responseHandlerStatus::FINISHED);
-			return connectStatus::CONNECT_CLOSED;
+			return connectStatus::FINISHED;
 		}
 		autoFillResponse("500 Internal Server Error: write");//is this ok?
 		_timesWriteFailed++;
