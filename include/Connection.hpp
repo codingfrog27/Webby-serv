@@ -46,13 +46,13 @@ class Connection
 		Request							_request;
 		Response						_response;
 		std::shared_ptr<CGI>			_cgi;
-		bool			_isClientSocket;
-		bool			_wantsNewConnect;
-		int				_clientFD;
-		bool			_keepOpen;
-		t_time			_startTime;
-		t_secs			_IdleTimeout;
-		// bool		_doneReading;
+		bool							_isClientSocket;
+		bool							_wantsNewConnect;
+		int								_clientFD;
+		bool							_keepOpen;
+		t_time							_startTime;
+		t_secs							_IdleTimeout;
+		// bool							_doneReading;
 		
 		// Constructors and Destructors
 		Connection(Config *config, int clientFD, bool isServerside);
