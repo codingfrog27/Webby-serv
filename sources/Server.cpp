@@ -105,7 +105,7 @@ void	Server::main_server_loop()
 			Connection &current = _Connections.at(_pollFDs[i].fd);
 			//should be find to check for nonexisting connects (though also shouldnt happen)
 			if (current._isClientSocket)
-				current.connectionAction(_pollFDs[i], *this);	
+				current.connAction(_pollFDs[i], *this);	
 			else if (_pollFDs[i].revents & POLLIN)
 					current._wantsNewConnect = true;
 		}
@@ -122,6 +122,7 @@ void	Server::main_server_loop()
 			else
 				i++;
 		}
+
 	}
 }
 

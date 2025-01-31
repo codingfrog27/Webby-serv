@@ -80,7 +80,7 @@ Connection::~Connection(void)
 	// 		_wantsNewConnect = true;
 	// 	return;
 	// }
-void	Connection::connectionAction(const pollfd &poll, Server &server)
+void	Connection::connAction(const pollfd &poll, Server &server)
 {
 	_CStatus = checkConnectStatus(poll);
 	if (poll.revents & POLLIN && (_CStatus == connectStatus::IDLE || \

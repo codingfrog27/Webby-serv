@@ -81,7 +81,6 @@ void	Request::locationHandler()
 	reqRules = findLocationMatch(locVec, matchCount);
 	if (reqRules == nullptr)
 		return;
-	std::cout << "reqrules name before nested loops ==" << reqRules->getName() << std::endl;
 	std::vector<location> &nestVec = reqRules->_nestedLocations;
 	while (!nestVec.empty())
 	{

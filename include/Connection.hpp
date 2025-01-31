@@ -62,6 +62,6 @@ class Connection
 		// void	resetRequest(Config* config, int clientFD);
 		// void	resetResponse();
 		connectStatus	refreshIfKeepAlive();
-		void			connectionAction(const pollfd &poll, Server &server);
+		void			connAction(const pollfd &poll, Server &server);
 		connectStatus	checkConnectStatus(const pollfd &poll);
 } ;
