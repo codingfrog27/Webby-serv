@@ -72,6 +72,8 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		return ;	// }
 	}
 	if (_PID == 0){ //child
+		dup2(_fdIn[0], STDIN_FILENO);
+		dup2(_fdOut[1], STDOUT_FILENO);
 		dup2(_fdError[1], STDERR_FILENO);
 		closePipes();
 		int status = 0;
@@ -82,6 +84,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		close(_fdIn[0]);
 		close(_fdOut[1]);
 		close(_fdError[1]);
+		_CGIHandlerStatus = CGIHandlerStatus::IN_PROGRESS;
 	}
 	return ;
 	// }

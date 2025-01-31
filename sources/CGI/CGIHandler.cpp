@@ -8,16 +8,10 @@
 // put reading and writing in a loop
 
 connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd>* CGIPollFDs, std::unordered_map<int, std::shared_ptr<CGI>> CGIMap){
-	if (connection == nullptr || CGIPollFDs == nullptr) {
-		std::cerr << "Null pointer detected in CGIHandler" << std::endl;
-		return connectStatus::SERVER_ERR;
-	}
-
 	Response* response = &connection->_response;
 	Request* request = &connection->_request;
 
-	if (_CGIHandlerStatus == CGIHandlerStatus::NOT_STARTED){
-		_CGIHandlerStatus = CGIHandlerStatus::IN_PROGRESS;
+	if (connection->_cgi == 0 && connection->_CStatus == connectStatus::CGI_REQUIRED){
 		if (request->_method_type != GET && request->_method_type != POST){
 			response->autoFillResponse("405 Method Not Allowed");
 			response->setHeaders("Allow", "GET, POST");
@@ -38,6 +32,8 @@ connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd>* CGIPo
 		CGIMap[newCGI->getFdOut()] = newCGI;
 		CGIMap[newCGI->getFdError()] = newCGI;
 		newCGI->invokeCGI(request, response);
+
+		std::cout << MAGENTA "CGI PollFD vector size in CGIHandler: " << CGIPollFDs->size() << RESET << std::endl;
 	}
 	return connectStatus::CGI;
 }

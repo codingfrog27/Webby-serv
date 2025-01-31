@@ -48,9 +48,9 @@ class CGI{
 
 	private:
 		std::vector<char*>	_envp;
-		int					*_fdIn;
-		int					*_fdOut;
-		int					*_fdError;
+		int					_fdIn[2];
+		int					_fdOut[2];
+		int					_fdError[2];
 		// pollfd				_pollFdIn;
 		// pollfd				_pollFdOut;
 		// pollfd				_pollFdError;
