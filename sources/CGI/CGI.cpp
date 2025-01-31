@@ -210,6 +210,7 @@ void CGI::readFromCGI(Response* response) {
 	if (bytes > 0) {
 		// Append the data to the response buffer
 		response->setResponseBuffer(std::string(buffer, bytes));
+		std::cout << MAGENTA "Response buffer: " << response->getResponseBuffer() << RESET << std::endl;
 	}
 	else if (bytes == 0) {
 		// End of file
@@ -265,6 +266,7 @@ bool	CGI::childIsRunning(Response* response){
 		return true;
 	}
 	else if (WIFEXITED(status)) {
+		std::cout << MAGENTA "Child exited with status " << WEXITSTATUS(status) << RESET << std::endl;
 		_CGIHandlerStatus = CGIHandlerStatus::CHILD_IS_FINISHED;
 	}
 	return false;
