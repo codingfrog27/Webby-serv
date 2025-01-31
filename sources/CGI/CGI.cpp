@@ -22,7 +22,7 @@
 // 	return ;
 // }
 
-CGI::CGI(Connection* connection, std::vector<pollfd>* CGIPollFDs) : _clientFD(connection->_clientFD){
+CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(connection->_clientFD){
 	_CGIHandlerStatus = CGIHandlerStatus::NOT_STARTED;
 
 	if (pipe(_fdIn) == -1) {
@@ -40,14 +40,15 @@ CGI::CGI(Connection* connection, std::vector<pollfd>* CGIPollFDs) : _clientFD(co
 		return ;
 	}
 	if (connection->_request._method_type == POST){
-		CGIPollFDs->emplace_back(pollfd{_fdIn[1], POLLOUT, 0});
+		CGIPollFDs.emplace_back(pollfd{_fdIn[1], POLLOUT, 0});
 	}
 	else {
 		close(_fdIn[1]);
 	}
-	CGIPollFDs->emplace_back(pollfd{_fdOut[0], POLLIN, 0});
-	CGIPollFDs->emplace_back(pollfd{_fdError[0], POLLIN, 0});
+	CGIPollFDs.emplace_back(pollfd{_fdOut[0], POLLIN, 0});
+	CGIPollFDs.emplace_back(pollfd{_fdError[0], POLLIN, 0});
 	setupCGIEnvironment(&connection->_request);
+	std::cout << MAGENTA "CGI PollFD vector size in constructor: " << CGIPollFDs.size() << RESET << std::endl;
 	return ;
 }
 

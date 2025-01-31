@@ -108,6 +108,7 @@ void	Server::main_server_loop()
 				current.connectionAction(_pollFDs[i], *this);
 			else if (_pollFDs[i].revents & POLLIN)
 					current._wantsNewConnect = true;
+			
 		}
 		acceptNewConnects(size); //could mb be part of main loop after all?
 		for (size_t i = 0; i < size;)
@@ -171,16 +172,17 @@ void Server::handleCGIPollEvents() {
 		if (poll(_CGIPollFDs.data(), size, 0) == 0)
 			return ;
 		for (size_t i = 0; i < size; i++){
+			std::cout << MAGENTA "CGI PollFD vector size in handleCGIPollEvents: " << _CGIPollFDs.size() << RESET << std::endl;
 			CGI *cgi = _CGIMap[_CGIPollFDs[i].fd].get();
 			Connection &connection = _Connections.at(cgi->getClientFD());
-			if (_CGIPollFDs[i].revents & POLLHUP){
-				_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
-				_CGIMap.erase(_CGIMap.find(_CGIPollFDs[i].fd));
-				size--;
-				i--;
-				continue;
-			}
-			else if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT)
+			// if (_CGIPollFDs[i].revents & POLLHUP){
+			// 	_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
+			// 	_CGIMap.erase(_CGIMap.find(_CGIPollFDs[i].fd));
+			// 	size--;
+			// 	i--;
+			// 	continue;
+			// }
+			 if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT)
 				cgi->writeToCGI(&connection._request, &connection._response);
 			else if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED || !cgi->childIsRunning(&connection._response)){
 				if (_CGIPollFDs[i].fd == cgi->getFdOut() && _CGIPollFDs[i].revents & POLLIN)
@@ -220,12 +222,12 @@ void Server::acceptNewConnects(size_t size)
 	}
 }
 
-std::vector<pollfd>	Server::getCGIPollFDs(void)
+std::vector<pollfd>		&Server::getCGIPollFDs(void)
 {
 	return (_CGIPollFDs);
 }
 
-std::unordered_map<int, std::shared_ptr<CGI>>	Server::getCGIMap(void)
+std::unordered_map<int, std::shared_ptr<CGI>>	&Server::getCGIMap(void)
 {
 	return (_CGIMap);
 }
@@ -283,3 +285,4 @@ std::unordered_map<int, std::shared_ptr<CGI>>	Server::getCGIMap(void)
 // 		}
 // 	}
 // }
+

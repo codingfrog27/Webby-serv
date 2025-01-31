@@ -28,10 +28,10 @@ class CGI{
 		CGI(const CGI &obj) = delete;
 		CGI& operator=(const CGI& obj) = delete;
 		// CGI(int *fdIn, int *fdOut, int *fdError); // what else do i need to pass?
-		CGI(Connection* connection, std::vector<pollfd>* pollFDs);
+		CGI(Connection* connection, std::vector<pollfd> &pollFDs);
 		~CGI();
 
-		connectStatus		CGIHandler(Connection* connection, std::vector<pollfd>* CGIPollFDs, std::unordered_map<int, std::shared_ptr<CGI>> CGIMap);
+		connectStatus		CGIHandler(Connection* connection, std::vector<pollfd> &CGIPollFDs, std::unordered_map<int, std::shared_ptr<CGI>> &CGIMap);
 		void				closePipes(void);
 		bool				childIsRunning(Response* response);
 

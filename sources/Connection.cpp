@@ -89,8 +89,8 @@ void	Connection::connectionAction(const pollfd &poll, Server &server)
 									_CStatus == connectStatus::READING))
 		_CStatus = _request.readRequest();
 	if(_CStatus == connectStatus::CGI_REQUIRED){
-		auto cgiPollFDs = server.getCGIPollFDs();
-		_CStatus = _cgi->CGIHandler(this, &cgiPollFDs, server.getCGIMap());
+		_CStatus = _cgi->CGIHandler(this, server.getCGIPollFDs(), server.getCGIMap());
+		std::cout << MAGENTA "CGI PollFD vector size in connectionAction: " << server.getCGIPollFDs().size() << RESET << std::endl;
 	}
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
 		_CStatus = _response.responseHandler(&_request);
@@ -116,8 +116,8 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 			// NicePrint::promptEnter();
 		return (connectStatus::CONNECT_CLOSED);
 	}
-	else if (isTimedOut(_startTime, _IdleTimeout) || poll.revents & POLLHUP)
-		return (connectStatus::CONNECT_CLOSED);
+	// else if (isTimedOut(_startTime, _IdleTimeout) || poll.revents & POLLHUP)
+	// 	return (connectStatus::CONNECT_CLOSED);
 	return (_CStatus);
 }
 

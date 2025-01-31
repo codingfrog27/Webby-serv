@@ -46,6 +46,6 @@ class Server
 		void		connectionAction(Connection &connect, pollfd &poll);
 		void		PrintConnectionStatusses(size_t size);
 
-		std::vector<pollfd>								getCGIPollFDs(void);
-		std::unordered_map<int, std::shared_ptr<CGI>>	getCGIMap(void);
+		std::vector<pollfd>								&getCGIPollFDs(void);
+		std::unordered_map<int, std::shared_ptr<CGI>>	&getCGIMap(void);
 };
