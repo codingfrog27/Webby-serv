@@ -68,29 +68,52 @@ void sendHTMLPage(int client_socket, const std::string& file_path)
 	file.close();
 }
 
+// void	Request::locationHandler()
+// {
+// 	location	*reqRules;
+// 	location	*nestRules;
+// 	size_t		matchCount = 0;
+// 	std::vector<location> &locVec = this->_config->_locations;
+// 	// std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
+// 	// << "FD == " << _clientFD << std::endl;
+// 	if (locVec.empty())
+// 		return;
+// 	reqRules = findLocationMatch(locVec, matchCount);
+// 	if (reqRules == nullptr)
+// 		return;
+// 	std::vector<location> &nestVec = reqRules->_nestedLocations;
+// 	while (!nestVec.empty())
+// 	{
+// 		nestRules = findLocationMatch(nestVec, matchCount);
+// 		if (nestRules == nullptr)
+// 			break;
+// 		setLocRules(*reqRules, *nestRules);
+// 		nestVec = nestRules->_nestedLocations;
+// 	}
+// 		checkRules(*reqRules);
+// }
+
 void	Request::locationHandler()
 {
-	location	*reqRules;
-	location	*nestRules;
+	location	*locPtr;
+	location	reqRules;
 	size_t		matchCount = 0;
-	std::vector<location> &locVec = this->_config->_locations;
-	// std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
-	// << "FD == " << _clientFD << std::endl;
-	if (locVec.empty())
+	std::vector<location> *locVec = &this->_config->_locations;
+	if (locVec->empty())
 		return;
-	reqRules = findLocationMatch(locVec, matchCount);
-	if (reqRules == nullptr)
+	locPtr = findLocationMatch(*locVec, matchCount);
+	if (locPtr == nullptr)
 		return;
-	std::vector<location> &nestVec = reqRules->_nestedLocations;
-	while (!nestVec.empty())
+	reqRules = *locPtr;
+	for (; !locVec->empty(); locVec = &locPtr->_nestedLocations)
 	{
-		nestRules = findLocationMatch(nestVec, matchCount);
-		if (nestRules == nullptr)
+		locPtr = findLocationMatch(*locVec, matchCount);
+		if (locPtr == nullptr)
 			break;
-		setLocRules(*reqRules, *nestRules);
-		nestVec = nestRules->_nestedLocations;
+		else
+		setLocRules(reqRules, *locPtr);
 	}
-		checkRules(*reqRules);
+	checkRules(reqRules);
 }
 
 location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
