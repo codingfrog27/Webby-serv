@@ -6,11 +6,12 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/02/01 16:04:41 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/01 17:44:42 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
+#include <array>
 #define YELLOW "\033[33m"
 #define RESET "\033[0m"
 
@@ -44,20 +45,27 @@ size_t	Request::parse_req_line(std::string req_line)
 
 void	Request::resolveFilePath()
 {
-	std::string resolved = _URI;
+	_filePath = 				_URI;
+	size_t						tokenPos;
+	std::array<std::string, 6>	tokens = {"?", "#", "https://", "http://", _config->_host, _config->_listen};
+
 	std::cout << "FILEPATH B4 RESOLVE" << _URI << std::endl;
 
-	if (resolved.find("?") != std::string::npos)
-		resolved.erase(resolved.find("?"));
-	else if (resolved.find("#") != std::string::npos)
-		resolved.erase(resolved.find("#"));
-	if (resolved.find("https://") != std::string::npos || resolved.find("http://") != std::string::npos) //do we wanna handle https?
-		resolved.erase(0, resolved.find("//") + 2);
-	if (resolved.find(_config->_host) != std::string::npos)
-		resolved.erase(0, _config->_host.length());
-	if (resolved.find(_config->_listen) != std::string::npos)
-		resolved.erase(0, _config->_listen.length() + 1);
-	_filePath = "/" + trim(resolved);
+	tokenPos = _filePath.find("?");
+	if (_filePath.find("?") != std::string::npos)
+		_filePath.erase(tokenPos);
+	tokenPos = _filePath.find("#");
+	if (tokenPos != std::string::npos)
+		_filePath.erase(tokenPos);
+	
+	for (size_t i = 0; i < tokens.size(); i++)
+	{
+		tokenPos = _filePath.find(tokens[i]);
+		if (tokenPos != std::string::npos)
+			_filePath.erase(0, tokenPos + tokens[i].length());
+	}
+	
+	_filePath = "/" + trim(_filePath);
 	locationHandler();
 	_filePath = trim(_root) + _filePath;
 	std::cout << "FILEPATH AFTER CHECK " << _filePath << std::endl;
