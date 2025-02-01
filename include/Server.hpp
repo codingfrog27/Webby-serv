@@ -16,6 +16,7 @@
 #include "Connection.hpp"
 #include "Request.hpp"
 #include "everything.hpp"
+#include "Colors.hpp"
 
 
 class Server

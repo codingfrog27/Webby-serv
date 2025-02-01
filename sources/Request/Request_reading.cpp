@@ -21,7 +21,7 @@ connectStatus	Request::readRequest()
 		if (_statusStr.empty() || _statusStr == "0 Not started yet")
 			_statusStr = "102 Processing";
 		readSocket(0);
-		if (!_rnrnFound && headerEndFound())
+		if (!_headerEndFound && headerEndFound())
 			parse_headers(_unsortedHeaders);
 		if (_hasBody && bodyIsRead()) {
 			std::cout << "PARSING BODY" << std::endl;
@@ -77,11 +77,9 @@ int	Request::readSocket(int size)
 			throw(ConnectionClosedExcep(_clientFD));
 		else
 			throw (std::ios_base::failure(" reading fail when reading from client socket"));
-	}
-	// std::cout << buffer << std::endl;
-	// NicePrint::promptEnter();
+	};
 	_rawRequestData.insert(_rawRequestData.end(), buffer, buffer + bytes_read);
-	if (_rnrnFound)
+	if (_headerEndFound)
 		body_bytes_read += bytes_read;
 	return (bytes_read);
 }
@@ -95,7 +93,7 @@ bool	Request::headerEndFound()
 		reading_mode = READING_HEADERS;
 		return (false);
 	}
-	_rnrnFound = true;
+	_headerEndFound = true;
 	_unsortedHeaders = std::string(_rawRequestData.begin(), it + 2);
 	_rawRequestData.erase(_rawRequestData.begin(), it + 2); //cut out the first CRLF
 	body_bytes_read = _rawRequestData.size();

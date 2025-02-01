@@ -6,36 +6,16 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 13:33:40 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/01 15:50:51 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <algorithm>
-#include <exception>
-#include <unordered_map>
-#include <map>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <ctype.h>
-#include <memory>
+#include "external.hpp"
 #include "location.hpp"
 #include "Colors.hpp"
 
-enum ServerRules
-{
-	LISTEN,
-	MAX_BODY_SIZE,
-	ERROR_PAGE,
-	HOST,
-	INDEX,
-	ROOT,
-	SERVER_NAME,
-	EMPTY
-};
 #define MAX_TIMEOUT 60000
 
 class Config
@@ -67,30 +47,6 @@ class Config
 		~Config(void);
 		std::string	toString() const;
 
-	
-	// std::map<std::string, std::string> _configMap;
-
-	//these are all REQUIRED
-	// size_t i = 0;
-	// size_t		_serverPort;
-	// std::vector<std::string> _locationName;
-	// std::vector<location> _location;
-	// std::vector <location> _locations;
-	// std::vector <Socket> _server;
-	// std::string	error_log_file;
-	// std::string	access_log_file;
-
-			
-	// size_t		keep_alive_timeout; //spefically how long to keep an idle connection open before closing
-	// bool		directory_listing; //aka autoindex: wether to display list of pages when requested dir isnt found
-	// std::string	cgi_script_directory;
-	// // not required but expected
-
-	// size_t		max_keep_alive_requests;
-	// std::unordered_map<std::string, std::string> custom_error_pages;
-	// std::unordered_map<std::string, std::string> access_control;
-	
-	// location findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	
 	bool		getAutoindex();

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="An example web page">
+	<title>Welcome to the mustache Web Server!</title>
+	<style>
+		body {
+			font-family: 'Arial', sans-serif;
+			margin: 0;
+			padding: 0;
+			background-color: #f4f4f4;
+			color: #333;
+		}
+
+		header {
+			background-color: #4CAF50;
+			color: white;
+			padding: 20px;
+			text-align: center;
+		}
+
+		nav {
+			text-align: center;
+			margin: 20px 0;
+		}
+
+		nav a {
+			margin: 0 15px;
+			text-decoration: none;
+			color: #4CAF50;
+			font-weight: bold;
+		}
+
+		nav a:hover {
+			color: #333;
+		}
+
+		section {
+			margin: 20px;
+			padding: 20px;
+			background-color: white;
+			box-shadow: 0 0 10px rgba(0,0,0,0.1);
+			border-radius: 8px;
+		}
+
+		h1, h2 {
+			color: #4CAF50;
+		}
+
+		img {
+			max-width: 100%;
+			height: auto;
+			border-radius: 8px;
+		}
+
+		footer {
+			background-color: #333;
+			color: white;
+			text-align: center;
+			padding: 10px 0;
+			position: relative;
+			bottom: 0;
+			width: 100%;
+		}
+
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+
+		.image-gallery {
+			display: flex;
+			gap: 20px;
+			justify-content: space-around;
+			flex-wrap: wrap;
+		}
+
+		.image-gallery img {
+			flex-basis: 30%;
+			max-width: 300px;
+		}
+
+		input[type="text"] {
+			height: 150px; /* Altezza della casella */
+			width: 400px; /* Larghezza della casella, opzionale */
+		}
+	</style>
+</head>
+<body>
+
+	<header>
+		<h1>Welcome to My Web Page</h1>
+		<p>A simple example of a webpage with HTML and CSS</p>
+	</header>
+
+	<nav>
+		<a href="#about">About Us</a>
+		<a href="#gallery">Gallery</a>
+		<a href="#contact">Contact</a>
+	</nav>
+
+	<div class="container">
+		<section id="about">
+			<h2>About Us</h2>
+			<p>We are a team of technology and design enthusiasts, dedicated to creating high-quality web experiences. Our goal is to deliver elegant, functional, and accessible digital solutions for everyone.</p>
+		</section>
+
+		<section id="gallery" class="image-gallery">
+			<h2>Gallery</h2>
+			<div class="image-gallery">
+				<img src="https://via.placeholder.com/300" alt="Image 1">
+				<img src="https://via.placeholder.com/300" alt="Image 2">
+				<img src="https://via.placeholder.com/300" alt="Image 3">
+			</div>
+		</section>
+
+		<section id="contact">
+			<h2>Contact</h2>
+			<p>For any information, leave a comment below or feel free to contact us via email at <a href="mailto:info@example.com">info@example.com </a>.</p>
+			<form name="text_post" method="post" action="pagina2.asp">
+				<input type="text" name="nomeCasella" value="" size="80" maxlength="80">
+			 </form>
+		</section>
+	</div>
+
+	<footer>
+		<p>&copy; 2024 My Company - All Rights Reserved</p>
+	</footer>
+
+</body>
+</html>

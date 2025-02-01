@@ -6,13 +6,16 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 15:13:39 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/11 15:51:39 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/01 15:51:58 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
 
 #include <exception>
 #include <iostream>
 
+//put in request?
 class ClientErrorExcept : std::exception
 {
 	private:

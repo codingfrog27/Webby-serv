@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/30 17:49:16 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/01 16:04:41 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,13 @@ size_t	Request::parse_req_line(std::string req_line)
 	method_end = req_line.find(' ');
 	if (method_end == std::string::npos)
 		throw (std::invalid_argument("no space found after method"));
-	uri_end = req_line.find(' ', method_end + 1); //could check on single space
+	uri_end = req_line.find(' ', method_end + 1);
 	if (uri_end == std::string::npos)
 		throw (std::invalid_argument("no space found after uri"));
 
 	_method_type = which_method_type(req_line.substr(0, method_end));
-	_URI = req_line.substr(method_end + 2, uri_end - method_end - 1); //temp + 2??
+	_URI = req_line.substr(method_end + 2, uri_end - method_end - 1);
 	resolveFilePath();
-	// checkLocations(_filePath);
 	_http_version = http_version(&req_line[uri_end + 1]);
 	return (line_end + 2);
 }
@@ -58,8 +57,6 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_host.length());
 	if (resolved.find(_config->_listen) != std::string::npos)
 		resolved.erase(0, _config->_listen.length() + 1);
-	// if (resolved.front() == '/')
-	// 	resolved.erase(0, 1);
 	_filePath = "/" + trim(resolved);
 	locationHandler();
 	_filePath = trim(_root) + _filePath;
@@ -78,7 +75,7 @@ void	Request::parse_headers(std::string header_str)
 		if (colon_pos == std::string::npos)
 			throw (std::invalid_argument("colon missing in header"));
 		key = header_str.substr(start, colon_pos - start);
-		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2)); //check for empty values?
+		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2));
 		_headers[key] = value;
 		start = line_end + 2;
 		line_end = header_str.find("\r\n", start);
@@ -114,7 +111,7 @@ void	Request::checkHeaders()
 void	Request::checkBodyHeaders()
 {
 	_hasBody = true;
-	if (!headerExists("Content-Type")) //or if type not supported
+	if (!headerExists("Content-Type"))
 		throw (std::invalid_argument("415 Bad request. Unsupported Media Type"));
 	if (getHeaderValue("Transfer-Encoding") == "chunked")
 	{

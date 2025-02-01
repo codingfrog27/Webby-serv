@@ -68,7 +68,7 @@ class Request
 		reading_status			reading_mode;
 		std::string				_boundary;
 		size_t					body_bytes_read;
-		bool					_rnrnFound;
+		bool					_headerEndFound;
 		bool					_dataIsChunked;
 		bool					_headerAreParsed;
 		bool					_hasBody;

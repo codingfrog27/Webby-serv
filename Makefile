@@ -48,7 +48,7 @@ $(LIBFT_A):
 re: fclean $(NAME)
 
 run: $(NAME)
-	@./$(NAME) example_config.conf
+	@./$(NAME) config_files/example_config.conf
 
 clean:
 	@rm -rf $(OBJDIR)
