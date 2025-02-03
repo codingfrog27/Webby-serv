@@ -87,4 +87,4 @@ class location
 bool	locationFound(std::string &line);
 bool	checkCaracter(const std::string &line, const char &c);
 std::string	normalize_space_location(std::string& str);
-
+std::ostream& operator<<(std::ostream& os, const location& loc);

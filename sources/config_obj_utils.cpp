@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/17 16:06:32 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/03 18:27:29 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ Config::Config(void) //default constructor
 	_listen = "8080"; //idk if this works 
 	_serverName = "localhost"; //"funny-server";
 	_host = "127.0.0.1";
-	_maxConnects = 1;
+	_maxConnects = 500;
 	_timeout = 50000;
 	_rootDir = "website/";
 	_autoIndexFilePath = _rootDir + "index.html"; //do i need slash?
@@ -45,13 +45,23 @@ Config::operator=(const Config &rhs)
 
 	if (this != &rhs)
 	{
-		// _serverPort = rhs._serverPort;
+		_host = rhs._host;
+		_autoIndexFilePath = rhs._autoIndexFilePath;
+		_errorPage = rhs._errorPage;
+		_client_max_body_size = rhs._client_max_body_size;
+		_index = rhs._index;
 		_listen = rhs._listen;
 		_serverName = rhs._serverName;
 		_maxConnects = rhs._maxConnects;
 		_timeout = rhs._timeout;
 		_rootDir = rhs._rootDir;
+		_autoindex = rhs._autoindex;
 		_autoIndexFilePath = rhs._autoIndexFilePath;
+		_errorPage = rhs._errorPage;
+		_locations = rhs._locations;
+		// _locationName = rhs._locationName;
+
+
 	}
 
 	return (*this);

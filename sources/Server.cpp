@@ -36,6 +36,7 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 {
 	try
 	{
+		printConfigs(_serverBlocks);
 		_Connections.reserve(100);
 		int	FD;
 		for (size_t i = 0; i < _serverBlocks.size(); ++i)

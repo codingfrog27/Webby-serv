@@ -220,3 +220,30 @@ void   location::parseRule(const std::string &line)
 	std::string tmp_value(value_begin, value_end);	
 	_rulemap.emplace(tmp_key, tmp_value);
 }
+
+std::ostream& operator<<(std::ostream& os, const location& loc)
+{
+	os << "Alias: " << loc._alias << "\n";
+	os << "Autoindex: " << loc._autoindex << "\n";
+	os << "Return: " << loc._return << "\n";
+	os << "Root: " << loc._root << "\n";
+	std::cout << "Allow Methods:";
+	for (const auto &method : loc._allow_methods) {
+		std::cout << (int)method << ' ';
+	}
+	std::cout << "CGI Extensions: ";
+	for (const auto &extension : loc._cgi_extension) {
+		std::cout << extension << ' ';
+	}
+	std::cout << std::endl;
+	std::cout << "CGI Paths: ";
+	for (const auto &path : loc._cgi_path) {
+		std::cout << path << ' ';
+	}
+	std::cout << "Index: ";
+	for (const auto &idx : loc._index) {
+		std::cout << idx << ' ';
+	}
+	std::cout << std::endl;
+    return os;
+}

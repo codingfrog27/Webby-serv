@@ -32,10 +32,6 @@
 
 #include "Config.hpp"
 
-
-
-#define PORT 8080 // common used port for web servers
-
 class Socket
 {
 	private:

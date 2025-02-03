@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/29 18:25:43 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/03 17:12:05 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,15 +153,15 @@ int Config::mapToMembers()
 	return (1);
 }
 
-std::string Config::toString() const {
-    std::ostringstream oss;
-    oss << "Server Name: " << _serverName << "\n";
-	oss << "Root: " << _rootDir << "\n";
-	oss << "Listen: " << _listen << "\n";
-	oss << "Host: " << _host << "\n";
-	oss << "Max Body Size: " << _client_max_body_size << "\n";
-    return oss.str();
-}
+// std::string Config::toString() const {
+//     std::ostringstream oss;
+//     oss << "Server Name: " << _serverName << "\n";
+// 	oss << "Root: " << _rootDir << "\n";
+// 	oss << "Listen: " << _listen << "\n";
+// 	oss << "Host: " << _host << "\n";
+// 	oss << "Max Body Size: " << _client_max_body_size << "\n";
+//     return oss.str();
+// }
 
 void	Config::parseRule(const std::string &line)
 {

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/02/01 15:50:51 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/03 18:29:47 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,23 +21,19 @@
 class Config
 {
 	public:
-		bool 		_autoindex;
-		std::string _autoIndexFilePath;
-		std::string _client_max_body_size;
+		bool 									_autoindex;
+		std::string 							_autoIndexFilePath;
+		std::string 							_client_max_body_size;
 		std::multimap<std::string, std::string> _errorPage;
-		std::string _host;
-		std::vector<std::string> _index;
-		std::string	_locationName;
-		std::string _listen;
-		std::string _rootDir;
-		std::string _serverName;
-		std::string _serverPort;
-		size_t		_maxConnects;
-		size_t		_timeout; //general _timeout waiting for request/respond sending
-		
-		std::vector<location> _locations;
-		std::vector<std::string> _locNames;
-		std::unordered_map<std::string, std::string> _rulemap;
+		std::string 							_host;
+		std::vector<std::string> 				_index;
+		std::string 							_listen;
+		std::string 							_rootDir;
+		std::string 							_serverName;
+		std::string 							_serverPort;
+		size_t									_maxConnects;
+		size_t									_timeout; 
+		std::vector<location> 					_locations;
 
 		// Constructors and Destructors
 		Config(void);
@@ -45,19 +41,17 @@ class Config
 		Config(const Config &rhs);
 		Config &operator=(const Config &rhs);
 		~Config(void);
-		std::string	toString() const;
 
-	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
-	
-	bool		getAutoindex();
-	std::multimap<std::string, std::string> getErrorPage();
-	std::string	getMaxBodySize();
-	std::string	getHost();
-	std::vector<std::string> getIndex();
-	std::string	getListen();
-	std::string	getRoot();
-	size_t		getTimeout();
-	std::string	getServerName();
+		//getters and setters
+		bool		getAutoindex();
+		std::multimap<std::string, std::string> getErrorPage();
+		std::string	getMaxBodySize();
+		std::string	getHost();
+		std::vector<std::string> getIndex();
+		std::string	getListen();
+		std::string	getRoot();
+		size_t		getTimeout();
+		std::string	getServerName();
 
 	class NoBlockFound : public std::exception
 	{
@@ -72,6 +66,7 @@ class Config
 	
 	private:
 	size_t i = 0;
+		std::unordered_map<std::string, std::string> _rulemap;
 	void		readBlock(std::ifstream &file, std::string &line);
 	location	findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void		parseRule(const std::string &line);
