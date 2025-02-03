@@ -11,7 +11,6 @@
 
 // CGI::CGI(int *fdIn, int *fdOut, int *fdError) : _fdIn(fdIn), _fdOut(fdOut), _fdError(fdError){
 // 	_CGIHandlerStatus = CGIHandlerStatus::NOT_STARTED;
-// 	// _bytesWrittenToChild = 0;
 // 	// _scriptError = "";
 // 	_pollFdIn.fd = _fdIn[1];
 // 	_pollFdIn.events = POLLOUT;
@@ -24,6 +23,7 @@
 
 CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(connection->_clientFD){
 	_CGIHandlerStatus = CGIHandlerStatus::NOT_STARTED;
+	_bytesWrittenToChild = 0;
 
 	if (pipe(_fdIn) == -1) {
 		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdIn");
@@ -46,8 +46,9 @@ CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(co
 		close(_fdIn[1]);
 	}
 	CGIPollFDs.emplace_back(pollfd{_fdOut[0], POLLIN, 0});
-	// CGIPollFDs.emplace_back(pollfd{_fdError[0], POLLIN, 0});
+	CGIPollFDs.emplace_back(pollfd{_fdError[0], POLLIN, 0});
 	setupCGIEnvironment(&connection->_request);
+	//what happens here with a post request???
 	std::cout << MAGENTA "CGI PollFD vector size in constructor: " << CGIPollFDs.size() << RESET << std::endl;
 	return ;
 }
@@ -185,7 +186,9 @@ void	CGI::invokeCGI(Request* request, Response* response){
 void CGI::writeToCGI(Request* request, Response* response) {
 	_CGIHandlerStatus = CGIHandlerStatus::WRITING_TO_CHILD;
 	size_t n = request->getBody().size() - _bytesWrittenToChild;
-	std::cout << CYAN "request body size: " << n << RESET << std::endl;
+	std::cout << CYAN "request body size: " << request->getBody().size() << RESET << std::endl;
+	std::cout << CYAN "bytes written to child: " << _bytesWrittenToChild << RESET << std::endl;
+	std::cout << CYAN "n: " << n << RESET << std::endl;
 	// if (n == 0){
 	// 	close(_fdIn[1]);
 	// 	return ;
@@ -204,6 +207,7 @@ void CGI::writeToCGI(Request* request, Response* response) {
 	if (_bytesWrittenToChild == request->getBody().size()){
 		// End of file
 		close(_fdIn[1]);
+		_CGIHandlerStatus = CGIHandlerStatus::WAITING_FOR_CHILD;
 	}
 	return ;
 }
@@ -245,6 +249,14 @@ void CGI::readErrorFromCGI(Response* response) {
 	if (bytes > 0) {
 		// Append the error data to the script error
 		_scriptError.append(buffer, bytes);
+		if (bytes < BUFFER_SIZE) {
+			// End of file
+			close(_fdError[0]);
+			if (!_scriptError.empty()) {
+				response->autoFillResponse("500 Internal Server Error: script: " + _scriptError);
+			}
+			_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
+		}
 	}
 	else if (bytes == 0) {
 		// End of file
@@ -279,11 +291,7 @@ bool	CGI::childIsRunning(Response* response){
 		_CGIHandlerStatus = CGIHandlerStatus::CHILD_IS_FINISHED;
 		return false;
 	}
-	else if (result == 0) {
-		// Child is still running
-		return true;
-	}
-	return false;
+	return true;
 }
 
 void	CGI::executeScript(Request* request, Response* response){
@@ -321,6 +329,8 @@ void CGI::setupCGIEnvironment(Request* request) {
 	CGI::addToEnvp("SERVER_PROTOCOL", "HTTP/1.1");
 	CGI::addToEnvp("SERVER_NAME", request->_headers["Host"]);
 	_envp.push_back(nullptr);
+	for (char* str : _envp)
+		std::cout << CYAN << str << RESET << std::endl;
 	return ;
 }
 

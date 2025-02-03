@@ -181,13 +181,6 @@ void Server::handleCGIPollEvents() {
 			continue;
 		}
 		Connection &connection = _Connections.at(cgi->getClientFD());
-		if (_CGIPollFDs[i].revents & POLLHUP){
-			_CGIMap.erase(_CGIPollFDs[i].fd);
-			_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
-			size--;
-			i--;
-			continue;
-		}
 		if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT){
 			std::cout << "fdin is pollout" << std::endl;
 			cgi->writeToCGI(&connection._request, &connection._response);
@@ -197,21 +190,48 @@ void Server::handleCGIPollEvents() {
 				std::cout << "fdout is pollin" << std::endl;
 				cgi->readFromCGI(&connection._response);
 			}
-			// else if (_CGIPollFDs[i].fd == cgi->getFdError() && _CGIPollFDs[i].revents & POLLIN){
-			// 	std::cout << "error fd is pollin" << std::endl;
-			// 	cgi->readErrorFromCGI(&connection._response);
-			// }
-				// else if (_CGIPollFDs[i].fd == cgi->getFdError()){
-				// 	std::cout << "removing error fd" << std::endl;
-				// 	_CGIMap.erase(_CGIPollFDs[i].fd);
-				// 	_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
-				// 	size--;
-				// 	i--;
-				// 	continue;
-				// }
+			else if (_CGIPollFDs[i].fd == cgi->getFdError() && _CGIPollFDs[i].revents & POLLIN){
+				std::cout << "error fd is pollin" << std::endl;
+				cgi->readErrorFromCGI(&connection._response);
+			}
+			if (_CGIPollFDs[i].revents & POLLHUP || (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED && !(_CGIPollFDs[i].revents & POLLIN))){
+				if (_CGIPollFDs[i].revents & POLLHUP)
+					close(_CGIPollFDs[i].fd );
+				_CGIMap.erase(_CGIPollFDs[i].fd);
+				_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
+				size--;
+				i--;
+				if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED){
+					connection._CStatus = connectStatus::RESPONDING;
+					connection._response.setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
+				}
+				continue;
+			}
 		}
 	}
 }
+
+// void Server::closeCGIConnects(){
+// 	size_t	size;
+// 	size = _CGIPollFDs.size();
+// 	for (size_t i = 0; i < size; i++){
+// 		CGI *cgi = _CGIMap[_CGIPollFDs[i].fd].get();
+// 		if (cgi == nullptr){
+// 			std::cout << "CGI is nullptr" << std::endl;
+// 			continue;
+// 		}
+// 		Connection &connection = _Connections.at(cgi->getClientFD());
+// 		if (_CGIPollFDs[i].revents & POLLHUP || (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED && !_CGIPollFDs[i].revents & POLLIN)){
+// 			if (_CGIPollFDs[i].revents & POLLHUP)
+// 				close(_CGIPollFDs[i].fd );
+// 			_CGIMap.erase(_CGIPollFDs[i].fd);
+// 			_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
+// 			size--;
+// 			i--;
+// 			continue;
+// 		}
+// 	}
+// }
 
 void Server::acceptNewConnects(size_t size)
 {

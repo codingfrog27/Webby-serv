@@ -79,7 +79,7 @@ void	Response::postMethod(Request* request){
 		if (getBytesWritten() >= request->getBody().size()){
 			getOutFile().close();
 			autoFillResponse("201 Created");
-			setResponseBuffer(generateResponse());
+			// setResponseBuffer(generateResponse());
 			setBytesWritten(0);
 			_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 		}
