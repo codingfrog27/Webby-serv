@@ -166,39 +166,41 @@ void	Server::close_connect(int fd)
 //remove _CGIPollFDs[i] when finished in read or write function
 void Server::handleCGIPollEvents() {
 	size_t	size;
-	while (1)
-	{
-		size = _CGIPollFDs.size();
-		if (poll(_CGIPollFDs.data(), size, 0) == 0)
-			return ;
-		for (size_t i = 0; i < size; i++){
-			// std::cout << MAGENTA "CGI PollFD vector size in handleCGIPollEvents: " << _CGIPollFDs.size() << RESET << std::endl;
-			CGI *cgi = _CGIMap[_CGIPollFDs[i].fd].get();
-			if (cgi == nullptr){
-				std::cout << "CGI is nullptr" << std::endl;
-				continue;
-			}
-			Connection &connection = _Connections.at(cgi->getClientFD());
-			if (_CGIPollFDs[i].revents & POLLHUP){
-				_CGIMap.erase(_CGIPollFDs[i].fd);
-				_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
-				size--;
-				i--;
-				continue;
-			}
-			if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT){
-				std::cout << "fdin is pollout" << std::endl;
-				cgi->writeToCGI(&connection._request, &connection._response);
-			}
-			// else if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED || !cgi->childIsRunning(&connection._response)){ //DOESNT GET HERE
-			else if (_CGIPollFDs[i].fd == cgi->getFdOut() && _CGIPollFDs[i].revents & POLLIN){
+	size = _CGIPollFDs.size();
+	if (poll(_CGIPollFDs.data(), size, 0) == 0)
+		return ;
+	for (size_t i = 0; i < size; i++){
+		// std::cout << MAGENTA "CGI PollFD vector size in handleCGIPollEvents: " << _CGIPollFDs.size() << RESET << std::endl;
+		// std::cout << "This is the fd left: " << _CGIPollFDs[i].fd << std::endl;
+		CGI *cgi = _CGIMap[_CGIPollFDs[i].fd].get();
+		// std::cout << "stdin: " << cgi->getFdIn() << std::endl;
+		// std::cout << "stdout: " << cgi->getFdOut() << std::endl;
+		// std::cout << "stderr: " << cgi->getFdError() << std::endl;
+		if (cgi == nullptr){
+			std::cout << "CGI is nullptr" << std::endl;
+			continue;
+		}
+		Connection &connection = _Connections.at(cgi->getClientFD());
+		if (_CGIPollFDs[i].revents & POLLHUP){
+			_CGIMap.erase(_CGIPollFDs[i].fd);
+			_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
+			size--;
+			i--;
+			continue;
+		}
+		if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT){
+			std::cout << "fdin is pollout" << std::endl;
+			cgi->writeToCGI(&connection._request, &connection._response);
+		}
+		else if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED || !cgi->childIsRunning(&connection._response)){ //DOESNT GET HERE
+			if (_CGIPollFDs[i].fd == cgi->getFdOut() && _CGIPollFDs[i].revents & POLLIN){
 				std::cout << "fdout is pollin" << std::endl;
 				cgi->readFromCGI(&connection._response);
 			}
-			else if (_CGIPollFDs[i].fd == cgi->getFdError() && _CGIPollFDs[i].revents & POLLIN){
-				std::cout << "error fd is pollin" << std::endl;
-				cgi->readErrorFromCGI(&connection._response);
-			}
+			// else if (_CGIPollFDs[i].fd == cgi->getFdError() && _CGIPollFDs[i].revents & POLLIN){
+			// 	std::cout << "error fd is pollin" << std::endl;
+			// 	cgi->readErrorFromCGI(&connection._response);
+			// }
 				// else if (_CGIPollFDs[i].fd == cgi->getFdError()){
 				// 	std::cout << "removing error fd" << std::endl;
 				// 	_CGIMap.erase(_CGIPollFDs[i].fd);
@@ -207,7 +209,6 @@ void Server::handleCGIPollEvents() {
 				// 	i--;
 				// 	continue;
 				// }
-			// }
 		}
 	}
 }

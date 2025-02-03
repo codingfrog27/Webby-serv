@@ -46,7 +46,7 @@ CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(co
 		close(_fdIn[1]);
 	}
 	CGIPollFDs.emplace_back(pollfd{_fdOut[0], POLLIN, 0});
-	CGIPollFDs.emplace_back(pollfd{_fdError[0], POLLIN, 0});
+	// CGIPollFDs.emplace_back(pollfd{_fdError[0], POLLIN, 0});
 	setupCGIEnvironment(&connection->_request);
 	std::cout << MAGENTA "CGI PollFD vector size in constructor: " << CGIPollFDs.size() << RESET << std::endl;
 	return ;
@@ -73,13 +73,13 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		return ;	// }
 	}
 	if (_PID == 0){ //child
-		dup2(_fdIn[0], STDIN_FILENO);
+		if (request->_method_type == POST){
+			dup2(_fdIn[0], STDIN_FILENO);
+		}
 		dup2(_fdOut[1], STDOUT_FILENO);
 		dup2(_fdError[1], STDERR_FILENO);
 		closePipes();
-		int status = 0;
 		CGI::executeScript(request, response);
-		exit(status); //might not be needed
 	}
 	else { //parent
 		close(_fdIn[0]);
@@ -185,6 +185,11 @@ void	CGI::invokeCGI(Request* request, Response* response){
 void CGI::writeToCGI(Request* request, Response* response) {
 	_CGIHandlerStatus = CGIHandlerStatus::WRITING_TO_CHILD;
 	size_t n = request->getBody().size() - _bytesWrittenToChild;
+	std::cout << CYAN "request body size: " << n << RESET << std::endl;
+	// if (n == 0){
+	// 	close(_fdIn[1]);
+	// 	return ;
+	// }
 	if (n > BUFFER_SIZE)
 		n = BUFFER_SIZE;
 	int bytes = write(_fdIn[1], request->getBody().data() + _bytesWrittenToChild, n);
@@ -207,10 +212,16 @@ void CGI::readFromCGI(Response* response) {
 	_CGIHandlerStatus = CGIHandlerStatus::READING_FDOUT;
 	char buffer[BUFFER_SIZE];
 	int bytes = read(_fdOut[0], buffer, BUFFER_SIZE);
+	std::cout << CYAN "bytes read: " << bytes << RESET << std::endl;
 	if (bytes > 0) {
 		// Append the data to the response buffer
 		response->setResponseBuffer(std::string(buffer, bytes));
 		std::cout << MAGENTA "Response buffer: " << response->getResponseBuffer() << RESET << std::endl;
+		if (bytes < BUFFER_SIZE) {
+			// End of file
+			close(_fdOut[0]);
+			_CGIHandlerStatus = CGIHandlerStatus::READING_FDERROR;
+		}
 	}
 	else if (bytes == 0) {
 		// End of file
@@ -256,18 +267,21 @@ void CGI::readErrorFromCGI(Response* response) {
 bool	CGI::childIsRunning(Response* response){
 	int status = 0;
 	pid_t result = waitpid(_PID, &status, WNOHANG);
+	// std::cout << MAGENTA "In childisrunning " << RESET << std::endl;
 	if (result == -1) {
 		response->autoFillResponse("500 Internal Server Error: waitpid");
 		closePipes();
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
-	}
-	else if (result == 0) {
-		// Child is still running
-		return true;
+		return false;
 	}
 	else if (WIFEXITED(status)) {
 		std::cout << MAGENTA "Child exited with status " << WEXITSTATUS(status) << RESET << std::endl;
 		_CGIHandlerStatus = CGIHandlerStatus::CHILD_IS_FINISHED;
+		return false;
+	}
+	else if (result == 0) {
+		// Child is still running
+		return true;
 	}
 	return false;
 }
@@ -276,6 +290,7 @@ void	CGI::executeScript(Request* request, Response* response){
 	// char* argv[] = {strdup(request->_filePath.c_str()), NULL};
 	std::string arg = request->_filePath.substr(request->_filePath.rfind("/") + 1);
 	char* argv[] = {const_cast<char *>(arg.c_str()), NULL};
+	// std::cout << MAGENTA "Executing script: " << request->_filePath << RESET << std::endl;
 	if (execve(request->_filePath.c_str(), argv, _envp.data()) == -1)
 		response->autoFillResponse("500 Internal Server Error: execve : " + std::string(strerror(errno)));
 	return ;
