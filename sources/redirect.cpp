@@ -121,6 +121,17 @@ void	Request::setLocRules(location &ruleblock, location &loc)
 	ruleblock._autoindex = loc._autoindex; //default on extra
 }
 
+void isMethodAllowed(Http_method method, std::vector<Http_method> const &allow_methods)
+{
+	if (allow_methods.empty())
+		return;
+	for (auto i : allow_methods)
+	{
+		if (i == method)
+			return;;
+	}
+	throw (ClientErrorExcept(405, "Method not allowed"));
+}
 
 void  Request::checkRules(location &rules)
 {   
@@ -130,23 +141,13 @@ void  Request::checkRules(location &rules)
 		_statusCode = 301;
 		return;
 	}
-	else if (!rules.getAllowMethods().empty())
-	{
-		std::vector<Http_method> allow_methods = rules.getAllowMethods();
-
-		for (auto i : allow_methods)
-		{
-			if (i == this->_method_type)
-				return;
-		}
-		throw (ClientErrorExcept(405, "Method not allowed"));
-	}
-	else if (!rules.getRoot().empty())
+	isMethodAllowed(_method_type, rules.getAllowMethods());
+	if (!rules.getRoot().empty())
 	{
 		_filePath.find(_config->_rootDir);
 		_filePath.replace(0, _config->_rootDir.size(), rules.getRoot());
 	}
-	else if (!rules.getAlias().empty())
+	else if (!rules.getAlias().empty()) //wrong, check merlin ss
 		this->_filePath = rules.getAlias();
 	else if (!rules.getIndex().empty())
 	{

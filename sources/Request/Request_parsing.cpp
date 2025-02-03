@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/02/01 17:44:42 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/03 20:22:14 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,8 @@ void	Request::resolveFilePath()
 {
 	_filePath = 				_URI;
 	size_t						tokenPos;
-	std::array<std::string, 6>	tokens = {"?", "#", "https://", "http://", _config->_host, _config->_listen};
 
-	std::cout << "FILEPATH B4 RESOLVE" << _URI << std::endl;
+	std::cout << "FILEPATH B4 RESOLVE " << _URI << std::endl;
 
 	tokenPos = _filePath.find("?");
 	if (_filePath.find("?") != std::string::npos)
@@ -58,14 +57,15 @@ void	Request::resolveFilePath()
 	if (tokenPos != std::string::npos)
 		_filePath.erase(tokenPos);
 	
-	for (size_t i = 0; i < tokens.size(); i++)
-	{
-		tokenPos = _filePath.find(tokens[i]);
-		if (tokenPos != std::string::npos)
-			_filePath.erase(0, tokenPos + tokens[i].length());
-	}
+	// std::array<std::string, 6>	tokens = {"?", "#", "https://", "http://", _config->_host, _config->_listen};
+	// for (size_t i = 0; i < tokens.size(); i++)
+	// {
+	// 	tokenPos = _filePath.find(tokens[i]);
+	// 	if (tokenPos != std::string::npos)
+	// 		_filePath.erase(0, tokenPos + tokens[i].length());
+	// }
 	
-	_filePath = "/" + trim(_filePath);
+	_filePath = trim(_filePath);
 	locationHandler();
 	_filePath = trim(_root) + _filePath;
 	std::cout << "FILEPATH AFTER CHECK " << _filePath << std::endl;

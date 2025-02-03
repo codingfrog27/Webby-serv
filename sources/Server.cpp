@@ -71,8 +71,11 @@ void	Server::setupAddrInfo(Config *config)
 
 	status = getaddrinfo(config->_serverName.c_str(), config->_listen.c_str(), &hints, &_addrInfo);
 	// std::cout << config->_serverName.c_str() << config->_serverPort.c_str() << std::endl;
+		// throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
 	if (status != 0)
-		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
+		std::cout << RED "cant connect " <<  config->_serverName <<  gai_strerror(status) << RESET << std::endl;
+	else
+		std::cout << GREEN "Server block " << config->_serverName << "opened!" RESET << std::endl;
 
 }
 

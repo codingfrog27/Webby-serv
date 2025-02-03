@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:27:26 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/02/03 18:18:35 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/03 20:05:59 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,17 +92,16 @@ std::string	normalize_space(std::string& str)
 void printConfigs(std::vector<Config> &configs)
 {
 	for (size_t i = 0; i < configs.size(); i++) {
-		std::cout << CYAN "Server block: " << i + 1 << configs[i] << RESET << std::endl;
-		std::cout << std::endl;
-		std::cout << LINE << std::endl;
+		std::cout << YELLOW LINE "\nServer block: " << i + 1 << configs[i] << RESET << std::endl;
 
 		for (size_t j = 0; j < configs[i]._locations.size(); j++) {
-			std::cout << "Location block:\n" << configs[i]._locations[j];
-			std::cout<< LINE << std::endl;
+			std::cout << MAGENTA LINE_S "Location block:\n" << configs[i]._locations[j];
+			std::cout <<  LINE_S RESET << std::endl;
 			for (size_t k = 0; k < configs[i]._locations[j]._nestedLocations.size(); k++) {
-				std::cout << "NESTED location block: " << configs[i]._locations[j]._nestedLocations[k] << std::endl;
-				std::cout<< LINE << std::endl;
+				std::cout << CYAN LINE_S "NESTED location block: " << configs[i]._locations[j]._nestedLocations[k] << std::endl;
+				std::cout <<  LINE RESET << std::endl;
 			}
 		}
+		std::cout << YELLOW LINE << std::endl;
 	}
 }
