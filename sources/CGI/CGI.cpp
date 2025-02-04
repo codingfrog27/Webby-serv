@@ -187,8 +187,6 @@ void CGI::writeToCGI(Request* request, Response* response) {
 	_CGIHandlerStatus = CGIHandlerStatus::WRITING_TO_CHILD;
 	size_t n = request->getBody().size() - _bytesWrittenToChild;
 	std::cout << CYAN "request body size: " << request->getBody().size() << RESET << std::endl;
-	std::cout << CYAN "bytes written to child: " << _bytesWrittenToChild << RESET << std::endl;
-	std::cout << CYAN "n: " << n << RESET << std::endl;
 	// if (n == 0){
 	// 	close(_fdIn[1]);
 	// 	return ;
@@ -196,6 +194,7 @@ void CGI::writeToCGI(Request* request, Response* response) {
 	if (n > BUFFER_SIZE)
 		n = BUFFER_SIZE;
 	int bytes = write(_fdIn[1], request->getBody().data() + _bytesWrittenToChild, n);
+	std::cout << CYAN "bytes written: " << bytes << RESET << std::endl;
 	if (bytes == -1){
 		// Handle error
 		response->autoFillResponse("500 Internal Server Error: write");
@@ -329,8 +328,12 @@ void CGI::setupCGIEnvironment(Request* request) {
 	CGI::addToEnvp("SERVER_PROTOCOL", "HTTP/1.1");
 	CGI::addToEnvp("SERVER_NAME", request->_headers["Host"]);
 	_envp.push_back(nullptr);
-	for (char* str : _envp)
-		std::cout << CYAN << str << RESET << std::endl;
+	for (char* str : _envp){
+		if (str == nullptr)
+			break;
+		else
+			std::cout << CYAN << str << RESET << std::endl;
+	}
 	return ;
 }
 
