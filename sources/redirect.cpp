@@ -128,7 +128,7 @@ void isMethodAllowed(Http_method method, std::vector<Http_method> const &allow_m
 	for (auto i : allow_methods)
 	{
 		if (i == method)
-			return;;
+			return;
 	}
 	throw (ClientErrorExcept(405, "Method not allowed"));
 }

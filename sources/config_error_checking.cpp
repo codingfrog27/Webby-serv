@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/19 15:09:38 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/04 14:23:07 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,7 +223,7 @@ std::string Config::validateHost()
 	}
 	if (dotCount != 3)
 		throw std::invalid_argument("Error: invalid host directive");
-	return (host_rule);
+	return (host_value);
 }
 
 size_t Config::validateTimeout()

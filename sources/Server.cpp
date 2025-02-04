@@ -36,9 +36,9 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 {
 	try
 	{
-		printConfigs(_serverBlocks);
 		_Connections.reserve(100);
 		int	FD;
+		_serverSockets.reserve(_serverBlocks.size());
 		for (size_t i = 0; i < _serverBlocks.size(); ++i)
  		{
 			setupAddrInfo(&_serverBlocks[i]);
@@ -50,7 +50,8 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 	}
 	catch(const std::exception& e)
 	{
-		std::cout << e.what() << '\n';
+		std::cout << e.what() << "\nserver setup failed, shutting down" << std::endl;
+		exit(1);
 	}
 	std::cout << GREEN << "Server is running :)" << RESET << std::endl;
 }
@@ -69,11 +70,15 @@ void	Server::setupAddrInfo(Config *config)
 	hints.ai_flags = AI_PASSIVE;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	status = getaddrinfo(config->_serverName.c_str(), config->_listen.c_str(), &hints, &_addrInfo);
-	// std::cout << config->_serverName.c_str() << config->_serverPort.c_str() << std::endl;
-		// throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
-	if (status != 0)
+	std::cout << "our addr info args ARE\n\nname = " << config->_serverName << \
+	" listen = " << config->_listen.c_str() << "\n\n" << std::endl;
+
+	status = getaddrinfo(config->_serverName.c_str(), config->_listen.c_str(), &hints, &_addrInfo); //can throw??
+	if (status != 0) {
 		std::cout << RED "cant connect " <<  config->_serverName <<  gai_strerror(status) << RESET << std::endl;
+		std::cout << config->_serverName.c_str() << config->_serverPort.c_str() << std::endl;
+		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
+	}
 	else
 		std::cout << GREEN "Server block " << config->_serverName << "opened!" RESET << std::endl;
 
@@ -92,10 +97,7 @@ Server::~Server(void)
 
 	// signal(SIGPIPE, SIG_IGN);
 
-	//refactor -> close connect loop 1 function, and for loops
-		//if poll timeout-> get current time
-		// std::cout << "This is start size: "<< size << std::endl;
-		// PrintConnectionStatusses(size);
+
 void	Server::main_server_loop()
 {
 	size_t	size;
@@ -142,8 +144,6 @@ void	Server::main_server_loop()
 void	Server::close_connect(int fd)
 {
 	std::vector<pollfd>::iterator it = _pollFDs.begin();
-	if (_pollFDs.size() != _Connections.size())
-		std::cout << RED "VECTOR SIZE MISMAtCH BRO" RESET << std::endl;
 	while (it != _pollFDs.end())
 	{
 		if (it->fd == fd)
@@ -177,7 +177,15 @@ void Server::acceptNewConnects(size_t size)
 			clientFD = accept(_pollFDs[i].fd, nullptr, nullptr);
 			if (clientFD <= 0)
 			{
-				std::cout << "NOT ACCEPTED" << clientFD << std::endl;
+				std::cout << RED "Couldn't accept connection on socket FD " << _pollFDs[i].fd \
+				<< " error == " << strerror(errno) << std::endl;
+				// if (fcntl(_pollFDs[i].fd, F_GETFD) == -1) {
+				// 	perror("fcntl failed - FD is invalid");
+				// }
+				// else {
+				// 	std::cout << "Client FD is valid: " << _pollFDs[i].fd << std::endl;
+				// }
+
 				NicePrint::promptEnter();
 				break;
 			}

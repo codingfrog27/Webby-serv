@@ -39,14 +39,24 @@ Socket::~Socket()
 void	Socket::openSocket()
 {
 	_socketFd = socket(_addrInfo->ai_family, _addrInfo->ai_socktype, _addrInfo->ai_protocol);
+	std::cout << YELLOW "FD ==" << _socketFd << RESET << std::endl;
 	if (fcntl(_socketFd, F_SETFL, O_NONBLOCK) < 0)
 		throw std::runtime_error("Failed to set Socket to noblocking");
-	if (setsockopt(_socketFd, SOL_SOCKET, SO_KEEPALIVE, &_setYes, sizeof(_setYes)) == -1 || \
-		 setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR ,&_setYes, sizeof(_setYes)) == -1)
+	if (setsockopt(_socketFd, SOL_SOCKET, SO_KEEPALIVE, &_setYes, sizeof(_setYes)) < 0 || \
+		 setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR ,&_setYes, sizeof(_setYes)) < 0)
 		throw std::runtime_error(std::string("setsockopt error: ") + strerror(errno));
-	if (bind(_socketFd, _addrInfo->ai_addr, _addrInfo->ai_addrlen) == -1)
+	if (bind(_socketFd, _addrInfo->ai_addr, _addrInfo->ai_addrlen) < 0)
 		throw std::runtime_error(std::string("Bind errorr: ") + strerror(errno));
-	listen(_socketFd, 20); //SET TO CONFIG VALUE
+	if (listen(_socketFd, 20) < 0) //SET TO CONFIG VALUE
+		throw std::runtime_error(std::string("Listen Error: ") + strerror(errno));
+	int listening = 0;
+	socklen_t len = sizeof(listening);
+	getsockopt(_socketFd, SOL_SOCKET, SO_ACCEPTCONN, &listening, &len);
+	if (!listening) {
+		std::cerr << "ERROR: FD is not a listening socket!" << std::endl;
+	}
+	std::cout << CYAN "socket opened" << std::endl;
+	freeaddrinfo(const_cast<struct addrinfo *>(_addrInfo));
 }
 
 void *Socket::get_in_addr(struct sockaddr *sa)
