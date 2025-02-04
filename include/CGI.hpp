@@ -18,7 +18,6 @@ enum class CGIHandlerStatus{
 	WAITING_FOR_CHILD,
 	READING_FDOUT,
 	READING_FDERROR,
-	CHILD_IS_FINISHED,
 	FINISHED
 };
 
@@ -41,6 +40,7 @@ class CGI{
 
 		void				setCGIHandlerStatus(CGIHandlerStatus status);
 		CGIHandlerStatus	getCGIHandlerStatus() const;
+		bool				getChildIsRunningStatus(void);
 		int					getFdIn(void);
 		int					getFdOut(void);
 		int					getFdError(void);
@@ -59,6 +59,7 @@ class CGI{
 		int					_PID;
 		size_t				_bytesWrittenToChild;
 		std::string			_scriptError;
+		bool				_childIsRunningStatus;
 
 		void				invokeCGI(Request* request, Response* response);
 		void				executeScript(Request* request, Response* response);

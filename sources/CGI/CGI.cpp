@@ -223,13 +223,13 @@ void CGI::readFromCGI(Response* response) {
 		if (bytes < BUFFER_SIZE) {
 			// End of file
 			close(_fdOut[0]);
-			_CGIHandlerStatus = CGIHandlerStatus::READING_FDERROR;
+			_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 		}
 	}
 	else if (bytes == 0) {
 		// End of file
 		close(_fdOut[0]);
-		_CGIHandlerStatus = CGIHandlerStatus::READING_FDERROR;
+		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 		response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 	}
 	else {
@@ -287,7 +287,7 @@ bool	CGI::childIsRunning(Response* response){
 	}
 	else if (WIFEXITED(status)) {
 		std::cout << MAGENTA "Child exited with status " << WEXITSTATUS(status) << RESET << std::endl;
-		_CGIHandlerStatus = CGIHandlerStatus::CHILD_IS_FINISHED;
+		_childIsRunningStatus = false;
 		return false;
 	}
 	return true;
@@ -352,6 +352,10 @@ void	CGI::setCGIHandlerStatus(CGIHandlerStatus status){
 
 CGIHandlerStatus	CGI::getCGIHandlerStatus() const{
 	return _CGIHandlerStatus;
+}
+
+bool	CGI::getChildIsRunningStatus(void){
+	return _childIsRunningStatus;
 }
 
 int	CGI::getFdIn(void){

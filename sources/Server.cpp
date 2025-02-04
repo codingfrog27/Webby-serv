@@ -185,7 +185,7 @@ void Server::handleCGIPollEvents() {
 			std::cout << "fdin is pollout" << std::endl;
 			cgi->writeToCGI(&connection._request, &connection._response);
 		}
-		else if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED || !cgi->childIsRunning(&connection._response)){ //DOESNT GET HERE
+		else if (cgi->getChildIsRunningStatus() == false || !cgi->childIsRunning(&connection._response)){ //DOESNT GET HERE
 			if (_CGIPollFDs[i].fd == cgi->getFdOut() && _CGIPollFDs[i].revents & POLLIN){
 				std::cout << "fdout is pollin" << std::endl;
 				cgi->readFromCGI(&connection._response);
@@ -194,14 +194,14 @@ void Server::handleCGIPollEvents() {
 				std::cout << "error fd is pollin" << std::endl;
 				cgi->readErrorFromCGI(&connection._response);
 			}
-			if (_CGIPollFDs[i].revents & POLLHUP || (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED && !(_CGIPollFDs[i].revents & POLLIN))){
+			if (_CGIPollFDs[i].revents & POLLHUP || (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED && !(_CGIPollFDs[i].revents & POLLIN))){
 				if (_CGIPollFDs[i].revents & POLLHUP)
 					close(_CGIPollFDs[i].fd );
 				_CGIMap.erase(_CGIPollFDs[i].fd);
 				_CGIPollFDs.erase(_CGIPollFDs.begin() + i);
 				size--;
 				i--;
-				if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::CHILD_IS_FINISHED){
+				if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED){
 					connection._CStatus = connectStatus::RESPONDING;
 					connection._response.setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 				}
