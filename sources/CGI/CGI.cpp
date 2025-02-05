@@ -220,18 +220,19 @@ void CGI::readFromCGI(Response* response) {
 	if (bytes > 0) {
 		// Append the data to the response buffer
 		response->setResponseBuffer(std::string(buffer, bytes));
-		std::cout << MAGENTA "Response buffer: " << response->getResponseBuffer() << RESET << std::endl;
+		// std::cout << MAGENTA "Response buffer: " << response->getResponseBuffer() << RESET << std::endl;
 		if (bytes < BUFFER_SIZE) {
 			// End of file
 			close(_fdOut[0]);
 			_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
+			// response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 		}
 	}
 	else if (bytes == 0) {
 		// End of file
 		close(_fdOut[0]);
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
-		response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
+		// response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 	}
 	else {
 		// Handle error
@@ -301,6 +302,7 @@ void	CGI::executeScript(Request* request, Response* response){
 	// std::cout << MAGENTA "Executing script: " << request->_filePath << RESET << std::endl;
 	if (execve(request->_filePath.c_str(), argv, _envp.data()) == -1){
 		response->autoFillResponse("500 Internal Server Error: execve : " + std::string(strerror(errno)));
+		std::cout << response->getResponseBuffer() << std::endl;
 		exit(1);
 	}
 	return ;

@@ -204,6 +204,7 @@ void Server::handleCGIPollEvents() {
 				if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED){
 					connection._CStatus = connectStatus::RESPONDING;
 					connection._response.setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
+					std::cout << MAGENTA "Response buffer: " << connection._response.getResponseBuffer() << RESET << std::endl;
 				}
 				continue;
 			}

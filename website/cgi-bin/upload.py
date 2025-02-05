@@ -12,7 +12,7 @@ if not os.path.exists(UPLOAD_DIR):
 
 # Print necessary HTTP headers
 print("HTTP/1.1 200 OK")
-print("Content-Type: text/html\n")
+print("Content-Type: text/html")
 print("Connection: keep-alive\r\n")
 
 # Parse form data
