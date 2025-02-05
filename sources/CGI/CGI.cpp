@@ -81,6 +81,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		dup2(_fdError[1], STDERR_FILENO);
 		closePipes();
 		CGI::executeScript(request, response);
+		std::cout << LILAC "after execute script" RESET << std::endl;
 	}
 	else { //parent
 		close(_fdIn[0]);
@@ -298,8 +299,10 @@ void	CGI::executeScript(Request* request, Response* response){
 	std::string arg = request->_filePath.substr(request->_filePath.rfind("/") + 1);
 	char* argv[] = {const_cast<char *>(arg.c_str()), NULL};
 	// std::cout << MAGENTA "Executing script: " << request->_filePath << RESET << std::endl;
-	if (execve(request->_filePath.c_str(), argv, _envp.data()) == -1)
+	if (execve(request->_filePath.c_str(), argv, _envp.data()) == -1){
 		response->autoFillResponse("500 Internal Server Error: execve : " + std::string(strerror(errno)));
+		exit(1);
+	}
 	return ;
 }
 
