@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/02/03 18:27:29 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/05 18:28:43 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@ Config::Config(void) //default constructor
 	_listen = "8080"; //idk if this works 
 	_serverName = "localhost"; //"funny-server";
 	_host = "127.0.0.1";
-	_maxConnects = 500;
 	_timeout = 50000;
 	_rootDir = "website/";
-	_autoIndexFilePath = _rootDir + "index.html"; //do i need slash?
+	_autoIndexFilePath = _rootDir + "index.html";
+	_autoindex = true;
 	
 
 	std::cout << GREEN << "Config: Default constructor called" << RESET << std::endl;
@@ -52,7 +52,6 @@ Config::operator=(const Config &rhs)
 		_index = rhs._index;
 		_listen = rhs._listen;
 		_serverName = rhs._serverName;
-		_maxConnects = rhs._maxConnects;
 		_timeout = rhs._timeout;
 		_rootDir = rhs._rootDir;
 		_autoindex = rhs._autoindex;

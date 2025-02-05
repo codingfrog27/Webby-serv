@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/02/03 18:29:47 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/02/05 18:47:04 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,12 @@ class Config
 		std::string 							_client_max_body_size;
 		std::multimap<std::string, std::string> _errorPage;
 		std::string 							_host;
-		std::vector<std::string> 				_index;
 		std::string 							_listen;
 		std::string 							_rootDir;
 		std::string 							_serverName;
 		std::string 							_serverPort;
-		size_t									_maxConnects;
 		size_t									_timeout; 
+		std::vector<std::string> 				_index;
 		std::vector<location> 					_locations;
 
 		// Constructors and Destructors
@@ -82,7 +81,7 @@ class Config
 	void		setServer(const int rule);
 
 	int			initializeServer();
-	int			mapToMembers();
+	void			mapToMembers();
 	bool		validateAutoindex();
 	std::multimap<std::string, std::string> validateErrorPage();
 	std::string validateHost();
