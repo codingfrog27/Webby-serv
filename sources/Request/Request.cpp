@@ -6,11 +6,12 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/01/29 16:54:55 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/02/24 15:22:24 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
+#include <fcntl.h>
 
 Request::Request(Config *config, int clientFD): _config(config), \
 	reading_mode(NOT_STARTED), body_bytes_read(0), _rnrnFound(false), \
@@ -18,6 +19,7 @@ Request::Request(Config *config, int clientFD): _config(config), \
 	 _clientFD(clientFD), _method_type(NOT_PARSED_YET), _keepOpen(true),\
 	  _doneReading(false), _statusStr("0 Not started yet")
 {
+	fcntl(_clientFD, F_SETFL, O_NONBLOCK);
 	_rawRequestData.reserve(100);
 	_timeoutTime = setTimeout(30); //normal secs
 	_startTime = getStartTime();
