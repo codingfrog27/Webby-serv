@@ -14,7 +14,7 @@
 
 #include <iostream>
 
-#define MAX_CLIENT 300
+// #define MAX_CLIENT 300
 void writeClientFD(int clientFD, int i);
 
 void writeClientFD(int clientFD, int i)
@@ -195,6 +195,8 @@ void Server::handleCGIPollEvents() {
 				cgi->readErrorFromCGI(&connection._response);
 			}
 			if (_CGIPollFDs[i].revents & POLLHUP || (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED && !(_CGIPollFDs[i].revents & POLLIN))){
+				std::cout << YELLOW << "CGIHandlerStatus: " << (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED ? "FINISHED" : "NOT FINISHED") << RESET << std::endl;
+				std::cout << YELLOW << "revents: " << (_CGIPollFDs[i].revents & POLLHUP ? "POLLHUP" : "NOT POLLHUP") << RESET << std::endl;
 				if (_CGIPollFDs[i].revents & POLLHUP)
 					close(_CGIPollFDs[i].fd );
 				_CGIMap.erase(_CGIPollFDs[i].fd);
@@ -204,7 +206,6 @@ void Server::handleCGIPollEvents() {
 				if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED){
 					connection._CStatus = connectStatus::RESPONDING;
 					connection._response.setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
-					std::cout << MAGENTA "Response buffer: " << connection._response.getResponseBuffer() << RESET << std::endl;
 				}
 				continue;
 			}
