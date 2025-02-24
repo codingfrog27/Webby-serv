@@ -22,6 +22,8 @@ connectStatus	Request::readRequest()
 		if (_statusStr.empty() || _statusStr == "0 Not started yet")
 			_statusStr = "102 Processing";
 		readSocket(0);
+		std::string temp = std::string(_rawRequestData.begin(), _rawRequestData.end());
+		std::cout << MAGENTA "Raw request data" << temp << RESET << std::endl;
 		if (!_rnrnFound && headerEndFound())
 			parse_headers(_unsortedHeaders);
 		if (_hasBody && bodyIsRead()) {
