@@ -23,7 +23,7 @@ connectStatus	Request::readRequest()
 			_statusStr = "102 Processing";
 		readSocket(0);
 		std::string temp = std::string(_rawRequestData.begin(), _rawRequestData.end());
-		std::cout << MAGENTA "Raw request data" << temp << RESET << std::endl;
+		// std::cout << MAGENTA "Raw request data" << temp << RESET << std::endl;
 		if (!_rnrnFound && headerEndFound())
 			parse_headers(_unsortedHeaders);
 		if (_hasBody && bodyIsRead()) {
@@ -119,7 +119,7 @@ bool	Request::bodyIsRead()
 		_doneReading = true;
 		reading_mode = FINISHED;
 		_reqBody = std::string(_rawRequestData.begin(), (_rawRequestData.begin() + _contentLen + 2));
-		std::cout << YELLOW "Request body: " << _reqBody << RESET << std::endl;
+		// std::cout << YELLOW "Request body: " << _reqBody << RESET << std::endl;
 		_rawRequestData.erase(_rawRequestData.begin(), _rawRequestData.begin() + _contentLen + 2);
 		return (true);
 	}
