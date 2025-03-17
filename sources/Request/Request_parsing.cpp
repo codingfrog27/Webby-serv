@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/03/17 16:49:02 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/03/17 18:08:12 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,11 +160,12 @@ bool	Request::dechunkBody()
 	{
 		rnPos += 2;
 		chunkSize = convertChunkSize(&bodyStr[rnPos], hexStrSize);
-		if (chunkSize > bodySize - hexStrSize) //means
+		if (chunkSize > bodySize - hexStrSize) //means we havent read the whole chunk yet
 			break;
 		bytesParsed += rnPos + hexStrSize + chunkSize;
 		if (chunkSize == 0){
 			_doneReading = true;
+			reading_mode = FINISHED;
 			break;
 		}
 		_reqBody += bodyStr.substr(rnPos + hexStrSize, chunkSize);

@@ -74,7 +74,7 @@ int	Request::convertChunkSize(const std::string &hexStr, size_t &hexStrSize)
 	char		*hexEnd;
 	chunkSize = std::strtol(hexStr.data(), &hexEnd ,16);
 	std::cout << "here :" << chunkSize << *hexEnd << std::endl;
-	if (*hexEnd != '\r' && chunkSize != 0)
+	if (*hexEnd != '\r' && chunkSize != 0) //hallo??
 			throw ClientErrorExcept(400, "bad hex number in chunk");
 	if (chunkSize + body_bytes_read > _max_body_size)
 		throw ClientErrorExcept(413, "payload too large");
