@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/03/17 15:56:38 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/03/17 16:49:02 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ size_t	Request::parse_req_line(std::string req_line)
 		throw (std::invalid_argument("no space found after uri"));
 
 	_method_type = which_method_type(req_line.substr(0, method_end));
-	_URI = req_line.substr(method_end + 2, uri_end - method_end - 1);
+	_URI = req_line.substr(method_end + 1, uri_end - method_end - 1);
 	resolveFilePath();
 	_http_version = http_version(&req_line[uri_end + 1]);
 	return (line_end + 2);

@@ -37,7 +37,19 @@
 // 	File.close();
 // }
 
-
+std::ofstream file("/home/mde-cloe/PROJECTS/Webby-serv/sources/Request/testing");
+// void create_testing_file(const std::string& content)
+// {
+// 	if (file.is_open())
+// 	{
+// 		file << content;
+// 		file.close();
+// 	}
+// 	else
+// 	{
+// 		std::cerr << "Unable to open file for writing" << std::endl;
+// 	}
+// }
 
 void	Request::RouteRuleHandler()
 {
@@ -56,7 +68,6 @@ void	Request::RouteRuleHandler()
 		locPtr = findLocationMatch(*locVec, matchCount);
 		if (locPtr == nullptr)
 			break;
-		else
 		setLocRules(reqRules, *locPtr);
 	}
 	checkRules(reqRules);
@@ -70,7 +81,7 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 	for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
 	{
 		newSize = countPathMatch(_filePath, it->getName());
-		if (newSize > matchCount) //?
+		if (newSize > matchCount)
 		{
 			matchCount = newSize;
 			matchFound = true;
@@ -86,14 +97,18 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 
 size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath)
 {
-	size_t	size = 0;
-	// while (locpath.at(size) == reqpath.at(size))
+	size_t	size = 0, matchCount = 0;
 	for (;size < reqpath.size() && size < locpath.size()\
-	 && reqpath[size] == locpath[size]; size++)
-	if (size == locpath.size() && size == reqpath.size())
+	 && reqpath[size] == locpath[size]; size++) {
+		if (reqpath[size] == '/')
+			matchCount++;
+	 }
+	if (size == locpath.size() && size == reqpath.size()){
+			file << "returning npos for path " << reqpath << std::endl;
 		return (std::string::npos);
-		
-	return (size);
+	}
+	file << "returning " << size << "for path " << reqpath << std::endl;	
+	return (matchCount);
 }
 
 void assignStrIfNonEmpty(std::string &dest, std::string &rhs)
