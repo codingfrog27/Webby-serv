@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import cgi
 
-print("Content-Type: text/html\n\n")
+print("HTTP/1.1 200 OK")
+print("Content-Type: text/html")
+print("Connection: keep-alive\r\n")
 
 form = cgi.FieldStorage()
 name = form.getvalue("name")

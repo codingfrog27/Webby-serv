@@ -22,6 +22,8 @@ connectStatus	Request::readRequest()
 		if (_statusStr.empty() || _statusStr == "0 Not started yet")
 			_statusStr = "102 Processing";
 		readSocket(0);
+		std::string temp = std::string(_rawRequestData.begin(), _rawRequestData.end());
+		// std::cout << MAGENTA "Raw request data" << temp << RESET << std::endl;
 		if (!_rnrnFound && headerEndFound())
 			parse_headers(_unsortedHeaders);
 		if (_hasBody && bodyIsRead()) {
@@ -30,34 +32,39 @@ connectStatus	Request::readRequest()
 		}
 		if (isTimedOut(this->_startTime, this->_timeoutTime))
 			throw ClientErrorExcept(408, "Request Timeout");
-		if (_doneReading)
-			return (connectStatus::DONE_READING);
-		return (connectStatus::READING);	
+		if (_doneReading){
+			if (isCGIrequired())
+				return (connectStatus::CGI_REQUIRED);
+			return (connectStatus::RESPONDING);
+			// return (connectStatus::DONE_READING);
+		}
+		return (connectStatus::READING);
 	}
 	catch(ClientErrorExcept &e)
 	{
-		std::cerr << e.what() << std::endl; //response
+		std::cout << e.what() << std::endl; //response
 		_statusStr = e._errorMsg;
 		_statusCode = e._statusCode;
-		return (connectStatus::REQ_ERR);
+		return (connectStatus::RESPONDING);
+		// return (connectStatus::REQ_ERR);
 	}
 	catch (ConnectionClosedExcep &e)
 	{
-		std::cerr << "Client closed connection" << std::endl;
-		NicePrint::promptEnter();
+		std::cout << "Client closed connection" << std::endl;
+		// NicePrint::promptEnter();
 		return (connectStatus::CONNECT_CLOSED);
 	}
 	//should maybe just make clienterr excepts?
 	catch(const std::ios_base::failure &e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cout << e.what() << std::endl;
 		_statusCode = 500;
 		_statusStr = std::to_string(_statusCode) + ' ' + e.what();
 		return (connectStatus::CONNECT_CLOSED);
 	}
 	catch(std::invalid_argument &e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cout << e.what() << std::endl;
 		_statusCode = 400;
 		_statusStr = std::to_string(_statusCode) + e.what();
 		return (connectStatus::REQ_ERR);
@@ -108,12 +115,29 @@ bool	Request::bodyIsRead()
 	if (_dataIsChunked && dechunkBody() == true)
 		return(true);
 	else if (body_bytes_read >= _contentLen)
-	{	
+	{
 		_doneReading = true;
 		reading_mode = FINISHED;
 		_reqBody = std::string(_rawRequestData.begin(), (_rawRequestData.begin() + _contentLen + 2));
+		// std::cout << YELLOW "Request body: " << _reqBody << RESET << std::endl;
 		_rawRequestData.erase(_rawRequestData.begin(), _rawRequestData.begin() + _contentLen + 2);
 		return (true);
 	}
 	return (_doneReading);
+}
+bool	Request::isCGIrequired(){
+	// if (this == nullptr) {
+	// 	std::cout << "AAHHH" << std::endl;
+	// 	NicePrint::promptEnter();
+	// 	return false;
+	// }
+	if (this->_filePath.rfind(".py") == this->_filePath.length() - 3)
+		return true;
+	if (this->_headers["Content-Type"].find("multi-part/form-data") != std::string::npos)
+		return true;
+	if (this->_headers["Content-Type"].find("application/x-www-form-urlencoded") != std::string::npos)
+		return true;
+	// if (this->_headers["Content-Type"].find("application/json") != std::string::npos)
+	// 	return true;
+	return false;
 }

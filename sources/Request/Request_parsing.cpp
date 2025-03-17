@@ -1,16 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Request_parsing.cpp                                :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 13:24:43 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Request_parsing.cpp                                :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/02/03 18:06:50 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
+#define YELLOW "\033[33m"
+#define RESET "\033[0m"
 
 size_t	Request::parse_req_line(std::string req_line)
 {
@@ -36,7 +38,7 @@ size_t	Request::parse_req_line(std::string req_line)
 	_method_type = which_method_type(req_line.substr(0, method_end));
 	_URI = req_line.substr(method_end + 2, uri_end - method_end - 1); //temp + 2??
 	resolveFilePath();
-	checkForRedirect(_filePath);
+	// checkLocations(_filePath);
 	_http_version = http_version(&req_line[uri_end + 1]);
 	return (line_end + 2);
 }
@@ -57,7 +59,9 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_listen.length() + 1);
 	if (resolved.front() == '/')
 		resolved.erase(0, 1);
-	_filePath = trim(_config->_rootDir) + trim(resolved);
+	_filePath = trim(resolved);
+	locationHandler();
+	_filePath = trim(_root) + _filePath;
 }
 
 void	Request::parse_headers(std::string header_str)
@@ -82,6 +86,7 @@ void	Request::parse_headers(std::string header_str)
 
 void	Request::checkHeaders()
 {
+	
 	if (!headerExists("Host"))
 		throw(std::invalid_argument("400 bad request: Host missing"));
 	if (getHeaderValue("Connection") == "close")
@@ -94,26 +99,6 @@ void	Request::checkHeaders()
 	else
 		checkBodyHeaders();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -142,12 +127,12 @@ void	Request::checkBodyHeaders()
 	}
 	catch(const std::invalid_argument& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cout << e.what() << '\n';
 		throw (ClientErrorExcept(413, "413 Payload too large"));
 	}
 	catch(const std::out_of_range& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cout << e.what() << '\n';
 		throw (ClientErrorExcept(413, "413 Payload too large"));
 	}
 	if (_contentLen == 0)
@@ -186,6 +171,9 @@ bool	Request::dechunkBody()
 void	Request::parseBody()
 {
 	std::string		content_type = getHeaderValue("Content-Type");
+	std::cout << "path " << _filePath << std::endl;
+	std::cout << "content type: " << content_type << std::endl;
+	std::cout << "body: " << _reqBody << std::endl;
 	if(content_type.compare("multipart/form-data; boundary=") == 0)
 		parseFormData(content_type);
 	else if (content_type.compare("application/x-www-form-urlencoded") == 0)
@@ -199,6 +187,10 @@ std::string	urlDecode(const std::string &encoded);
 
 void	Request::parseUrlEncoded()
 {
+	if (_reqBody.size() < 2) {
+		std::cout << "url decode without body???" << std::endl;
+		return;
+	}
 	std::istringstream stream(_reqBody.substr(2));
 	std::string pair;
 

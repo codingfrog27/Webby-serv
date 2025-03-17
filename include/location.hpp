@@ -24,18 +24,18 @@ class location
 
 
 	public:
-		std::string				 _alias;
+		std::string				 	_alias;
 		std::vector<std::string>	_allow_methods;
 		bool						_autoindex;
 		std::vector<std::string>	_cgi_extension;
 		std::vector<std::string>	_cgi_path; 
 		std::vector<std::string>	_index;
-		std::string				 _return;
-		std::string				 _root;
+		std::string					 _return;
+		std::string					 _root;
+		std::string 				_name;
 
 		std::vector<location>   _nestedLocations;
 		std::unordered_map<std::string, std::string> _rulemap;
-		std::string _name;
 
 		location(void);
 		location(std::ifstream &file, std::string &line);
@@ -46,7 +46,7 @@ class location
 		void	printLocationValue(const location& loc) const;
 		void parseRule(const std::string &line);
 
-		std::string getName() const;
+		std::string &getName();
 
 		std::string	getAlias();
 		std::vector<std::string>	getAllowMethods();
@@ -64,6 +64,8 @@ class location
 		void	setIndex(const std::vector<std::string> &index);
 		void	setReturn(const std::string &t_return);
 		void	setRoot(const std::string &root);
+		void	setName(const std::string &name);
+
 		void	initializeLocation();
 
 		std::string toString() const;

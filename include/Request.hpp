@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include <sys/socket.h>
+#include "location.hpp"
 
 
 #include "libft.h"
@@ -33,7 +34,7 @@
 #define RED "\033[31m"
 #define RESET "\033[0m"
 #define BUFFER_SIZE 1024
-#define PLACEHOLDER_MAX_SIZE 10240
+#define PLACEHOLDER_MAX_SIZE 1000000
 
 
 //unsigned char vector iterator
@@ -73,8 +74,9 @@ class Request
 		bool					_hasBody;
 		size_t					_contentLen; //need to put in init list
 		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
-		t_msecs					_timeoutTime;
+		t_secs					_timeoutTime;
 		t_time					_startTime;
+		std::string				_root;
 
 
 
@@ -84,6 +86,7 @@ class Request
 		bool					headerEndFound();
 		size_t					parse_req_line(std::string req_line);
 		bool					bodyIsRead();
+		bool					isCGIrequired();
 		bool					dechunkBody();
 		std::string				http_version(const std::string &version);
 		void					checkHeaders();
@@ -93,6 +96,10 @@ class Request
 		void					parseUrlEncoded();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 		void					resolveFilePath();
+		void					locationHandler();
+		location				*findLocationMatch(std::vector<location> &locs, size_t &matchCount);
+		void					setLocRules(location &loc, location &ruleblock);
+		size_t					countPathMatch(std::string &reqpath, std::string &locpath);
 
 
 	public:
@@ -122,14 +129,13 @@ class Request
 
 		//get and setters
 		const std::string &getBody();
-		//public methods	
-		void			checkForRedirect(std::string _filePath);
+		//public methods
 		connectStatus	readRequest();
 		std::string		getHeaderValue(std::string key);
 		bool			headerExists(std::string key);
 		std::string		getStatusCode();
 		void			printHeaders();
-		
+
 		Config*			getConfig();
 };
 

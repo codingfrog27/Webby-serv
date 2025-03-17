@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 12:08:23 by mde-cloe         ###   ########.fr       */
+/*   Updated: 2025/01/14 13:39:57 by mde-cloe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	parseConfig(int argc, char ** argv, std::vector<Config> &configs)
 	}
 	catch(const Config::NoBlockFound &e) //general config error
 	{
-		std::cerr << e.what() << "\n running with default config values" << std::endl;
+		std::cout << e.what() << "\n running with default config values" << std::endl;
 		configs.emplace_back();
 	}
 }
@@ -135,18 +135,18 @@ int Config::mapToMembers()
 			}
 			catch(const std::exception& e)
 			{
-				std::cerr << e.what() << '\n';
+				std::cout << e.what() << '\n';
 			}
 		}
 		else
 		{
-			std::cerr << "Keys do not match the expected serverBlock configuration" << std::endl;
+			std::cout << "Keys do not match the expected serverBlock configuration" << std::endl;
 			return (0);
 		}
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << "Unexpected error in mapToMembers: " << e.what() << std::endl;
+		std::cout << "Unexpected error in mapToMembers: " << e.what() << std::endl;
 		return (-8);
 	}
 

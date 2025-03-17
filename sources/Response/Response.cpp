@@ -86,11 +86,14 @@ std::string	Response::generateResponse() const{
 
 connectStatus Response::writeResponse(int FD){
 	size_t n =_responseBuffer.size() - _bytesWritten;
+	std::cout << YELLOW "\nresponse buffer size: " << _responseBuffer.size() << "\n bytes written: " << _bytesWritten << "\n n: " << n << RESET << std::endl;
 	if (n > BUFFER_SIZE)
 		n = BUFFER_SIZE;
-	size_t bytes = write(FD, _responseBuffer.c_str() + _bytesWritten, n); 
-	std::ofstream outFile("Response written.txt", std::ios::app);
-	outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
+	std::cout << "writing " << n << " bytes" << std::endl;
+	size_t bytes = send(FD, _responseBuffer.c_str() + _bytesWritten, n, 0); 
+	write(STDOUT_FILENO, _responseBuffer.c_str() + _bytesWritten, n);
+	// std::ofstream outFile("Response written.txt", std::ios::app);
+	// outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
 	_bytesWritten += bytes;
 	if (_bytesWritten >= _responseBuffer.size()){
 		setResponseHandlerStatus(responseHandlerStatus::FINISHED);
@@ -99,7 +102,7 @@ connectStatus Response::writeResponse(int FD){
 	if (bytes < 0){
 		if (_timesWriteFailed == 2){
 			setResponseHandlerStatus(responseHandlerStatus::FINISHED);
-			return connectStatus::CONNECT_CLOSED;
+			return connectStatus::FINISHED;
 		}
 		autoFillResponse("500 Internal Server Error: write");//is this ok?
 		_timesWriteFailed++;
@@ -121,10 +124,10 @@ void	Response::setResponseHandlerStatus(responseHandlerStatus status){
 	return ;
 }
 
-void	Response::setCGI(CGI* cgi){
-	_cgi = cgi;
-	return ;
-}
+// void	Response::setCGI(CGI* cgi){
+// 	_cgi = cgi;
+// 	return ;
+// }
 
 // void	Response::setOutFile(std::ofstream&& outFile){
 // 	if (_outFile.is_open())
@@ -191,6 +194,7 @@ void	Response::setBody(std::vector<char> body){
 
 void	Response::setResponseBuffer(std::string buffer){
 	_responseBuffer += buffer;
+	// std::cout << "Response buffer: " << _responseBuffer << std::endl;
 	return ;
 }
 
@@ -208,9 +212,9 @@ responseHandlerStatus	Response::getResponseHandlerStatus() const{
 	return _responseHandlerStatus;
 }
 
-CGI*	Response::getCGI() const{
-	return _cgi;
-}
+// CGI*	Response::getCGI() const{
+// 	return _cgi;
+// }
 
 std::ofstream&	Response::getOutFile(){
 	// if (!_outFile.is_open())
