@@ -95,7 +95,7 @@ class Request
 		void					parseUrlEncoded();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 		void					resolveFilePath();
-		void					locationHandler();
+		void					RouteRuleHandler();
 		location				*findLocationMatch(std::vector<location> &locs, size_t &matchCount);
 		void					setLocRules(location &ruleblock, location &loc);
 		size_t					countPathMatch(std::string &reqpath, std::string &locpath);

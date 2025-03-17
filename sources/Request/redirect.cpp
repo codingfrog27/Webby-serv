@@ -39,7 +39,7 @@
 
 
 
-void	Request::locationHandler()
+void	Request::RouteRuleHandler()
 {
 	location	*locPtr;
 	location	reqRules;

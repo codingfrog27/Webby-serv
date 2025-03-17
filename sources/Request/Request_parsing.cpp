@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Request_parsing.cpp                                :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/12 19:31:50 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/02/04 17:53:37 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Request_parsing.cpp                                :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/03/17 15:56:38 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	Request::resolveFilePath()
 	// }
 	
 	_filePath = trim(_filePath);
-	locationHandler();
+	RouteRuleHandler();
 	_filePath = trim(_root) + _filePath;
 	std::cout << "FILEPATH AFTER CHECK " << _filePath << std::endl;
 }
