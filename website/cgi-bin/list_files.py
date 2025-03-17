@@ -10,19 +10,21 @@ if not os.path.exists(UPLOAD_DIR):
 	os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 files = os.listdir(UPLOAD_DIR) if os.path.exists(UPLOAD_DIR) else []
-files_html = ""
+files_list = ""
+files_delete = ""
 
 if files:
 	for file in files:
 		safe_filename = file.replace('"', '&quot;')
 		file_url = f"/uploads/{safe_filename}"
-		files_html += f'<li><a href="{file_url}" target="_blank">{safe_filename}</a></li>\n'
+		files_list += f'<li><a href="{file_url}" target="_blank">{safe_filename}</a></li>\n'
+		files_delete += f'<option value="{file}">{safe_filename}</option>\n'
 else:
-	files_html = "<li>No files uploaded yet.</li>"
+	files_list = "<li>No files uploaded yet.</li>"
+	files_delete = '<option disabled>No files available</option>'
 
 # Start HTML output
-body = f"""
-<!DOCTYPE html>
+body = f"""<!DOCTYPE html>
 <head>
 	<title>Uploaded Files - Team Mustache</title>
 	<link rel="stylesheet" type="text/css" href="/css/styles.css">
@@ -33,11 +35,11 @@ body = f"""
 		<h1>hey there ;)</h1>
 		<nav>
 			<ul>
-				<li><a href="index.html">Home</a></li>
-				<li><a href="about.html">About</a></li>
-				<li><a href="cgi-bin/list_files.py">Uploads</a></li>
-				<li><a href="services.html">Services</a></li>
-				<li><a href="contact.html">Contact</a></li>
+				<li><a href="/index.html">Home</a></li>
+				<li><a href="/about.html">About</a></li>
+				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+				<li><a href="/services.html">Services</a></li>
+				<li><a href="/contact.html">Contact</a></li>
 			</ul>
 		</nav>
 	</header>
@@ -54,8 +56,18 @@ body = f"""
 		<section>
 			<h2>Uploaded Files</h2>
 			<ul>
-				{files_html}
+				{files_list}
 			</ul>
+		</section>
+
+		<section>
+			<h2>Delete a file</h2>
+			<form action="/cgi-bin/delete.py" method="post">
+				<select id="file" name="file" size="1">
+					{files_delete}
+				</select>
+				<input type="submit" value="Delete">
+			</form>
 		</section>
 
 	</main>
@@ -64,14 +76,13 @@ body = f"""
 		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
 	</footer>
 </body>
-</html>
-"""
+</html>"""
 
 # HTTP headers
 headers = f"""HTTP/1.1 200\r
 Content-Length: {len(body)}\r
 Content-Type: text/html; charset=utf-8\r
-Connection: keep-alive\r\n\r"""
+Connection: keep-alive\r\n\r\n"""
 
 # Print the headers and HTML body
 print(headers)
