@@ -86,6 +86,7 @@ std::string	Response::generateResponse() const{
 
 connectStatus Response::writeResponse(int FD){
 	size_t n =_responseBuffer.size() - _bytesWritten;
+	std::cout << YELLOW "\nresponse buffer size: " << _responseBuffer.size() << "\n bytes written: " << _bytesWritten << "\n n: " << n << RESET << std::endl;
 	if (n > BUFFER_SIZE)
 		n = BUFFER_SIZE;
 	std::cout << "writing " << n << " bytes" << std::endl;

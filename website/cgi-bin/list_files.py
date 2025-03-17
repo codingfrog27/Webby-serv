@@ -21,7 +21,8 @@ else:
 	files_html = "<li>No files uploaded yet.</li>"
 
 # Start HTML output
-body = f"""<!DOCTYPE html>
+body = f"""
+<!DOCTYPE html>
 <head>
 	<title>Uploaded Files - Team Mustache</title>
 	<link rel="stylesheet" type="text/css" href="/css/styles.css">
@@ -63,7 +64,8 @@ body = f"""<!DOCTYPE html>
 		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
 	</footer>
 </body>
-</html>"""
+</html>
+"""
 
 # HTTP headers
 headers = f"""HTTP/1.1 200\r

@@ -53,7 +53,8 @@ else:
 # Get the HTTP status code and message
 
 # HTML template function
-body = f"""<!DOCTYPE html>
+body = f"""
+<!DOCTYPE html>
 <head>
 	<title>Upload Success - Team Mustache</title>
 	<link rel="stylesheet" type="text/css" href="/css/styles.css">
@@ -88,7 +89,8 @@ body = f"""<!DOCTYPE html>
 		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
 	</footer>
 </body>
-</html>"""
+</html>
+"""
 
 # HTTP headers
 headers = f"""HTTP/1.1 {status}\r
