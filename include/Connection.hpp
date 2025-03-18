@@ -29,6 +29,7 @@ enum class connectStatus
 	CONNECT_CLOSED,
 	DONE_READING,
 	CGI_REQUIRED,
+	CGI,
 	RESPONDING,
 	SERVER_ERR,
 	FINISHED
@@ -40,17 +41,18 @@ class Connection
 		
 
 	public:
-		connectStatus	_CStatus;
-		Config			*_config;
-		Request			_request;
-		Response		_response;
-		bool			_isClientSocket;
-		bool			_wantsNewConnect;
-		int				_clientFD;
-		bool			_keepOpen;
-		t_time			_startTime;
-		t_secs			_IdleTimeout;
-		// bool		_doneReading;
+		connectStatus					_CStatus;
+		Config							*_config;
+		Request							_request;
+		Response						_response;
+		std::shared_ptr<CGI>			_cgi;
+		bool							_isClientSocket;
+		bool							_wantsNewConnect;
+		int								_clientFD;
+		bool							_keepOpen;
+		t_time							_startTime;
+		t_secs							_IdleTimeout;
+		// bool							_doneReading;
 		
 		// Constructors and Destructors
 		Connection(Config *config, int clientFD, bool isServerside);

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/03/17 18:08:12 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/03/18 17:09:29 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,6 +179,9 @@ bool	Request::dechunkBody()
 void	Request::parseBody()
 {
 	std::string		content_type = getHeaderValue("Content-Type");
+	std::cout << "path " << _filePath << std::endl;
+	std::cout << "content type: " << content_type << std::endl;
+	std::cout << "body: " << _reqBody << std::endl;
 	if(content_type.compare("multipart/form-data; boundary=") == 0)
 		parseFormData(content_type);
 	else if (content_type.compare("application/x-www-form-urlencoded") == 0)

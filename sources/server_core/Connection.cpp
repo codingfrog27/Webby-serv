@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "Connection.hpp"
+#include "CGI.hpp"
+#include "Server.hpp"
 
 
 // ************************************************************************** //
@@ -18,7 +20,7 @@
 // ************************************************************************** //
 
 Connection::Connection(Config *config, int clientFD, bool isServerside): \
-_config(config), _request(config, clientFD), _isClientSocket(isServerside), \
+_config(config), _request(config, clientFD), _cgi(0), _isClientSocket(isServerside), \
 _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 {
 	_startTime = getStartTime();
@@ -86,11 +88,12 @@ void	Connection::connAction(const pollfd &poll, Server &server)
 	if (poll.revents & POLLIN && (_CStatus == connectStatus::IDLE || \
 									_CStatus == connectStatus::READING))
 		_CStatus = _request.readRequest();
-
-	if (_CStatus == connectStatus::CGI_REQUIRED)
-		(void)server;
+	if(_CStatus == connectStatus::CGI_REQUIRED){
+		_CStatus = _cgi->CGIHandler(this, server.getCGIPollFDs(), server.getCGIMap());
+		std::cout << MAGENTA "CGI PollFD vector size in connectionAction: " << server.getCGIPollFDs().size() << RESET << std::endl;
+	}
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
-		_CStatus = responseHandler(&_request, &_response);
+		_CStatus = _response.responseHandler(&_request);
 
 	if (_CStatus == connectStatus::FINISHED)
 		_CStatus = refreshIfKeepAlive();
@@ -99,7 +102,7 @@ void	Connection::connAction(const pollfd &poll, Server &server)
 //print to info log and or error log file
 	// if (poll.revents & POLLHUP) {
 	// 	std::cout << "Client disconnected (POLLHUP)" << std::endl;
-	// } 
+	// }
 connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 {
 	int error = 0;
@@ -111,10 +114,10 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 		if (error != 0)
 			std::cout << RED "Socket error: " << strerror(error) << RESET << std::endl;
 			// NicePrint::promptEnter();
-		return (connectStatus::CONNECT_CLOSED); 
+		return (connectStatus::CONNECT_CLOSED);
 	}
-	else if (isTimedOut(_startTime, _IdleTimeout) || poll.revents & POLLHUP)
-		return (connectStatus::CONNECT_CLOSED); 
+	// else if (isTimedOut(_startTime, _IdleTimeout) || poll.revents & POLLHUP)
+	// 	return (connectStatus::CONNECT_CLOSED);
 	return (_CStatus);
 }
 

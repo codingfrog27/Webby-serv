@@ -18,22 +18,26 @@
 #include "everything.hpp"
 #include "Colors.hpp"
 
+class CGI;
 
 class Server
 {
 	private:
-		std::vector<Socket> 	_serverSockets;
-		std::vector<Config> 	&_serverBlocks;
-		std::vector<pollfd>		_pollFDs;
+		std::vector<Socket> 							_serverSockets;
+		std::vector<Config> 							&_serverBlocks;
+		std::vector<pollfd>								_pollFDs;
+		std::vector<pollfd>								_CGIPollFDs;
 		// std::vector<Connection> _Connections;
-		std::unordered_map<int, Connection> _Connections;
-		std::unordered_map<int, std::shared_ptr<CGI>> _CGIs;
-		struct	addrinfo		*_addrInfo;
+		std::unordered_map<int, Connection> 			_Connections;
+		std::unordered_map<int, std::shared_ptr<CGI>>	_CGIMap;
+		struct	addrinfo								*_addrInfo;
 		// const int	_max_clients;
 
 		void		setupAddrInfo(Config *config);
+		void		handleCGIPollEvents();
 		void		acceptNewConnects(size_t size);
 		void		close_connect(int i);
+		void		closeCGIConnects();
 	public:
 					Server(std::vector<Config>& vec);
 					Server(Server &rhs) = delete;
@@ -42,4 +46,7 @@ class Server
 		void		main_server_loop();
 		void		connAction(Connection &connect, pollfd &poll);
 		void		PrintConnectionStatusses(size_t size);
+
+		std::vector<pollfd>								&getCGIPollFDs(void);
+		std::unordered_map<int, std::shared_ptr<CGI>>	&getCGIMap(void);
 };

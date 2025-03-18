@@ -24,5 +24,6 @@
 #include "socket.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
+#include "CGI.hpp"
 #include "Config.hpp"
 #include "Connection.hpp"

@@ -1,64 +1,39 @@
 #include "CGI.hpp"
 #include "Response.hpp"
 #include "Request.hpp"
+#include "Connection.hpp"
 
 //next up: testing
 // write script
 // put reading and writing in a loop
 
-void	CGIHandler(Request* request, Response* response){
-	int	fdIn[2];
-	int	fdOut[2];
-	int fdError[2];
-	// std::cout << "in CGI???" << std::endl;
-	// NicePrint::promptEnter();
-	if (response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS){
-		// should we even invoke CGI?
-		if (request->_method_type != Http_method::GET && request->_method_type != Http_method::POST){
+connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd> &CGIPollFDs, std::unordered_map<int, std::shared_ptr<CGI>> &CGIMap){
+	Response* response = &connection->_response;
+	Request* request = &connection->_request;
+
+	if (connection->_cgi == 0 && connection->_CStatus == connectStatus::CGI_REQUIRED){
+		if (request->_method_type != GET && request->_method_type != POST){
 			response->autoFillResponse("405 Method Not Allowed");
 			response->setHeaders("Allow", "GET, POST");
-			return ;
+			return connectStatus::RESPONDING;
 		}
 		if (request->_filePath.find("cgi-bin/", 0) == std::string::npos){
 			response->autoFillResponse("403 Forbidden");
-			return ;
+			return connectStatus::RESPONDING;
 		}
 		if (!fileExists(request->_filePath)){
 			response->autoFillResponse("404 Not Found: CGI");
-			return ;
+			return connectStatus::RESPONDING;
 		}
 		// if yes
-		if (pipe(fdIn) == -1) {
-			response->autoFillResponse("500 Internal Server Error: pipe fdIn");
-			return ;
-		}
-		if (pipe(fdOut) == -1) {
-			close(fdIn[0]);
-			close(fdIn[1]);
-			response->autoFillResponse("500 Internal Server Error: pipe fdOut");
-			return ;
-		}
-		if (pipe(fdError) == -1) {
-			close(fdIn[0]);
-			close(fdIn[1]);
-			close(fdOut[0]);
-			close(fdOut[1]);
-			response->autoFillResponse("500 Internal Server Error: pipe fdError");
-			return ;
-		}
-		CGI* newCGI = new CGI(fdIn, fdOut, fdError);
-		newCGI->setupCGIEnvironment(request);
-		response->setCGI(newCGI);
-	}
-	CGI* CGI = response->getCGI();
-	CGI->invokeCGI(request, response);
-	if (CGI->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED && response->getResponseHandlerStatus() == responseHandlerStatus::READY_TO_WRITE)
-		delete CGI;
-	return ;
-}
+		std::shared_ptr<CGI> newCGI = std::make_shared<CGI>(connection, CGIPollFDs);
+		connection->_cgi = newCGI;
+		CGIMap[newCGI->getFdIn()] = newCGI;
+		CGIMap[newCGI->getFdOut()] = newCGI;
+		CGIMap[newCGI->getFdError()] = newCGI;
+		newCGI->invokeCGI(request, response);
 
-//move piping to if statement so it's only run once
-//in invokeCGI check if child is running
-// if no, fork
-//if yes, check if child is done
-// if child is done read & write from pipe
+		std::cout << MAGENTA "CGI PollFD vector size in CGIHandler: " << CGIPollFDs.size() << RESET << std::endl;
+	}
+	return connectStatus::CGI;
+}

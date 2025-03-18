@@ -14,7 +14,7 @@
 
 NAME			:= libft.a
 CC				?= gcc
-WARN_FLAGS		?= -Wall -Wextra -Werror
+WARN_FLAGS		?= -Wall -Wextra -Werror -g -fsanitize=address
 INCLUDE_FLAGS 	?= -I include
 
 #----cfiles-----
