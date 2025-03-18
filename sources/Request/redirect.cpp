@@ -28,28 +28,8 @@
 	return html.str();
 }
 
-// void	create_directory_listing_page(std::string html_page)
-// {
-// 	std::fstream	File;
-
-// 	File.open("directory_listing.html", std::ios::out);
-// 	File << html_page;
-// 	File.close();
-// }
-
 std::ofstream file("/home/mde-cloe/PROJECTS/Webby-serv/sources/Request/testing");
-// void create_testing_file(const std::string& content)
-// {
-// 	if (file.is_open())
-// 	{
-// 		file << content;
-// 		file.close();
-// 	}
-// 	else
-// 	{
-// 		std::cerr << "Unable to open file for writing" << std::endl;
-// 	}
-// }
+
 
 void	Request::RouteRuleHandler()
 {
@@ -154,6 +134,7 @@ void  Request::checkRules(location &rules)
 	{
 		this->_filePath = rules.getReturn();
 		_statusCode = 301;
+		_statusStr = "301 Moved Permanently";
 		return;
 	}
 	isMethodAllowed(_method_type, rules.getAllowMethods());
