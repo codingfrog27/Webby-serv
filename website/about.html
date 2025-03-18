@@ -1,111 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="About page of our website.">
-    <title>About Us</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
+<html>
+<head> <!-- head is for meta info (running theme ig xd) -->
+	<meta charset="UTF-8">
+	<title>My Website</title>
+	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+	<style>
+		.container {
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		}
 
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-        }
+		.container .left, .container .right {
+			flex: 1;
+			margin: 10px;
+		}
 
-        header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-        }
+		.left img {
+			max-width: 100%;
+			border-radius: 8px;
+		}
 
-        section {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            color: #007bff;
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-
-        p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .container {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .container .left, .container .right {
-            flex: 1;
-            margin: 10px;
-        }
-
-        .left img {
-            max-width: 100%;
-            border-radius: 8px;
-        }
-
-        .right {
-            max-width: 600px;
-        }
-
-        footer {
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
-
-        footer p {
-            margin: 0;
-            font-size: 0.9rem;
-        }
-    </style>
+		.right {
+			max-width: 600px;
+		}
+	</style>
 </head>
-<body>
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<body> <!-- all the actual page content -->
+	<header> <!-- usually used as introduction of page with links or a logo -->
+		<h1>hey there ;)</h1> <!-- h1 == bigger text -->
+		<nav> <!-- nav == navigation links -->
+			<ul> <!-- unorder list -->
+				<li><a href="/index.html">Home</a></li>
+				<li><a href="/about.html">About</a></li>
+				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+				<li><a href="/contact.html">Contact</a></li>
+			</ul>
+		</nav>
+	</header>
 
-<header>
-    <h1>About Us</h1>
-</header>
+	<main> <!-- main page content -->
+		<section>
+			<h2>Welcome to our About page!</h2>
+			<div class="container">
+				<div class="left">
+					<img src="/images/merlin.jpg" alt="Imaginary profile pic ;p">
+				</div>
+				<div class="right">
+					<p> Loading...  </p>
+				</div>
+			</div>
+			<div class="container">
+				<div class="left">
+					<img src="/images/michelle.jpg" alt="Imaginary profile pic ;p">
+				</div>
+				<div class="right">
+					<p>My name is Michelle and i'm part of the 2022 cohort. I like cats, board games, computer games, crafting & traveling/camping </p>
+					<p>Handling the CGI, responses and scripts were part of my responsibilities for our webserver ✨ </p>
+				</div>
+			</div>
+			<div class="container">
+				<div class="left">
+					<img src="/images/antonio.jpg" alt="Imaginary profile pic ;p">
+				</div>
+				<div class="right">
+					<p> Loading... </p>
+				</div>
+			</div>
+		</section>
+	</main>
 
-<section>
-    <h2>Welcome to our About page!</h2>
-    <div class="container">
-        <div class="left">
-            <img src="https://via.placeholder.com/600x400" alt="Example image">
-        </div>
-        <div class="right">
-            <p>We are a team of passionate professionals dedicated to providing innovative, high-quality solutions for our clients. Our mission is to improve people's lives through technology by creating products and services that are useful and easy to use.</p>
-            <p>Founded in 2024, our company has grown rapidly, thanks to the passion, commitment, and dedication of every member of our team. We work together to solve complex problems and achieve ambitious goals, with the aim of making a positive impact in our industry and community.</p>
-            <p>We have big plans for the future and are excited to share our journey with you. Thank you for your interest!</p>
-        </div>
-    </div>
-</section>
-
-<footer>
-    <p>&copy; 2025 Our Company | All rights reserved</p>
-</footer>
-
+	<footer>
+		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+	</footer>
 </body>
 </html>
