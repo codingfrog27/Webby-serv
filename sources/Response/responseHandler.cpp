@@ -126,18 +126,18 @@ connectStatus	Response::responseHandler(Request* request){
 	// 	return connectStatus::RESPONDING;
 	// }
 	else{
-		if ((request->_method_type == Http_method::GET && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_GET){
-			getMethod(request, response);
+		if ((request->_method_type == Http_method::GET && this->_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || this->_responseHandlerStatus == responseHandlerStatus::IN_GET){
+			getMethod(request);
 			return connectStatus::RESPONDING;
 		}
-		else if ((request->_method_type == Http_method::POST && response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || response->getResponseHandlerStatus() == responseHandlerStatus::IN_POST){
-			postMethod(request, response);
+		else if ((request->_method_type == Http_method::POST && this->_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || this->_responseHandlerStatus == responseHandlerStatus::IN_POST){
+			postMethod(request);
 			return connectStatus::RESPONDING;
 		}
 		else if ((request->_method_type == Http_method::DELETE && \
-		 response->getResponseHandlerStatus() == responseHandlerStatus::IN_PROGRESS) || \
-		  response->getResponseHandlerStatus() == responseHandlerStatus::IN_DELETE) {
-			deleteMethod(request, response);
+		 this->_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || \
+		  this->_responseHandlerStatus == responseHandlerStatus::IN_DELETE) {
+			deleteMethod(request);
 			return connectStatus::RESPONDING;
 		 }
 	}

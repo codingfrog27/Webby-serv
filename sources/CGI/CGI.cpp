@@ -39,7 +39,7 @@ CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(co
 		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdError");
 		return ;
 	}
-	if (connection->_request._method_type == POST){
+	if (connection->_request._method_type == Http_method::POST){
 		CGIPollFDs.emplace_back(pollfd{_fdIn[1], POLLOUT, 0});
 	}
 	else {
@@ -74,7 +74,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		return ;	// }
 	}
 	if (_PID == 0){ //child
-		if (request->_method_type == POST){
+		if (request->_method_type == Http_method::POST){
 			dup2(_fdIn[0], STDIN_FILENO);
 		}
 		dup2(_fdOut[1], STDOUT_FILENO);

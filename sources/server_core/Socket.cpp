@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "socket.hpp"
-#include "colors.hpp"
+#include "Colors.hpp"
 
 Socket::Socket(Config *config, const struct addrinfo *addressInfo)
  : _addrInfo(addressInfo),_setYes(1), _hostname(config->_serverName), \
