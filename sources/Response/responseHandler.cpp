@@ -115,6 +115,8 @@ connectStatus	Response::responseHandler(Request* request){
 			setHeaders("Connection", "keep-alive");
 	}
 	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()){ //if there was an error in (parsing) the request{}
+		if (request->getStatusCode().compare(0, 1, "3") == 0)
+			setHeaders("Location", request->_filePath);
 		autoFillResponse(request->getStatusCode());
 		return connectStatus::RESPONDING;
 	}
