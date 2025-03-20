@@ -65,5 +65,6 @@ class Connection
 		// void	resetResponse();
 		connectStatus	refreshIfKeepAlive();
 		void			connectionAction(const pollfd &poll, Server &server);
+		void			removeCGIFromEverywhere(Server& server);
 		connectStatus	checkConnectStatus(const pollfd &poll);
 } ;

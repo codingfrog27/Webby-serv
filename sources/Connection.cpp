@@ -122,6 +122,20 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 }
 
 
+void Connection::removeCGIFromEverywhere(Server& server) {
+	auto& pollFDs = server.getCGIPollFDs();
+	auto it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
+		return fd.fd == _cgi->getFdIn(); // Match the fd value
+	});
+
+	if (it != pollFDs.end()) {
+		pollFDs.erase(it); // Erase the found element
+	}
+	server.getCGIMap().erase(_cgi->getFdIn());
+	server.getCGIMap().erase(_cgi->getFdOut());
+	server.getCGIMap().erase(_cgi->getFdError());
+	_cgi.reset();
+}
 connectStatus Connection::refreshIfKeepAlive()
 {
 	// std::cout << "First response FINISHED" << std::endl;
