@@ -12,12 +12,7 @@ message = form.getvalue("message").strip()
 
 if not name or not email or not subject or not message:
 	status = 400
-	body = f"""
-	<!DOCTYPE html>
-	<title>Error</title>
-	<p>Missing required fields! ❌</p>
-	<p><a href="/contact.html">Back to Contact Form</a></p>
-	"""
+	message = "Missing required fields! 😢"
 
 else:
 	SMTP_SERVER = "smtp.mail.me.com"
@@ -47,27 +42,56 @@ else:
 		server.quit()
 
 		status = 200
-		body = f"""
-		<!DOCTYPE html>
-		<title>Message Sent</title>
-		<p>Message sent successfully! 📬</p>
-		<p><a href="/contact.html">Back to Contact Form</a></p>
-		"""
+		message = "Message sent successfully! 🎉"
+
 	except Exception as e:
 		status = 500
-		body = f"""
-		<!DOCTYPE html>
-		<title>Error</title>
-		<p>Message not sent. Error: {e}</p>
-		<p><a href="/contact.html">Back to Contact Form</a></p>
-		"""
+		message = f"An error occurred: {e}"
+
+body = f"""<!DOCTYPE html>
+<head>
+	<title>Contact Success - Team Mustache</title>
+	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+</head>
+<body>
+	<header>
+		<h1>hey there ;)</h1>
+		<nav>
+			<ul>
+				<li><a href="/index.html">Home</a></li>
+				<li><a href="/about.html">About</a></li>
+				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+				<li><a href="/contact.html">Contact</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main>
+		<section>
+			<h2>Upload Status</h2>
+			<p style='color:green;'>{message}</p>
+			<p><a href="/contact.html">Back to Contact Form</a></p>
+		</section>
+
+		<section>
+			<img src="/images/dancing_froggy.gif" alt="gif no loady :(" width="480" height="480">
+		</section>
+	</main>
+
+	<footer>
+		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+	</footer>
+</body>
+</html>"""
 
 # HTTP headers
 headers = f"""HTTP/1.1 {status}\r
-Content-Length: {len(body)}\r
+Content-Length: {len(body.encode('utf-8'))}\r
 Content-Type: text/html; charset=utf-8\r
-Connection: keep-alive\r\n\r"""
+Connection: keep-alive\r\n"""
 
 # Print the headers and HTML body
 print(headers)
+print()
 print(body)
