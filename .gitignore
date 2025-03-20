@@ -36,3 +36,4 @@ webserv
 clientFD_log.txt
 chunked_request.txt
 response_written.txt
+Response written.txt
