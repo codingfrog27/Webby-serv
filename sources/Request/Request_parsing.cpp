@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/03/17 17:47:36 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/03/20 16:49:49 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,7 @@ void	Request::parseBody()
 	std::string		content_type = getHeaderValue("Content-Type");
 	std::cout << "path " << _filePath << std::endl;
 	std::cout << "content type: " << content_type << std::endl;
+	std::cout << "content length: " << _contentLen << std::endl;
 	std::cout << "body: " << _reqBody << std::endl;
 	std::cout << "raw data: " << std::string(_rawRequestData.begin(), _rawRequestData.end()) << std::endl;
 	if(content_type.compare("multipart/form-data; boundary=") == 0)

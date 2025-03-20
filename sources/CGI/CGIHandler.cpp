@@ -11,6 +11,8 @@ connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd> &CGIPo
 	Response* response = &connection->_response;
 	Request* request = &connection->_request;
 
+	if (connection->_cgi != 0)
+		std::cout << RED "connection has cgi object" RESET << std::endl;
 	if (connection->_cgi == 0 && connection->_CStatus == connectStatus::CGI_REQUIRED){
 		if (request->_method_type != GET && request->_method_type != POST){
 			response->autoFillResponse("405 Method Not Allowed");
