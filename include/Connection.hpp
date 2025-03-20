@@ -65,6 +65,7 @@ class Connection
 		// void	resetResponse();
 		connectStatus	refreshIfKeepAlive();
 		void			connectionAction(const pollfd &poll, Server &server);
+		void			findFDtoRemove(int eraseMe, std::vector<pollfd> &pollFDs);
 		void			removeCGIFromEverywhere(Server& server);
 		connectStatus	checkConnectStatus(const pollfd &poll);
 } ;
