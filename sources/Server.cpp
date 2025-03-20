@@ -206,6 +206,7 @@ void Server::handleCGIPollEvents() {
 				if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED){
 					connection._CStatus = connectStatus::RESPONDING;
 					connection._response.setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
+					connection.removeCGIFromEverywhere(*this);
 				}
 				continue;
 			}
