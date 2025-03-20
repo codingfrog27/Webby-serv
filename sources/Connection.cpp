@@ -127,18 +127,21 @@ void Connection::removeCGIFromEverywhere(Server& server) {
 		return fd.fd == _cgi->getFdIn(); // Match the fd value
 	});
 	if (it != pollFDs.end()) {
+		close(_cgi->getFdIn());
 		pollFDs.erase(it); // Erase the found element
 	}
 	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdOut(); // Match the fd value
 	});
 	if (it != pollFDs.end()) {
+		close(_cgi->getFdOut());
 		pollFDs.erase(it); // Erase the found element
 	}
 	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdError(); // Match the fd value
 	});
 	if (it != pollFDs.end()) {
+		close(_cgi->getFdError());
 		pollFDs.erase(it); // Erase the found element
 	}
 	server.getCGIMap().erase(_cgi->getFdIn());
