@@ -42,7 +42,7 @@ body = f"""
 		<nav>
 			<ul>
 				<li><a href="/index.html">Home</a></li>
-				<li><a href="/about.html">About</a></li>
+				<li><a href="/about.html">About Us</a></li>
 				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
 				<li><a href="/contact.html">Contact</a></li>
 			</ul>
@@ -70,10 +70,12 @@ body = f"""
 
 # HTTP headers
 headers = f"""HTTP/1.1 {status}\r
-Content-Length: {len(body)}\r
+Connection: keep-alive\r
 Content-Type: text/html; charset=utf-8\r
-Connection: keep-alive\r\n\r"""
+Content-Length: {len(body.encode('utf-8'))}\r
+"""
 
 # Print the headers and HTML body
 print(headers)
+print()
 print(body)
