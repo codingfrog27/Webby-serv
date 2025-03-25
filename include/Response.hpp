@@ -29,8 +29,9 @@ enum class connectStatus;
 
 class Response{
 	public:
-		Response();
-		Response(const Response &obj) = delete;
+		Response() = delete;
+		Response(Config *config);
+		Response(const Response &obj);
 		~Response();
 
 		Response &										operator=(const Response& obj);
