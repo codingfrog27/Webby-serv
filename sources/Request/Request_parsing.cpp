@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/03/17 16:49:02 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/03/25 14:10:11 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	Request::resolveFilePath()
 	_filePath = 				_URI;
 	size_t						tokenPos;
 
-	std::cout << "FILEPATH B4 RESOLVE " << _URI << std::endl;
+	// std::cout << "FILEPATH B4 RESOLVE " << _URI << std::endl;
 
 	tokenPos = _filePath.find("?");
 	if (_filePath.find("?") != std::string::npos)

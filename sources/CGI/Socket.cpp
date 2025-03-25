@@ -39,7 +39,7 @@ Socket::~Socket()
 void	Socket::openSocket()
 {
 	_socketFd = socket(_addrInfo->ai_family, _addrInfo->ai_socktype, _addrInfo->ai_protocol);
-	std::cout << YELLOW "FD ==" << _socketFd << RESET << std::endl;
+	// std::cout << YELLOW "FD ==" << _socketFd << RESET << std::endl;
 	if (fcntl(_socketFd, F_SETFL, O_NONBLOCK) < 0)
 		throw std::runtime_error("Failed to set Socket to noblocking");
 	if (setsockopt(_socketFd, SOL_SOCKET, SO_KEEPALIVE, &_setYes, sizeof(_setYes)) < 0 || \
@@ -55,7 +55,7 @@ void	Socket::openSocket()
 	if (!listening) {
 		std::cerr << "ERROR: FD is not a listening socket!" << std::endl;
 	}
-	std::cout << CYAN "socket opened" << std::endl;
+	// std::cout << CYAN "socket opened" << std::endl;
 	freeaddrinfo(const_cast<struct addrinfo *>(_addrInfo));
 }
 

@@ -26,14 +26,16 @@ _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 	// _IdleTimeout = setTimeout(config->_timeout);
 	if (_isClientSocket)
 		_CStatus = connectStatus::IDLE;
-	else
+	else {
 		_CStatus = connectStatus::SERV_SOCKET;
+		std::cout << "server sock connection constructed" << std::endl;
+	}
 }
 
 
 Connection::Connection(const Connection &rhs) : _request(rhs._request)
 {
-	// std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
+	std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
 
 	*this = rhs;
 }
@@ -121,12 +123,10 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 
 connectStatus Connection::refreshIfKeepAlive()
 {
-	// std::cout << "First response FINISHED" << std::endl;
-	// if (!this->_keepOpen)
-			// _keepOpen = true; //move to request
 	if (_request.getHeaderValue("Connection") != "keep-alive")
 		return (connectStatus::FINISHED);
-	std::cout << "connection stays open" << std::endl;
+	std::cout << "connection stays open resetting req and response\n"\
+	 "path was " << _request._filePath  << "FD == " << this->_clientFD << std::endl;
 	_request = Request(this->_config, this->_clientFD);
 	_response = Response();
 	return (connectStatus::IDLE);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Request.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/17 19:39:08 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/02/01 16:05:10 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Request.cpp                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/17 19:39:08 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/03/25 13:02:05 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ Request::Request(Config *config, int clientFD): _config(config), \
 	_rawRequestData.reserve(100);
 	_timeoutTime = setTimeout(30); //normal secs
 	_startTime = getStartTime();
+	std::cout << "request has been constructed" << std::endl;
 }
 
 Request::Request(const Request &rhs)
@@ -32,7 +33,6 @@ Request::Request(const Request &rhs)
 Request &
 Request::operator=(const Request &rhs)
 {
-	// std::cout << GREEN << "Request: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
@@ -67,6 +67,7 @@ Request::operator=(const Request &rhs)
 		// _CGIRequired = rhs._CGIRequired;
 		_dirListing = rhs._dirListing;
 	}
+	// std::cout << "copy complte URI == " << _URI << std::endl;
 
 	return (*this);
 }

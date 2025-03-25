@@ -15,12 +15,16 @@ Response::operator=(const Response &rhs)
 
 	if (this != &rhs)
 	{
+		_httpVersion = rhs._httpVersion;
 		_responseHandlerStatus = rhs._responseHandlerStatus;
 		_responseBuffer = rhs._responseBuffer;
 		_bytesWritten = rhs._bytesWritten;
 		_status = rhs._status;
 		_headers = rhs._headers;
 		_body = rhs._body;
+		_cgi = rhs._cgi;
+		// _outFile = rhs._outFile;
+		// _inFile = rhs._inFile;
 	}
 
 	return (*this);

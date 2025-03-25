@@ -36,6 +36,7 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 {
 	try
 	{
+		std::cout << "hoi" << std::endl;
 		_Connections.reserve(100);
 		int	FD;
 		_serverSockets.reserve(_serverBlocks.size());
@@ -70,8 +71,8 @@ void	Server::setupAddrInfo(Config *config)
 	hints.ai_flags = AI_PASSIVE;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	std::cout << "our addr info args ARE\n\nname = " << config->_serverName << \
-	" listen = " << config->_listen.c_str() << "\n\n" << std::endl;
+	// std::cout << "our addr info args ARE\n\nname = " << config->_serverName << \
+	// " listen = " << config->_listen.c_str() << "\n\n" << std::endl;
 
 	status = getaddrinfo(config->_serverName.c_str(), config->_listen.c_str(), &hints, &_addrInfo); //can throw??
 	if (status != 0) {
@@ -79,8 +80,8 @@ void	Server::setupAddrInfo(Config *config)
 		std::cout << config->_serverName.c_str() << config->_serverPort.c_str() << std::endl;
 		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
 	}
-	else
-		std::cout << GREEN "Server block " << config->_serverName << "opened!" RESET << std::endl;
+	// else
+	// 	std::cout << GREEN "Server block " << config->_serverName << "opened!" RESET << std::endl;
 
 }
 
@@ -182,7 +183,7 @@ void Server::acceptNewConnects(size_t size)
 				break;
 			}
 			else {
-				std::cout << GREEN "new connection!" RESET << clientFD <<  std::endl;
+				std::cout << GREEN "new connection! FD == " RESET << clientFD <<  std::endl;
 				current._wantsNewConnect = false; //move
 				_pollFDs.emplace_back(\
 						pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
