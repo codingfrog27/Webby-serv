@@ -109,6 +109,7 @@ connectStatus	Response::responseHandler(Request* request){
 	if (_responseHandlerStatus == responseHandlerStatus::NOT_STARTED){
 		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
 		setHTTPVersion(request->_http_version);
+		setHeaders("Root", request->getRoot());
 		if (request->_headers.find("Connection") != request->_headers.end() && request->_headers["Connection"] == "close")
 			setHeaders("Connection", "close");
 		else
