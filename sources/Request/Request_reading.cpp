@@ -31,7 +31,7 @@ connectStatus	Request::readRequest()
 			parseBody();
 		}
 		if (isTimedOut(this->_startTime, this->_timeoutTime))
-			throw ClientErrorExcept(408, "Request Timeout");
+			throw ClientErrorExcept(408, "408 Request Timeout");
 		if (_doneReading){
 			if (isCGIrequired())
 				return (connectStatus::CGI_REQUIRED);

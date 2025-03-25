@@ -175,9 +175,11 @@ void	Request::parseBody()
 	std::cout << "content type: " << content_type << std::endl;
 	std::cout << "content length: " << _contentLen << std::endl;
 	std::cout << "body: " << _reqBody << std::endl;
-	std::cout << "raw data: " << std::string(_rawRequestData.begin(), _rawRequestData.end()) << std::endl;
-	if(content_type.compare("multipart/form-data; boundary=") == 0)
+	std::cout << "raw data: " RESET << std::string(_rawRequestData.begin(), _rawRequestData.end()) << std::endl;
+	if(content_type.compare(0, 30, "multipart/form-data; boundary=") == 0){
+		std::cout << RED "is triggered" RESET << std::endl;
 		parseFormData(content_type);
+	}
 	else if (content_type.compare("application/x-www-form-urlencoded") == 0)
 		parseUrlEncoded();
 	_reqBody = trim(_reqBody);
@@ -199,7 +201,7 @@ void	Request::parseUrlEncoded()
 	while (std::getline(stream, pair, '&')) {
 		size_t pos = pair.find('=');
 		if (pos == std::string::npos)
-			throw (ClientErrorExcept(400, "400, missing = in www-form encoded pairs"));
+			throw (ClientErrorExcept(400, "400 missing = in www-form encoded pairs"));
 		_wwwFormEncodedPairs[urlDecode(pair.substr(0, pos))] = urlDecode(pair.substr(pos + 1));
 	}
 }
@@ -209,8 +211,9 @@ void	Request::parseFormData(std::string &content_type){
 	//assuming its there cause of header check
 	size_t nextboundary;
 		if (content_type.size() < 31) //meaning multiform without boundery!
-			throw(ClientErrorExcept(400, "400, Bad Request, empty boundary parameter"));
-	std::string delimiter = "--" + content_type.substr(31);
+			throw(ClientErrorExcept(400, "400 Bad Request: empty boundary parameter"));
+	std::string delimiter = content_type.substr(31) + "--";
+	std::cout << RED "delimiter: " RESET << delimiter << std::endl;
 	for (size_t i = _reqBody.find(delimiter); i != std::string::npos; i = nextboundary)
 	{
 		if (_reqBody.compare(i, 2, "--") == 0)

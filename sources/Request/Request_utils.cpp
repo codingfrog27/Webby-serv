@@ -55,7 +55,7 @@ Http_method Request::which_method_type(std::string str)
 		if (str == Methods[i])
 			return (static_cast<Http_method>(i));
 	}
-	throw ClientErrorExcept(400, "Unsupported HTTP method: " + str);
+	throw ClientErrorExcept(400, "400 Unsupported HTTP method: " + str);
 }
 
 std::string Request::http_version(const std::string &version)
@@ -65,7 +65,7 @@ std::string Request::http_version(const std::string &version)
 	else if (!version.compare(0, 6, "HTTP/1"))
 		return (version.substr(0, 6));
 	else
-		throw ClientErrorExcept(400, "Unsupported HTTP version: " + version);
+		throw ClientErrorExcept(400, "400 Unsupported HTTP version: " + version);
 }
 
 int	Request::convertChunkSize(const std::string &hexStr, size_t &hexStrSize)
@@ -75,9 +75,9 @@ int	Request::convertChunkSize(const std::string &hexStr, size_t &hexStrSize)
 	chunkSize = std::strtol(hexStr.data(), &hexEnd ,16);
 	std::cout << "here :" << chunkSize << *hexEnd << std::endl;
 	if (*hexEnd != '\r' && chunkSize != 0)
-			throw ClientErrorExcept(400, "bad hex number in chunk");
+			throw ClientErrorExcept(400, "400 bad hex number in chunk");
 	if (chunkSize + body_bytes_read > _max_body_size)
-		throw ClientErrorExcept(413, "payload too large");
+		throw ClientErrorExcept(413, "413 payload too large");
 	hexStrSize = (hexEnd - hexStr.c_str());
 	return (chunkSize);
 }
