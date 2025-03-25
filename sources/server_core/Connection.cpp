@@ -20,8 +20,8 @@
 // ************************************************************************** //
 
 Connection::Connection(Config *config, int clientFD, bool isServerside): \
-_config(config), _request(config, clientFD), _cgi(0), _isClientSocket(isServerside), \
-_wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
+_config(config), _request(config, clientFD), _response(config), _cgi(0), \
+_isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 {
 	_startTime = getStartTime();
 	_IdleTimeout = setTimeout(2);
@@ -33,7 +33,7 @@ _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
 }
 
 
-Connection::Connection(const Connection &rhs) : _request(rhs._request)
+Connection::Connection(const Connection &rhs) : _request(rhs._request), _response(rhs._response)
 {
 	// std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
 
@@ -92,9 +92,9 @@ void	Connection::connAction(const pollfd &poll, Server &server)
 		_CStatus = _cgi->CGIHandler(this, server.getCGIPollFDs(), server.getCGIMap());
 		std::cout << MAGENTA "CGI PollFD vector size in connectionAction: " << server.getCGIPollFDs().size() << RESET << std::endl;
 	}
-	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
+	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING){
 		_CStatus = _response.responseHandler(&_request);
-
+	}
 	if (_CStatus == connectStatus::FINISHED)
 		_CStatus = refreshIfKeepAlive();
 }
@@ -131,6 +131,6 @@ connectStatus Connection::refreshIfKeepAlive()
 		return (connectStatus::FINISHED);
 	std::cout << "connection stays open" << std::endl;
 	_request = Request(this->_config, this->_clientFD);
-	_response = Response();
+	_response = Response(this->_config);
 	return (connectStatus::IDLE);
 }

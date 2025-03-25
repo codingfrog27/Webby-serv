@@ -131,7 +131,6 @@ class Request
 
 		//get and setters
 		const std::string	&getBody();
-		const std::string	&getRoot();
 
 		//public methods
 		connectStatus	readRequest();
