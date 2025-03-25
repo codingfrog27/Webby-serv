@@ -2,12 +2,18 @@
 #include "Request.hpp"
 #include "Connection.hpp"
 
-Response::Response(){
+Response::Response(Config *config) {
 	this->_responseHandlerStatus = responseHandlerStatus::NOT_STARTED;
 	this->_responseBuffer = "";
 	this->_bytesWritten = 0;
 	this->_timesWriteFailed = 0;
+	this->setHTTPVersion("HTTP/1.1");
+	setHeaders("Root", config->_rootDir);
 	return ;
+}
+
+Response::Response(const Response &obj){
+	*this = obj;
 }
 
 Response &	Response::operator=(const Response &rhs)
@@ -16,12 +22,14 @@ Response &	Response::operator=(const Response &rhs)
 
 	if (this != &rhs)
 	{
+		_httpVersion = rhs._httpVersion;
 		_responseHandlerStatus = rhs._responseHandlerStatus;
-		_responseBuffer = rhs._responseBuffer;
-		_bytesWritten = rhs._bytesWritten;
 		_status = rhs._status;
 		_headers = rhs._headers;
 		_body = rhs._body;
+		_responseBuffer = rhs._responseBuffer;
+		_bytesWritten = rhs._bytesWritten;
+		_timesWriteFailed = rhs._timesWriteFailed;
 	}
 
 	return (*this);
@@ -79,6 +87,7 @@ void	Response::autoFillResponse(std::string status){
 
 std::string	Response::generateResponse() const{
 	std::string response = _httpVersion + " " + _status + "\r\n";
+	std::cout << YELLOW "HTTP version: " << _httpVersion << "\nStatus: " << _status << RESET << std::endl;
 	for (auto it = _headers.begin(); it != _headers.end(); it++){
 		response += it->first + ": " + it->second + "\r\n";
 	}
@@ -95,7 +104,7 @@ connectStatus Response::writeResponse(int FD){
 		n = BUFFER_SIZE;
 	// std::cout << "writing " << n << " bytes" << std::endl;
 	size_t bytes = send(FD, _responseBuffer.c_str() + _bytesWritten, n, 0); 
-	// write(STDOUT_FILENO, _responseBuffer.c_str() + _bytesWritten, n);
+	write(STDOUT_FILENO, _responseBuffer.c_str() + _bytesWritten, n);
 	// std::ofstream outFile("Response written.txt", std::ios::app);
 	// outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
 	_bytesWritten += bytes;

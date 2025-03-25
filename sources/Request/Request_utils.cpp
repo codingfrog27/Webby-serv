@@ -106,10 +106,6 @@ const std::string &Request::getBody()
 	return (_reqBody);
 }
 
-const std::string&	Request::getRoot() {
-		return (_root);
-}
-
 std::string trim(const std::string& str) {
 	auto start = str.find_first_not_of(" \n\r\t");
 	auto end = str.find_last_not_of(" \n\r\t");
