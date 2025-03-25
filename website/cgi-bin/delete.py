@@ -56,9 +56,6 @@ body = f"""
 			<p><a href="/cgi-bin/list_files.py">Back to Uploads</a></p>
 		</section>
 
-		<section>
-			<img src="/images/dancing_froggy.gif" alt="gif no loady :(" width="480" height="480">
-		</section>
 	</main>
 
 	<footer>

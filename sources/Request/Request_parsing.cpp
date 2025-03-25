@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/03/20 16:49:49 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/03/25 17:49:08 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ size_t	Request::parse_req_line(std::string req_line)
 {
 	size_t	line_end, method_end, uri_end;
 
+	std::cout << MAGENTA "req line: " RESET << req_line << std::endl;
 	line_end = req_line.find("\r\n");
 	if (line_end == 0)
 	{
@@ -171,7 +172,7 @@ bool	Request::dechunkBody()
 void	Request::parseBody()
 {
 	std::string		content_type = getHeaderValue("Content-Type");
-	std::cout << "path " << _filePath << std::endl;
+	std::cout << LILAC "path " << _filePath << std::endl;
 	std::cout << "content type: " << content_type << std::endl;
 	std::cout << "content length: " << _contentLen << std::endl;
 	std::cout << "body: " << _reqBody << std::endl;
@@ -209,6 +210,7 @@ void	Request::parseUrlEncoded()
 
 void	Request::parseFormData(std::string &content_type){
 	//assuming its there cause of header check
+	std::cout << MAGENTA "content type: " RESET << content_type << std::endl;
 	size_t nextboundary;
 		if (content_type.size() < 31) //meaning multiform without boundery!
 			throw(ClientErrorExcept(400, "400 Bad Request: empty boundary parameter"));
