@@ -41,8 +41,8 @@ Response::~Response(){
 
 void	Response::autoFillResponse(std::string status){
 	std::string		path = _headers["Root"] + "/error_pages/" + status.substr(0, 3) + ".html";
-	std::cout << YELLOW "Root in autofill: " RESET << _headers["Root"] << std::endl;
-	std::cout << YELLOW "path: " RESET << path << std::endl;
+	// std::cout << YELLOW "Root in autofill: " RESET << _headers["Root"] << std::endl;
+	// std::cout << YELLOW "path: " RESET << path << std::endl;
 	size_t			size = 0;
 	std::ifstream	file(path);
 
@@ -50,7 +50,7 @@ void	Response::autoFillResponse(std::string status){
 	if (!_body.empty())
 		_body.clear();
 	if (file.is_open()){
-		std::cout << YELLOW "file is open" RESET << std::endl;
+		// std::cout << YELLOW "file is open" RESET << std::endl;
 		file.seekg(0, std::ios::end);
 		size = file.tellg();
 		file.seekg(0, std::ios::beg);
@@ -65,7 +65,7 @@ void	Response::autoFillResponse(std::string status){
 		file.close();
 	}
 	else{
-		std::cout << YELLOW "file is not open" RESET << std::endl;
+		// std::cout << YELLOW "file is not open" RESET << std::endl;
 		Response::setHeaders("Content-Type", "text/plain");
 		Response::setHeaders("Content-Length", std::to_string(status.length()));
 		Response::setBody(status);
@@ -87,7 +87,7 @@ void	Response::autoFillResponse(std::string status){
 
 std::string	Response::generateResponse() const{
 	std::string response = _httpVersion + " " + _status + "\r\n";
-	std::cout << YELLOW "HTTP version: " << _httpVersion << "\nStatus: " << _status << RESET << std::endl;
+	// std::cout << YELLOW "HTTP version: " << _httpVersion << "\nStatus: " << _status << RESET << std::endl;
 	for (auto it = _headers.begin(); it != _headers.end(); it++){
 		response += it->first + ": " + it->second + "\r\n";
 	}
@@ -104,7 +104,7 @@ connectStatus Response::writeResponse(int FD){
 		n = BUFFER_SIZE;
 	// std::cout << "writing " << n << " bytes" << std::endl;
 	size_t bytes = send(FD, _responseBuffer.c_str() + _bytesWritten, n, 0); 
-	write(STDOUT_FILENO, _responseBuffer.c_str() + _bytesWritten, n);
+	// write(STDOUT_FILENO, _responseBuffer.c_str() + _bytesWritten, n);
 	// std::ofstream outFile("Response written.txt", std::ios::app);
 	// outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
 	_bytesWritten += bytes;
