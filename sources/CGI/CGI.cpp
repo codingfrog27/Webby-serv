@@ -54,6 +54,7 @@ CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(co
 }
 
 CGI::~CGI(){
+	std::cout << RED "CGI destructor called" RESET << std::endl;
 	for (char* str : _envp)
 		free(str);
 	return ;

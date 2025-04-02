@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/02/03 18:06:50 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/03/25 17:49:08 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ size_t	Request::parse_req_line(std::string req_line)
 {
 	size_t	line_end, method_end, uri_end;
 
+	std::cout << MAGENTA "req line: " RESET << req_line << std::endl;
 	line_end = req_line.find("\r\n");
 	if (line_end == 0)
 	{
@@ -171,11 +172,15 @@ bool	Request::dechunkBody()
 void	Request::parseBody()
 {
 	std::string		content_type = getHeaderValue("Content-Type");
-	std::cout << "path " << _filePath << std::endl;
+	std::cout << LILAC "path " << _filePath << std::endl;
 	std::cout << "content type: " << content_type << std::endl;
+	std::cout << "content length: " << _contentLen << std::endl;
 	std::cout << "body: " << _reqBody << std::endl;
-	if(content_type.compare("multipart/form-data; boundary=") == 0)
+	std::cout << "raw data: " RESET << std::string(_rawRequestData.begin(), _rawRequestData.end()) << std::endl;
+	if(content_type.compare(0, 30, "multipart/form-data; boundary=") == 0){
+		std::cout << RED "is triggered" RESET << std::endl;
 		parseFormData(content_type);
+	}
 	else if (content_type.compare("application/x-www-form-urlencoded") == 0)
 		parseUrlEncoded();
 	_reqBody = trim(_reqBody);
@@ -197,7 +202,7 @@ void	Request::parseUrlEncoded()
 	while (std::getline(stream, pair, '&')) {
 		size_t pos = pair.find('=');
 		if (pos == std::string::npos)
-			throw (ClientErrorExcept(400, "400, missing = in www-form encoded pairs"));
+			throw (ClientErrorExcept(400, "400 missing = in www-form encoded pairs"));
 		_wwwFormEncodedPairs[urlDecode(pair.substr(0, pos))] = urlDecode(pair.substr(pos + 1));
 	}
 }
@@ -205,10 +210,12 @@ void	Request::parseUrlEncoded()
 
 void	Request::parseFormData(std::string &content_type){
 	//assuming its there cause of header check
+	std::cout << MAGENTA "content type: " RESET << content_type << std::endl;
 	size_t nextboundary;
 		if (content_type.size() < 31) //meaning multiform without boundery!
-			throw(ClientErrorExcept(400, "400, Bad Request, empty boundary parameter"));
-	std::string delimiter = "--" + content_type.substr(31);
+			throw(ClientErrorExcept(400, "400 Bad Request: empty boundary parameter"));
+	std::string delimiter = content_type.substr(31) + "--";
+	std::cout << RED "delimiter: " RESET << delimiter << std::endl;
 	for (size_t i = _reqBody.find(delimiter); i != std::string::npos; i = nextboundary)
 	{
 		if (_reqBody.compare(i, 2, "--") == 0)

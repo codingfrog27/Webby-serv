@@ -121,6 +121,70 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 	return (_CStatus);
 }
 
+// void	Connection::findFDtoRemove(int eraseMe, std::vector<pollfd> &pollFDs)
+// {
+// 	int matchCount = 0;
+// 	for (auto it = pollFDs.begin(); it != pollFDs.end(); ++it)
+// 	{
+// 		if (it->fd == eraseMe) {
+// 			close(eraseMe);
+// 			it = pollFDs.erase(it);
+// 			return; //rn will look for clones for debugging
+// 			matchCount++;
+// 		}
+// 	}
+// 	if (matchCount == 1)
+// 		return;
+// 	if (matchCount == 0)
+// 		throw std::runtime_error("Error deleting CGI FD, FD NOT FOUND"); //server error runtime_error
+// 	throw std::runtime_error("Found duplicate(s)");
+// }
+
+// void Connection::removeCGIFromEverywhere(Server& server) {
+// 	auto& pollFDs = server.getCGIPollFDs();
+	
+// 	try {
+// 		findFDtoRemove(_cgi->getFdIn(), pollFDs);
+// 		findFDtoRemove(_cgi->getFdOut(), pollFDs);
+// 		findFDtoRemove(_cgi->getFdError(), pollFDs);
+// 	}
+// 	catch (std::runtime_error &e) {
+// 		std::cerr << e.what() << std::endl;
+// 	}
+// 	server.getCGIMap().erase(_cgi->getFdIn());
+// 	server.getCGIMap().erase(_cgi->getFdOut());
+// 	server.getCGIMap().erase(_cgi->getFdError());
+// 	_cgi.reset();
+// }
+
+void Connection::removeCGIFromEverywhere(Server& server) {
+	auto& pollFDs = server.getCGIPollFDs();
+	auto it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
+		return fd.fd == _cgi->getFdIn(); // Match the fd value
+	});
+	if (it != pollFDs.end()) {
+		close(_cgi->getFdIn());
+		pollFDs.erase(it); // Erase the found element
+	}
+	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
+		return fd.fd == _cgi->getFdOut(); // Match the fd value
+	});
+	if (it != pollFDs.end()) {
+		close(_cgi->getFdOut());
+		pollFDs.erase(it); // Erase the found element
+	}
+	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
+		return fd.fd == _cgi->getFdError(); // Match the fd value
+	});
+	if (it != pollFDs.end()) {
+		close(_cgi->getFdError());
+		pollFDs.erase(it); // Erase the found element
+	}
+	server.getCGIMap().erase(_cgi->getFdIn());
+	server.getCGIMap().erase(_cgi->getFdOut());
+	server.getCGIMap().erase(_cgi->getFdError());
+	_cgi.reset();
+}
 
 connectStatus Connection::refreshIfKeepAlive()
 {

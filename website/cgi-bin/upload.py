@@ -50,11 +50,8 @@ else:
 	status = 200
 	message = "No file uploaded. 😬"
 
-# Get the HTTP status code and message
-
 # HTML template function
-body = f"""
-<!DOCTYPE html>
+body = f"""<!DOCTYPE html>
 <head>
 	<title>Upload Success - Team Mustache</title>
 	<link rel="stylesheet" type="text/css" href="/css/styles.css">
@@ -65,11 +62,10 @@ body = f"""
 		<h1>hey there ;)</h1>
 		<nav>
 			<ul>
-				<li><a href="index.html">Home</a></li>
-				<li><a href="about.html">About</a></li>
-				<li><a href="cgi-bin/list_files.py">Uploads</a></li>
-				<li><a href="services.html">Services</a></li>
-				<li><a href="contact.html">Contact</a></li>
+				<li><a href="/index.html">Home</a></li>
+				<li><a href="/about.html">About Us</a></li>
+				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+				<li><a href="/contact.html">Contact</a></li>
 			</ul>
 		</nav>
 	</header>
@@ -78,26 +74,25 @@ body = f"""
 		<section>
 			<h2>Upload Status</h2>
 			<p style='color:green;'>{message}</p>
+			<p><a href="/cgi-bin/list_files.py">Back to Uploads</a></p>
 		</section>
 
-		<section>
-			<img src="/images/dancing_froggy.gif" alt="gif no loady :(" width="480" height="480">
-		</section>
 	</main>
 
 	<footer>
 		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
 	</footer>
 </body>
-</html>
-"""
+</html>"""
 
 # HTTP headers
 headers = f"""HTTP/1.1 {status}\r
-Content-Length: {len(body)}\r
+Connection: keep-alive\r
 Content-Type: text/html; charset=utf-8\r
-Connection: keep-alive\r\n\r"""
+Content-Length: {len(body.encode('utf-8'))}\r
+"""
 
 # Print the headers and HTML body
 print(headers)
+print()
 print(body)

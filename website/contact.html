@@ -1,139 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Contact page for our website.">
-    <title>Contact Us</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
+<html>
+<head> <!-- head is for meta info (running theme ig xd) -->
+	<title>My Website</title>
+	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+	<style>
+		.contact-form {
+			display: grid;
+			gap: 20px;
+			grid-template-columns: 1fr 1fr;
+		}
 
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-        }
+		.contact-form input, .contact-form textarea {
+			padding: 12px;
+			border: 1px solid #ddd;
+			border-radius: 5px;
+			font-size: 1rem;
+			width: 100%;
+			box-sizing: border-box;
+		}
 
-        header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-        }
+		.contact-form input[type="submit"] {
+			background-color: #31c16a;
+			color: white;
+			cursor: pointer;
+			border: none;
+			padding: 14px;
+			font-size: 1.2rem;
+			transition: background-color 0.3s;
+		}
 
-        section {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+		.contact-form input[type="submit"]:hover {
+			background-color: #31c16a;
+		}
 
-        h2 {
-            color: #007bff;
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-
-        p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .contact-form {
-            display: grid;
-            gap: 20px;
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .contact-form input, .contact-form textarea {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .contact-form input[type="submit"] {
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-            border: none;
-            padding: 14px;
-            font-size: 1.2rem;
-            transition: background-color 0.3s;
-        }
-
-        .contact-form input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-
-        footer {
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
-
-        footer p {
-            margin: 0;
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 768px) {
-            .contact-form {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+		@media (max-width: 768px) {
+			.contact-form {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
 </head>
-<body>
-
-<header>
-    <h1>Contact Us</h1>
-</header>
-
-<section>
-    <h2>We'd love to hear from you!</h2>
-    <p>If you have any questions or would like to get in touch with us, please fill out the form below, and we'll get back to you as soon as possible.</p>
-    
-    <form action="#" method="post" class="contact-form">
-        <div>
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" required placeholder="Your full name">
-        </div>
-        <div>
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required placeholder="Your email address">
-        </div>
-        <div>
-            <label for="subject">Subject</label>
-            <input type="text" id="subject" name="subject" required placeholder="Subject of your message">
-        </div>
-        <div>
-            <label for="message">Your Message</label>
-            <textarea id="message" name="message" rows="6" required placeholder="Your message here"></textarea>
-        </div>
-        <div>
-            <input type="submit" value="Send Message">
-        </div>
-    </form>
-</section>
-
-<footer>
-    <p>&copy; 2025 Our Company | All rights reserved</p>
-</footer>
-
+<body> <!-- all the actual page content -->
+	<header> <!-- usually used as introduction of page with links or a logo -->
+		<h1>hey there ;)</h1> <!-- h1 == bigger text -->
+		<nav> <!-- nav == navigation links -->
+			<ul> <!-- unorder list -->
+				<li><a href="/index.html">Home</a></li>
+				<li><a href="/about.html">About Us</a></li>
+				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+				<li><a href="/contact.html">Contact</a></li>
+			</ul>
+		</nav>
+	</header>
+	<main> <!-- main page content -->
+		<section>
+			<h2>We'd love to hear from you!</h2>
+			<p>If you have any questions or would like to get in touch with us, please fill out the form below, and we'll get back to you as soon as possible.</p>
+			
+			<form action="/cgi-bin/send_email.py" method="post" enctype="x-www-form-urlencoded" class="contact-form">
+				<div>
+					<label for="name">Full Name</label>
+					<input type="text" id="name" name="name" required placeholder="Your full name">
+				</div>
+				<div>
+					<label for="email">Email Address</label>
+					<input type="email" id="email" name="email" required placeholder="Your email address">
+				</div>
+				<div>
+					<label for="subject">Subject</label>
+					<input type="text" id="subject" name="subject" required placeholder="Subject of your message">
+				</div>
+				<div>
+					<label for="message">Your Message</label>
+					<textarea id="message" name="message" rows="6" required placeholder="Your message here"></textarea>
+				</div>
+				<div>
+					<input type="submit" value="Send Message">
+				</div>
+			</form>
+		</section>
+	</main>
+	<footer>
+		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+	</footer>
 </body>
 </html>

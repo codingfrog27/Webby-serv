@@ -31,7 +31,7 @@ connectStatus	Request::readRequest()
 			parseBody();
 		}
 		if (isTimedOut(this->_startTime, this->_timeoutTime))
-			throw ClientErrorExcept(408, "Request Timeout");
+			throw ClientErrorExcept(408, "408 Request Timeout");
 		if (_doneReading){
 			if (isCGIrequired())
 				return (connectStatus::CGI_REQUIRED);
@@ -112,14 +112,16 @@ bool	Request::bodyIsRead()
 {
 	if (body_bytes_read > _max_body_size)
 			throw (ClientErrorExcept(413, "413 Payload too large"));
-	if (_dataIsChunked && dechunkBody() == true)
+	if (_dataIsChunked && dechunkBody() == true){
+		std::cout << BOLD "data is chunked in body is read" RESET << std::endl;
 		return(true);
+	}
 	else if (body_bytes_read >= _contentLen)
 	{
 		_doneReading = true;
 		reading_mode = FINISHED;
 		_reqBody = std::string(_rawRequestData.begin(), (_rawRequestData.begin() + _contentLen + 2));
-		// std::cout << YELLOW "Request body: " << _reqBody << RESET << std::endl;
+		std::cout << MAGENTA "Request body: " << _reqBody << RESET << std::endl;
 		_rawRequestData.erase(_rawRequestData.begin(), _rawRequestData.begin() + _contentLen + 2);
 		return (true);
 	}

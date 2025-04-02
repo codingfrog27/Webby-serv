@@ -91,7 +91,7 @@ connectStatus Response::writeResponse(int FD){
 		n = BUFFER_SIZE;
 	std::cout << "writing " << n << " bytes" << std::endl;
 	size_t bytes = send(FD, _responseBuffer.c_str() + _bytesWritten, n, 0); 
-	write(STDOUT_FILENO, _responseBuffer.c_str() + _bytesWritten, n);
+	// write(STDOUT_FILENO, _responseBuffer.c_str() + _bytesWritten, n);
 	// std::ofstream outFile("Response written.txt", std::ios::app);
 	// outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
 	_bytesWritten += bytes;
