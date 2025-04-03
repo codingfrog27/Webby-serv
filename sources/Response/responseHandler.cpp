@@ -15,7 +15,8 @@ void	Response::getMethod(Request* request){
 			else
 				getInFile().open(request->_filePath);
 			if (!getInFile().is_open()){
-				autoFillResponse("500 Internal Server Error: GET");
+				// autoFillResponse("500 Internal Server Error: GET");
+				request->_statusCode = 500;
 				return ;
 			}
 		}
@@ -51,8 +52,11 @@ void	Response::getMethod(Request* request){
 			_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 		}
 	}
-	else
-		autoFillResponse("500 Internal Server Error: GET");
+	else{
+		// autoFillResponse("500 Internal Server Error: GET");
+		request->_statusCode = 500;
+		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
+	}
 	return ;
 }
 
@@ -64,7 +68,8 @@ void	Response::postMethod(Request* request){
 		else
 			getOutFile().open(request->_filePath);
 		if (!getOutFile().is_open()){
-			autoFillResponse("500 Internal Server Error: POST");
+			// autoFillResponse("500 Internal Server Error: POST");
+			request->_statusCode = 500;
 			return ;
 		}
 		_responseHandlerStatus = responseHandlerStatus::IN_POST;
@@ -72,7 +77,9 @@ void	Response::postMethod(Request* request){
 	if (getOutFile().is_open() && _responseHandlerStatus == responseHandlerStatus::IN_POST){
 		getOutFile().write(request->getBody().c_str() + getBytesWritten(), BUFFER_SIZE);
 		if (getOutFile().fail()){
-			autoFillResponse("500 Internal Server Error: POST");
+			// autoFillResponse("500 Internal Server Error: POST");
+			request->_statusCode = 500;
+			_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
 			getOutFile().close();
 			return ;
 		}
@@ -86,8 +93,11 @@ void	Response::postMethod(Request* request){
 		}
 		return ;
 	}
-	else
-		autoFillResponse("500 Internal Server Error");
+	else{
+		// autoFillResponse("500 Internal Server Error");
+		request->_statusCode = 500;
+		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
+	}
 	return ;
 }
 
@@ -97,11 +107,17 @@ void	Response::deleteMethod(Request* request){
 	if (fileExists(request->_filePath)){
 		if (std::remove(request->_filePath.c_str()) == 0)
 			autoFillResponse("200 OK");
-		else
-			autoFillResponse("500 Internal Server Error");
+		else{
+			// autoFillResponse("500 Internal Server Error");
+			request->_statusCode = 500;
+			_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
+		}
 	}
-	else
-		autoFillResponse("404 Not Found");
+	else{
+		// autoFillResponse("404 Not Found");
+		request->_statusCode = 404;
+		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
+	}
 	return ;
 }
 
