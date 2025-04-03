@@ -32,44 +32,47 @@ const image = `/images/${code}.jpg`;
 
 // Generate HTML response
 const body = `<!DOCTYPE html>
-  <html>
-  <head>
+<head>
 	<title>Error ${code} - Team Mustache</title>
 	<link rel="stylesheet" type="text/css" href="/css/styles.css">
 	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-  </head>
-  <body>
+</head>
+<body>
 	<header>
-	  <h1>hey there ;)</h1>
-	  <nav>
+	<h1>hey there ;)</h1>
+	<nav>
 		<ul>
-		  <li><a href="index.html">Home</a></li>
-		  <li><a href="about.html">About</a></li>
-		  <li><a href="cgi-bin/list_files.py">Uploads</a></li>
-		  <li><a href="services.html">Services</a></li>
-		  <li><a href="contact.html">Contact</a></li>
+		<li><a href="index.html">Home</a></li>
+		<li><a href="about.html">About</a></li>
+		<li><a href="cgi-bin/list_files.py">Uploads</a></li>
+		<li><a href="services.html">Services</a></li>
+		<li><a href="contact.html">Contact</a></li>
 		</ul>
-	  </nav>
+	</nav>
 	</header>
 
 	<main>
-	  <section>
+	<section>
 		<h2>Error ${code} - ${message}</h2>
 		<img src="${image}" alt="Error ${code}" width="480" style="height:auto;">
-	  </section>
+	</section>
 	</main>
 
 	<footer>
-	  <p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+	<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
 	</footer>
-  </body>
-  </html>`;
+</body>
+</html>
+`;
 
 //HTTP headers
-const headers = `HTTP/1.1 ${code} ${message}\n' +
-  'Content-Type: text/html; charset=utf-8\n' +
-  'Content-Length: ${body.length}\n`;
+const headers = `HTTP/1.1 ${code} ${message}
+Connection: close
+Content-Type: text/html; charset=utf-8
+Content-Length: ${body.length}
+
+`;
 
 // Print the headers and body
-console.log(headers);
-console.log(body);
+console.log(headers + body);
+// console.log(body);

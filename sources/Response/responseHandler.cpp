@@ -118,6 +118,7 @@ connectStatus	Response::responseHandler(Request* request){
 		// autoFillResponse(request->getStatusCode());
 		std::cout << YELLOW "IN STATUSCODE NOT EMPTY TRIGGER" RESET << std::endl;
 		request->_filePath = _headers["Root"] + "cgi-bin/error.js";
+		request->_method_type = GET;
 		return connectStatus::CGI_REQUIRED;
 	}
 	// std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
