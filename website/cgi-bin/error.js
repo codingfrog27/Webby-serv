@@ -34,27 +34,19 @@ const image = `/images/${code}.jpg`;
 const body = `<!DOCTYPE html>
 <head>
 	<title>Error ${code} - Team Mustache</title>
-	<link rel="stylesheet" type="text/css" href="/css/styles.css">
 	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 </head>
 <body>
 	<header>
-	<h1>hey there ;)</h1>
-	<nav>
-		<ul>
-		<li><a href="index.html">Home</a></li>
-		<li><a href="about.html">About</a></li>
-		<li><a href="cgi-bin/list_files.py">Uploads</a></li>
-		<li><a href="services.html">Services</a></li>
-		<li><a href="contact.html">Contact</a></li>
-		</ul>
-	</nav>
+	<h1>whoopsie ;)</h1>
 	</header>
 
 	<main>
 	<section>
-		<h2>Error ${code} - ${message}</h2>
-		<img src="${image}" alt="Error ${code}" width="480" style="height:auto;">
+		<h2>Error ${code}</h2>
+		<img src="${image}" alt="Error ${code} - ${message}" width="480" style="height:auto;">
+		<p>Sorry, but something went wrong. Please try again later.</p>
+		<p>Return to the <a href="/index.html">homepage</a></p>
 	</section>
 	</main>
 
