@@ -43,7 +43,7 @@ void	Response::autoFillResponse(std::string status){
 	// std::string		path = _headers["Root"] + "/error_pages/" + status.substr(0, 3) + ".html";
 	// std::cout << YELLOW "Root in autofill: " RESET << _headers["Root"] << std::endl;
 	// std::cout << YELLOW "path: " RESET << path << std::endl;
-	size_t			size = 0;
+	// size_t			size = 0;
 	// std::ifstream	file(path);
 
 	Response::setStatus(status);
@@ -66,9 +66,9 @@ void	Response::autoFillResponse(std::string status){
 	// }
 	// else{
 		// std::cout << YELLOW "file is not open" RESET << std::endl;
-		Response::setHeaders("Content-Type", "text/plain");
-		Response::setHeaders("Content-Length", std::to_string(status.length()));
-		Response::setBody(status);
+	Response::setHeaders("Content-Type", "text/plain");
+	Response::setHeaders("Content-Length", std::to_string(status.length()));
+	Response::setBody(status);
 	// }
 	Response::setResponseBuffer(Response::generateResponse());
 	_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;

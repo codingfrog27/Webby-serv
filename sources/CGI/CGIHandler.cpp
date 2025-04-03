@@ -33,6 +33,7 @@ connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd> &CGIPo
 		CGIMap[newCGI->getFdIn()] = newCGI;
 		CGIMap[newCGI->getFdOut()] = newCGI;
 		CGIMap[newCGI->getFdError()] = newCGI;
+		std::cout << MAGENTA << request->_filePath << RESET << std::endl;
 		newCGI->invokeCGI(request, response);
 
 		std::cout << MAGENTA "CGI PollFD vector size in CGIHandler: " << CGIPollFDs.size() << RESET << std::endl;

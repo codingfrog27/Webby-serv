@@ -20,7 +20,8 @@ void	Response::getMethod(Request* request){
 			}
 		}
 		else{
-			autoFillResponse("404 Not Found");
+			// autoFillResponse("404 Not Found");
+			request->_statusCode = 404;
 			return ;
 		}
 		getInFile().seekg(0, std::ios::end);
@@ -113,9 +114,10 @@ connectStatus	Response::responseHandler(Request* request){
 		else
 			setHeaders("Connection", "keep-alive");
 	}
-	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()){ //if there was an error in (parsing) the request{}
+	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && request->_statusCode != 0){ //if there was an error in (parsing) the request{}
 		// autoFillResponse(request->getStatusCode());
-		request->_filePath = _headers["Root"] + "/cgi-bin/error.js";
+		std::cout << YELLOW "IN STATUSCODE NOT EMPTY TRIGGER" RESET << std::endl;
+		request->_filePath = _headers["Root"] + "cgi-bin/error.js";
 		return connectStatus::CGI_REQUIRED;
 	}
 	// std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
