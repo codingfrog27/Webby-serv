@@ -107,12 +107,12 @@ void	location::setAlias(const std::string &alias)
 	this->_alias = alias;
 }
 
-std::vector<std::string>	location::getAllowMethods()
+std::vector<Http_method>	location::getAllowMethods()
 {
 	return(this->_allow_methods);
 }
 
-void	location::setAllowMethods(const std::vector<std::string> &allow_methods)
+void	location::setAllowMethods(const std::vector<Http_method> &allow_methods)
 {
 	this->_allow_methods = allow_methods;
 }

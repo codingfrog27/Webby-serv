@@ -39,7 +39,7 @@ CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(co
 		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdError");
 		return ;
 	}
-	if (connection->_request._method_type == POST){
+	if (connection->_request._method_type == Http_method::POST){
 		CGIPollFDs.emplace_back(pollfd{_fdIn[1], POLLOUT, 0});
 	}
 	else {
@@ -75,7 +75,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 		return ;	// }
 	}
 	if (_PID == 0){ //child
-		if (request->_method_type == POST){
+		if (request->_method_type == Http_method::POST){
 			dup2(_fdIn[0], STDIN_FILENO);
 		}
 		dup2(_fdOut[1], STDOUT_FILENO);
@@ -318,14 +318,14 @@ void CGI::closePipes(){
 }
 
 void CGI::setupCGIEnvironment(Request* request) {
-	if (request->_method_type == GET) {
+	if (request->_method_type == Http_method::GET) {
 		CGI::addToEnvp("REQUEST_METHOD", "GET");
 		if (request->_URI.find("?") != std::string::npos) {
 			CGI::addToEnvp("QUERY_STRING", request->_URI.substr(request->_URI.find("?") + 1));
 			std::cout << LILAC "QUERY_STRING: " << request->_URI.substr(request->_URI.find("?") + 1) << RESET << std::endl;
 		}
 	}
-	else if (request->_method_type == POST) {
+	else if (request->_method_type == Http_method::POST) {
 		CGI::addToEnvp("REQUEST_METHOD", "POST");
 		CGI::addToEnvp("CONTENT_TYPE", request->_headers["Content-Type"]);
 		CGI::addToEnvp("CONTENT_LENGTH", request->_headers["Content-Length"]);

@@ -50,7 +50,7 @@ enum reading_status
 	FINISHED
 };
 
-enum Http_method
+enum class Http_method
 {
 	INVALID = -1,
 	GET,
@@ -96,11 +96,11 @@ class Request
 		void					parseUrlEncoded();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 		void					resolveFilePath();
-		void					locationHandler();
+		void					RouteRuleHandler();
 		location				*findLocationMatch(std::vector<location> &locs, size_t &matchCount);
 		void					setLocRules(location &loc, location &ruleblock);
 		size_t					countPathMatch(std::string &reqpath, std::string &locpath);
-
+		void  					checkRules(location &rules);
 
 	public:
 		int							_clientFD;
@@ -118,6 +118,7 @@ class Request
 		bool						_doneReading;
 		std::string					_statusStr;
 		int							_statusCode;
+		bool						_dirListing;
 		// bool						_error_occured;
 		// Constructors and Destructors
 						Request(void) = delete;

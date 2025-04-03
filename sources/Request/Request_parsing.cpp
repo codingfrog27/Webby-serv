@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/02 14:14:29 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/03 15:41:51 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	Request::resolveFilePath()
 	if (resolved.front() == '/')
 		resolved.erase(0, 1);
 	_filePath = trim(resolved);
-	locationHandler();
+	RouteRuleHandler();
 	_filePath = trim(_root) + _filePath;
 }
 
@@ -92,7 +92,7 @@ void	Request::checkHeaders()
 		throw(std::invalid_argument("400 bad request: Host missing"));
 	if (getHeaderValue("Connection") == "close")
 		_keepOpen = false;
-	if (_method_type == GET)
+	if (_method_type ==  Http_method::GET)
 	{
 		_doneReading = true;
 		_statusStr = "";

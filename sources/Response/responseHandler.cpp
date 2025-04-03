@@ -125,15 +125,15 @@ connectStatus	Response::responseHandler(Request* request){
 	// 	return connectStatus::RESPONDING;
 	// }
 	else{
-		if ((request->_method_type == GET && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_GET){
+		if ((request->_method_type ==  Http_method::GET && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_GET){
 			getMethod(request);
 			return connectStatus::RESPONDING;
 		}
-		else if ((request->_method_type == POST && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_POST){
+		else if ((request->_method_type == Http_method::POST && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_POST){
 			postMethod(request);
 			return connectStatus::RESPONDING;
 		}
-		else if ((request->_method_type == DELETE && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_DELETE) {
+		else if ((request->_method_type == Http_method::DELETE && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_DELETE) {
 			deleteMethod(request);
 			return connectStatus::RESPONDING;
 		 }
