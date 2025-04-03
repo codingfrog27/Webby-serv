@@ -44,7 +44,7 @@ const body = `<!DOCTYPE html>
 	<main>
 	<section>
 		<h2>Error ${code}</h2>
-		<img src="${image}" alt="Error ${code} - ${message}" width="480" style="height:auto;">
+		<img src="${image}" alt="Error ${code} - ${message}" width="420" style="height:auto;">
 		<p>Sorry, but something went wrong. Please try again later.</p>
 		<p>Return to the <a href="/index.html">homepage</a></p>
 	</section>
