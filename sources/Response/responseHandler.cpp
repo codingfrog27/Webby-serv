@@ -114,8 +114,9 @@ connectStatus	Response::responseHandler(Request* request){
 			setHeaders("Connection", "keep-alive");
 	}
 	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()){ //if there was an error in (parsing) the request{}
-		autoFillResponse(request->getStatusCode());
-		return connectStatus::RESPONDING;
+		// autoFillResponse(request->getStatusCode());
+		request->_filePath = _headers["Root"] + "/cgi-bin/error.js";
+		return connectStatus::CGI_REQUIRED;
 	}
 	// std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
 	// std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;

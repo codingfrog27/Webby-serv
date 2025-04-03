@@ -330,6 +330,7 @@ void CGI::setupCGIEnvironment(Request* request) {
 		CGI::addToEnvp("CONTENT_TYPE", request->_headers["Content-Type"]);
 		CGI::addToEnvp("CONTENT_LENGTH", request->_headers["Content-Length"]);
 	}
+	CGI::addToEnvp("STATUS_CODE", request->getStatusCode().substr(0, 3));
 	CGI::addToEnvp("SCRIPT_FILENAME", request->_filePath);
 	CGI::addToEnvp("SERVER_PROTOCOL", "HTTP/1.1");
 	CGI::addToEnvp("SERVER_NAME", request->_headers["Host"]);
