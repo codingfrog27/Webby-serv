@@ -22,7 +22,8 @@ enum class Http_method;
 class location
 {
 	private:
-		// std::string _locationName;
+		std::string	findLocationName(std::string locationLine);
+		std::string	validateLocationName(std::string line);
 
 
 	public:

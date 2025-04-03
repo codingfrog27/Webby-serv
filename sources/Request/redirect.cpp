@@ -31,11 +31,15 @@ std::string generate_directory_listing(const std::string& _filePath) //should be
 std::ofstream file("/home/mde-cloe/PROJECTS/Webby-serv/sources/Request/testing");
 
 
+// #include <fstream>
+// std::fstream	errfile("debuggin");
+
 void	Request::RouteRuleHandler()
 {
 	location	*locPtr;
 	location	reqRules;
 	size_t		matchCount = 0;
+	std::cout << YELLOW "path before routehnandler == " RESET << _filePath << std::endl;
 	std::vector<location> *locVec = &this->_config->_locations;
 	if (locVec->empty())
 		return;
@@ -63,6 +67,7 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 		newSize = countPathMatch(_filePath, it->getName());
 		if (newSize > matchCount)
 		{
+			std::cout << MAGENTA "MATCH FOUND" RESET << std::endl;
 			matchCount = newSize;
 			matchFound = true;
 			ret = &(*it);
@@ -79,9 +84,11 @@ size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath)
 {
 	size_t	size = 0, matchCount = 0;
 	for (;size < reqpath.size() && size < locpath.size()\
-	 && reqpath[size] == locpath[size]; size++) {
-		if (reqpath[size] == '/')
+	&& reqpath[size] == locpath[size]; size++) {
+		if (reqpath[size] == '/') {
 			matchCount++;
+			std::cout << MAGENTA "MATCH FOUND" RESET << std::endl;
+		}
 	 }
 	if (size == locpath.size() && size == reqpath.size()){
 			file << "returning npos for path " << reqpath << std::endl;
@@ -125,7 +132,7 @@ void isMethodAllowed(Http_method method, std::vector<Http_method> const &allow_m
 		if (i == method)
 			return;
 	}
-	throw (ClientErrorExcept(405, "Method not allowed"));
+	throw (ClientErrorExcept(405, "405 Method not allowed"));
 }
 
 void  Request::checkRules(location &rules)
@@ -141,11 +148,11 @@ void  Request::checkRules(location &rules)
 	if (!rules.getRoot().empty())
 	{
 		_filePath.find(_config->_rootDir);
-		_filePath.replace(0, _config->_rootDir.size(), rules.getRoot());
+		_filePath.replace(0, _config->_rootDir.size(), rules.getRoot()); //???
 	}
 	else if (!rules.getAlias().empty()) //wrong, check merlin ss
 		this->_filePath = rules.getAlias();
-	else if (!rules.getIndex().empty())
+	else if (!rules.getIndex().empty()) //add to outside location as well!!
 	{
 		std::filesystem::path p = _filePath;
 		if (std::filesystem::is_directory(p))
@@ -162,9 +169,9 @@ void  Request::checkRules(location &rules)
 					return;
 				}
 				tmp = _filePath;
-				if (rules.getAutoindex())
-					this->_dirListing = true;
 			}
+			if (rules.getAutoindex())
+				this->_dirListing = true;
 		}
 	}
 	else if (!rules.getCgiExtension().empty())

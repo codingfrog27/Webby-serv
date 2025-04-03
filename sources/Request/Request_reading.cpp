@@ -133,7 +133,7 @@ bool	Request::isCGIrequired(){
 	// 	NicePrint::promptEnter();
 	// 	return false;
 	// }
-	if (this->_filePath.rfind(".py") == this->_filePath.length() - 3)
+	if (this->_filePath.rfind(".py") == this->_filePath.length() - 3 || this->_filePath.rfind(".js") == this->_filePath.length() - 3)
 		return true;
 	if (this->_headers["Content-Type"].find("multi-part/form-data") != std::string::npos)
 		return true;

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/03 15:41:51 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/03 17:46:31 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ size_t	Request::parse_req_line(std::string req_line)
 		throw (std::invalid_argument("no space found after uri"));
 
 	_method_type = which_method_type(req_line.substr(0, method_end));
-	_URI = req_line.substr(method_end + 2, uri_end - method_end - 1); //temp + 2??
+	_URI = req_line.substr(method_end + 1, uri_end - method_end - 1);
 	resolveFilePath();
 	// checkLocations(_filePath);
 	_http_version = http_version(&req_line[uri_end + 1]);
@@ -63,6 +63,7 @@ void	Request::resolveFilePath()
 	_filePath = trim(resolved);
 	RouteRuleHandler();
 	_filePath = trim(_root) + _filePath;
+	std::cout << YELLOW "AFTER ROUTEHANDLER  " << _filePath << RESET << std::endl;
 }
 
 void	Request::parse_headers(std::string header_str)
@@ -89,7 +90,7 @@ void	Request::checkHeaders()
 {
 	
 	if (!headerExists("Host"))
-		throw(std::invalid_argument("400 bad request: Host missing"));
+		throw(ClientErrorExcept(400, "400 bad request: Host missing"));
 	if (getHeaderValue("Connection") == "close")
 		_keepOpen = false;
 	if (_method_type ==  Http_method::GET)

@@ -27,6 +27,7 @@ location::location(void)
 location::location(std::ifstream &file, std::string &line)
 {
 	size_t i = 0;
+	setName(validateLocationName(line));
 	while (std::getline(file, line))
 	{
 		if (line.empty() || line[i] == '#')
