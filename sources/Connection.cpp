@@ -71,17 +71,6 @@ Connection::~Connection(void)
 //								Public methods							  //
 // ************************************************************************** //
 
-	// if (_CStatus == connectStatus::CONNECT_CLOSED)
-	// 	return;
-	//done reading and req error could both just be responding to make things easier
-	// if (_CStatus == connectStatus::DONE_READING || _CStatus == connectStatus::REQ_ERR)
-	// 	_CStatus = connectStatus::RESPONDING;
-	// if (_isClientSocket)
-	// {
-	// 	if (poll.revents & POLLIN)
-	// 		_wantsNewConnect = true;
-	// 	return;
-	// }
 void	Connection::connectionAction(const pollfd &poll, Server &server)
 {
 	_CStatus = checkConnectStatus(poll);
@@ -99,10 +88,6 @@ void	Connection::connectionAction(const pollfd &poll, Server &server)
 		_CStatus = refreshIfKeepAlive();
 }
 
-//print to info log and or error log file
-	// if (poll.revents & POLLHUP) {
-	// 	std::cout << "Client disconnected (POLLHUP)" << std::endl;
-	// }
 connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 {
 	int error = 0;
@@ -113,7 +98,6 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 			std::cout << "getsockopt failed" << std::endl;
 		if (error != 0)
 			std::cout << RED "Socket error: " << strerror(error) << RESET << std::endl;
-			// NicePrint::promptEnter();
 		return (connectStatus::CONNECT_CLOSED);
 	}
 	// else if (isTimedOut(_startTime, _IdleTimeout) || poll.revents & POLLHUP)
@@ -121,41 +105,7 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 	return (_CStatus);
 }
 
-// void	Connection::findFDtoRemove(int eraseMe, std::vector<pollfd> &pollFDs)
-// {
-// 	int matchCount = 0;
-// 	for (auto it = pollFDs.begin(); it != pollFDs.end(); ++it)
-// 	{
-// 		if (it->fd == eraseMe) {
-// 			close(eraseMe);
-// 			it = pollFDs.erase(it);
-// 			return; //rn will look for clones for debugging
-// 			matchCount++;
-// 		}
-// 	}
-// 	if (matchCount == 1)
-// 		return;
-// 	if (matchCount == 0)
-// 		throw std::runtime_error("Error deleting CGI FD, FD NOT FOUND"); //server error runtime_error
-// 	throw std::runtime_error("Found duplicate(s)");
-// }
 
-// void Connection::removeCGIFromEverywhere(Server& server) {
-// 	auto& pollFDs = server.getCGIPollFDs();
-	
-// 	try {
-// 		findFDtoRemove(_cgi->getFdIn(), pollFDs);
-// 		findFDtoRemove(_cgi->getFdOut(), pollFDs);
-// 		findFDtoRemove(_cgi->getFdError(), pollFDs);
-// 	}
-// 	catch (std::runtime_error &e) {
-// 		std::cerr << e.what() << std::endl;
-// 	}
-// 	server.getCGIMap().erase(_cgi->getFdIn());
-// 	server.getCGIMap().erase(_cgi->getFdOut());
-// 	server.getCGIMap().erase(_cgi->getFdError());
-// 	_cgi.reset();
-// }
 
 void Connection::removeCGIFromEverywhere(Server& server) {
 	auto& pollFDs = server.getCGIPollFDs();
@@ -188,15 +138,8 @@ void Connection::removeCGIFromEverywhere(Server& server) {
 
 connectStatus Connection::refreshIfKeepAlive()
 {
-	// std::cout << "First response FINISHED" << std::endl;
-	// if (!this->_keepOpen)
-			// _keepOpen = true; //move to request
 	if (_request.getHeaderValue("Connection") != "keep-alive")
-	{
-		std::cout << "close meee" << std::endl;
 		return (connectStatus::FINISHED);
-	} //change to closed check
-	std::cout << "connection keep open activate" << std::endl;
 	_request = Request(this->_config, this->_clientFD);
 	_response = Response(this->_config);
 	return (connectStatus::IDLE);

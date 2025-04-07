@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/03 12:15:24 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/07 14:04:47 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Request::Request(Config *config, int clientFD): _config(config), \
 {
 	fcntl(_clientFD, F_SETFL, O_NONBLOCK);
 	_rawRequestData.reserve(100);
-	_timeoutTime = setTimeout(30); //normal secs
+	_timeoutTime = setTimeout(30);
 	_startTime = getStartTime();
 }
 
@@ -34,8 +34,6 @@ Request::Request(const Request &rhs)
 Request &
 Request::operator=(const Request &rhs)
 {
-	// std::cout << GREEN << "Request: Assignment operator called" << RESET << std::endl;
-
 	if (this != &rhs)
 	{
 		// _clientFD = rhs._clientFD;

@@ -12,7 +12,6 @@
 
 #include "Request.hpp"
 
-
 std::string	Request::getHeaderValue(std::string key)
 {
 	std::unordered_map<std::string, std::string>::iterator it;
@@ -21,8 +20,6 @@ std::string	Request::getHeaderValue(std::string key)
 		return (it->second);
 	return ("");
 }
-
-
 
 bool	Request::headerExists(std::string key)
 {
@@ -62,8 +59,6 @@ std::string Request::http_version(const std::string &version)
 {
 	if (!version.compare(0, 8, "HTTP/1.1"))
 		return (version.substr(0, 8));
-	else if (!version.compare(0, 6, "HTTP/1"))
-		return (version.substr(0, 6));
 	else
 		throw ClientErrorExcept(400, "400 Unsupported HTTP version: " + version);
 }

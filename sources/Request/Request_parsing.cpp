@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/07 13:03:37 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/07 13:49:12 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,7 @@ bool	Request::dechunkBody()
 
 void	Request::parseBody()
 {
+	std::string		content_type = getHeaderValue("Content-Type");
 	if(content_type.compare(0, 30, "multipart/form-data; boundary=") == 0){
 		std::cout << RED "is triggered" RESET << std::endl;
 		parseFormData(content_type);
