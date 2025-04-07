@@ -16,14 +16,12 @@
 
 connectStatus	Request::readRequest()
 {
-	//update idle time
 	try
 	{
 		if (_statusStr.empty() || _statusStr == "0 Not started yet")
 			_statusStr = "102 Processing";
 		readSocket(0);
 		std::string temp = std::string(_rawRequestData.begin(), _rawRequestData.end());
-		// std::cout << MAGENTA "Raw request data" << temp << RESET << std::endl;
 		if (!_rnrnFound && headerEndFound())
 			parse_headers(_unsortedHeaders);
 		if (_hasBody && bodyIsRead()) {
@@ -36,25 +34,21 @@ connectStatus	Request::readRequest()
 			if (isCGIrequired())
 				return (connectStatus::CGI_REQUIRED);
 			return (connectStatus::RESPONDING);
-			// return (connectStatus::DONE_READING);
 		}
 		return (connectStatus::READING);
 	}
 	catch(ClientErrorExcept &e)
 	{
-		std::cout << e.what() << std::endl; //response
+		std::cout << e.what() << std::endl;
 		_statusStr = e._errorMsg;
 		_statusCode = e._statusCode;
 		return (connectStatus::RESPONDING);
-		// return (connectStatus::REQ_ERR);
 	}
 	catch (ConnectionClosedExcep &e)
 	{
 		std::cout << "Client closed connection" << std::endl;
-		// NicePrint::promptEnter();
 		return (connectStatus::CONNECT_CLOSED);
 	}
-	//should maybe just make clienterr excepts?
 	catch(const std::ios_base::failure &e)
 	{
 		std::cout << e.what() << std::endl;
@@ -67,7 +61,7 @@ connectStatus	Request::readRequest()
 		std::cout << e.what() << std::endl;
 		_statusCode = 400;
 		_statusStr = std::to_string(_statusCode) + e.what();
-		return (connectStatus::REQ_ERR);
+		return (connectStatus::RESPONDING);
 	}
 }
 

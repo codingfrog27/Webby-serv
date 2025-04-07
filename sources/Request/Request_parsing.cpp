@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/02 14:14:29 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/07 13:03:37 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ size_t	Request::parse_req_line(std::string req_line)
 	_method_type = which_method_type(req_line.substr(0, method_end));
 	_URI = req_line.substr(method_end + 2, uri_end - method_end - 1); //temp + 2??
 	resolveFilePath();
-	// checkLocations(_filePath);
 	_http_version = http_version(&req_line[uri_end + 1]);
 	return (line_end + 2);
 }
@@ -100,15 +99,6 @@ void	Request::checkHeaders()
 	else
 		checkBodyHeaders();
 }
-
-
-
-
-
-
-
-
-
 
 void	Request::checkBodyHeaders()
 {
@@ -171,12 +161,6 @@ bool	Request::dechunkBody()
 
 void	Request::parseBody()
 {
-	std::string		content_type = getHeaderValue("Content-Type");
-	std::cout << LILAC "path " << _filePath << std::endl;
-	std::cout << "content type: " << content_type << std::endl;
-	std::cout << "content length: " << _contentLen << std::endl;
-	std::cout << "body: " << _reqBody << std::endl;
-	std::cout << "raw data: " RESET << std::string(_rawRequestData.begin(), _rawRequestData.end()) << std::endl;
 	if(content_type.compare(0, 30, "multipart/form-data; boundary=") == 0){
 		std::cout << RED "is triggered" RESET << std::endl;
 		parseFormData(content_type);

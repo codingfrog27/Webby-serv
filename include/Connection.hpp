@@ -25,7 +25,6 @@ enum class connectStatus
 	SERV_SOCKET,
 	IDLE,
 	READING,
-	REQ_ERR,
 	CONNECT_CLOSED,
 	DONE_READING,
 	CGI_REQUIRED,
