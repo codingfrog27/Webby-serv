@@ -40,36 +40,36 @@ Response::~Response(){
 }
 
 void	Response::autoFillResponse(std::string status){
-	std::string		path = _headers["Root"] + "/error_pages/" + status.substr(0, 3) + ".html";
+	// std::string		path = _headers["Root"] + "/error_pages/" + status.substr(0, 3) + ".html";
 	// std::cout << YELLOW "Root in autofill: " RESET << _headers["Root"] << std::endl;
 	// std::cout << YELLOW "path: " RESET << path << std::endl;
-	size_t			size = 0;
-	std::ifstream	file(path);
+	// size_t			size = 0;
+	// std::ifstream	file(path);
 
 	Response::setStatus(status);
 	if (!_body.empty())
 		_body.clear();
-	if (file.is_open()){
-		// std::cout << YELLOW "file is open" RESET << std::endl;
-		file.seekg(0, std::ios::end);
-		size = file.tellg();
-		file.seekg(0, std::ios::beg);
-		std::vector<char> buffer(size + 1);
-		if (file.read(buffer.data(), size)){
-			Response::setContentType(path);
-			Response::setHeaders("Content-Length", std::to_string(size));
-			Response::setBody(buffer.data());
-		}
-		else
-			Response::autoFillResponse("500 Internal Server Error");
-		file.close();
-	}
-	else{
+	// if (file.is_open()){
+	// 	// std::cout << YELLOW "file is open" RESET << std::endl;
+	// 	file.seekg(0, std::ios::end);
+	// 	size = file.tellg();
+	// 	file.seekg(0, std::ios::beg);
+	// 	std::vector<char> buffer(size + 1);
+	// 	if (file.read(buffer.data(), size)){
+	// 		Response::setContentType(path);
+	// 		Response::setHeaders("Content-Length", std::to_string(size));
+	// 		Response::setBody(buffer.data());
+	// 	}
+	// 	else
+	// 		Response::autoFillResponse("500 Internal Server Error");
+	// 	file.close();
+	// }
+	// else{
 		// std::cout << YELLOW "file is not open" RESET << std::endl;
-		Response::setHeaders("Content-Type", "text/plain");
-		Response::setHeaders("Content-Length", std::to_string(status.length()));
-		Response::setBody(status);
-	}
+	Response::setHeaders("Content-Type", "text/plain");
+	Response::setHeaders("Content-Length", std::to_string(status.length()));
+	Response::setBody(status);
+	// }
 	Response::setResponseBuffer(Response::generateResponse());
 	_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 	return ;
@@ -103,7 +103,7 @@ connectStatus Response::writeResponse(int FD){
 	if (n > BUFFER_SIZE)
 		n = BUFFER_SIZE;
 	// std::cout << "writing " << n << " bytes" << std::endl;
-	size_t bytes = send(FD, _responseBuffer.c_str() + _bytesWritten, n, 0); 
+	size_t bytes = send(FD, _responseBuffer.c_str() + _bytesWritten, n, 0);
 	// write(STDOUT_FILENO, _responseBuffer.c_str() + _bytesWritten, n);
 	// std::ofstream outFile("Response written.txt", std::ios::app);
 	// outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;

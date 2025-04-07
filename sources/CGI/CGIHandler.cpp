@@ -15,17 +15,23 @@ connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd> &CGIPo
 		std::cout << RED "connection has cgi object" RESET << std::endl;
 	if (connection->_cgi == 0 && connection->_CStatus == connectStatus::CGI_REQUIRED){
 		if (request->_method_type != GET && request->_method_type != POST){
-			response->autoFillResponse("405 Method Not Allowed");
-			response->setHeaders("Allow", "GET, POST");
-			return connectStatus::RESPONDING;
+			// response->autoFillResponse("405 Method Not Allowed");
+			// response->setHeaders("Allow", "GET, POST");
+			// return connectStatus::RESPONDING;
+			request->_statusCode = 405;
+			return connectStatus::CGI_REQUIRED;
 		}
 		if (request->_filePath.find("cgi-bin/", 0) == std::string::npos){
-			response->autoFillResponse("403 Forbidden");
-			return connectStatus::RESPONDING;
+			// response->autoFillResponse("403 Forbidden");
+			// return connectStatus::RESPONDING;
+			request->_statusCode = 403;
+			return connectStatus::CGI_REQUIRED;
 		}
 		if (!fileExists(request->_filePath)){
-			response->autoFillResponse("404 Not Found: CGI");
-			return connectStatus::RESPONDING;
+			// response->autoFillResponse("404 Not Found: CGI");
+			// return connectStatus::RESPONDING;
+			request->_statusCode = 404;
+			return connectStatus::CGI_REQUIRED;
 		}
 		// if yes
 		std::shared_ptr<CGI> newCGI = std::make_shared<CGI>(connection, CGIPollFDs);
@@ -33,6 +39,7 @@ connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd> &CGIPo
 		CGIMap[newCGI->getFdIn()] = newCGI;
 		CGIMap[newCGI->getFdOut()] = newCGI;
 		CGIMap[newCGI->getFdError()] = newCGI;
+		std::cout << MAGENTA << request->_filePath << RESET << std::endl;
 		newCGI->invokeCGI(request, response);
 
 		std::cout << MAGENTA "CGI PollFD vector size in CGIHandler: " << CGIPollFDs.size() << RESET << std::endl;

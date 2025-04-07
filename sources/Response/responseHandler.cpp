@@ -15,12 +15,14 @@ void	Response::getMethod(Request* request){
 			else
 				getInFile().open(request->_filePath);
 			if (!getInFile().is_open()){
-				autoFillResponse("500 Internal Server Error: GET");
+				// autoFillResponse("500 Internal Server Error: GET");
+				request->_statusCode = 500;
 				return ;
 			}
 		}
 		else{
-			autoFillResponse("404 Not Found");
+			// autoFillResponse("404 Not Found");
+			request->_statusCode = 404;
 			return ;
 		}
 		getInFile().seekg(0, std::ios::end);
@@ -50,8 +52,11 @@ void	Response::getMethod(Request* request){
 			_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 		}
 	}
-	else
-		autoFillResponse("500 Internal Server Error: GET");
+	else{
+		// autoFillResponse("500 Internal Server Error: GET");
+		request->_statusCode = 500;
+		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
+	}
 	return ;
 }
 
@@ -63,7 +68,8 @@ void	Response::postMethod(Request* request){
 		else
 			getOutFile().open(request->_filePath);
 		if (!getOutFile().is_open()){
-			autoFillResponse("500 Internal Server Error: POST");
+			// autoFillResponse("500 Internal Server Error: POST");
+			request->_statusCode = 500;
 			return ;
 		}
 		_responseHandlerStatus = responseHandlerStatus::IN_POST;
@@ -71,7 +77,9 @@ void	Response::postMethod(Request* request){
 	if (getOutFile().is_open() && _responseHandlerStatus == responseHandlerStatus::IN_POST){
 		getOutFile().write(request->getBody().c_str() + getBytesWritten(), BUFFER_SIZE);
 		if (getOutFile().fail()){
-			autoFillResponse("500 Internal Server Error: POST");
+			// autoFillResponse("500 Internal Server Error: POST");
+			request->_statusCode = 500;
+			_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
 			getOutFile().close();
 			return ;
 		}
@@ -85,8 +93,11 @@ void	Response::postMethod(Request* request){
 		}
 		return ;
 	}
-	else
-		autoFillResponse("500 Internal Server Error");
+	else{
+		// autoFillResponse("500 Internal Server Error");
+		request->_statusCode = 500;
+		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
+	}
 	return ;
 }
 
@@ -96,11 +107,17 @@ void	Response::deleteMethod(Request* request){
 	if (fileExists(request->_filePath)){
 		if (std::remove(request->_filePath.c_str()) == 0)
 			autoFillResponse("200 OK");
-		else
-			autoFillResponse("500 Internal Server Error");
+		else{
+			// autoFillResponse("500 Internal Server Error");
+			request->_statusCode = 500;
+			_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
+		}
 	}
-	else
-		autoFillResponse("404 Not Found");
+	else{
+		// autoFillResponse("404 Not Found");
+		request->_statusCode = 404;
+		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
+	}
 	return ;
 }
 
@@ -113,9 +130,12 @@ connectStatus	Response::responseHandler(Request* request){
 		else
 			setHeaders("Connection", "keep-alive");
 	}
-	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()){ //if there was an error in (parsing) the request{}
-		autoFillResponse(request->getStatusCode());
-		return connectStatus::RESPONDING;
+	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && request->_statusCode != 0){ //if there was an error in (parsing) the request{}
+		// autoFillResponse(request->getStatusCode());
+		std::cout << YELLOW "IN STATUSCODE NOT EMPTY TRIGGER" RESET << std::endl;
+		request->_filePath = _headers["Root"] + "cgi-bin/error.js";
+		request->_method_type = GET;
+		return connectStatus::CGI_REQUIRED;
 	}
 	// std::cout << MAGENTA "Method		: " << request->_method_type << " (0 = GET, 1 = POST, 2 = DELETE)" RESET << std::endl;
 	// std::cout << MAGENTA "Content-type	: " << request->getHeaderValue("Content-Type") << RESET << std::endl;

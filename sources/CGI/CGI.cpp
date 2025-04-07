@@ -67,6 +67,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 	// response->setResponseHandlerStatus(responseHandlerStatus::IN_CGI);
 	// if (_CGIHandlerStatus == CGIHandlerStatus::NOT_STARTED){
 	// 	_CGIHandlerStatus = CGIHandlerStatus::IN_PROGRESS;
+	std::cout << YELLOW << request->_filePath.substr(request->_filePath.rfind("/") + 1) << RESET << std::endl;
 	_PID = fork();
 	if (_PID == -1){
 		closePipes();
@@ -330,6 +331,7 @@ void CGI::setupCGIEnvironment(Request* request) {
 		CGI::addToEnvp("CONTENT_TYPE", request->_headers["Content-Type"]);
 		CGI::addToEnvp("CONTENT_LENGTH", request->_headers["Content-Length"]);
 	}
+	CGI::addToEnvp("STATUS_CODE", std::to_string(request->_statusCode).c_str());
 	CGI::addToEnvp("SCRIPT_FILENAME", request->_filePath);
 	CGI::addToEnvp("SERVER_PROTOCOL", "HTTP/1.1");
 	CGI::addToEnvp("SERVER_NAME", request->_headers["Host"]);
