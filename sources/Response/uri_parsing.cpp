@@ -32,33 +32,3 @@ std::string urlToFilePath(const std::string url)
 
 	return sanitized_url;
 }
-
-// 100 continue
-// 102 Processing
-
-
-
-// 200 OK
-// 201 created
-
-//if going out of root dir == 403
-// 404 not found
-// 405 when trying to delete
-// 408 request timeout
-
-//415 unsupported media type
-//429 too many requests
-
-
-//maybe need these?
-
-// 204 no content == post/delete succesfull but dont need to load a new page
-//301/302 moved url
-
-// 416 Range not satifiable
-// 417 expectation failed
-
-//424 failed dependency
-
-
-//431 request header fields too large
