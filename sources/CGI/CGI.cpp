@@ -5,8 +5,6 @@
 #include <cstring>
 #include <sys/wait.h>
 
-
-
 /*	Constructors & destructors	*/
 
 CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(connection->_clientFD){

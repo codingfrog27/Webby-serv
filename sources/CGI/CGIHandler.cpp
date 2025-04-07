@@ -3,10 +3,6 @@
 #include "Request.hpp"
 #include "Connection.hpp"
 
-//next up: testing
-// write script
-// put reading and writing in a loop
-
 connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd> &CGIPollFDs, std::unordered_map<int, std::shared_ptr<CGI>> &CGIMap){
 	Response* response = &connection->_response;
 	Request* request = &connection->_request;
