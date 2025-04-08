@@ -36,8 +36,8 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 {
 	try
 	{
-		_Connections.reserve(100);
 		int	FD;
+		_Connections.reserve(100);
 		_serverSockets.reserve(_serverBlocks.size());
 		for (size_t i = 0; i < _serverBlocks.size(); ++i)
  		{
@@ -69,8 +69,7 @@ void	Server::setupAddrInfo(Config *config)
 	hints.ai_flags = AI_PASSIVE;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	status = getaddrinfo(config->_serverName.c_str(), config->_listen.c_str(), &hints, &_addrInfo);
-	// std::cout << config->_serverName.c_str() << config->_serverPort.c_str() << std::endl;
+	status = getaddrinfo(config->_host.c_str(), config->_listen.c_str(), &hints, &_addrInfo);
 	if (status != 0)
 		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
 

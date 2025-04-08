@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   config_obj_utils.cpp                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/17 16:06:32 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   config_obj_utils.cpp                               :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/11/06 19:35:05 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/04/08 18:25:47 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ Config::Config(const Config &rhs)
       _listen(rhs._listen),
       _rootDir(rhs._rootDir),
       _serverName(rhs._serverName),
-      _serverPort(rhs._serverPort),
       _maxConnects(rhs._maxConnects),
       _timeout(rhs._timeout),
       _locations(rhs._locations),
@@ -67,13 +66,11 @@ Config &Config::operator=(const Config &rhs)
 		_client_max_body_size = rhs._client_max_body_size;
 		_host = rhs._host;
 		_locationName = rhs._locationName;
-		_serverPort = rhs._serverPort;
 		_autoindex = rhs._autoindex;
 		_index = rhs._index;
 		_errorPage = rhs._errorPage;
 		_rulemap = rhs._rulemap;
 		_locNames = rhs._locNames;
-		
 		_locations.clear();
 		for (const auto &loc : rhs._locations)
 		{

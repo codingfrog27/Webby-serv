@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Config.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 13:33:40 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Config.hpp                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/09/18 15:09:44 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/04/08 18:24:49 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ class Config
 		std::string _listen;
 		std::string _rootDir;
 		std::string _serverName;
-		std::string _serverPort;
 		size_t		_maxConnects;
 		size_t		_timeout;
 		

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:27:26 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/03 15:49:37 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/08 18:33:16 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,16 @@ std::string	normalize_space(std::string& str)
 void printConfigs(std::vector<Config> &configs) 
 {
 	std::cout << "Total servers: " << configs.size() << std::endl;
+	for (size_t i = 0; i < configs.size(); i++) {
+		std::cout << "Server " << i + 1 << ":" << std::endl;
+		std::cout << "Host: " << configs[i]._host << std::endl;
+		std::cout << "Listen: " << configs[i]._listen << std::endl;
+		std::cout << "Server Name: " << configs[i]._serverName << std::endl;
+		// for (size_t j = 0; j < configs[i]._locations.size(); j++) {
+		// 	std::cout << "Location " << j + 1 << " Name: " << configs[i]._locations[j]._LocationName << std::endl;
+		// }
+		// std::cout << std::endl;
+	}
 	
 	for (size_t i = 0; i < configs.size(); i++) {
 		std::cout << LINE << std::endl;
