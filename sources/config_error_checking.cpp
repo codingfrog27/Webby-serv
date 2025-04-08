@@ -53,33 +53,93 @@ std::string	getErrorPageMapKey(std::string& errorPage_value)
 	return (errorPage_key);
 }
 
-std::multimap<std::string, std::string> Config::validateErrorPage()
+// std::unordered_map<std::string, std::string> Config::validateErrorPage()
+// {
+//     std::unordered_map<std::string, std::string> tmpErrorPageMap;
+
+//     auto range = _rulemap.equal_range("error_page");
+//     for (auto it = range.first; it != range.second; ++it)
+//     {
+//         std::string errorPage_rule = normalize_space(it->second);
+//         std::istringstream iss(errorPage_rule);
+//         std::string token;
+//         std::vector<std::string> errorCodes;
+//         std::string errorPage;
+
+//         // Ignora "error_page" se è presente
+//         if (!(iss >> token) || token != "error_page") {
+//             throw std::invalid_argument("Error: expected 'error_page' at the beginning of directive");
+//         }
+
+//         // Itera su tutti i token nella riga
+//         while (iss >> token) {
+//             if (std::all_of(token.begin(), token.end(), ::isdigit)) {
+//                 // Se il token è un numero, è un codice di errore
+//                 errorCodes.push_back(token);
+//             } else {
+//                 // Se non è un numero, è il percorso dell'errore
+//                 errorPage = token;
+
+//                 // Validazione del path
+//                 for (char c : errorPage) {
+//                     if (!isdigit(c) && !isalpha(c) && c != '/' && c != '.' && c != '_') {
+//                         throw std::invalid_argument("Error: invalid character in error_page directive");
+//                     }
+//                 }
+
+//                 // Aggiungi tutti i codici di errore trovati con questo path
+//                 for (const std::string &errorCode : errorCodes) {
+//                     tmpErrorPageMap[errorCode] = errorPage;
+//                 }
+
+//                 // Resetta l'elenco dei codici per il prossimo path
+//                 errorCodes.clear();
+//             }
+//         }
+//     }
+
+//     if (tmpErrorPageMap.empty())
+//         throw std::invalid_argument("Error: no valid error_page directives found");
+
+//     return tmpErrorPageMap;
+// }
+
+std::unordered_map<std::string, std::string> Config::validateErrorPage()
 {
-    std::multimap<std::string, std::string> tmpErrorPageMap;
+    std::unordered_map<std::string, std::string> tmpErrorPageMap;
 
-    auto range = _rulemap.equal_range("error_page");
-    for (auto it = range.first; it != range.second; ++it)
+    if (_rulemap.contains("error_page"))
     {
-        std::string errorPage_rule = normalize_space(it->second);
+        auto found = _rulemap.find("error_page");
+        std::string errorPage_rule = normalize_space(found->second);
         std::istringstream iss(errorPage_rule);
-        std::string errorCode;
-        std::string errorPage;
+        std::string token, errorPage;
+        std::vector<std::string> errorCodes;
 
-        while (iss >> errorCode >> errorPage)
-        {
-            for (char c : errorPage)
-            {
-                if (!isdigit(c) && !isalpha(c) && c != '/' && c != '.' && c != '_')
-                    throw std::invalid_argument("Error: invalid character in error_page directive");
+        iss >> token;
+
+        while (iss >> token) 
+		{
+            if (std::isdigit(token[0]))
+                errorCodes.push_back(token);
+			else 
+			{
+                errorPage = token;
+                for (char c : errorPage) 
+				{
+                    if (!isdigit(c) && !isalpha(c) && c != '/' && c != '.' && c != '_') 
+                        throw std::invalid_argument("Error: invalid character in error_page directive");
+                }
+                for (const auto &code : errorCodes) 
+                    tmpErrorPageMap[code] = errorPage;
+                errorCodes.clear();
             }
-            tmpErrorPageMap.emplace(errorCode, errorPage);
         }
     }
-
     if (tmpErrorPageMap.empty())
         throw std::invalid_argument("Error: no valid error_page directives found");
 
-    return tmpErrorPageMap;
+    return (tmpErrorPageMap);
 }
 
 std::vector<std::string>		Config::ValidateIndex()

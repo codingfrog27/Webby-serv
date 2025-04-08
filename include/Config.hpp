@@ -44,7 +44,7 @@ class Config
 		bool 		_autoindex;
 		std::string _autoIndexFilePath;
 		std::string _client_max_body_size;
-		std::multimap<std::string, std::string> _errorPage;
+		std::unordered_map<std::string, std::string> _errorPage;
 		std::string _host;
 		std::vector<std::string> _index;
 		std::string	_locationName;
@@ -69,7 +69,7 @@ class Config
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	
 	bool		getAutoindex();
-	std::multimap<std::string, std::string> getErrorPage();
+	std::unordered_map<std::string, std::string> getErrorPage();
 	std::string	getMaxBodySize();
 	std::string	getHost();
 	std::vector<std::string> getIndex();
@@ -92,7 +92,7 @@ class Config
 	location	findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void		parseRule(const std::string &line);
 	void		setAutoindex(const bool& autoIndex);
-	void		setErrorPage(const std::multimap<std::string, std::string> &errorPageMap);
+	void		setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap);
 	void		setHost(const std::string &host);
 	void		setIndex(const std::vector<std::string> &index_vector);
 	void		setListen(const std::string &listen);
@@ -105,7 +105,7 @@ class Config
 	int			initializeServer();
 	int			mapToMembers();
 	bool		validateAutoindex();
-	std::multimap<std::string, std::string> validateErrorPage();
+	std::unordered_map<std::string, std::string> validateErrorPage();
 	std::string validateHost();
 	std::vector<std::string> ValidateIndex();
 	std::string	validateListen();
