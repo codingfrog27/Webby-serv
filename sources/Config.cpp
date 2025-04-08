@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Config.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/14 13:39:57 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Config.cpp                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/04/08 15:28:03 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ std::string	extractLocationName(std::string line)
             endPos = location.length();
     location_name = location.substr(startPos, endPos - startPos);
 	}
-	std::cout << location_name << std::endl;
 	return (location_name);
 }
 

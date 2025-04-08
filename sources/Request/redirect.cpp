@@ -28,12 +28,6 @@ std::string generate_directory_listing(const std::string& _filePath) //should be
 	return html.str();
 }
 
-std::ofstream file("/home/mde-cloe/PROJECTS/Webby-serv/sources/Request/testing");
-
-
-// #include <fstream>
-// std::fstream	errfile("debuggin");
-
 void	Request::RouteRuleHandler()
 {
 	location	*locPtr;
@@ -84,17 +78,13 @@ size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath)
 {
 	size_t	size = 0, matchCount = 0;
 	for (;size < reqpath.size() && size < locpath.size()\
-	&& reqpath[size] == locpath[size]; size++) {
-		if (reqpath[size] == '/') {
+		&& reqpath[size] == locpath[size]; size++)
+	{
+		if (reqpath[size] == '/')
 			matchCount++;
-			std::cout << MAGENTA "MATCH FOUND" RESET << std::endl;
-		}
-	 }
-	if (size == locpath.size() && size == reqpath.size()){
-			file << "returning npos for path " << reqpath << std::endl;
-		return (std::string::npos);
 	}
-	file << "returning " << size << "for path " << reqpath << std::endl;	
+	if (size == locpath.size() && size == reqpath.size())
+		return (std::string::npos);
 	return (matchCount);
 }
 
@@ -106,8 +96,6 @@ void assignStrIfNonEmpty(std::string &dest, std::string &rhs)
 
 void	Request::setLocRules(location &ruleblock, location &loc)
 {
-	// assignStrIfNonEmpty(ruleblock._allow_methods, loc._allow_methods); //change after merge
-	// assignStrIfNonEmpty(ruleblock._index, loc._index);
 	assignStrIfNonEmpty(ruleblock._alias, loc._alias);
 	assignStrIfNonEmpty(ruleblock._name, loc._name);
 	assignStrIfNonEmpty(ruleblock._return, loc._return);

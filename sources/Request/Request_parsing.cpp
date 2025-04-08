@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/03 18:24:48 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/08 16:11:25 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,8 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_host.length());
 	if (resolved.find(_config->_listen) != std::string::npos)
 		resolved.erase(0, _config->_listen.length() + 1);
-	// if (resolved.front() == '/')
-	// 	resolved.erase(0, 1);
+	if (resolved.front() == '/')
+		resolved.erase(0, 1);
 	_filePath = trim(resolved);
 	RouteRuleHandler();
 	_filePath = trim(_root) + _filePath;

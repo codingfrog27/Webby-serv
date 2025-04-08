@@ -38,6 +38,7 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 	{
 		_Connections.reserve(100);
 		int	FD;
+		_serverSockets.reserve(_serverBlocks.size());
 		for (size_t i = 0; i < _serverBlocks.size(); ++i)
  		{
 			setupAddrInfo(&_serverBlocks[i]);
