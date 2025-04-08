@@ -32,29 +32,56 @@ Config::Config(void) //default constructor
 }
 
 Config::Config(const Config &rhs)
+    : _autoindex(rhs._autoindex),
+      _autoIndexFilePath(rhs._autoIndexFilePath),
+      _client_max_body_size(rhs._client_max_body_size),
+      _errorPage(rhs._errorPage),
+      _host(rhs._host),
+      _index(rhs._index),
+      _locationName(rhs._locationName),
+      _listen(rhs._listen),
+      _rootDir(rhs._rootDir),
+      _serverName(rhs._serverName),
+      _serverPort(rhs._serverPort),
+      _maxConnects(rhs._maxConnects),
+      _timeout(rhs._timeout),
+      _locations(rhs._locations),
+      _locNames(rhs._locNames),
+      _rulemap(rhs._rulemap)
 {
-	std::cout << GREEN << "Config: Copy constructor called" << RESET << std::endl;
-
-	*this = rhs;
+    std::cout << GREEN << "Config: Copy constructor called" << RESET << std::endl;
 }
 
-Config &
-Config::operator=(const Config &rhs)
+Config &Config::operator=(const Config &rhs)
 {
 	std::cout << GREEN << "Config: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
-		// _serverPort = rhs._serverPort;
 		_listen = rhs._listen;
 		_serverName = rhs._serverName;
 		_maxConnects = rhs._maxConnects;
 		_timeout = rhs._timeout;
 		_rootDir = rhs._rootDir;
 		_autoIndexFilePath = rhs._autoIndexFilePath;
+		_client_max_body_size = rhs._client_max_body_size;
+		_host = rhs._host;
+		_locationName = rhs._locationName;
+		_serverPort = rhs._serverPort;
+		_autoindex = rhs._autoindex;
+		_index = rhs._index;
+		_errorPage = rhs._errorPage;
+		_rulemap = rhs._rulemap;
+		_locNames = rhs._locNames;
+		
+		_locations.clear();
+		for (const auto &loc : rhs._locations)
+		{
+			_locations.push_back(loc);
+		}
 	}
 
-	return (*this);
+	return *this;
 }
 
 Config::~Config(void)

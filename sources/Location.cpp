@@ -47,18 +47,29 @@ location::location(std::ifstream &file, std::string &line)
 
 location::location(const location &rhs)
 {
-	std::cout << GREEN << "location: Copy constructor called" RESET << std::endl;
-	*this = rhs;
+    std::cout << GREEN << "location: Copy constructor called" << RESET << std::endl;
+
+    _alias = rhs._alias;
+    _allow_methods = rhs._allow_methods;
+    _autoindex = rhs._autoindex;
+    _cgi_extension = rhs._cgi_extension;
+    _cgi_path = rhs._cgi_path;
+    _index = rhs._index;
+    _name = rhs._name;
+    _return = rhs._return;
+    _root = rhs._root;
+    _nestedLocations = rhs._nestedLocations;
+    _rulemap = rhs._rulemap;
 }
 
 location &
 location::operator=(const location &rhs)
 {
-	// std::cout << GREEN << "location: Assignment operator called" << RESET << std::endl;
+	std::cout << GREEN << "location: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
-		 _alias = rhs._alias;
+		_alias = rhs._alias;
 		_allow_methods = rhs._allow_methods;
 		_autoindex = rhs._autoindex;
 		_cgi_extension = rhs._cgi_extension;

@@ -210,20 +210,37 @@ std::string Config::validateHost()
 	}
 	else
 		throw std::invalid_argument("Error: host directive not found");
+
+	std::vector<std::string> octets;
+	std::stringstream ss(host_value);
+	std::string segment;
 	int dotCount = 0;
-	for(size_t i = 0; i < host_value.length(); i++)
+
+	while (std::getline(ss, segment, '.'))
 	{
-		if (host_value[i] == '.')
-		{
-			dotCount++;
-			i++;
-		}
-		if (!isdigit(host_value[i]) && host_value[i] != '.')
-			throw std::invalid_argument("Error: invalid character in host directive");
+		octets.push_back(segment);
+		dotCount++;
 	}
-	if (dotCount != 3)
-		throw std::invalid_argument("Error: invalid host directive");
-	return (host_rule);
+
+	if (dotCount != 4) {
+		throw std::invalid_argument("Error: invalid host directive (incorrect number of octets)");
+	}
+
+	for (const std::string &octet : octets)
+	{
+		if (octet.empty() || octet.length() > 3)
+			throw std::invalid_argument("Error: invalid octet in host directive");
+		for (char c : octet) 
+		{
+			if (!isdigit(c))
+				throw std::invalid_argument("Error: invalid character in host directive");
+		}
+
+		int num = std::stoi(octet);
+		if (num < 0 || num > 255)
+			throw std::invalid_argument("Error: invalid IP range in host directive");
+	}
+	return host_rule;
 }
 
 size_t Config::validateTimeout()

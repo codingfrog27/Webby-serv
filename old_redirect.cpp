@@ -73,7 +73,7 @@ void sendHTMLPage(int client_socket, const std::string& file_path)
 // 	location	*reqRules;
 // 	location	*nestRules;
 // 	size_t		matchCount = 0;
-// 	std::vector<location> &locVec = this->_config->_locations;
+// 	std::vector<location> *locVec = &this->_config->_locations;
 // 	// std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
 // 	// << "FD == " << _clientFD << std::endl;
 // 	if (locVec.empty())
