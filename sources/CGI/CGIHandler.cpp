@@ -10,18 +10,21 @@ connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd> &CGIPo
 	if (connection->_cgi == 0 && connection->_CStatus == connectStatus::CGI_REQUIRED){
 		if (request->_method_type != Http_method::GET && request->_method_type !=  Http_method::POST){
 			request->_statusCode = 405;
+			request->_statusStr = "405 Method Not Allowed";
 			request->_filePath = response->getHeader("Root") + "cgi-bin/error.js";
 			request->_method_type = Http_method::GET;
 			return connectStatus::CGI_REQUIRED;
 		}
 		if (request->_filePath.find("cgi-bin/", 0) == std::string::npos){
 			request->_statusCode = 403;
+			request->_statusStr = "403 Forbidden";
 			request->_filePath = response->getHeader("Root") + "cgi-bin/error.js";
 			request->_method_type = Http_method::GET;
 			return connectStatus::CGI_REQUIRED;
 		}
 		if (!fileExists(request->_filePath)){
 			request->_statusCode = 404;
+			request->_statusStr = "404 Not Found";
 			request->_filePath = response->getHeader("Root") + "cgi-bin/error.js";
 			request->_method_type = Http_method::GET;
 			return connectStatus::CGI_REQUIRED;

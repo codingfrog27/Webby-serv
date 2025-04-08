@@ -37,7 +37,7 @@ class Response{
 		Response &										operator=(const Response& obj);
 
 		connectStatus									responseHandler(Request* request);
-		void											autoFillResponse(std::string status);
+		void											autoFillResponse(std::string status, std::string path);
 		std::string										generateResponse() const;
 
 		void											setHTTPVersion(std::string HTTPversion);
@@ -63,6 +63,7 @@ class Response{
 	private:
 		responseHandlerStatus							_responseHandlerStatus;
 		std::string										_httpVersion;
+		std::string										_root;
 		std::ofstream									_outFile;
 		std::ifstream									_inFile;
 		std::string										_status;

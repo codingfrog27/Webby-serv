@@ -12,17 +12,17 @@ CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(co
 	_bytesWrittenToChild = 0;
 
 	if (pipe(_fdIn) == -1) {
-		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdIn");
+		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdIn", NULL);
 		return ;
 	}
 	if (pipe(_fdOut) == -1) {
 		closePipes();
-		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdOut");
+		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdOut", NULL);
 		return ;
 	}
 	if (pipe(_fdError) == -1) {
 		closePipes();
-		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdError");
+		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdError", NULL);
 		return ;
 	}
 	if (connection->_request._method_type == Http_method::POST){
@@ -48,7 +48,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
 	_PID = fork();
 	if (_PID == -1){
 		closePipes();
-		response->autoFillResponse("500 Internal Server Error: fork");
+		response->autoFillResponse("500 Internal Server Error: fork", NULL);
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 		return ;
 	}
@@ -78,7 +78,7 @@ void CGI::writeToCGI(Request* request, Response* response) {
 	int bytes = write(_fdIn[1], request->getBody().data() + _bytesWrittenToChild, n);
 	if (bytes == -1){
 		// Handle error
-		response->autoFillResponse("500 Internal Server Error: write");
+		response->autoFillResponse("500 Internal Server Error: write", NULL);
 		closePipes();
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 		return ;
@@ -112,7 +112,7 @@ void CGI::readFromCGI(Response* response) {
 	}
 	else {
 		// Handle error
-		response->autoFillResponse("500 Internal Server Error: read");
+		response->autoFillResponse("500 Internal Server Error: read", NULL);
 		closePipes();
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 	}
@@ -130,7 +130,7 @@ void CGI::readErrorFromCGI(Response* response) {
 			// End of file
 			close(_fdError[0]);
 			if (!_scriptError.empty()) {
-				response->autoFillResponse("500 Internal Server Error: script: " + _scriptError);
+				response->autoFillResponse("500 Internal Server Error: script: " + _scriptError, NULL);
 			}
 			_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 		}
@@ -139,14 +139,14 @@ void CGI::readErrorFromCGI(Response* response) {
 		// End of file
 		close(_fdError[0]);
 		if (!_scriptError.empty()) {
-			response->autoFillResponse("500 Internal Server Error: script: " + _scriptError);
+			response->autoFillResponse("500 Internal Server Error: script: " + _scriptError, NULL);
 		}
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 		response->setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
 	}
 	else {
 		// Handle error
-		response->autoFillResponse("500 Internal Server Error: read");
+		response->autoFillResponse("500 Internal Server Error: read", NULL);
 		closePipes();
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 	}
@@ -157,7 +157,7 @@ bool	CGI::childIsRunning(Response* response){
 	int status = 0;
 	pid_t result = waitpid(_PID, &status, WNOHANG);
 	if (result == -1) {
-		response->autoFillResponse("500 Internal Server Error: waitpid");
+		response->autoFillResponse("500 Internal Server Error: waitpid", NULL);
 		closePipes();
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 		return false;
@@ -173,7 +173,7 @@ void	CGI::executeScript(Request* request, Response* response){
 	std::string arg = request->_filePath.substr(request->_filePath.rfind("/") + 1);
 	char* argv[] = {const_cast<char *>(arg.c_str()), NULL};
 	if (execve(request->_filePath.c_str(), argv, _envp.data()) == -1){
-		response->autoFillResponse("500 Internal Server Error: execve : " + std::string(strerror(errno)));
+		response->autoFillResponse("500 Internal Server Error: execve : " + std::string(strerror(errno)), NULL);
 		exit(1);
 	}
 	return ;
