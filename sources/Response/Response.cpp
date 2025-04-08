@@ -38,18 +38,6 @@ Response::~Response(){
 	return ;
 }
 
-// void	Response::autoFillResponse(std::string status){
-// 	Response::setStatus(status);
-// 	if (!_body.empty())
-// 		_body.clear();
-// 	Response::setHeaders("Content-Type", "text/plain");
-// 	Response::setHeaders("Content-Length", std::to_string(status.length()));
-// 	Response::setBody(status);
-// 	Response::setResponseBuffer(Response::generateResponse());
-// 	_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
-// 	return ;
-// }
-
 void	Response::autoFillResponse(std::string status, std::string path){
 	if (path.empty())
 		path = _root + "/error/" + status.substr(0, 3) + ".html";
@@ -58,12 +46,10 @@ void	Response::autoFillResponse(std::string status, std::string path){
 	size_t			size = 0;
 	std::ifstream	file(path);
 
-	std::cout << MAGENTA "autoFillResponse: " << path << RESET << std::endl;
 	Response::setStatus(status);
 	if (!_body.empty())
 		_body.clear();
 	if (file.is_open()){
-		std::cout << YELLOW "file is open" RESET << std::endl;
 		file.seekg(0, std::ios::end);
 		size = file.tellg();
 		file.seekg(0, std::ios::beg);
@@ -78,13 +64,11 @@ void	Response::autoFillResponse(std::string status, std::string path){
 		file.close();
 	}
 	else{
-		// std::cout << YELLOW "file is not open" RESET << std::endl;
 		Response::setHeaders("Content-Type", "text/plain");
 		Response::setHeaders("Content-Length", std::to_string(status.length()));
 		Response::setBody(status);
 	}
 	Response::setResponseBuffer(Response::generateResponse());
-	std::cout << MAGENTA "ResponseBuffer: " << _responseBuffer << RESET << std::endl;
 	_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 	return ;
 }
