@@ -36,8 +36,6 @@
 #define BUFFER_SIZE 1024
 #define PLACEHOLDER_MAX_SIZE 1000000
 
-
-//unsigned char vector iterator
 typedef std::vector<unsigned char>::iterator t_ucit;
 enum class connectStatus;
 
@@ -72,8 +70,8 @@ class Request
 		bool					_dataIsChunked;
 		bool					_headerAreParsed;
 		bool					_hasBody;
-		size_t					_contentLen; //need to put in init list
-		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
+		size_t					_contentLen;
+		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE;
 		t_secs					_timeoutTime;
 		t_time					_startTime;
 		std::string				_root;
@@ -119,19 +117,15 @@ class Request
 		std::string					_statusStr;
 		int							_statusCode;
 		bool						_dirListing;
-		// bool						_error_occured;
-		// Constructors and Destructors
+
 						Request(void) = delete;
 						Request(Config *config, int _clientFD);
 						Request(const Request &rhs);
 		Request 		&operator=(const Request &rhs);
 						~Request(void);
 
-
-		//get and setters
 		const std::string	&getBody();
 
-		//public methods
 		connectStatus	readRequest();
 		std::string		getHeaderValue(std::string key);
 		bool			headerExists(std::string key);
@@ -142,4 +136,3 @@ class Request
 };
 
 std::string trim(const std::string& str);
-//bleb

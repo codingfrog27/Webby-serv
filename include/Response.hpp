@@ -49,9 +49,6 @@ class Response{
 		void											setBody(std::vector<char>);
 		void											setResponseBuffer(std::string buffer);
 		void											setBytesWritten(size_t bytesWritten);
-		// void											setCGI(CGI* cgi);
-		// void											setOutFile(std::ofstream&& outFile);
-		// void											setInFile(std::ifstream&& inFile);
 
 		responseHandlerStatus							getResponseHandlerStatus() const;
 		std::ofstream&									getOutFile();
@@ -62,7 +59,6 @@ class Response{
 		std::string										getResponseBuffer() const;
 		size_t											getBytesWritten() const;
 		connectStatus									writeResponse(int FD);
-		// CGI*											getCGI() const;
 
 	private:
 		responseHandlerStatus							_responseHandlerStatus;

@@ -49,22 +49,8 @@ std::string	getErrorPageMapKey(std::string& errorPage_value)
 	{
 		if (isdigit(errorPage_key[i]))
 			digits++;
-		// if (digits > 3 || !isdigit(errorPage_key[i]))
-		// 	throw std::invalid_argument("Error: invalid error_page code directive");
 	}
 	return (errorPage_key);
-}
-
-std::string getErrorPageMapValue(std::string& errorPage_value)
-{
-	std::string errorPage_path = errorPage_value.substr(4, errorPage_value.length());
-
-	for (size_t i = 0; i < errorPage_path.length(); i++)
-	{
-		// if (!isdigit(errorPage_path[i]) && !isalpha(errorPage_path[i]) && errorPage_path[i] != '/' && errorPage_path[i] != '.')
-		// 	throw std::invalid_argument("Error: invalid character in error_page directive");
-	}
-	return (errorPage_path);
 }
 
 std::multimap<std::string, std::string> Config::validateErrorPage()
@@ -81,9 +67,6 @@ std::multimap<std::string, std::string> Config::validateErrorPage()
 
         while (iss >> errorCode >> errorPage)
         {
-            // if (errorPage[0] != '/')
-            //     throw std::invalid_argument("Error: invalid path in error_page directive");
-
             for (char c : errorPage)
             {
                 if (!isdigit(c) && !isalpha(c) && c != '/' && c != '.' && c != '_')
@@ -311,7 +294,7 @@ std::string Config::validateRoot()
 			!= '/' && root_value[i] != '.' && root_value[i] != '_')
 			throw std::invalid_argument("Error: invalid root path directive");
 	}
-	root_value.erase(0, 1); //hi antonio im removing leading root / for correct filepathing :)
+	root_value.erase(0, 1);
 	return (root_value);
 }
 
@@ -338,11 +321,7 @@ bool		Config::validateAutoindex()
 	
 	return (true);
 }
-/**
- * @brief A simple check to see if none of the server blocks are trying to listen on the same port
- *
- * @param configs vector of config objects to check
- */
+
 void	checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs)
 {
 	for (size_t i = 0; i < configs.size(); i++)

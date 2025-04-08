@@ -25,9 +25,8 @@ void	parseConfig(int argc, char ** argv, std::vector<Config> &configs)
 		if (argc != 2)
 			throw Config::NoBlockFound("please oprovide a config file (and no other arguments)");
 		configs = readConfigFile(argv[1]);
-		// printConfigs(configs);
 	}
-	catch(const Config::NoBlockFound &e) //general config error
+	catch(const Config::NoBlockFound &e)
 	{
 		std::cout << e.what() << "\n running with default config values" << std::endl;
 		configs.emplace_back();
@@ -49,12 +48,9 @@ std::vector<Config>	readConfigFile(const std::string fileName)
 			continue;
 		if (line.find("server {") != std::string::npos)
 			Configs.emplace_back(file, line);
-		// else
-			// throw std::invalid_argument("non comment text between server blocks! >:(");
 	}
 	if (Configs.empty())
 		throw Config::NoBlockFound("no server blocks found! be sure to start your block wit \"server {\"");
-	// checkPortUniqueness(Configs);
 	return (Configs);
 }
 

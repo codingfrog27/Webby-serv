@@ -34,27 +34,20 @@
 
 class NicePrint {
 public:
-	// Constructors
 	NicePrint() = default;
 	NicePrint(const NicePrint &other);
 	NicePrint& operator=(const NicePrint &other);
 	~NicePrint()  = default;
 
-
-	// Other member functions
 	void	count_down(int counter);
 	void	stagger_print(std::string msg, size_t ms);
 	void	high_five_loop();
 	void	greeter();
 	static void	promptEnter();
 	void	printLine() const;
-	// void	newline();
 	const std::string div = "--------------------------------------------";
 	const std::string div_s = "--------------";
 
-private:
-	// Member variables
 };
-//const (and constexpr) can be defined directly in the header in c++11 and later :)
 
-#endif // NICEPRINT_HPP
+#endif

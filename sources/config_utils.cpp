@@ -19,9 +19,7 @@ std::ostream& operator<<(std::ostream& os, const Config& config)
 	os << "Root: " << config._rootDir << "\n";
 	os << "Listen: " << config._listen << "\n";
 	os << "Host: " << config._host << "\n";
-	// os << "Error Page: " << config._errorPage << "\n";
 	os << "Max Body Size: " << config._client_max_body_size << "\n";
-	// os << "Index: " << config._index << "\n";
     return os;
 }
 
@@ -56,7 +54,6 @@ void	print_map(const std::unordered_map<std::string, std::string> map)
 {
 	for(auto i : map)
 	{
-		// for (auto x : i.second)
 		std::cout << "Key: " << i.first << "\t" << "Value: " << i.second << std::endl;
 	}
 }

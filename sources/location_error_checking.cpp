@@ -156,7 +156,7 @@ std::string location::validateAlias()
 std::string	location::findLocationName(std::string locationLine)
 {
 	size_t end = locationLine.rfind('{');
-	std::string locationName = locationLine.substr(10, end - 11); //is this ok? seems unsafe
+	std::string locationName = locationLine.substr(10, end - 11);
 	return (locationName);
 }
 
@@ -233,8 +233,6 @@ std::vector<std::string>		location::validateIndex()
 			}
 		}
 	}
-	// for (size_t i = tmp_vector.begin(); i < tmp_vector.end(); i++)
-	// 	std::cout << *i << std::endl;
 	return (tmp_vector);
 }
 
