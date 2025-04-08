@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   config_error_checking.cpp                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/19 15:09:38 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   config_error_checking.cpp                          :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/11/06 19:41:53 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/04/08 14:51:56 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,6 +181,8 @@ std::string Config::validateMaxBodySize()
 	return (maxBodySize_value + lastChar);
 }
 
+
+
 std::string Config::validateHost()
 {
 	std::string host_rule;
@@ -223,7 +225,7 @@ std::string Config::validateHost()
 		if (num < 0 || num > 255)
 			throw std::invalid_argument("Error: invalid IP range in host directive");
 	}
-	return host_rule;
+	return host_value;
 }
 
 size_t Config::validateTimeout()
