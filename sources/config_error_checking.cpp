@@ -53,33 +53,42 @@ std::string	getErrorPageMapKey(std::string& errorPage_value)
 	return (errorPage_key);
 }
 
-std::multimap<std::string, std::string> Config::validateErrorPage()
+std::unordered_map<std::string, std::string> Config::validateErrorPage()
 {
-    std::multimap<std::string, std::string> tmpErrorPageMap;
+    std::unordered_map<std::string, std::string> tmpErrorPageMap;
 
-    auto range = _rulemap.equal_range("error_page");
-    for (auto it = range.first; it != range.second; ++it)
+    if (_rulemap.contains("error_page"))
     {
-        std::string errorPage_rule = normalize_space(it->second);
+        auto found = _rulemap.find("error_page");
+        std::string errorPage_rule = normalize_space(found->second);
         std::istringstream iss(errorPage_rule);
-        std::string errorCode;
-        std::string errorPage;
+        std::string token, errorPage;
+        std::vector<std::string> errorCodes;
 
-        while (iss >> errorCode >> errorPage)
-        {
-            for (char c : errorPage)
-            {
-                if (!isdigit(c) && !isalpha(c) && c != '/' && c != '.' && c != '_')
-                    throw std::invalid_argument("Error: invalid character in error_page directive");
+        iss >> token;
+
+        while (iss >> token) 
+		{
+            if (std::isdigit(token[0]))
+                errorCodes.push_back(token);
+			else 
+			{
+                errorPage = token;
+                for (char c : errorPage) 
+				{
+                    if (!isdigit(c) && !isalpha(c) && c != '/' && c != '.' && c != '_') 
+                        throw std::invalid_argument("Error: invalid character in error_page directive");
+                }
+                for (const auto &code : errorCodes) 
+                    tmpErrorPageMap[code] = errorPage;
+                errorCodes.clear();
             }
-            tmpErrorPageMap.emplace(errorCode, errorPage);
         }
     }
-
     if (tmpErrorPageMap.empty())
         throw std::invalid_argument("Error: no valid error_page directives found");
 
-    return tmpErrorPageMap;
+    return (tmpErrorPageMap);
 }
 
 std::vector<std::string>		Config::ValidateIndex()
