@@ -127,7 +127,7 @@ connectStatus	Response::responseHandler(Request* request){
 		if (request->getConfig()->_errorPage.find(std::to_string(request->_statusCode)) != request->getConfig()->_errorPage.end()){
 			request->_filePath = request->getConfig()->_errorPage[std::to_string(request->_statusCode)];
 			if (request->_filePath == "default"){
-				request->_filePath = _root + "cgi-bin/error.js";
+				request->_filePath = _root + "/cgi-bin/error.js";
 				request->_method_type = Http_method::GET;
 				return connectStatus::CGI_REQUIRED;
 			}
@@ -138,7 +138,7 @@ connectStatus	Response::responseHandler(Request* request){
 			}
 		}
 		else{
-			request->_filePath = _root + "cgi-bin/error.js";
+			request->_filePath = _root + "/cgi-bin/error.js";
 			request->_method_type = Http_method::GET;
 			return connectStatus::CGI_REQUIRED;
 		}

@@ -42,7 +42,7 @@ void	Response::autoFillResponse(std::string status, std::string path){
 	if (path.empty())
 		path = _root + "/error/" + status.substr(0, 3) + ".html";
 	else
-		path = _root + path.erase(0, 1);
+		path = _root + path;
 	size_t			size = 0;
 	std::ifstream	file(path);
 

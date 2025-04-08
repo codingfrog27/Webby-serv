@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/08 16:11:25 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/08 19:45:54 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ size_t	Request::parse_req_line(std::string req_line)
 {
 	size_t	line_end, method_end, uri_end;
 
-	std::cout << MAGENTA "req line: " RESET << req_line << std::endl;
+	// std::cout << MAGENTA "req line: " RESET << req_line << std::endl;
 	line_end = req_line.find("\r\n");
 	if (line_end == 0)
 	{
@@ -58,8 +58,8 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_host.length());
 	if (resolved.find(_config->_listen) != std::string::npos)
 		resolved.erase(0, _config->_listen.length() + 1);
-	if (resolved.front() == '/')
-		resolved.erase(0, 1);
+	// if (resolved.front() == '/')
+	// 	resolved.erase(0, 1);
 	_filePath = trim(resolved);
 	RouteRuleHandler();
 	_filePath = trim(_root) + _filePath;
@@ -173,11 +173,11 @@ bool	Request::dechunkBody()
 void	Request::parseBody()
 {
 	std::string		content_type = getHeaderValue("Content-Type");
-	std::cout << LILAC "path " << _filePath << std::endl;
-	std::cout << "content type: " << content_type << std::endl;
-	std::cout << "content length: " << _contentLen << std::endl;
-	std::cout << "body: " << _reqBody << std::endl;
-	std::cout << "raw data: " RESET << std::string(_rawRequestData.begin(), _rawRequestData.end()) << std::endl;
+	// std::cout << LILAC "path " << _filePath << std::endl;
+	// std::cout << "content type: " << content_type << std::endl;
+	// std::cout << "content length: " << _contentLen << std::endl;
+	// std::cout << "body: " << _reqBody << std::endl;
+	// std::cout << "raw data: " RESET << std::string(_rawRequestData.begin(), _rawRequestData.end()) << std::endl;
 	if(content_type.compare(0, 30, "multipart/form-data; boundary=") == 0){
 		std::cout << RED "is triggered" RESET << std::endl;
 		parseFormData(content_type);

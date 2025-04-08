@@ -41,24 +41,30 @@ void	Request::RouteRuleHandler()
 	if (locPtr == nullptr)
 		return;
 	reqRules = *locPtr;
-	for (; !locVec->empty(); locVec = &locPtr->_nestedLocations)
+	if (!locPtr->_nestedLocations.empty()) 
 	{
-		locPtr = findLocationMatch(*locVec, matchCount);
-		if (locPtr == nullptr)
-			break;
-		setLocRules(reqRules, *locPtr);
+		for (; !locVec->empty(); locVec = &locPtr->_nestedLocations)
+		{
+			locPtr = findLocationMatch(*locVec, matchCount);
+			if (locPtr == nullptr)
+				break;
+			setLocRules(reqRules, *locPtr);
+		}
 	}
 	checkRules(reqRules);
 }
 
 location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
 {
-	size_t	newSize;
-	location *ret;
-	bool	matchFound = false;
+	size_t		newSize;
+	location	*ret = nullptr, *root = nullptr;
+	bool		matchFound = false;
 	for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
 	{
-		newSize = countPathMatch(_filePath, it->getName());
+		std::string	&locpath = it->getName();
+		if (locpath == "/")
+			root = &(*it);
+		newSize = countPathMatch(_filePath, locpath);
 		if (newSize > matchCount)
 		{
 			std::cout << MAGENTA "MATCH FOUND" RESET << std::endl;
@@ -70,7 +76,19 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 		}
 	}
 	if (matchFound)
-		return (ret);
+	{
+		if (matchCount > 1)
+		{
+			std::cout << "REAL MATHC FOUND BBY match == " << ret->getName() << " reqpath == " << this->_filePath << std::endl;
+			return (ret);
+		}
+		else if (root != nullptr)
+		{
+			std::cout << "root match uwu" << std::endl;
+			return (root);
+		}
+	}
+	std::cout << "NO MATHC FOUND wompwomp" << std::endl;
 	return (nullptr);
 }
 
