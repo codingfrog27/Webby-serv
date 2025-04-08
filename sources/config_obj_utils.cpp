@@ -140,12 +140,12 @@ void	Config::setHost(const std::string &host)
 	this->_host = host;
 }
 
-std::multimap<std::string, std::string>	Config::getErrorPage()
+std::unordered_map<std::string, std::string>	Config::getErrorPage()
 {
 	return(this->_errorPage);
 }
 
-void	Config::setErrorPage(const std::multimap<std::string, std::string> &errorPageMap)
+void	Config::setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap)
 {
 	this->_errorPage = errorPageMap;
 }

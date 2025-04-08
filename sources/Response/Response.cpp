@@ -8,7 +8,7 @@ Response::Response(Config *config) {
 	this->_bytesWritten = 0;
 	this->_timesWriteFailed = 0;
 	this->setHTTPVersion("HTTP/1.1");
-	setHeaders("Root", config->_rootDir);
+	this->_root = config->_rootDir;
 	return ;
 }
 
@@ -21,6 +21,7 @@ Response &	Response::operator=(const Response &rhs)
 	if (this != &rhs)
 	{
 		_httpVersion = rhs._httpVersion;
+		_root = rhs._root;
 		_responseHandlerStatus = rhs._responseHandlerStatus;
 		_status = rhs._status;
 		_headers = rhs._headers;
@@ -37,13 +38,36 @@ Response::~Response(){
 	return ;
 }
 
-void	Response::autoFillResponse(std::string status){
+void	Response::autoFillResponse(std::string status, std::string path){
+	if (path.empty())
+		path = _root + "/error/" + status.substr(0, 3) + ".html";
+	else
+		path = _root + path.erase(0, 1);
+	size_t			size = 0;
+	std::ifstream	file(path);
+
 	Response::setStatus(status);
 	if (!_body.empty())
 		_body.clear();
-	Response::setHeaders("Content-Type", "text/plain");
-	Response::setHeaders("Content-Length", std::to_string(status.length()));
-	Response::setBody(status);
+	if (file.is_open()){
+		file.seekg(0, std::ios::end);
+		size = file.tellg();
+		file.seekg(0, std::ios::beg);
+		std::vector<char> buffer(size + 1);
+		if (file.read(buffer.data(), size)){
+			Response::setContentType(path);
+			Response::setHeaders("Content-Length", std::to_string(size));
+			Response::setBody(buffer.data());
+		}
+		else
+			Response::autoFillResponse("500 Internal Server Error", NULL);
+		file.close();
+	}
+	else{
+		Response::setHeaders("Content-Type", "text/plain");
+		Response::setHeaders("Content-Length", std::to_string(status.length()));
+		Response::setBody(status);
+	}
 	Response::setResponseBuffer(Response::generateResponse());
 	_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 	return ;
@@ -75,7 +99,7 @@ connectStatus Response::writeResponse(int FD){
 			setResponseHandlerStatus(responseHandlerStatus::FINISHED);
 			return connectStatus::FINISHED;
 		}
-		autoFillResponse("500 Internal Server Error: write");
+		autoFillResponse("500 Internal Server Error: write", NULL);
 		_timesWriteFailed++;
 		return connectStatus::RESPONDING;
 	}

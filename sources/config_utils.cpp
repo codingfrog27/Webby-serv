@@ -94,10 +94,15 @@ void printConfigs(std::vector<Config> &configs)
 		}
 		std::cout << std::endl;
 
-		std::multimap<std::string, std::string> errorPage = configs[i].getErrorPage();
-		std::cout << "Server ErrorPage: ";
-		for (const auto &idx : errorPage) {
-			std::cout << "[" << idx.first << " -> " << idx.second << "] ";
+		std::unordered_map<std::string, std::string> errorPage = configs[i].getErrorPage();
+
+		if (errorPage.empty()) {
+			std::cout << "Server ErrorPage: (empty)" << std::endl;
+		} else {
+			std::cout << "Server ErrorPage: ";
+			for (const auto &idx : errorPage) {
+				std::cout << "[" << idx.first << " -> " << idx.second << "] ";
+			}
 		}
 		std::cout << std::endl;
 
