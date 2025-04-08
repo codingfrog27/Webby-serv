@@ -22,25 +22,25 @@ else:
 
 # Start HTML output
 body = f"""<!DOCTYPE html>
-<head> <!-- head is for meta info (running theme ig xd) -->
+<head>
 	<title>Delete file - Team Mustache</title>
 	<link rel="stylesheet" type="text/css" href="/css/styles.css">
 	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
 </head>
-<body> <!-- all the actual page content -->
-	<header> <!-- usually used as introduction of page with links or a logo -->
-		<h1>hey there ;)</h1> <!-- h1 == bigger text -->
-		<nav> <!-- nav == navigation links -->
-			<ul> <!-- unorder list -->
-				<li><a href="index.html">Home</a></li> <!-- li == list item, A is for links -->
-				<li><a href="about.html">About Us</a></li>
-				<li><a href="cgi-bin/list_files.py">Uploads</a></li>
-				<li><a href="contact.html">Contact</a></li>
+<body>
+	<header>
+		<h1>hey there ;)</h1>
+		<nav>
+			<ul>
+				<li><a href="/index.html">Home</a></li>
+				<li><a href="/about.html">About Us</a></li>
+				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+				<li><a href="/contact.html">Contact</a></li>
 			</ul>
 		</nav>
 	</header>
 
-	<main> <!-- main page content -->
+	<main>
 		<section>
 			<h2>Delete a file</h2>
 			<form action="/cgi-bin/delete.py" method="post">
