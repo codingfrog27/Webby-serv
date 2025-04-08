@@ -15,9 +15,10 @@
 
 std::string	find_value(std::string& directive)
 {
+	std::string directive_without_space = normalize_space(directive);
 	std::string value;
 
-	if (directive.length() == 0)
+	if (directive_without_space.length() == 0)
 		throw std::invalid_argument("Error: directive is empty");
 
 	int i = 0;
@@ -85,9 +86,6 @@ std::unordered_map<std::string, std::string> Config::validateErrorPage()
             }
         }
     }
-    if (tmpErrorPageMap.empty())
-        throw std::invalid_argument("Error: no valid error_page directives found");
-
     return (tmpErrorPageMap);
 }
 
