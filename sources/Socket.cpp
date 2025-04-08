@@ -24,7 +24,7 @@ Socket::Socket(Config *config, const struct addrinfo *addressInfo)
 	{
 		if(_socketFd)
 			close(_socketFd);
-		std::cout << e.what() << '\n';
+		std::cout << e.what() << "\nserver setup failed, shutting down" << std::endl;
 		exit(1); //think we can exit cause  server socket creation kinda vital?
 	}
 	
@@ -46,7 +46,16 @@ void	Socket::openSocket()
 		throw std::runtime_error(std::string("setsockopt error: ") + strerror(errno));
 	if (bind(_socketFd, _addrInfo->ai_addr, _addrInfo->ai_addrlen) == -1)
 		throw std::runtime_error(std::string("Bind errorr: ") + strerror(errno));
-	listen(_socketFd, 20); //SET TO CONFIG VALUE
+	if (listen(_socketFd, 20) < 0) //SET TO CONFIG VALUE
+		throw std::runtime_error(std::string("Listen Error: ") + strerror(errno));
+	int listening = 0;
+	socklen_t len = sizeof(listening);
+	getsockopt(_socketFd, SOL_SOCKET, SO_ACCEPTCONN, &listening, &len);
+	if (!listening) {
+		std::cerr << "ERROR: FD is not a listening socket!" << std::endl;
+	}
+	std::cout << CYAN "socket opened" << std::endl;
+	freeaddrinfo(const_cast<struct addrinfo *>(_addrInfo));
 }
 
 void *Socket::get_in_addr(struct sockaddr *sa)
