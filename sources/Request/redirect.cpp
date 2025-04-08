@@ -2,32 +2,6 @@
 #include <filesystem>
 #include "socket.hpp"
 
-std::string generate_directory_listing(const std::string& _filePath) //should become response func 
-{
-	std::ostringstream html;
-
-	html << "<html><head><title>Directory Listing</title></head><body>\n";
-	html << "<h1>Directory listing for " << _filePath << "</h1>\n";
-	html << "<ul>\n";
-
-	if (std::filesystem::exists(_filePath) && std::filesystem::is_directory(_filePath))
-	{
-		for (const auto& it : std::filesystem::directory_iterator(_filePath)) 
-		{
-			std::string entry_name = it.path().filename().string();
-			if (it.is_directory()) 
-				html << "<li><a href='" << entry_name << "/'>" << entry_name << "/</a></li>\n";
-			else 
-				html << "<li><a href='" << entry_name << "'>" << entry_name << "</a></li>\n";
-		}
-	}
-
-	html << "</ul>\n";
-	html << "</body></html>\n";
-
-	return html.str();
-}
-
 void	Request::RouteRuleHandler()
 {
 	location	*locPtr;
@@ -53,7 +27,7 @@ void	Request::RouteRuleHandler()
 	}
 	checkRules(reqRules);
 }
-
+ 
 location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
 {
 	size_t		newSize;

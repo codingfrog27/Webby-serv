@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/08 20:04:19 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/08 20:22:22 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ Request::operator=(const Request &rhs)
 		_doneReading = rhs._doneReading;
 		_statusStr = rhs._statusStr;
 		_statusCode = rhs._statusCode;
+		_dirListing = rhs._dirListing;
 		// _CGIRequired = rhs._CGIRequired;
 		// _customConf = std::make_unique<CustomConfig>(*rhs._customConf);
 	}

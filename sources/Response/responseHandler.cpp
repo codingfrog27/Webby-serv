@@ -8,6 +8,18 @@ void	Response::getMethod(Request* request){
 	size_t size = 0;
 
 	if(_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS){
+		if (request->_dirListing == true){
+			std::cout << MAGENTA "Directory listing requested" RESET << std::endl;
+			std::string dirListing = generateDirectoryListing(request->_filePath);
+			setHeaders("Content-Type", "text/html");
+			setHeaders("Content-Length", std::to_string(dirListing.size()));
+			setBody(dirListing);
+			setStatus("200 OK");
+			setResponseBuffer(generateResponse());
+			std::cout << CYAN "Response buffer: " << getResponseBuffer() << RESET << std::endl;
+			_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
+			return ;
+		}
 		if (fileExists(request->_filePath)){
 			setContentType(request->_filePath);
 			if (getReadingModeFromResponse() == BINARY)

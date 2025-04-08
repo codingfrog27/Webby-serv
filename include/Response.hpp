@@ -60,6 +60,8 @@ class Response{
 		size_t											getBytesWritten() const;
 		connectStatus									writeResponse(int FD);
 
+		std::string										generateDirectoryListing(const std::string& _filePath);
+
 	private:
 		responseHandlerStatus							_responseHandlerStatus;
 		std::string										_httpVersion;
