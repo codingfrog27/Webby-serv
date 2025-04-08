@@ -20,7 +20,7 @@ int main(int argc, char ** argv) {
 	try
 	{
 		parseConfig(argc, argv, configs);
-		std::cout << "ROOT == " << configs[0]._rootDir << std::endl;
+		// std::cout << "ROOT == " << configs[0]._rootDir << std::endl;
 		printConfigs(configs);
 		Server _webbyserv(configs);
 		_webbyserv.main_server_loop();

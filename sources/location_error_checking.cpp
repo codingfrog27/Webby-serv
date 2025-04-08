@@ -1,4 +1,5 @@
 #include "location.hpp"
+#include <sstream>
 
 std::string	find_value_location(std::string& directive)
 {
@@ -18,6 +19,8 @@ std::string	find_value_location(std::string& directive)
 		}
 		i++;
 	}
+	if (value.length() == 0)
+		throw std::invalid_argument("Error: directive is empty");
 	return (value);
 }
 
@@ -186,54 +189,31 @@ std::string location::validateLocationName(std::string line)
 	return (location_name_value);
 }
 
-std::vector<std::string>		location::validateIndex()
+std::vector<std::string> location::validateIndex()
 {
-	std::string index_rule;
-	std::string index_value;
-	std::string tmp_value;
-	std::vector<std::string>  tmp_vector;
-	
-	static int space = 0;
+    std::vector<std::string> tmp_vector;
+    std::string index_rule, index_value;
 
-	if (_rulemap.contains("index"))
-	{
-		index_rule = normalize_space_location(_rulemap.at("index"));
-		index_value = find_value_location(index_rule);
-	}
-	else
-		return (tmp_vector);
-	for (size_t i = 0; i < index_value.length(); i++)
-	{
-		if (isspace(index_value[i]))
-			i++;
-		if (!isalpha(index_value[i]) && !isdigit(index_value[i]) && index_value[i] != '-' && index_value[i] != '.')
-			throw std::invalid_argument("Error: invalid character in index directive");
-	}
-	for (size_t i = 0; i < index_value.length(); i++)
-	{
-		if (isspace(index_value[i]))
-			space++;
-	}
-	if (space == 0)
-	{
-		tmp_value = index_value.substr(0, index_value.length());
-		tmp_vector.push_back(tmp_value);
-	}
-	else
-	{
-		size_t j = 0;
-		for (size_t i = 0; i < index_value.length(); i++)
-		{
-			if (!isspace(index_value[i]))
-			{	
-				for (j = i; !isspace(index_value[j]) && j < (index_value.length()); j++)
-					tmp_value = index_value.substr(i, j - i);
-				tmp_vector.push_back(tmp_value);
-				i = j;	
-			}
-		}
-	}
-	return (tmp_vector);
+    if (_rulemap.contains("index"))
+    {
+        index_rule = normalize_space_location(_rulemap.at("index"));
+        index_value = find_value_location(index_rule);
+    }
+    else
+        return (tmp_vector);
+
+    for (char c : index_value)
+    {
+        if (!std::isalnum(c) && c != '-' && c != '.' && !std::isspace(c))
+            throw std::invalid_argument("Error: invalid character in index directive");
+    }
+
+    std::istringstream iss(index_value);
+    std::string word;
+    while (iss >> word)
+        tmp_vector.push_back(word);
+
+    return (tmp_vector);
 }
 
 std::string location::validateReturn()

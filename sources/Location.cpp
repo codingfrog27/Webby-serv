@@ -195,9 +195,6 @@ std::string location::toString() const
 
 void	location::initializeLocation()
 {
-	static int	count;
-	if (!count)
-		setName("loc1");
 	setAlias(validateAlias());
 	setAllowMethods(validateAllowMethods());
 	setAutoindex(validateAutoindex());
