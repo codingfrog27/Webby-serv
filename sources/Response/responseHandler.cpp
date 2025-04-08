@@ -116,7 +116,7 @@ connectStatus	Response::responseHandler(Request* request){
 	}
 	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && request->_statusCode != 0){ //if there was an error in (parsing) the request{}
 		request->_filePath = _headers["Root"] + "cgi-bin/error.js";
-		request->_method_type = GET;
+		request->_method_type = Http_method::GET;
 		return connectStatus::CGI_REQUIRED;
 	}
 	else{
