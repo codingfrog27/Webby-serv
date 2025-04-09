@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/08 15:28:03 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/09 17:50:36 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,7 @@ int Config::mapToMembers()
 				setAutoindex(validateAutoindex()); 
 				setListen(validateListen()); 
 				setMaxBodySize(validateMaxBodySize()); 
+				setMaxBodySizeLong(convertMaxBodySize());
 				setErrorPage(validateErrorPage());
 				setHost(validateHost());
 				setIndex(ValidateIndex());

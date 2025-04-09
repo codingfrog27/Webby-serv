@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/08 18:24:49 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/09 17:36:27 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ class Config
 		bool 		_autoindex;
 		std::string _autoIndexFilePath;
 		std::string _client_max_body_size;
+		long		_client_max_body_size_long;
 		std::unordered_map<std::string, std::string> _errorPage;
 		std::string _host;
 		std::vector<std::string> _index;
@@ -70,6 +71,7 @@ class Config
 	bool		getAutoindex();
 	std::unordered_map<std::string, std::string> getErrorPage();
 	std::string	getMaxBodySize();
+	long		getMaxBodySizeLong();
 	std::string	getHost();
 	std::vector<std::string> getIndex();
 	std::string	getListen();
@@ -96,6 +98,7 @@ class Config
 	void		setIndex(const std::vector<std::string> &index_vector);
 	void		setListen(const std::string &listen);
 	void		setMaxBodySize(const std::string &maxBodySize);
+	void		setMaxBodySizeLong(const long &maxBodySizeLong);
 	void		setRoot(const std::string &root);
 	void		setTimeout(const size_t& timeout);
 	void		setServerName(const std::string &serverName);
@@ -109,6 +112,7 @@ class Config
 	std::vector<std::string> ValidateIndex();
 	std::string	validateListen();
 	std::string validateMaxBodySize();
+	long		convertMaxBodySize();
 	std::string validateRoot();
 	size_t 		validateTimeout();
 	std::string validateServerName();

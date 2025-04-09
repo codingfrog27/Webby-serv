@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/08 14:51:56 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/09 17:49:38 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ std::string Config::validateMaxBodySize()
 	else
 		throw std::invalid_argument("Error: client_max_body_size directive not found");
 	char lastChar = maxBodySize_value.back();
-	if (lastChar == 'k' || lastChar == 'K' || lastChar == 'm' || lastChar == 'M' || lastChar == 'g' || lastChar == 'G')
+	if (lastChar == 'k' || lastChar == 'K' || lastChar == 'm' || lastChar == 'M' || lastChar == 'g' || lastChar == 'G' || std::isdigit(lastChar))
 		maxBodySize_value.pop_back();
 	else
 		throw std::invalid_argument("Error: invalid character in client_max_body_size directive");
@@ -167,7 +167,22 @@ std::string Config::validateMaxBodySize()
 	return (maxBodySize_value + lastChar);
 }
 
-
+long	Config::convertMaxBodySize(){
+	char lastChar = _client_max_body_size.back();
+	std::string maxBodySize_value;
+	if (std::isalpha(lastChar))
+		maxBodySize_value = _client_max_body_size.substr(0, _client_max_body_size.length() - 1);
+	else
+		maxBodySize_value = _client_max_body_size;
+	if (lastChar == 'k' || lastChar == 'K')
+		return (std::stol(maxBodySize_value) * 1024);
+	else if (lastChar == 'm' || lastChar == 'M')
+		return (std::stol(maxBodySize_value) * 1024 * 1024);
+	else if (lastChar == 'g' || lastChar == 'G')
+		return (std::stol(maxBodySize_value) * 1024 * 1024 * 1024);
+	else
+		return (std::stol(maxBodySize_value));
+}
 
 std::string Config::validateHost()
 {

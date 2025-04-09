@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/08 18:25:47 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/09 17:32:13 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,16 @@ std::string	Config::getMaxBodySize()
 void	Config::setMaxBodySize(const std::string &maxBodySize)
 {
 	this->_client_max_body_size = maxBodySize;
+}
+
+long	Config::getMaxBodySizeLong()
+{
+	return(this->_client_max_body_size_long);
+}
+
+void	Config::setMaxBodySizeLong(const long &maxBodySizeLong)
+{
+	this->_client_max_body_size_long = maxBodySizeLong;
 }
 
 std::vector<std::string>	Config::getIndex()
