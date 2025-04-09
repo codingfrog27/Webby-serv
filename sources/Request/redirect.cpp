@@ -7,7 +7,7 @@ void	Request::RouteRuleHandler()
 	location	*locPtr;
 	location	reqRules;
 	size_t		matchCount = 0;
-	std::cout << YELLOW "path before routehnandler == " RESET << _filePath << std::endl;
+	// std::cout << YELLOW "path before routehnandler == " RESET << _filePath << std::endl;
 	std::vector<location> *locVec = &this->_config->_locations;
 	if (locVec->empty())
 		return;
@@ -41,7 +41,7 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 		newSize = countPathMatch(_filePath, locpath);
 		if (newSize > matchCount)
 		{
-			std::cout << MAGENTA "MATCH FOUND" RESET << std::endl;
+			// std::cout << MAGENTA "MATCH FOUND" RESET << std::endl;
 			matchCount = newSize;
 			matchFound = true;
 			ret = &(*it);
@@ -53,16 +53,16 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 	{
 		if (matchCount > 1)
 		{
-			std::cout << "REAL MATHC FOUND BBY match == " << ret->getName() << " reqpath == " << this->_filePath << std::endl;
+			// std::cout << "REAL MATHC FOUND BBY match == " << ret->getName() << " reqpath == " << this->_filePath << std::endl;
 			return (ret);
 		}
 		else if (root != nullptr)
 		{
-			std::cout << "root match uwu" << std::endl;
+			// std::cout << "root match uwu" << std::endl;
 			return (root);
 		}
 	}
-	std::cout << "NO MATHC FOUND wompwomp" << std::endl;
+	// std::cout << "NO MATHC FOUND wompwomp" << std::endl;
 	return (nullptr);
 }
 
@@ -124,50 +124,56 @@ void  Request::checkRules(location &rules)
 		_statusStr = "301 Moved Permanently";
 		return;
 	}
-	isMethodAllowed(_method_type, rules.getAllowMethods());
-	if (!rules.getRoot().empty())
-	{
-		_filePath.find(_config->_rootDir);
-		_filePath.replace(0, _config->_rootDir.size(), rules.getRoot()); //???
-	}
-	else if (!rules.getAlias().empty()) //wrong, check merlin ss
-		this->_filePath = rules.getAlias();
-	else if (!rules.getIndex().empty()) //add to outside location as well!!
-	{
-		std::filesystem::path p = _filePath;
-		if (std::filesystem::is_directory(p))
-		{
-			std::vector<std::string> rules_index = rules.getIndex();
-			std::string tmp = this->_filePath;
+	// isMethodAllowed(_method_type, rules.getAllowMethods());
+	// if (!rules.getRoot().empty())
+	// {
+	// 	_filePath.find(_config->_rootDir);
+	// 	_filePath.replace(0, _config->_rootDir.size(), rules.getRoot()); //???
+	// }
+	// else if (!rules.getAlias().empty()) //wrong, check merlin ss
+	// 	this->_filePath = rules.getAlias();
+	checkIndex(rules);
+	// if (!rules.getCgiExtension().empty())
+	// {
+	// 	std::vector<std::string> cgi_extension = rules.getCgiExtension();
+	// 	size_t pos = _filePath.rfind('.');
+	// 	std::string extension_to_compare = _filePath.substr(pos + 1);
+	// 	std::cout << extension_to_compare << std::endl;
 
-			for (auto i : rules_index)
-			{
-				tmp += i;
-				if (fileExists(_filePath))
-				{
-					_filePath = tmp;
-					return;
-				}
-				tmp = _filePath;
-			}
-			if (rules.getAutoindex())
-				this->_dirListing = true;
-		}
-	}
-	else if (!rules.getCgiExtension().empty())
-	{
-		std::vector<std::string> cgi_extension = rules.getCgiExtension();
-		size_t pos = _filePath.rfind('.');
-		std::string extension_to_compare = _filePath.substr(pos + 1);
-		std::cout << extension_to_compare << std::endl;
-
-		for (auto i : cgi_extension)
-		{
-			if (i == extension_to_compare)
-				return;
-		}
-		throw (ClientErrorExcept(500, "Internal Server Error"));
-	}
+	// 	for (auto i : cgi_extension)
+	// 	{
+	// 		if (i == extension_to_compare)
+	// 			return;
+	// 	}
+	// 	throw (ClientErrorExcept(500, "Internal Server Error"));
+	// }
 }
 
 
+void	Request::checkIndex(location &rules)
+{
+
+	std::string indexPath, dirPath = this->_root + this->_filePath;
+	if (!std::filesystem::is_directory(dirPath))
+		return;
+	if (!rules.getIndex().empty())
+	{
+		std::vector<std::string> IndexPages = rules.getIndex();
+		for (auto i : IndexPages)
+		{
+			indexPath = dirPath + i;
+			if (fileExists(indexPath))
+			{
+				_filePath += i;
+				return;
+			}
+			indexPath = _filePath;
+		}
+	}
+	if (rules.getAutoindex())
+	{
+		this->_dirListing = true;
+		return;
+	}
+	throw ClientErrorExcept(403, "403 Forbidden");
+}

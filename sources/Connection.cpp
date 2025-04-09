@@ -35,7 +35,7 @@ _isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _ke
 
 Connection::Connection(const Connection &rhs) : _request(rhs._request), _response(rhs._response)
 {
-	std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
+	// std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
 
 	*this = rhs;
 }
@@ -43,7 +43,7 @@ Connection::Connection(const Connection &rhs) : _request(rhs._request), _respons
 Connection &
 Connection::operator=(const Connection &rhs)
 {
-	std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
+	// std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
@@ -64,7 +64,7 @@ Connection::operator=(const Connection &rhs)
 
 Connection::~Connection(void)
 {
-	std::cout << RED << "Connection: Destructor called" << RESET << std::endl;
+	// std::cout << RED << "Connection: Destructor called" << RESET << std::endl;
 }
 
 // ************************************************************************** //
