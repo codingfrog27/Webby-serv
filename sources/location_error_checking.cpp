@@ -240,6 +240,7 @@ std::string location::validateRoot()
 {
 	std::string root_rule;
 	std::string root_value;
+	size_t dot = 0;
 
 	if (_rulemap.contains("root"))
 	{
@@ -248,11 +249,24 @@ std::string location::validateRoot()
 	}
 	else 
 		return ("");
-	for (size_t i = 0; i < root_value.length(); i++)
+
+	size_t root_value_lenght = root_value.length();
+
+	for (size_t i = 0; i < root_value_lenght; i++)
 	{
-		if (!isalpha(root_value[i]) && !isdigit(root_value[i]) && root_value[i] != '/' && root_value[i] != '_' && root_value[i] != '-' && root_value[i] != '.')
+		if (root_value[0] == '.')
+			dot++;
+		else if (root_value[0] != '/' || root_value[root_value_lenght - 1] == '/')
+			throw std::invalid_argument("Error: invalid root path directive:" \
+			"please start root with '/' "  + root_value + " or it doesn't have to finish wiht a /");
+
+		if (!isalpha(root_value[i]) && !isdigit(root_value[i]) && root_value[i] != '/' && root_value[i] != '_' && root_value[i] != '-' && dot > 1)
 			throw std::invalid_argument("Error: invalid character in root directive");
 	}
+	if (root_value[0] == '/')
+		root_value.erase(0 , 1);
+	else if (root_value[0] == '.' && root_value[1] == '/')
+		root_value.erase(0 , 2);
 	return (root_value);
 }
 

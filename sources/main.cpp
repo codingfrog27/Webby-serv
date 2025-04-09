@@ -21,7 +21,7 @@ int main(int argc, char ** argv) {
 	{
 		parseConfig(argc, argv, configs);
 		// std::cout << "ROOT == " << configs[0]._rootDir << std::endl;
-		printConfigs(configs);
+		// printConfigs(configs);
 		Server _webbyserv(configs);
 		_webbyserv.main_server_loop();
 	}
