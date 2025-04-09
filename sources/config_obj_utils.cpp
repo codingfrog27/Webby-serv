@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/09 17:57:49 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/09 18:18:45 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ Config::Config(const Config &rhs)
     : _autoindex(rhs._autoindex),
       _autoIndexFilePath(rhs._autoIndexFilePath),
       _client_max_body_size(rhs._client_max_body_size),
+	  _client_max_body_size_long(rhs._client_max_body_size_long),
       _errorPage(rhs._errorPage),
       _host(rhs._host),
       _index(rhs._index),
@@ -48,13 +49,10 @@ Config::Config(const Config &rhs)
       _locNames(rhs._locNames),
       _rulemap(rhs._rulemap)
 {
-    std::cout << GREEN << "Config: Copy constructor called" << RESET << std::endl;
 }
 
 Config &Config::operator=(const Config &rhs)
 {
-	std::cout << GREEN << "Config: Assignment operator called" << RESET << std::endl;
-
 	if (this != &rhs)
 	{
 		_listen = rhs._listen;
@@ -64,6 +62,7 @@ Config &Config::operator=(const Config &rhs)
 		_rootDir = rhs._rootDir;
 		_autoIndexFilePath = rhs._autoIndexFilePath;
 		_client_max_body_size = rhs._client_max_body_size;
+		_client_max_body_size_long = rhs._client_max_body_size_long;
 		_host = rhs._host;
 		_locationName = rhs._locationName;
 		_autoindex = rhs._autoindex;
@@ -155,6 +154,16 @@ std::string	Config::getMaxBodySize()
 void	Config::setMaxBodySize(const std::string &maxBodySize)
 {
 	this->_client_max_body_size = maxBodySize;
+}
+
+long	Config::getMaxBodySizeLong()
+{
+	return(this->_client_max_body_size_long);
+}
+
+void	Config::setMaxBodySizeLong(const long &maxBodySizeLong)
+{
+	this->_client_max_body_size_long = maxBodySizeLong;
 }
 
 std::vector<std::string>	&Config::getIndex()

@@ -152,8 +152,8 @@ void  Request::checkRules(location &rules)
 
 void	Request::checkIndex(std::vector<std::string> &indexPages, bool	autoindex)
 {
-
 	std::string indexPath, dirPath = this->_root + this->_filePath;
+	
 	if (!std::filesystem::is_directory(dirPath))
 		return;
 	if (!indexPages.empty())

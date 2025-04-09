@@ -71,7 +71,7 @@ class Request
 		bool					_headerAreParsed;
 		bool					_hasBody;
 		size_t					_contentLen;
-		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE;
+		size_t					_max_body_size;
 		t_secs					_timeoutTime;
 		t_time					_startTime;
 		std::string				_root;
