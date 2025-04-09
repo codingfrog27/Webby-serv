@@ -132,7 +132,7 @@ void  Request::checkRules(location &rules)
 	// }
 	// else if (!rules.getAlias().empty()) //wrong, check merlin ss
 	// 	this->_filePath = rules.getAlias();
-	checkIndex(rules);
+	checkIndex(rules.getIndex(), rules.getAutoindex());
 	// if (!rules.getCgiExtension().empty())
 	// {
 	// 	std::vector<std::string> cgi_extension = rules.getCgiExtension();
@@ -150,16 +150,16 @@ void  Request::checkRules(location &rules)
 }
 
 
-void	Request::checkIndex(location &rules)
+void	Request::checkIndex(std::vector<std::string> &indexPages, bool	autoindex)
 {
 
 	std::string indexPath, dirPath = this->_root + this->_filePath;
 	if (!std::filesystem::is_directory(dirPath))
 		return;
-	if (!rules.getIndex().empty())
+	if (!indexPages.empty())
 	{
-		std::vector<std::string> IndexPages = rules.getIndex();
-		for (auto i : IndexPages)
+		
+		for (auto i : indexPages)
 		{
 			indexPath = dirPath + i;
 			if (fileExists(indexPath))
@@ -170,7 +170,7 @@ void	Request::checkIndex(location &rules)
 			indexPath = _filePath;
 		}
 	}
-	if (rules.getAutoindex())
+	if (autoindex)
 	{
 		this->_dirListing = true;
 		return;

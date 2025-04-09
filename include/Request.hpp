@@ -133,7 +133,7 @@ class Request
 		void			printHeaders();
 
 		Config*			getConfig();
-		void			checkIndex(location &rules);
+		void			checkIndex(std::vector<std::string> &indexPages, bool	autoindex);
 };
 
 std::string trim(const std::string& str);

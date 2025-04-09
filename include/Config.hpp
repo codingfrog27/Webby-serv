@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/08 18:24:49 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/09 17:47:48 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ class Config
 	std::unordered_map<std::string, std::string> getErrorPage();
 	std::string	getMaxBodySize();
 	std::string	getHost();
-	std::vector<std::string> getIndex();
+	std::vector<std::string> &getIndex();
 	std::string	getListen();
 	std::string	getRoot();
 	size_t		getTimeout();

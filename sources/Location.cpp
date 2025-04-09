@@ -159,7 +159,7 @@ void	location::setCgiPath(const std::vector<std::string> &cgi_path)
 	this-> _cgi_path = cgi_path;
 }
 
-std::vector<std::string>	location::getIndex()
+std::vector<std::string>	&location::getIndex()
 {
 	return(this->_index);
 }

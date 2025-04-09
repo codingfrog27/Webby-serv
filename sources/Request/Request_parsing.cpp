@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/08 19:45:54 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/09 17:51:00 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,12 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_host.length());
 	if (resolved.find(_config->_listen) != std::string::npos)
 		resolved.erase(0, _config->_listen.length() + 1);
-	// if (resolved.front() == '/')
-	// 	resolved.erase(0, 1);
 	_filePath = trim(resolved);
 	RouteRuleHandler();
+	if (_dirListing == false)
+		checkIndex(_config->getIndex(), _config->getAutoindex());
 	_filePath = trim(_root) + _filePath;
+	//might remove the trims cause idk if they do anything?
 	std::cout << YELLOW "AFTER ROUTEHANDLER  " << _filePath << RESET << std::endl;
 }
 

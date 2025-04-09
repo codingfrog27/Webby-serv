@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/08 18:25:47 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/09 17:47:41 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ void	Config::setMaxBodySize(const std::string &maxBodySize)
 	this->_client_max_body_size = maxBodySize;
 }
 
-std::vector<std::string>	Config::getIndex()
+std::vector<std::string>	&Config::getIndex()
 {
 	return(this->_index);
 }

@@ -56,7 +56,7 @@ class location
 		bool		getAutoindex();
 		std::vector<std::string>	getCgiExtension();
 		std::vector<std::string>	getCgiPath();
-		std::vector<std::string>	getIndex();
+		std::vector<std::string>	&getIndex();
 		std::string	getReturn();
 		std::string	getRoot();
 		void	setAlias(const std::string &alias);

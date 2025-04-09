@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:27:26 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/08 18:33:16 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/09 17:48:00 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ void printConfigs(std::vector<Config> &configs)
 		std::cout << LINE << std::endl;
 		std::cout << "Server block:\n" << configs[i].toString() << std::endl;
 		
-		std::vector<std::string> serverIndex = configs[i].getIndex();
+		std::vector<std::string> &serverIndex = configs[i].getIndex();
 		std::cout << "Server Index: ";
 		for (const auto &idx : serverIndex) {
 			std::cout << idx << ' ';
@@ -143,7 +143,7 @@ void printConfigs(std::vector<Config> &configs)
 			}
 			std::cout << std::endl;
 
-			std::vector<std::string> locationIndex = configs[i]._locations[j].getIndex();
+			std::vector<std::string> &locationIndex = configs[i]._locations[j].getIndex();
 			std::cout << "Index: ";
 			for (const auto &idx : locationIndex) {
 				std::cout << idx << ' ';
