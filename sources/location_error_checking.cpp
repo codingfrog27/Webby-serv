@@ -251,6 +251,8 @@ std::string location::validateRoot()
 		return ("");
 
 	size_t root_value_lenght = root_value.length();
+	if (root_value_lenght == 1)
+		throw std::invalid_argument("Error: invalid root path in root directive");
 
 	for (size_t i = 0; i < root_value_lenght; i++)
 	{
