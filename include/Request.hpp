@@ -133,6 +133,7 @@ class Request
 		void			printHeaders();
 
 		Config*			getConfig();
+		void			checkIndex(location &rules);
 };
 
 std::string trim(const std::string& str);

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/08 20:04:19 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/09 16:02:11 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ Request::Request(Config *config, int clientFD): _config(config), \
 
 Request::Request(const Request &rhs)
 {
-	std::cout << GREEN << "Http_request: Copy constructor called" << RESET << std::endl;
+	// std::cout << GREEN << "Http_request: Copy constructor called" << RESET << std::endl;
 	*this = rhs;
 }
 

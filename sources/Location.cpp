@@ -47,7 +47,7 @@ location::location(std::ifstream &file, std::string &line)
 
 location::location(const location &rhs)
 {
-    std::cout << GREEN << "location: Copy constructor called" << RESET << std::endl;
+    // std::cout << GREEN << "location: Copy constructor called" << RESET << std::endl;
 
     _alias = rhs._alias;
     _allow_methods = rhs._allow_methods;
@@ -65,7 +65,7 @@ location::location(const location &rhs)
 location &
 location::operator=(const location &rhs)
 {
-	std::cout << GREEN << "location: Assignment operator called" << RESET << std::endl;
+	// std::cout << GREEN << "location: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
@@ -87,7 +87,7 @@ location::operator=(const location &rhs)
 
 location::~location(void)
 {
-	std::cout << RED << "location: Destructor called" << RESET << std::endl;
+	// std::cout << RED << "location: Destructor called" << RESET << std::endl;
 }
 
 // ************************************************************************** //
