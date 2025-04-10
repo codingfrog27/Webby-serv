@@ -75,7 +75,7 @@ body = f"""<!DOCTYPE html>
 		</section>
 
 		<section>
-			<img src="/images/dancing_froggy.gif" alt="gif no loady :(" width="480" height="480">
+			<img src="/images/dancing_froggy.gif" alt="gif no loady :(" width="420" height="auto">
 		</section>
 	</main>
 
