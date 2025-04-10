@@ -263,30 +263,45 @@ std::string Config::validateRoot()
 {
 	std::string root_rule;
 	std::string root_value;
-	// size_t dot = 0;
-	
+	size_t dot = 0;
+
 	if (_rulemap.contains("root"))
 	{
 		auto found = _rulemap.find("root");
 		root_rule = normalize_space(found->second);
 		root_value = find_value(root_rule);
 	}
-	else
+	else 
 		throw std::invalid_argument("Error: root directive not found");
 
 	size_t root_value_lenght = root_value.length();
+	if (root_value_lenght == 1)
+		throw std::invalid_argument("Error: invalid root path in root directive");
 
 	for (size_t i = 0; i < root_value_lenght; i++)
 	{
-		if (root_value[0] != '/' || root_value[root_value_lenght - 1] == '/')
+		if (root_value[0] == '.')
+			dot++;
+		else if (root_value[0] != '/' || root_value[root_value_lenght - 1] == '/')
 			throw std::invalid_argument("Error: invalid root path directive:" \
 			"please start root with '/' "  + root_value + " or it doesn't have to finish wiht a /");
 
-		if (!isdigit(root_value[i]) && !isalpha(root_value[i]) && root_value[i] \
-			!= '/' && root_value[i] != '_' && root_value[i] != '-')
-			throw std::invalid_argument("Error: invalid root path directive");
+		if (!isalpha(root_value[i]) && !isdigit(root_value[i]) && root_value[i] != '/' && root_value[i] != '_' && root_value[i] != '-' && dot > 1)
+			throw std::invalid_argument("Error: invalid character in root directive");
 	}
-	root_value.erase(0, 1);
+	std::filesystem::path rootPath(root_value);
+
+	if (!rootPath.is_absolute())
+	    rootPath = std::filesystem::current_path() / rootPath;
+	if (!std::filesystem::exists(rootPath))
+	    throw std::invalid_argument("Error: root path does not exist! (" + rootPath.string() + ")");
+	if (!std::filesystem::is_directory(rootPath))
+	    throw std::invalid_argument("Error: root path is not a directory! (" + rootPath.string() + ")");
+
+	if (root_value[0] == '/')
+		root_value.erase(0 , 1);
+	else if (root_value[0] == '.' && root_value[1] == '/')
+		root_value.erase(0 , 2);
 	return (root_value);
 }
 

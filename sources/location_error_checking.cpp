@@ -1,5 +1,6 @@
 #include "location.hpp"
 #include <sstream>
+#include <filesystem>
 
 std::string	find_value_location(std::string& directive)
 {
@@ -265,6 +266,16 @@ std::string location::validateRoot()
 		if (!isalpha(root_value[i]) && !isdigit(root_value[i]) && root_value[i] != '/' && root_value[i] != '_' && root_value[i] != '-' && dot > 1)
 			throw std::invalid_argument("Error: invalid character in root directive");
 	}
+	std::filesystem::path rootPath(root_value);
+
+	if (!rootPath.is_absolute())
+	    rootPath = std::filesystem::current_path() / rootPath;
+
+	if (!std::filesystem::exists(rootPath))
+	    throw std::invalid_argument("Error: root path does not exist! (" + rootPath.string() + ")");
+
+	if (!std::filesystem::is_directory(rootPath))
+	    throw std::invalid_argument("Error: root path is not a directory! (" + rootPath.string() + ")");
 	if (root_value[0] == '/')
 		root_value.erase(0 , 1);
 	else if (root_value[0] == '.' && root_value[1] == '/')
