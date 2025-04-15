@@ -25,6 +25,10 @@ const messages = {
 	501: "Not Implemented"
   };
 
+
+// Get connection type from environment variable
+const connection = process.env.CONNECTION || "keep-alive";
+
 // Get status code from environment variable
 const code = process.env.STATUS_CODE || "403";
 const message = messages[code] || "Unknown Error";
@@ -59,7 +63,7 @@ const body = `<!DOCTYPE html>
 
 //HTTP headers
 const headers = `HTTP/1.1 ${code} ${message}
-Connection: close
+Connection: ${connection}
 Content-Type: text/html; charset=utf-8
 Content-Length: ${body.length}
 

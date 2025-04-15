@@ -3,6 +3,9 @@
 import cgi, os, smtplib
 from email.message import EmailMessage
 
+# Get connection type from environment variable
+connection = os.environ.get("CONNECTION", "keep-alive")
+
 # Parse form data
 form = cgi.FieldStorage()
 name = form.getvalue("name").strip()
@@ -87,7 +90,7 @@ body = f"""<!DOCTYPE html>
 
 # HTTP headers
 headers = f"""HTTP/1.1 {status}\r
-Connection: keep-alive\r
+Connection: {connection}\r
 Content-Type: text/html; charset=utf-8\r
 Content-Length: {len(body.encode('utf-8'))}\r
 """
