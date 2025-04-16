@@ -186,6 +186,10 @@ responseHandlerStatus	Response::getResponseHandlerStatus() const{
 	return _responseHandlerStatus;
 }
 
+std::string	Response::getRoot() const{
+	return _root;
+}
+
 std::ofstream&	Response::getOutFile(){
 	return _outFile;
 }

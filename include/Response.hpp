@@ -51,6 +51,7 @@ class Response{
 		void											setBytesWritten(size_t bytesWritten);
 
 		responseHandlerStatus							getResponseHandlerStatus() const;
+		std::string										getRoot() const;
 		std::ofstream&									getOutFile();
 		std::ifstream&									getInFile();
 		std::string										getHeader(std::string key) const;
