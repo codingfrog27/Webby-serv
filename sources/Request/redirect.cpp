@@ -133,7 +133,7 @@ void  Request::checkRules(location &rules)
 		std::vector<std::string> cgi_extension = rules.getCgiExtension();
 		size_t pos = _filePath.rfind('.');
 		if (pos == std::string::npos || pos == _filePath.size() - 1)
-			throw (ClientErrorExcept(400, "400 Bad Request"));
+			throw (ClientErrorExcept(403, "403 Forbidden"));
 		std::string extension_to_compare = _filePath.substr(pos + 1);
 		for (auto i : cgi_extension)
 		{

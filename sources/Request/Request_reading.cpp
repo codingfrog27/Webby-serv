@@ -40,7 +40,8 @@ connectStatus	Request::readRequest()
 	}
 	catch(ClientErrorExcept &e)
 	{
-		std::cout << RED "Client error: " << e.what() << RESET << std::endl;
+		std::cerr << RED "Client error: " << e.what() << RESET << std::endl;
+		std::cerr << "path was: " << _filePath << std::endl;
 		// shutdown(_clientFD, SHUT_RD);
 		_statusStr = e._errorMsg;
 		_statusCode = e._statusCode;
@@ -121,6 +122,7 @@ bool	Request::bodyIsRead()
 	}
 	return (_doneReading);
 }
+
 bool	Request::isCGIrequired()
 {
 	if (this->_filePath.rfind(".py") == this->_filePath.length() - 3 || this->_filePath.rfind(".js") == this->_filePath.length() - 3)
