@@ -1,0 +1,52 @@
+ARCENIO PHONEBOOK NOTES
+
+
+SEARCH index checking for if it sout of bounds or an index of a not created contact
+
+check for ADDING if input is valid before adding in
+
+
+
+
+
+
+
+
+-no norm
+
+-all classes need UpperCamelFormat
+
+-almost everything from stdlib is allowed! no other ext libs tho
+
+-no printf alloc or free
+
+-no namespace or friend
+
+-STL in mod08 only so no containers or algorithms
+
+-codam can use c11
+
+
+
+
+
+what are vecors and containers
+
+and namespaces
+
+auto keyword
+
+why are these things called iterators
+
+
+
+
+difference between macros and functions
+
+post en pre increment operators
+
+
+
+
+
+Dont forget to make Makefiles not relink :)

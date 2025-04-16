@@ -25,7 +25,7 @@ Socket::Socket(Config *config, const struct addrinfo *addressInfo)
 		if(_socketFd)
 			close(_socketFd);
 		std::cout << e.what() << "\nserver setup failed, shutting down" << std::endl;
-		exit(1); //think we can exit cause  server socket creation kinda vital?
+		exit(1);
 	}
 	
  }
@@ -46,7 +46,7 @@ void	Socket::openSocket()
 		throw std::runtime_error(std::string("setsockopt error: ") + strerror(errno));
 	if (bind(_socketFd, _addrInfo->ai_addr, _addrInfo->ai_addrlen) == -1)
 		throw std::runtime_error(std::string("Bind errorr: ") + strerror(errno));
-	if (listen(_socketFd, 20) < 0) //SET TO CONFIG VALUE
+	if (listen(_socketFd, 20) < 0)
 		throw std::runtime_error(std::string("Listen Error: ") + strerror(errno));
 	int listening = 0;
 	socklen_t len = sizeof(listening);

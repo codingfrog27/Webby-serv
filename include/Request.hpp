@@ -90,11 +90,10 @@ class Request
 		void					checkHeaders();
 		void					checkBodyHeaders();
 		void					parseBody();
-		void					parseFormData(std::string &content_type);
 		void					parseUrlEncoded();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 		void					resolveFilePath();
-		void					RouteRuleHandler();
+		bool					RouteRuleHandler();
 		location				*findLocationMatch(std::vector<location> &locs, size_t &matchCount);
 		void					setLocRules(location &loc, location &ruleblock);
 		size_t					countPathMatch(std::string &reqpath, std::string &locpath);
@@ -117,6 +116,8 @@ class Request
 		std::string					_statusStr;
 		int							_statusCode;
 		bool						_dirListing;
+		bool						_aliasUsed;
+		bool						_cgiRequired;
 
 						Request(void) = delete;
 						Request(Config *config, int _clientFD);
