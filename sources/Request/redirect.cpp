@@ -134,7 +134,7 @@ void  Request::checkRules(location &rules)
 		size_t pos = _filePath.rfind('.');
 		if (pos == std::string::npos || pos == _filePath.size() - 1)
 			throw (ClientErrorExcept(403, "403 Forbidden"));
-		std::string extension_to_compare = _filePath.substr(pos + 1);
+		std::string extension_to_compare = _filePath.substr(pos);
 		for (auto i : cgi_extension)
 		{
 			if (i == extension_to_compare)

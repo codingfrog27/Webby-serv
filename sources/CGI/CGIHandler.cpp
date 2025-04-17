@@ -25,9 +25,7 @@ connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd> &CGIPo
 		if (!fileExists(request->_filePath)){
 			request->_statusCode = 404;
 			request->_statusStr = "404 Not Found";
-			request->_filePath = response->getRoot() + "cgi-bin/error.js";
-			request->_method_type = Http_method::GET;
-			return connectStatus::CGI_REQUIRED;
+			return connectStatus::RESPONDING;
 		}
 		// if yes
 		std::shared_ptr<CGI> newCGI = std::make_shared<CGI>(connection, CGIPollFDs);
