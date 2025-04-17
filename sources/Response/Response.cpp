@@ -39,8 +39,10 @@ Response::~Response(){
 }
 
 void	Response::autoFillResponse(std::string status, std::string path){
+	std::string	statusCode = status.substr(0, 3);
+	
 	if (path.empty())
-		path = _root + "/error/" + status.substr(0, 3) + ".html";
+		path = _root + "/error/" + statusCode + ".html";
 	else
 		path = _root + path;
 	size_t			size = 0;
@@ -68,6 +70,8 @@ void	Response::autoFillResponse(std::string status, std::string path){
 		Response::setHeaders("Content-Length", std::to_string(status.length()));
 		Response::setBody(status);
 	}
+	if (statusCode == "413")
+		Response::setHeaders("Connection", "close");
 	Response::setResponseBuffer(Response::generateResponse());
 	_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 	return ;
