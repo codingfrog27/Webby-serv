@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/09 18:35:20 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/16 18:46:52 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ size_t	Request::parse_req_line(std::string req_line)
 {
 	size_t	line_end, method_end, uri_end;
 
-	// std::cout << MAGENTA "req line: " RESET << req_line << std::endl;
 	line_end = req_line.find("\r\n");
 	if (line_end == 0)
 	{
@@ -27,14 +26,13 @@ size_t	Request::parse_req_line(std::string req_line)
 		line_end = req_line.find("\r\n");
 	}
 	if (line_end == std::string::npos)
-		throw (std::invalid_argument("no CRLF found"));
-
+		throw (ClientErrorExcept(400, "400 Bad Request"));
 	method_end = req_line.find(' ');
 	if (method_end == std::string::npos)
-		throw (std::invalid_argument("no space found after method"));
-	uri_end = req_line.find(' ', method_end + 1); //could check on single space
+		throw (ClientErrorExcept(400, "400 Bad Request"));
+	uri_end = req_line.find(' ', method_end + 1);
 	if (uri_end == std::string::npos)
-		throw (std::invalid_argument("no space found after uri"));
+		throw (ClientErrorExcept(400, "400 Bad Request"));
 
 	_method_type = which_method_type(req_line.substr(0, method_end));
 	_URI = req_line.substr(method_end + 1, uri_end - method_end - 1);
@@ -51,18 +49,25 @@ void	Request::resolveFilePath()
 		resolved.erase(resolved.find("?"));
 	else if (resolved.find("#") != std::string::npos)
 		resolved.erase(resolved.find("#"));
-	if (resolved.find("https://") != std::string::npos || resolved.find("http://") != std::string::npos) //do we wanna handle https?
+	if (resolved.find("https://") != std::string::npos || resolved.find("http://") != std::string::npos)
 		resolved.erase(0, resolved.find("//") + 2);
 	if (resolved.find(_config->_host) != std::string::npos)
 		resolved.erase(0, _config->_host.length());
 	if (resolved.find(_config->_listen) != std::string::npos)
 		resolved.erase(0, _config->_listen.length() + 1);
-	_filePath = trim(resolved);
-	RouteRuleHandler();
-	if (_dirListing == false)
-		checkIndex(_config->getIndex(), _config->getAutoindex());
-	_filePath = trim(_root) + _filePath;
+
+
 	//might remove the trims cause idk if they do anything?
+	_filePath = trim(resolved);
+
+	std::cerr << "path == " << _filePath << std::endl;
+
+	if (RouteRuleHandler() == false) {
+		std::cout << "yahoo" << std::endl;
+		checkIndex(_config->getIndex(), _config->getAutoindex());
+	}
+	if (_aliasUsed == false)
+		_filePath = trim(_root) + _filePath;
 	std::cout << YELLOW "AFTER ROUTEHANDLER  " << _filePath << RESET << std::endl;
 }
 
@@ -78,7 +83,7 @@ void	Request::parse_headers(std::string header_str)
 		if (colon_pos == std::string::npos)
 			throw (std::invalid_argument("colon missing in header"));
 		key = header_str.substr(start, colon_pos - start);
-		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2)); //check for empty values?
+		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2));
 		_headers[key] = value;
 		start = line_end + 2;
 		line_end = header_str.find("\r\n", start);
@@ -102,19 +107,10 @@ void	Request::checkHeaders()
 		checkBodyHeaders();
 }
 
-
-
-
-
-
-
-
-
-
 void	Request::checkBodyHeaders()
 {
 	_hasBody = true;
-	if (!headerExists("Content-Type")) //or if type not supported
+	if (!headerExists("Content-Type"))
 		throw (std::invalid_argument("415 Bad request. Unsupported Media Type"));
 	if (getHeaderValue("Transfer-Encoding") == "chunked")
 	{
@@ -125,7 +121,6 @@ void	Request::checkBodyHeaders()
 	try
 	{
 		_contentLen = std::stoul(getHeaderValue("Content-Length"));
-		reading_mode = READING_BODY;
 	}
 	catch(const std::invalid_argument& e)
 	{
@@ -137,10 +132,13 @@ void	Request::checkBodyHeaders()
 		std::cout << e.what() << '\n';
 		throw (ClientErrorExcept(413, "413 Payload too large"));
 	}
+	
 	if (_contentLen == 0)
 		throw (ClientErrorExcept(411, "411 length required"));
 	if (_contentLen > _max_body_size)
 		throw (ClientErrorExcept(413, "413 Payload too large"));
+
+	reading_mode = READING_BODY;
 }
 
 bool	Request::dechunkBody()
@@ -150,7 +148,7 @@ bool	Request::dechunkBody()
 	size_t		bytesParsed = 0;
 	size_t		hexStrSize = 0;
 	size_t		chunkSize;
-	//assumes the starting rnrn of body is still there but also only last one
+	
 	for (size_t rnPos = bodyStr.find("\r\n", bytesParsed); rnPos != std::string::npos;)
 	{
 		rnPos += 2;
@@ -165,7 +163,6 @@ bool	Request::dechunkBody()
 		_reqBody += bodyStr.substr(rnPos + hexStrSize, chunkSize);
 	}
 	_rawRequestData.erase(_rawRequestData.begin(), (_rawRequestData.begin() + bytesParsed));
-	//do i have to remove 2 more if we're at the end? if so can make chunksize 2 :)
 	return (_doneReading);
 }
 
@@ -173,16 +170,7 @@ bool	Request::dechunkBody()
 void	Request::parseBody()
 {
 	std::string		content_type = getHeaderValue("Content-Type");
-	// std::cout << LILAC "path " << _filePath << std::endl;
-	// std::cout << "content type: " << content_type << std::endl;
-	// std::cout << "content length: " << _contentLen << std::endl;
-	// std::cout << "body: " << _reqBody << std::endl;
-	// std::cout << "raw data: " RESET << std::string(_rawRequestData.begin(), _rawRequestData.end()) << std::endl;
-	if(content_type.compare(0, 30, "multipart/form-data; boundary=") == 0){
-		std::cout << RED "is triggered" RESET << std::endl;
-		parseFormData(content_type);
-	}
-	else if (content_type.compare("application/x-www-form-urlencoded") == 0)
+	if (content_type.compare("application/x-www-form-urlencoded") == 0)
 		parseUrlEncoded();
 	_reqBody = trim(_reqBody);
 	_doneReading = true;
@@ -206,38 +194,4 @@ void	Request::parseUrlEncoded()
 			throw (ClientErrorExcept(400, "400 missing = in www-form encoded pairs"));
 		_wwwFormEncodedPairs[urlDecode(pair.substr(0, pos))] = urlDecode(pair.substr(pos + 1));
 	}
-}
-
-
-void	Request::parseFormData(std::string &content_type){
-	//assuming its there cause of header check
-	std::cout << MAGENTA "content type: " RESET << content_type << std::endl;
-	size_t nextboundary;
-		if (content_type.size() < 31) //meaning multiform without boundery!
-			throw(ClientErrorExcept(400, "400 Bad Request: empty boundary parameter"));
-	std::string delimiter = content_type.substr(31) + "--";
-	std::cout << RED "delimiter: " RESET << delimiter << std::endl;
-	for (size_t i = _reqBody.find(delimiter); i != std::string::npos; i = nextboundary)
-	{
-		if (_reqBody.compare(i, 2, "--") == 0)
-			break;
-
-		//make new form object
-		//object.headers = parse_headers(&_reqBody[i + delimiter.size()]);
-
-
-		//change parse headers to take table to save the key and values to (and move checkheaders elsewhere)
-		// ORR give a bool and put a conditional in there but less pretty
-		//OR parse manually for members since
-		// Content-Disposition: form-data; name="file"; filename="example.txt"
-		// AND Content-Type: text/plain are the key ones, could even throw the other ones out
-		// if i use table might copy/move the 2 important ones to seperate strings anyways
-
-		nextboundary = _reqBody.find(delimiter, i);
-		if (i == std::string::npos)
-			throw	ClientErrorExcept(400, "400 no closing boundary in multiform");
-		//object.body = _reqBody.substr(boundary + delimiter.size(), nextboundary - boundary)
-
-	}
-
 }

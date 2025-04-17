@@ -2,18 +2,17 @@
 #include <filesystem>
 #include "socket.hpp"
 
-void	Request::RouteRuleHandler()
+bool	Request::RouteRuleHandler()
 {
 	location	*locPtr;
 	location	reqRules;
 	size_t		matchCount = 0;
-	// std::cout << YELLOW "path before routehnandler == " RESET << _filePath << std::endl;
 	std::vector<location> *locVec = &this->_config->_locations;
 	if (locVec->empty())
-		return;
+		return false;
 	locPtr = findLocationMatch(*locVec, matchCount);
 	if (locPtr == nullptr)
-		return;
+		return false;
 	reqRules = *locPtr;
 	if (!locPtr->_nestedLocations.empty()) 
 	{
@@ -26,6 +25,7 @@ void	Request::RouteRuleHandler()
 		}
 	}
 	checkRules(reqRules);
+	return true;
 }
  
 location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
@@ -41,7 +41,6 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 		newSize = countPathMatch(_filePath, locpath);
 		if (newSize > matchCount)
 		{
-			// std::cout << MAGENTA "MATCH FOUND" RESET << std::endl;
 			matchCount = newSize;
 			matchFound = true;
 			ret = &(*it);
@@ -53,16 +52,13 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 	{
 		if (matchCount > 1)
 		{
-			// std::cout << "REAL MATHC FOUND BBY match == " << ret->getName() << " reqpath == " << this->_filePath << std::endl;
 			return (ret);
 		}
 		else if (root != nullptr)
 		{
-			// std::cout << "root match uwu" << std::endl;
 			return (root);
 		}
 	}
-	// std::cout << "NO MATHC FOUND wompwomp" << std::endl;
 	return (nullptr);
 }
 
@@ -100,7 +96,7 @@ void	Request::setLocRules(location &ruleblock, location &loc)
 		ruleblock._cgi_extension = loc._cgi_extension;
 	if (!loc._cgi_path.empty())
 		ruleblock._cgi_path = loc._cgi_path;
-	ruleblock._autoindex = loc._autoindex; //default on extra
+	ruleblock._autoindex = loc._autoindex;
 }
 
 void isMethodAllowed(Http_method method, std::vector<Http_method> const &allow_methods)
@@ -119,40 +115,46 @@ void  Request::checkRules(location &rules)
 {   
 	if (!rules.getReturn().empty())
 	{
-		this->_filePath = rules.getReturn();
+		_filePath = rules.getReturn();
 		_statusCode = 301;
 		_statusStr = "301 Moved Permanently";
 		return;
 	}
-	// isMethodAllowed(_method_type, rules.getAllowMethods());
-	// if (!rules.getRoot().empty())
-	// {
-	// 	_filePath.find(_config->_rootDir);
-	// 	_filePath.replace(0, _config->_rootDir.size(), rules.getRoot()); //???
-	// }
-	// else if (!rules.getAlias().empty()) //wrong, check merlin ss
-	// 	this->_filePath = rules.getAlias();
+	isMethodAllowed(_method_type , rules.getAllowMethods());
+	if (!rules.getAlias().empty()) {
+		_aliasUsed = true;
+		_filePath = rules.getAlias();
+	}
+	else if (!rules.getRoot().empty())
+		_root =  rules.getRoot();
 	checkIndex(rules.getIndex(), rules.getAutoindex());
-	// if (!rules.getCgiExtension().empty())
-	// {
-	// 	std::vector<std::string> cgi_extension = rules.getCgiExtension();
-	// 	size_t pos = _filePath.rfind('.');
-	// 	std::string extension_to_compare = _filePath.substr(pos + 1);
-	// 	std::cout << extension_to_compare << std::endl;
-
-	// 	for (auto i : cgi_extension)
-	// 	{
-	// 		if (i == extension_to_compare)
-	// 			return;
-	// 	}
-	// 	throw (ClientErrorExcept(500, "Internal Server Error"));
-	// }
+	if (!rules.getCgiExtension().empty())
+	{
+		std::vector<std::string> cgi_extension = rules.getCgiExtension();
+		size_t pos = _filePath.rfind('.');
+		if (pos == std::string::npos || pos == _filePath.size() - 1)
+			throw (ClientErrorExcept(403, "403 Forbidden"));
+		std::string extension_to_compare = _filePath.substr(pos + 1);
+		for (auto i : cgi_extension)
+		{
+			if (i == extension_to_compare)
+			{
+				_cgiRequired = true;
+				return;
+			}	
+		}
+		throw (ClientErrorExcept(403, "403 Forbidden"));
+	}
 }
 
 
 void	Request::checkIndex(std::vector<std::string> &indexPages, bool	autoindex)
 {
-	std::string indexPath, dirPath = this->_root + this->_filePath;
+	std::string indexPath, dirPath;
+	
+	if (this->_aliasUsed == false)
+		dirPath = this->_root;
+	dirPath += this->_filePath;
 	
 	if (!std::filesystem::is_directory(dirPath))
 		return;
