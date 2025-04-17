@@ -132,10 +132,13 @@ connectStatus	Response::responseHandler(Request* request){
 		else
 			setHeaders("Connection", "keep-alive");
 	}
-	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && request->_statusCode != 0){ //if there was an error in (parsing) the request{}
-		if (request->getConfig()->_errorPage.find(std::to_string(request->_statusCode)) != request->getConfig()->_errorPage.end()){
+	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && request->_statusCode != 0) //if there was an error in (parsing) the request{}
+	{ 
+		if (request->getConfig()->_errorPage.find(std::to_string(request->_statusCode)) != request->getConfig()->_errorPage.end())
+		{
 			request->_filePath = request->getConfig()->_errorPage[std::to_string(request->_statusCode)];
-			if (request->_filePath == "default"){
+			if (request->_filePath == "default")
+			{
 				request->_filePath = _root + "/cgi-bin/error.js";
 				request->_method_type = Http_method::GET;
 				return connectStatus::CGI_REQUIRED;
@@ -151,7 +154,8 @@ connectStatus	Response::responseHandler(Request* request){
 			return connectStatus::CGI_REQUIRED;
 		}
 	}
-	else{
+	else
+	{
 		if ((request->_method_type ==  Http_method::GET && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_GET){
 			getMethod(request);
 			return connectStatus::RESPONDING;

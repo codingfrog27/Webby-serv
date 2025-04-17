@@ -95,7 +95,7 @@ connectStatus Response::writeResponse(int FD){
 	if (n > BUFFER_SIZE)
 		n = BUFFER_SIZE;
 	size_t bytes = send(FD, _responseBuffer.c_str() + _bytesWritten, n, MSG_NOSIGNAL);
-	_bytesWritten += bytes; //MSG_NOSIGNAL in send
+	_bytesWritten += bytes;
 	if (_bytesWritten >= _responseBuffer.size()){
 		setResponseHandlerStatus(responseHandlerStatus::FINISHED);
 		return connectStatus::FINISHED;

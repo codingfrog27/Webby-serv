@@ -39,14 +39,12 @@
 #define YELLOW	"\033[33m"
 #define RESET	"\033[0m"
 
-#define PORT 8080 // common used port for web servers
-
 class Socket
 {
 	private:
 		const struct addrinfo	*_addrInfo;
 		int						_setYes;
-		struct sockaddr_storage _address; //Cover IPv4 and IPv6
+		struct sockaddr_storage _address;
 		std::string				_hostname; 
 		std::string				_port;
 		char ip_address[INET6_ADDRSTRLEN];

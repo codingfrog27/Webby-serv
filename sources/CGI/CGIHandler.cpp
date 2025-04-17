@@ -27,7 +27,6 @@ connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd> &CGIPo
 			request->_statusStr = "404 Not Found";
 			return connectStatus::RESPONDING;
 		}
-		// if yes
 		std::shared_ptr<CGI> newCGI = std::make_shared<CGI>(connection, CGIPollFDs);
 		connection->_cgi = newCGI;
 		CGIMap[newCGI->getFdIn()] = newCGI;

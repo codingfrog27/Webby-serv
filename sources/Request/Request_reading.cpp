@@ -16,7 +16,6 @@
 
 connectStatus	Request::readRequest()
 {
-	//update idle time
 	try
 	{
 		if (_statusStr.empty() || _statusStr == "0 Not started yet")

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/17 13:56:54 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/17 17:10:22 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,17 +55,12 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_host.length());
 	if (resolved.find(_config->_listen) != std::string::npos)
 		resolved.erase(0, _config->_listen.length() + 1);
-
-
-	//might remove the trims cause idk if they do anything?
+	
 	_filePath = resolved;
-	// _filePath = trim(resolved);
-
 	if (RouteRuleHandler() == false)
 		checkIndex(_config->getIndex(), _config->getAutoindex());
 	if (_aliasUsed == false)
 		_filePath = _root + _filePath;
-		// _filePath = trim(_root) + _filePath;
 }
 
 void	Request::parse_headers(std::string header_str)
@@ -150,7 +145,7 @@ bool	Request::dechunkBody()
 	{
 		rnPos += 2;
 		chunkSize = convertChunkSize(&bodyStr[rnPos], hexStrSize);
-		if (chunkSize > bodySize - hexStrSize) //means
+		if (chunkSize > bodySize - hexStrSize)
 			break;
 		bytesParsed += rnPos + hexStrSize + chunkSize;
 		if (chunkSize == 0){

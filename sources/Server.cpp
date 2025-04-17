@@ -55,9 +55,9 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 
 
 // AF_UNSPEC == can be either IPv4 or IPv6
-// SOCK_STREAM; //Specifies we want a TCP socket type
-// AI_PASSIVE; //Provides additional options (AI_PASSIVE for binding to all network interfaces)
-// IPPROTO_TCP; //Specifies the protocol
+// SOCK_STREAM == Specifies we want a TCP socket type
+// AI_PASSIVE == Provides additional options (AI_PASSIVE for binding to all network interfaces)
+// IPPROTO_TCP == Specifies the protocol
 void	Server::setupAddrInfo(Config *config)
 {
 	addrinfo hints;
@@ -126,8 +126,6 @@ void	Server::close_connect(int fd)
 	{
 		if (it->fd == fd)
 		{
-			// shutdown(fd, SHUT_RD);
-			// shutdown(fd, SHUT_WR);
 			close(fd);
 			_pollFDs.erase(it);
 			if (_Connections.at(fd)._clientFD != fd)

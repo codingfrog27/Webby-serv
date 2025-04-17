@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/17 11:48:44 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/17 16:52:26 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,6 @@
 #include "location.hpp"
 #include "Colors.hpp"
 
-enum ServerRules
-{
-	LISTEN,
-	MAX_BODY_SIZE,
-	ERROR_PAGE,
-	HOST,
-	INDEX,
-	ROOT,
-	SERVER_NAME,
-	EMPTY
-};
 #define MAX_TIMEOUT 60000
 
 class Config

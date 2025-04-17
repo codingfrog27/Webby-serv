@@ -26,7 +26,6 @@ class CGI{
 		CGI() = delete;
 		CGI(const CGI &obj) = delete;
 		CGI& operator=(const CGI& obj) = delete;
-		// CGI(int *fdIn, int *fdOut, int *fdError); // what else do i need to pass?
 		CGI(Connection* connection, std::vector<pollfd> &pollFDs);
 		~CGI();
 

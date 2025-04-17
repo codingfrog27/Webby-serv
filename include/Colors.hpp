@@ -24,4 +24,3 @@
 #define	UNDERLINE "\33[4m"
 
 #define RESET "\033[0m"
-// #define LINE "-----------------------------\n"
