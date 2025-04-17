@@ -138,7 +138,7 @@ void Connection::removeCGIFromEverywhere(Server& server) {
 
 connectStatus Connection::refreshIfKeepAlive()
 {
-	if (_request.getHeaderValue("Connection") != "keep-alive" || !_request._statusStr.empty())
+	if (_response.getHeader("Connection") == "close")
 	{
 		std::cout << "close meee" << std::endl;
 		// shutdown(_clientFD, SHUT_RD);
