@@ -71,15 +71,10 @@ Connection::~Connection(void)
 void	Connection::connectionAction(const pollfd &poll, Server &server)
 {
 	_CStatus = checkConnectStatus(poll);
-	if (poll.revents & POLLIN && (_CStatus == connectStatus::IDLE || \
-									_CStatus == connectStatus::READING)){
+	if (poll.revents & POLLIN && (_CStatus == connectStatus::IDLE || _CStatus == connectStatus::READING))
 		_CStatus = _request.readRequest();
-		_CStatus = checkConnectStatus(poll);
-		}
-	if(_CStatus == connectStatus::CGI_REQUIRED){
+	if(_CStatus == connectStatus::CGI_REQUIRED)
 		_CStatus = _cgi->CGIHandler(this, server.getCGIPollFDs(), server.getCGIMap());
-		_CStatus = checkConnectStatus(poll);
-	}
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
 		_CStatus = _response.responseHandler(&_request);
 	if (_CStatus == connectStatus::FINISHED)

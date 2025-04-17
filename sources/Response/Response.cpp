@@ -89,6 +89,8 @@ std::string	Response::generateResponse() const{
 }
 
 connectStatus Response::writeResponse(int FD){
+	if (!Connection::connectIsOkay(FD))
+		return connectStatus::CONNECT_CLOSED;
 	size_t n =_responseBuffer.size() - _bytesWritten;
 	if (n > BUFFER_SIZE)
 		n = BUFFER_SIZE;

@@ -25,9 +25,8 @@ std::string Response::generateDirectoryListing(const std::string& _filePath)
 		{
 			std::string entry_name = it.path().filename().string();
 			if (it.is_directory()) 
-				html << "<li><a href='" << entry_name << "/'>" << entry_name << "/</a></li>\n";
-			else 
-				html << "<li><a href='" << entry_name << "'>" << entry_name << "</a></li>\n";
+				continue;
+			html << "<li><a href='" << entry_name << "'>" << entry_name << "</a></li>\n";
 		}
 	}
 

@@ -20,7 +20,7 @@ connectStatus	Request::readRequest()
 	try
 	{
 		if (_statusStr.empty() || _statusStr == "0 Not started yet")
-			_statusStr = "102 Processing"; //comment out?
+			_statusStr = "102 Processing";
 
 		readSocket(0);
 
