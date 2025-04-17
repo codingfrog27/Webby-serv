@@ -20,41 +20,37 @@ connectStatus	Request::readRequest()
 	try
 	{
 		if (_statusStr.empty() || _statusStr == "0 Not started yet")
-			_statusStr = "102 Processing";
+			_statusStr = "102 Processing"; //comment out?
+
 		readSocket(0);
-		std::string temp = std::string(_rawRequestData.begin(), _rawRequestData.end());
-		// std::cout << MAGENTA "Raw request data" << temp << RESET << std::endl;
-		if (!_rnrnFound && headerEndFound())
-			parse_headers(_unsortedHeaders);
-		if (_hasBody && bodyIsRead()) {
-			std::cout << "PARSING BODY" << std::endl;
-			parseBody();
-		}
+
 		if (isTimedOut(this->_startTime, this->_timeoutTime))
 			throw ClientErrorExcept(408, "408 Request Timeout");
-		if (_doneReading){
-			if (isCGIrequired())
+		if (!_rnrnFound && headerEndFound())
+			parse_headers(_unsortedHeaders);
+		if (_hasBody && bodyIsRead())
+			parseBody();
+		if (_doneReading)
+		{
+			if (_cgiRequired == true || isCGIrequired() == true)
 				return (connectStatus::CGI_REQUIRED);
 			return (connectStatus::RESPONDING);
-			// return (connectStatus::DONE_READING);
 		}
 		return (connectStatus::READING);
 	}
 	catch(ClientErrorExcept &e)
 	{
-		std::cout << e.what() << std::endl; //response
+		std::cerr << RED "Client error: " << e.what() << RESET << std::endl;
+		std::cerr << "path was: " << _filePath << std::endl;
 		_statusStr = e._errorMsg;
 		_statusCode = e._statusCode;
 		return (connectStatus::RESPONDING);
-		// return (connectStatus::REQ_ERR);
 	}
 	catch (ConnectionClosedExcep &e)
 	{
 		std::cout << "Client closed connection" << std::endl;
-		// NicePrint::promptEnter();
 		return (connectStatus::CONNECT_CLOSED);
 	}
-	//should maybe just make clienterr excepts?
 	catch(const std::ios_base::failure &e)
 	{
 		std::cout << e.what() << std::endl;
@@ -67,7 +63,7 @@ connectStatus	Request::readRequest()
 		std::cout << e.what() << std::endl;
 		_statusCode = 400;
 		_statusStr = std::to_string(_statusCode) + e.what();
-		return (connectStatus::REQ_ERR);
+		return (connectStatus::RESPONDING);
 	}
 }
 
@@ -76,6 +72,8 @@ int	Request::readSocket(int size)
 	if (!size)
 		size = BUFFER_SIZE;
 	char buffer[size];
+	if (!Connection::connectIsOkay(_clientFD))
+		throw (ConnectionClosedExcep(_clientFD));
 	int	bytes_read = recv(_clientFD, buffer, size, MSG_DONTWAIT);
 	if (bytes_read <= 0)
 	{
@@ -84,8 +82,6 @@ int	Request::readSocket(int size)
 		else
 			throw (std::ios_base::failure(" reading fail when reading from client socket"));
 	}
-	// std::cout << buffer << std::endl;
-	// NicePrint::promptEnter();
 	_rawRequestData.insert(_rawRequestData.end(), buffer, buffer + bytes_read);
 	if (_rnrnFound)
 		body_bytes_read += bytes_read;
@@ -103,7 +99,7 @@ bool	Request::headerEndFound()
 	}
 	_rnrnFound = true;
 	_unsortedHeaders = std::string(_rawRequestData.begin(), it + 2);
-	_rawRequestData.erase(_rawRequestData.begin(), it + 2); //cut out the first CRLF
+	_rawRequestData.erase(_rawRequestData.begin(), it + 2);
 	body_bytes_read = _rawRequestData.size();
 	return (true);
 }
@@ -121,25 +117,19 @@ bool	Request::bodyIsRead()
 		_doneReading = true;
 		reading_mode = FINISHED;
 		_reqBody = std::string(_rawRequestData.begin(), (_rawRequestData.begin() + _contentLen + 2));
-		std::cout << MAGENTA "Request body: " << _reqBody << RESET << std::endl;
 		_rawRequestData.erase(_rawRequestData.begin(), _rawRequestData.begin() + _contentLen + 2);
 		return (true);
 	}
 	return (_doneReading);
 }
-bool	Request::isCGIrequired(){
-	// if (this == nullptr) {
-	// 	std::cout << "AAHHH" << std::endl;
-	// 	NicePrint::promptEnter();
-	// 	return false;
-	// }
+
+bool	Request::isCGIrequired()
+{
 	if (this->_filePath.rfind(".py") == this->_filePath.length() - 3 || this->_filePath.rfind(".js") == this->_filePath.length() - 3)
 		return true;
 	if (this->_headers["Content-Type"].find("multi-part/form-data") != std::string::npos)
 		return true;
 	if (this->_headers["Content-Type"].find("application/x-www-form-urlencoded") != std::string::npos)
 		return true;
-	// if (this->_headers["Content-Type"].find("application/json") != std::string::npos)
-	// 	return true;
 	return false;
 }

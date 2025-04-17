@@ -2,72 +2,45 @@
 #include <filesystem>
 #include "socket.hpp"
 
-std::string generate_directory_listing(const std::string& _filePath) //should become response func 
-{
-	std::ostringstream html;
-
-	html << "<html><head><title>Directory Listing</title></head><body>\n";
-	html << "<h1>Directory listing for " << _filePath << "</h1>\n";
-	html << "<ul>\n";
-
-	if (std::filesystem::exists(_filePath) && std::filesystem::is_directory(_filePath))
-	{
-		for (const auto& it : std::filesystem::directory_iterator(_filePath)) 
-		{
-			std::string entry_name = it.path().filename().string();
-			if (it.is_directory()) 
-				html << "<li><a href='" << entry_name << "/'>" << entry_name << "/</a></li>\n";
-			else 
-				html << "<li><a href='" << entry_name << "'>" << entry_name << "</a></li>\n";
-		}
-	}
-
-	html << "</ul>\n";
-	html << "</body></html>\n";
-
-	return html.str();
-}
-
-std::ofstream file("/home/mde-cloe/PROJECTS/Webby-serv/sources/Request/testing");
-
-
-// #include <fstream>
-// std::fstream	errfile("debuggin");
-
-void	Request::RouteRuleHandler()
+bool	Request::RouteRuleHandler()
 {
 	location	*locPtr;
 	location	reqRules;
 	size_t		matchCount = 0;
-	std::cout << YELLOW "path before routehnandler == " RESET << _filePath << std::endl;
 	std::vector<location> *locVec = &this->_config->_locations;
 	if (locVec->empty())
-		return;
+		return false;
 	locPtr = findLocationMatch(*locVec, matchCount);
 	if (locPtr == nullptr)
-		return;
+		return false;
 	reqRules = *locPtr;
-	for (; !locVec->empty(); locVec = &locPtr->_nestedLocations)
+	if (!locPtr->_nestedLocations.empty()) 
 	{
-		locPtr = findLocationMatch(*locVec, matchCount);
-		if (locPtr == nullptr)
-			break;
-		setLocRules(reqRules, *locPtr);
+		for (; !locVec->empty(); locVec = &locPtr->_nestedLocations)
+		{
+			locPtr = findLocationMatch(*locVec, matchCount);
+			if (locPtr == nullptr)
+				break;
+			setLocRules(reqRules, *locPtr);
+		}
 	}
 	checkRules(reqRules);
+	return true;
 }
-
+ 
 location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
 {
-	size_t	newSize;
-	location *ret;
-	bool	matchFound = false;
+	size_t		newSize;
+	location	*ret = nullptr, *root = nullptr;
+	bool		matchFound = false;
 	for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
 	{
-		newSize = countPathMatch(_filePath, it->getName());
+		std::string	&locpath = it->getName();
+		if (locpath == "/")
+			root = &(*it);
+		newSize = countPathMatch(_filePath, locpath);
 		if (newSize > matchCount)
 		{
-			std::cout << MAGENTA "MATCH FOUND" RESET << std::endl;
 			matchCount = newSize;
 			matchFound = true;
 			ret = &(*it);
@@ -76,7 +49,16 @@ location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchC
 		}
 	}
 	if (matchFound)
-		return (ret);
+	{
+		if (matchCount > 1)
+		{
+			return (ret);
+		}
+		else if (root != nullptr)
+		{
+			return (root);
+		}
+	}
 	return (nullptr);
 }
 
@@ -84,17 +66,13 @@ size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath)
 {
 	size_t	size = 0, matchCount = 0;
 	for (;size < reqpath.size() && size < locpath.size()\
-	&& reqpath[size] == locpath[size]; size++) {
-		if (reqpath[size] == '/') {
+		&& reqpath[size] == locpath[size]; size++)
+	{
+		if (reqpath[size] == '/')
 			matchCount++;
-			std::cout << MAGENTA "MATCH FOUND" RESET << std::endl;
-		}
-	 }
-	if (size == locpath.size() && size == reqpath.size()){
-			file << "returning npos for path " << reqpath << std::endl;
-		return (std::string::npos);
 	}
-	file << "returning " << size << "for path " << reqpath << std::endl;	
+	if (size == locpath.size() && size == reqpath.size())
+		return (std::string::npos);
 	return (matchCount);
 }
 
@@ -106,8 +84,6 @@ void assignStrIfNonEmpty(std::string &dest, std::string &rhs)
 
 void	Request::setLocRules(location &ruleblock, location &loc)
 {
-	// assignStrIfNonEmpty(ruleblock._allow_methods, loc._allow_methods); //change after merge
-	// assignStrIfNonEmpty(ruleblock._index, loc._index);
 	assignStrIfNonEmpty(ruleblock._alias, loc._alias);
 	assignStrIfNonEmpty(ruleblock._name, loc._name);
 	assignStrIfNonEmpty(ruleblock._return, loc._return);
@@ -120,7 +96,7 @@ void	Request::setLocRules(location &ruleblock, location &loc)
 		ruleblock._cgi_extension = loc._cgi_extension;
 	if (!loc._cgi_path.empty())
 		ruleblock._cgi_path = loc._cgi_path;
-	ruleblock._autoindex = loc._autoindex; //default on extra
+	ruleblock._autoindex = loc._autoindex;
 }
 
 void isMethodAllowed(Http_method method, std::vector<Http_method> const &allow_methods)
@@ -139,55 +115,67 @@ void  Request::checkRules(location &rules)
 {   
 	if (!rules.getReturn().empty())
 	{
-		this->_filePath = rules.getReturn();
+		_filePath = rules.getReturn();
 		_statusCode = 301;
 		_statusStr = "301 Moved Permanently";
 		return;
 	}
-	isMethodAllowed(_method_type, rules.getAllowMethods());
-	if (!rules.getRoot().empty())
-	{
-		_filePath.find(_config->_rootDir);
-		_filePath.replace(0, _config->_rootDir.size(), rules.getRoot()); //???
+	isMethodAllowed(_method_type , rules.getAllowMethods());
+	if (!rules.getAlias().empty()) {
+		_aliasUsed = true;
+		_filePath = rules.getAlias();
 	}
-	else if (!rules.getAlias().empty()) //wrong, check merlin ss
-		this->_filePath = rules.getAlias();
-	else if (!rules.getIndex().empty()) //add to outside location as well!!
-	{
-		std::filesystem::path p = _filePath;
-		if (std::filesystem::is_directory(p))
-		{
-			std::vector<std::string> rules_index = rules.getIndex();
-			std::string tmp = this->_filePath;
-
-			for (auto i : rules_index)
-			{
-				tmp += i;
-				if (fileExists(_filePath))
-				{
-					_filePath = tmp;
-					return;
-				}
-				tmp = _filePath;
-			}
-			if (rules.getAutoindex())
-				this->_dirListing = true;
-		}
-	}
-	else if (!rules.getCgiExtension().empty())
+	else if (!rules.getRoot().empty())
+		_root =  rules.getRoot();
+	checkIndex(rules.getIndex(), rules.getAutoindex());
+	if (!rules.getCgiExtension().empty())
 	{
 		std::vector<std::string> cgi_extension = rules.getCgiExtension();
 		size_t pos = _filePath.rfind('.');
-		std::string extension_to_compare = _filePath.substr(pos + 1);
-		std::cout << extension_to_compare << std::endl;
-
+		if (pos == std::string::npos || pos == _filePath.size() - 1)
+			throw (ClientErrorExcept(403, "403 Forbidden"));
+		std::string extension_to_compare = _filePath.substr(pos);
 		for (auto i : cgi_extension)
 		{
 			if (i == extension_to_compare)
+			{
+				_cgiRequired = true;
 				return;
+			}	
 		}
-		throw (ClientErrorExcept(500, "Internal Server Error"));
+		throw (ClientErrorExcept(403, "403 Forbidden"));
 	}
 }
 
 
+void	Request::checkIndex(std::vector<std::string> &indexPages, bool	autoindex)
+{
+	std::string indexPath, dirPath;
+	
+	if (this->_aliasUsed == false)
+		dirPath = this->_root;
+	dirPath += this->_filePath;
+	
+	if (!std::filesystem::is_directory(dirPath))
+		return;
+	if (!indexPages.empty())
+	{
+		
+		for (auto i : indexPages)
+		{
+			indexPath = dirPath + i;
+			if (fileExists(indexPath))
+			{
+				_filePath += i;
+				return;
+			}
+			indexPath = _filePath;
+		}
+	}
+	if (autoindex)
+	{
+		this->_dirListing = true;
+		return;
+	}
+	throw ClientErrorExcept(403, "403 Forbidden");
+}

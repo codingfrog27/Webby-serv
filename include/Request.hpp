@@ -71,7 +71,7 @@ class Request
 		bool					_headerAreParsed;
 		bool					_hasBody;
 		size_t					_contentLen;
-		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE;
+		size_t					_max_body_size;
 		t_secs					_timeoutTime;
 		t_time					_startTime;
 		std::string				_root;
@@ -90,11 +90,10 @@ class Request
 		void					checkHeaders();
 		void					checkBodyHeaders();
 		void					parseBody();
-		void					parseFormData(std::string &content_type);
 		void					parseUrlEncoded();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 		void					resolveFilePath();
-		void					RouteRuleHandler();
+		bool					RouteRuleHandler();
 		location				*findLocationMatch(std::vector<location> &locs, size_t &matchCount);
 		void					setLocRules(location &loc, location &ruleblock);
 		size_t					countPathMatch(std::string &reqpath, std::string &locpath);
@@ -117,6 +116,8 @@ class Request
 		std::string					_statusStr;
 		int							_statusCode;
 		bool						_dirListing;
+		bool						_aliasUsed;
+		bool						_cgiRequired;
 
 						Request(void) = delete;
 						Request(Config *config, int _clientFD);
@@ -133,6 +134,7 @@ class Request
 		void			printHeaders();
 
 		Config*			getConfig();
+		void			checkIndex(std::vector<std::string> &indexPages, bool	autoindex);
 };
 
 std::string trim(const std::string& str);

@@ -8,6 +8,16 @@ void	Response::getMethod(Request* request){
 	size_t size = 0;
 
 	if(_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS){
+		if (request->_dirListing == true){
+			std::string dirListing = generateDirectoryListing(request->_filePath);
+			setHeaders("Content-Type", "text/html");
+			setHeaders("Content-Length", std::to_string(dirListing.size()));
+			setBody(dirListing);
+			setStatus("200 OK");
+			setResponseBuffer(generateResponse());
+			_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
+			return ;
+		}
 		if (fileExists(request->_filePath)){
 			setContentType(request->_filePath);
 			if (getReadingModeFromResponse() == BINARY)
@@ -16,18 +26,20 @@ void	Response::getMethod(Request* request){
 				getInFile().open(request->_filePath);
 			if (!getInFile().is_open()){
 				request->_statusCode = 500;
+				request->_statusStr = "500 Internal Server Error";
 				return ;
 			}
 		}
 		else{
 			request->_statusCode = 404;
+			request ->_statusStr = "404 Not Found";
 			return ;
 		}
 		getInFile().seekg(0, std::ios::end);
 		size = getInFile().tellg();
 		if (size == 0){
 			getInFile().close();
-			autoFillResponse("204 No Content");
+			autoFillResponse("204 No Content", NULL);
 			return ;
 		}
 		getInFile().seekg(0, std::ios::beg);
@@ -47,6 +59,7 @@ void	Response::getMethod(Request* request){
 	}
 	else{
 		request->_statusCode = 500;
+		request->_statusStr = "500 Internal Server Error";
 		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
 	}
 	return ;
@@ -60,6 +73,7 @@ void	Response::postMethod(Request* request){
 			getOutFile().open(request->_filePath);
 		if (!getOutFile().is_open()){
 			request->_statusCode = 500;
+			request->_statusStr = "500 Internal Server Error";
 			return ;
 		}
 		_responseHandlerStatus = responseHandlerStatus::IN_POST;
@@ -68,6 +82,7 @@ void	Response::postMethod(Request* request){
 		getOutFile().write(request->getBody().c_str() + getBytesWritten(), BUFFER_SIZE);
 		if (getOutFile().fail()){
 			request->_statusCode = 500;
+			request->_statusStr = "500 Internal Server Error";
 			_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
 			getOutFile().close();
 			return ;
@@ -75,7 +90,7 @@ void	Response::postMethod(Request* request){
 		setBytesWritten(BUFFER_SIZE);
 		if (getBytesWritten() >= request->getBody().size()){
 			getOutFile().close();
-			autoFillResponse("201 Created");
+			autoFillResponse("201 Created", NULL);
 			setBytesWritten(0);
 			_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 		}
@@ -83,6 +98,7 @@ void	Response::postMethod(Request* request){
 	}
 	else{
 		request->_statusCode = 500;
+		request->_statusStr = "500 Internal Server Error";
 		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
 	}
 	return ;
@@ -93,14 +109,16 @@ void	Response::deleteMethod(Request* request){
 		_responseHandlerStatus = responseHandlerStatus::IN_DELETE;
 	if (fileExists(request->_filePath)){
 		if (std::remove(request->_filePath.c_str()) == 0)
-			autoFillResponse("200 OK");
+			autoFillResponse("200 OK", NULL);
 		else{
 			request->_statusCode = 500;
+			request->_statusStr = "500 Internal Server Error";
 			_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
 		}
 	}
 	else{
 		request->_statusCode = 404;
+		request ->_statusStr = "404 Not Found";
 		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
 	}
 	return ;
@@ -115,9 +133,23 @@ connectStatus	Response::responseHandler(Request* request){
 			setHeaders("Connection", "keep-alive");
 	}
 	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && request->_statusCode != 0){ //if there was an error in (parsing) the request{}
-		request->_filePath = _headers["Root"] + "cgi-bin/error.js";
-		request->_method_type = Http_method::GET;
-		return connectStatus::CGI_REQUIRED;
+		if (request->getConfig()->_errorPage.find(std::to_string(request->_statusCode)) != request->getConfig()->_errorPage.end()){
+			request->_filePath = request->getConfig()->_errorPage[std::to_string(request->_statusCode)];
+			if (request->_filePath == "default"){
+				request->_filePath = _root + "/cgi-bin/error.js";
+				request->_method_type = Http_method::GET;
+				return connectStatus::CGI_REQUIRED;
+			}
+			else{
+				autoFillResponse(request->_statusStr, request->_filePath);
+				return connectStatus::RESPONDING;
+			}
+		}
+		else{
+			request->_filePath = _root + "/cgi-bin/error.js";
+			request->_method_type = Http_method::GET;
+			return connectStatus::CGI_REQUIRED;
+		}
 	}
 	else{
 		if ((request->_method_type ==  Http_method::GET && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_GET){

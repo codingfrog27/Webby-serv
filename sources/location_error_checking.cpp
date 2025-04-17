@@ -231,8 +231,9 @@ std::string location::validateReturn()
 		return ("");
 	for (size_t i = 0; i < return_value.length(); i++)
 	{
-		if (!isalpha(return_value[i]) && !isdigit(return_value[i]) && return_value[i] != '/' && return_value[i] != ':' && return_value[i] != '_' && return_value[i] != '-' && return_value[i] != '.')
-		 	throw std::invalid_argument("Error: invalid character in return directive");
+		if (!isalpha(return_value[i]) && !isdigit(return_value[i]) && return_value[i] != '/' \
+			&& return_value[i] != ':' && return_value[i] != '_' && return_value[i] != '-' && return_value[i] != '.')
+			throw std::invalid_argument("Error: invalid character in return directive");
 	}
 	return (return_value);
 }

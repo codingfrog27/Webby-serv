@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Config.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 13:33:40 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Config.hpp                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/09/18 15:09:44 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/04/17 11:48:44 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ class Config
 		bool 		_autoindex;
 		std::string _autoIndexFilePath;
 		std::string _client_max_body_size;
+		size_t		_client_max_body_size_t;
 		std::unordered_map<std::string, std::string> _errorPage;
 		std::string _host;
 		std::vector<std::string> _index;
@@ -51,7 +52,6 @@ class Config
 		std::string _listen;
 		std::string _rootDir;
 		std::string _serverName;
-		std::string _serverPort;
 		size_t		_maxConnects;
 		size_t		_timeout;
 		
@@ -71,8 +71,9 @@ class Config
 	bool		getAutoindex();
 	std::unordered_map<std::string, std::string> getErrorPage();
 	std::string	getMaxBodySize();
+	size_t		getMaxBodySizeT();
 	std::string	getHost();
-	std::vector<std::string> getIndex();
+	std::vector<std::string> &getIndex();
 	std::string	getListen();
 	std::string	getRoot();
 	size_t		getTimeout();
@@ -97,6 +98,7 @@ class Config
 	void		setIndex(const std::vector<std::string> &index_vector);
 	void		setListen(const std::string &listen);
 	void		setMaxBodySize(const std::string &maxBodySize);
+	void		setMaxBodySizeT(const long &MaxBodySizeT);
 	void		setRoot(const std::string &root);
 	void		setTimeout(const size_t& timeout);
 	void		setServerName(const std::string &serverName);
@@ -110,6 +112,7 @@ class Config
 	std::vector<std::string> ValidateIndex();
 	std::string	validateListen();
 	std::string validateMaxBodySize();
+	size_t		convertMaxBodySize();
 	std::string validateRoot();
 	size_t 		validateTimeout();
 	std::string validateServerName();

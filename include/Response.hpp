@@ -37,7 +37,7 @@ class Response{
 		Response &										operator=(const Response& obj);
 
 		connectStatus									responseHandler(Request* request);
-		void											autoFillResponse(std::string status);
+		void											autoFillResponse(std::string status, std::string path);
 		std::string										generateResponse() const;
 
 		void											setHTTPVersion(std::string HTTPversion);
@@ -51,6 +51,7 @@ class Response{
 		void											setBytesWritten(size_t bytesWritten);
 
 		responseHandlerStatus							getResponseHandlerStatus() const;
+		std::string										getRoot() const;
 		std::ofstream&									getOutFile();
 		std::ifstream&									getInFile();
 		std::string										getHeader(std::string key) const;
@@ -60,9 +61,12 @@ class Response{
 		size_t											getBytesWritten() const;
 		connectStatus									writeResponse(int FD);
 
+		std::string										generateDirectoryListing(const std::string& _filePath);
+
 	private:
 		responseHandlerStatus							_responseHandlerStatus;
 		std::string										_httpVersion;
+		std::string										_root;
 		std::ofstream									_outFile;
 		std::ifstream									_inFile;
 		std::string										_status;
