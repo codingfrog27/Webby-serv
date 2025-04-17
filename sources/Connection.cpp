@@ -104,6 +104,20 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 	return (_CStatus);
 }
 
+bool	Connection::connectIsOkay(int fd)
+{
+	int error = 0;
+	socklen_t len = sizeof(error);
+	if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0) {
+		std::cout << "getsockopt failed" << std::endl;
+		return (false);
+	}
+	if (error == 0)
+		return (true);
+	std::cerr << RED "Socket error: " << strerror(error) << RESET << std::endl;
+	return (false);
+}
+
 void Connection::removeCGIFromEverywhere(Server& server) {
 	auto& pollFDs = server.getCGIPollFDs();
 	auto it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {

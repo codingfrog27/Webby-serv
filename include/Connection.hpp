@@ -68,4 +68,5 @@ class Connection
 		void			findFDtoRemove(int eraseMe, std::vector<pollfd> &pollFDs);
 		void			removeCGIFromEverywhere(Server& server);
 		connectStatus	checkConnectStatus(const pollfd &poll);
+		static bool		connectIsOkay(int fd);
 } ;
