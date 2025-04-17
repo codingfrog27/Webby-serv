@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Config.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/14 13:39:57 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Config.cpp                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/04/17 11:47:10 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,8 @@ void	parseConfig(int argc, char ** argv, std::vector<Config> &configs)
 		if (argc != 2)
 			throw Config::NoBlockFound("please oprovide a config file (and no other arguments)");
 		configs = readConfigFile(argv[1]);
-		// printConfigs(configs);
 	}
-	catch(const Config::NoBlockFound &e) //general config error
+	catch(const Config::NoBlockFound &e)
 	{
 		std::cout << e.what() << "\n running with default config values" << std::endl;
 		configs.emplace_back();
@@ -49,12 +48,9 @@ std::vector<Config>	readConfigFile(const std::string fileName)
 			continue;
 		if (line.find("server {") != std::string::npos)
 			Configs.emplace_back(file, line);
-		// else
-			// throw std::invalid_argument("non comment text between server blocks! >:(");
 	}
 	if (Configs.empty())
 		throw Config::NoBlockFound("no server blocks found! be sure to start your block wit \"server {\"");
-	// checkPortUniqueness(Configs);
 	return (Configs);
 }
 
@@ -78,7 +74,6 @@ std::string	extractLocationName(std::string line)
             endPos = location.length();
     location_name = location.substr(startPos, endPos - startPos);
 	}
-	std::cout << location_name << std::endl;
 	return (location_name);
 }
 
@@ -126,6 +121,7 @@ int Config::mapToMembers()
 				setAutoindex(validateAutoindex()); 
 				setListen(validateListen()); 
 				setMaxBodySize(validateMaxBodySize()); 
+				setMaxBodySizeT(convertMaxBodySize());
 				setErrorPage(validateErrorPage());
 				setHost(validateHost());
 				setIndex(ValidateIndex());

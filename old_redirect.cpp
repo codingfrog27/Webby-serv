@@ -68,31 +68,31 @@ void sendHTMLPage(int client_socket, const std::string& file_path)
 	file.close();
 }
 
-void	Request::locationHandler()
-{
-	location	*reqRules;
-	location	*nestRules;
-	size_t		matchCount = 0;
-	std::vector<location> &locVec = this->_config->_locations;
-	// std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
-	// << "FD == " << _clientFD << std::endl;
-	if (locVec.empty())
-		return;
-	reqRules = findLocationMatch(locVec, matchCount);
-	if (reqRules == nullptr)
-		return;
-	locVec = reqRules->_nestedLocations;
-	while (!locVec.empty())
-	{
-		nestRules = findLocationMatch(locVec, matchCount);
-		if (nestRules == nullptr)
-			break;
-		setLocRules(*reqRules, *nestRules);
-		locVec = nestRules->_nestedLocations;
-	}
-	//antonio set rules
-	// _filePath = _root + _filePath;
-}
+// void	Request::locationHandler()
+// {
+// 	location	*reqRules;
+// 	location	*nestRules;
+// 	size_t		matchCount = 0;
+// 	std::vector<location> *locVec = &this->_config->_locations;
+// 	// std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
+// 	// << "FD == " << _clientFD << std::endl;
+// 	if (locVec.empty())
+// 		return;
+// 	reqRules = findLocationMatch(locVec, matchCount);
+// 	if (reqRules == nullptr)
+// 		return;
+// 	locVec = reqRules->_nestedLocations;
+// 	while (!locVec.empty())
+// 	{
+// 		nestRules = findLocationMatch(locVec, matchCount);
+// 		if (nestRules == nullptr)
+// 			break;
+// 		setLocRules(*reqRules, *nestRules);
+// 		locVec = nestRules->_nestedLocations;
+// 	}
+// 	//antonio set rules
+// 	// _filePath = _root + _filePath;
+// }
 
 location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
 {

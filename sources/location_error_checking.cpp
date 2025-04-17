@@ -1,4 +1,5 @@
 #include "location.hpp"
+#include <sstream>
 
 std::string	find_value_location(std::string& directive)
 {
@@ -18,6 +19,8 @@ std::string	find_value_location(std::string& directive)
 		}
 		i++;
 	}
+	if (value.length() == 0)
+		throw std::invalid_argument("Error: directive is empty");
 	return (value);
 }
 
@@ -41,12 +44,13 @@ std::string	normalize_space_location(std::string& str)
 	return (str);
 }
 
-std::vector<std::string> location::validateAllowMethods()
+std::vector<Http_method> location::validateAllowMethods()
 {
 	std::string allow_methods_rule;
     std::string allow_methods_value;
 	std::string tmp_value;
-	std::vector<std::string>  tmp_vector;
+	std::vector<Http_method>  tmp_vector;
+	std::vector<std::string>  methods = {"POST", "GET", "DELETE"};
 	
 	static int space = 0;
 
@@ -72,9 +76,12 @@ std::vector<std::string> location::validateAllowMethods()
 	if (space == 0)
 	{
 		tmp_value = allow_methods_value.substr(0, allow_methods_value.length());
-		if (tmp_value == "POST" || tmp_value == "GET" || tmp_value == "DELETE") //|| isspace(tmp_value[space]) == 0)
-			tmp_vector.push_back(tmp_value);
-		else
+		for (size_t i = 0; i < methods.size(); i++)
+		{
+			if (tmp_value == methods[i])
+				tmp_vector.push_back((Http_method)i);
+		}
+		if (tmp_vector.empty())
 		 	throw std::invalid_argument("Error: invalid ruleeeee in allow_methods directive");
 	}
 	else
@@ -91,15 +98,18 @@ std::vector<std::string> location::validateAllowMethods()
 			if (start < i)
 			{
 				tmp_value = allow_methods_value.substr(start, i - start);
-				if (tmp_value == "POST" || tmp_value == "GET" || tmp_value == "DELETE")
-					tmp_vector.push_back(tmp_value);
-				else
+				for (size_t i = 0; i < methods.size(); i++)
+				{
+					if (tmp_value == methods[i])
+						tmp_vector.push_back((Http_method)i);
+				}
+				if (tmp_vector.empty())
 					throw std::invalid_argument("Error: invalid rule in autoindex directive");
 			}
 		}
 	}
 	return (tmp_vector);
-}	
+}
 
 bool location::validateAutoindex()
 {
@@ -146,56 +156,64 @@ std::string location::validateAlias()
 	return (alias_value);
 }
 
-std::vector<std::string>		location::validateIndex()
+std::string	location::findLocationName(std::string locationLine)
 {
-	std::string index_rule;
-	std::string index_value;
-	std::string tmp_value;
-	std::vector<std::string>  tmp_vector;
-	
-	static int space = 0;
+	size_t end = locationLine.rfind('{');
+	std::string locationName = locationLine.substr(10, end - 11);
+	return (locationName);
+}
 
-	if (_rulemap.contains("index"))
+std::string location::validateLocationName(std::string line)
+{
+	std::string location_name_rule;
+	std::string location_name_value;
+
+	if (!line.empty())
 	{
-		index_rule = normalize_space_location(_rulemap.at("index"));
-		index_value = find_value_location(index_rule);
+		location_name_rule = normalize_space_location(line);
+		location_name_value = findLocationName(location_name_rule);
 	}
-	else
-		return (tmp_vector);
-	for (size_t i = 0; i < index_value.length(); i++)
+	size_t size = location_name_value.size();
+	if (location_name_value[0] == '/' && location_name_value[size - 1] == '/')
 	{
-		if (isspace(index_value[i]))
-			i++;
-		if (!isalpha(index_value[i]) && !isdigit(index_value[i]) && index_value[i] != '-' && index_value[i] != '.')
-			throw std::invalid_argument("Error: invalid character in index directive");
-	}
-	for (size_t i = 0; i < index_value.length(); i++)
-	{
-		if (isspace(index_value[i]))
-			space++;
-	}
-	if (space == 0)
-	{
-		tmp_value = index_value.substr(0, index_value.length());
-		tmp_vector.push_back(tmp_value);
-	}
-	else
-	{
-		size_t j = 0;
-		for (size_t i = 0; i < index_value.length(); i++)
+		for (size_t i = 0; i < size; i++)
 		{
-			if (!isspace(index_value[i]))
-			{	
-				for (j = i; !isspace(index_value[j]) && j < (index_value.length()); j++)
-					tmp_value = index_value.substr(i, j - i);
-				tmp_vector.push_back(tmp_value);
-				i = j;	
-			}
+			if (!isalpha(location_name_value[i]) && !isdigit(location_name_value[i]) && location_name_value[i] != '-' && location_name_value[i] != '/')
+				throw std::invalid_argument("Error: invalid character in location name");
+			if (location_name_value[i] == '/' && location_name_value[i + 1] == '/')
+				throw std::invalid_argument("Error: invalid character in location name");
 		}
 	}
-	// for (size_t i = tmp_vector.begin(); i < tmp_vector.end(); i++)
-	// 	std::cout << *i << std::endl;
-	return (tmp_vector);
+	else
+		throw std::invalid_argument("Error: invalid character in location name");
+	return (location_name_value);
+}
+
+std::vector<std::string> location::validateIndex()
+{
+    std::vector<std::string> tmp_vector;
+    std::string index_rule, index_value;
+
+    if (_rulemap.contains("index"))
+    {
+        index_rule = normalize_space_location(_rulemap.at("index"));
+        index_value = find_value_location(index_rule);
+    }
+    else
+        return (tmp_vector);
+
+    for (char c : index_value)
+    {
+        if (!std::isalnum(c) && c != '-' && c != '.' && !std::isspace(c))
+            throw std::invalid_argument("Error: invalid character in index directive");
+    }
+
+    std::istringstream iss(index_value);
+    std::string word;
+    while (iss >> word)
+        tmp_vector.push_back(word);
+
+    return (tmp_vector);
 }
 
 std::string location::validateReturn()
@@ -212,8 +230,9 @@ std::string location::validateReturn()
 		return ("");
 	for (size_t i = 0; i < return_value.length(); i++)
 	{
-		if (!isalpha(return_value[i]) && !isdigit(return_value[i]) && return_value[i] != '/' && return_value[i] != ':' && return_value[i] != '_' && return_value[i] != '-' && return_value[i] != '.')
-		 	throw std::invalid_argument("Error: invalid character in return directive");
+		if (!isalpha(return_value[i]) && !isdigit(return_value[i]) && return_value[i] != '/' \
+			&& return_value[i] != ':' && return_value[i] != '_' && return_value[i] != '-' && return_value[i] != '.')
+			throw std::invalid_argument("Error: invalid character in return directive");
 	}
 	return (return_value);
 }

@@ -27,6 +27,7 @@ location::location(void)
 location::location(std::ifstream &file, std::string &line)
 {
 	size_t i = 0;
+	setName(validateLocationName(line));
 	while (std::getline(file, line))
 	{
 		if (line.empty() || line[i] == '#')
@@ -46,8 +47,19 @@ location::location(std::ifstream &file, std::string &line)
 
 location::location(const location &rhs)
 {
-	std::cout << GREEN << "location: Copy constructor called" RESET << std::endl;
-	*this = rhs;
+    // std::cout << GREEN << "location: Copy constructor called" << RESET << std::endl;
+
+    _alias = rhs._alias;
+    _allow_methods = rhs._allow_methods;
+    _autoindex = rhs._autoindex;
+    _cgi_extension = rhs._cgi_extension;
+    _cgi_path = rhs._cgi_path;
+    _index = rhs._index;
+    _name = rhs._name;
+    _return = rhs._return;
+    _root = rhs._root;
+    _nestedLocations = rhs._nestedLocations;
+    _rulemap = rhs._rulemap;
 }
 
 location &
@@ -57,7 +69,7 @@ location::operator=(const location &rhs)
 
 	if (this != &rhs)
 	{
-		 _alias = rhs._alias;
+		_alias = rhs._alias;
 		_allow_methods = rhs._allow_methods;
 		_autoindex = rhs._autoindex;
 		_cgi_extension = rhs._cgi_extension;
@@ -75,7 +87,7 @@ location::operator=(const location &rhs)
 
 location::~location(void)
 {
-	std::cout << RED << "location: Destructor called" << RESET << std::endl;
+	// std::cout << RED << "location: Destructor called" << RESET << std::endl;
 }
 
 // ************************************************************************** //
@@ -107,12 +119,12 @@ void	location::setAlias(const std::string &alias)
 	this->_alias = alias;
 }
 
-std::vector<std::string>	location::getAllowMethods()
+std::vector<Http_method>	location::getAllowMethods()
 {
 	return(this->_allow_methods);
 }
 
-void	location::setAllowMethods(const std::vector<std::string> &allow_methods)
+void	location::setAllowMethods(const std::vector<Http_method> &allow_methods)
 {
 	this->_allow_methods = allow_methods;
 }
@@ -147,7 +159,7 @@ void	location::setCgiPath(const std::vector<std::string> &cgi_path)
 	this-> _cgi_path = cgi_path;
 }
 
-std::vector<std::string>	location::getIndex()
+std::vector<std::string>	&location::getIndex()
 {
 	return(this->_index);
 }
@@ -183,9 +195,6 @@ std::string location::toString() const
 
 void	location::initializeLocation()
 {
-	static int	count;
-	if (!count)
-		setName("loc1");
 	setAlias(validateAlias());
 	setAllowMethods(validateAllowMethods());
 	setAutoindex(validateAutoindex());

@@ -1,19 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   config_error_checking.cpp                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
-/*   Updated: 2024/12/19 15:09:38 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   config_error_checking.cpp                          :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/11/06 19:41:53 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/04/17 12:14:49 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
 #include <filesystem>
+#include <limits>
 
-std::string	find_value(std::string& directive)
+std::string find_value(std::string &directive)
 {
 	std::string value;
 
@@ -31,13 +32,15 @@ std::string	find_value(std::string& directive)
 		}
 		i++;
 	}
+	if (value.length() == 0)
+		throw std::invalid_argument("Error: directive is empty");
 	return (value);
 }
 
-std::string	getErrorPageMapKey(std::string& errorPage_value)
+std::string getErrorPageMapKey(std::string &errorPage_value)
 {
 	int digits = 0;
-	std::string	errorPage_key;
+	std::string errorPage_key;
 
 	(void)digits;
 	for (auto i = 0; i < errorPage_value[i]; i++)
@@ -49,116 +52,84 @@ std::string	getErrorPageMapKey(std::string& errorPage_value)
 	{
 		if (isdigit(errorPage_key[i]))
 			digits++;
-		// if (digits > 3 || !isdigit(errorPage_key[i]))
-		// 	throw std::invalid_argument("Error: invalid error_page code directive");
 	}
 	return (errorPage_key);
 }
 
-std::string getErrorPageMapValue(std::string& errorPage_value)
+std::unordered_map<std::string, std::string> Config::validateErrorPage()
 {
-	std::string errorPage_path = errorPage_value.substr(4, errorPage_value.length());
+	std::unordered_map<std::string, std::string> tmpErrorPageMap;
 
-	for (size_t i = 0; i < errorPage_path.length(); i++)
+	if (_rulemap.contains("error_page"))
 	{
-		// if (!isdigit(errorPage_path[i]) && !isalpha(errorPage_path[i]) && errorPage_path[i] != '/' && errorPage_path[i] != '.')
-		// 	throw std::invalid_argument("Error: invalid character in error_page directive");
-	}
-	return (errorPage_path);
-}
+		auto found = _rulemap.find("error_page");
+		std::string errorPage_rule = normalize_space(found->second);
+		std::istringstream iss(errorPage_rule);
+		std::string token, errorPage;
+		std::vector<std::string> errorCodes;
 
-std::multimap<std::string, std::string> Config::validateErrorPage()
-{
-    std::multimap<std::string, std::string> tmpErrorPageMap;
+		iss >> token;
 
-    auto range = _rulemap.equal_range("error_page");
-    for (auto it = range.first; it != range.second; ++it)
-    {
-        std::string errorPage_rule = normalize_space(it->second);
-        std::istringstream iss(errorPage_rule);
-        std::string errorCode;
-        std::string errorPage;
-
-        while (iss >> errorCode >> errorPage)
-        {
-            // if (errorPage[0] != '/')
-            //     throw std::invalid_argument("Error: invalid path in error_page directive");
-
-            for (char c : errorPage)
-            {
-                if (!isdigit(c) && !isalpha(c) && c != '/' && c != '.' && c != '_')
-                    throw std::invalid_argument("Error: invalid character in error_page directive");
-            }
-            tmpErrorPageMap.emplace(errorCode, errorPage);
-        }
-    }
-
-    if (tmpErrorPageMap.empty())
-        throw std::invalid_argument("Error: no valid error_page directives found");
-
-    return tmpErrorPageMap;
-}
-
-std::vector<std::string>		Config::ValidateIndex()
-{
-	std::string index_rule;
-	std::string index_value;
-	std::string tmp_value;
-	std::vector<std::string>  tmp_vector;
-
-	static int space = 0;
-
-	if (_rulemap.contains("index"))
-	{
-		auto found = _rulemap.find("index");
-		index_rule = normalize_space(found->second);
-		index_value = find_value(index_rule);
-	}
-	else
-		throw std::invalid_argument("Error: index directive not found");
-	for (size_t i = 0; i < index_value.length(); i++)
-	{
-		if (isspace(index_value[i]))
-			i++;
-		if (!isalpha(index_value[i]) && !isdigit(index_value[i]) && index_value[i] != '-' && index_value[i] != '.')
-			throw std::invalid_argument("Error: invalid character in index directive");
-	}
-	for (size_t i = 0; i < index_value.length(); i++)
-	{
-		if (isspace(index_value[i]))
-			space++;
-	}
-	if (space == 0)
-	{
-		tmp_value = index_value.substr(0, index_value.length());
-		tmp_vector.push_back(tmp_value);
-	}
-	else
-	{
-		size_t j = 0;
-		for (size_t i = 0; i < index_value.length(); i++)
+		while (iss >> token)
 		{
-			if (!isspace(index_value[i]))
+			if (std::isdigit(token[0]))
+				errorCodes.push_back(token);
+			else
 			{
-				for (j = i; !isspace(index_value[j]) && j < (index_value.length()); j++)
-					tmp_value = index_value.substr(i, j - i);
-				tmp_vector.push_back(tmp_value);
-				i = j;
+				errorPage = token;
+				for (char c : errorPage)
+				{
+					if (!isdigit(c) && !isalpha(c) && c != '/' && c != '.' && c != '_')
+						throw std::invalid_argument("Error: invalid character in error_page directive");
+				}
+				for (const auto &code : errorCodes)
+					tmpErrorPageMap[code] = errorPage;
+				errorCodes.clear();
 			}
 		}
 	}
-	return (tmp_vector);
+	return (tmpErrorPageMap);
 }
 
-std::string	Config::validateListen()
+std::vector<std::string> Config::ValidateIndex()
 {
-	std::string listen_rule;;
+	std::vector<std::string> tmp_vector;
+	std::string index_rule, index_value;
+
+	if (_rulemap.contains("index"))
+	{
+		index_rule = normalize_space(_rulemap.at("index"));
+		index_value = find_value(index_rule);
+	}
+	else
+		return (tmp_vector);
+
+	for (char c : index_value)
+	{
+		if (!std::isalnum(c) && c != '-' && c != '.' && !std::isspace(c))
+		{
+			throw std::invalid_argument("Error: invalid character in index directive");
+		}
+	}
+
+	std::istringstream iss(index_value);
+	std::string word;
+	while (iss >> word)
+		tmp_vector.push_back(word);
+
+	return tmp_vector;
+}
+
+std::string Config::validateListen()
+{
+	std::string listen_rule;
+	;
 	std::string listen_value;
 
 	if (_rulemap.contains("listen"))
 	{
 		auto found = _rulemap.find("listen");
-		listen_rule = normalize_space (found->second);
+		listen_rule = normalize_space(found->second);
 		listen_value = find_value(listen_rule);
 	}
 	else
@@ -185,17 +156,53 @@ std::string Config::validateMaxBodySize()
 	else
 		throw std::invalid_argument("Error: client_max_body_size directive not found");
 	char lastChar = maxBodySize_value.back();
-	if (lastChar == 'k' || lastChar == 'K' || lastChar == 'm' || lastChar == 'M' || lastChar == 'g' || lastChar == 'G')
+	if (lastChar == 'k' || lastChar == 'K' || lastChar == 'm' || lastChar == 'M' || lastChar == 'g' || lastChar == 'G' || std::isdigit(lastChar))
 		maxBodySize_value.pop_back();
 	else
 		throw std::invalid_argument("Error: invalid character in client_max_body_size directive");
 
-	for(size_t i = 0; i < maxBodySize_value.size(); i++)
+	for (size_t i = 0; i < maxBodySize_value.size(); i++)
 	{
 		if (!isdigit(maxBodySize_value[i]))
 			throw std::invalid_argument("Error: invalid character in client_max_body_size directive");
 	}
 	return (maxBodySize_value + lastChar);
+}
+
+size_t Config::convertMaxBodySize()
+{
+	char lastChar = _client_max_body_size.back();
+
+	std::string maxBodySize_value;
+	if (std::isalpha(lastChar))
+		maxBodySize_value = _client_max_body_size.substr(0, _client_max_body_size.length() - 1);
+	else
+		maxBodySize_value = _client_max_body_size;
+
+	unsigned long long result = 0;
+	try
+	{
+		result = std::stoull(maxBodySize_value);
+		if (lastChar == 'k' || lastChar == 'K')
+			result *= 1024;
+		else if (lastChar == 'm' || lastChar == 'M')
+			result *= 1024 * 1024;
+		else if (lastChar == 'g' || lastChar == 'G')
+			result *= 1024 * 1024 * 1024;
+	}
+	catch (const std::out_of_range &e)
+	{
+		throw std::invalid_argument("Error: client_max_body_size value is too large");
+	}
+	catch (const std::invalid_argument &e)
+	{
+		throw std::invalid_argument("Error: invalid client_max_body_size value");
+	}
+
+	if (result > std::numeric_limits<size_t>::max())
+		throw std::invalid_argument("Error: client_max_body_size value is too large");
+
+	return result;
 }
 
 std::string Config::validateHost()
@@ -210,27 +217,45 @@ std::string Config::validateHost()
 	}
 	else
 		throw std::invalid_argument("Error: host directive not found");
+
+	std::vector<std::string> octets;
+	std::stringstream ss(host_value);
+	std::string segment;
 	int dotCount = 0;
-	for(size_t i = 0; i < host_value.length(); i++)
+
+	while (std::getline(ss, segment, '.'))
 	{
-		if (host_value[i] == '.')
-		{
-			dotCount++;
-			i++;
-		}
-		if (!isdigit(host_value[i]) && host_value[i] != '.')
-			throw std::invalid_argument("Error: invalid character in host directive");
+		octets.push_back(segment);
+		dotCount++;
 	}
-	if (dotCount != 3)
-		throw std::invalid_argument("Error: invalid host directive");
-	return (host_rule);
+
+	if (dotCount != 4)
+	{
+		throw std::invalid_argument("Error: invalid host directive (incorrect number of octets)");
+	}
+
+	for (const std::string &octet : octets)
+	{
+		if (octet.empty() || octet.length() > 3)
+			throw std::invalid_argument("Error: invalid octet in host directive");
+		for (char c : octet)
+		{
+			if (!isdigit(c))
+				throw std::invalid_argument("Error: invalid character in host directive");
+		}
+
+		int num = std::stoi(octet);
+		if (num < 0 || num > 255)
+			throw std::invalid_argument("Error: invalid IP range in host directive");
+	}
+	return host_value;
 }
 
 size_t Config::validateTimeout()
 {
 	std::string timeout_rule;
 	std::string timeout_value;
-	size_t		timeout_size_t;
+	size_t timeout_size_t;
 
 	if (_rulemap.contains("timeout"))
 	{
@@ -238,14 +263,14 @@ size_t Config::validateTimeout()
 		timeout_rule = normalize_space(found->second);
 		timeout_value = find_value(timeout_rule);
 	}
-	else 
+	else
 		return (std::stoi("3000"));
 
 	timeout_size_t = stoi(timeout_value);
-	
+
 	if (timeout_size_t > MAX_TIMEOUT || timeout_size_t < 3000)
 		throw std::invalid_argument("Error: invalid parameter in timeout directive");
-	
+
 	return (timeout_size_t);
 }
 
@@ -253,7 +278,7 @@ std::string Config::validateServerName()
 {
 	std::string serverName_rule;
 	std::string serverName_value;
-	
+
 	if (_rulemap.contains("server_name"))
 	{
 		auto found = _rulemap.find("server_name");
@@ -262,9 +287,9 @@ std::string Config::validateServerName()
 	}
 	else
 		return ("Default name");
-	for(size_t i = 0; i < serverName_value.length(); i++)
+	for (size_t i = 0; i < serverName_value.length(); i++)
 	{
-		if (!isalpha(serverName_value[i]) && !isdigit(serverName_value[i]) && \
+		if (!isalpha(serverName_value[i]) && !isdigit(serverName_value[i]) &&
 			serverName_value[i] != '-' && serverName_value[i] != '.' && serverName_value[i] != '_')
 			throw std::invalid_argument("Error: invalid character in server_name directive");
 	}
@@ -288,17 +313,17 @@ std::string Config::validateRoot()
 	for (size_t i = 0; i < root_value.length(); i++)
 	{
 		if (root_value[0] != '/')
-			throw std::invalid_argument("Error: invalid root path directive:" \
-			"please start root with /"  + root_value);
-		if (!isdigit(root_value[i]) && !isalpha(root_value[i]) && root_value[i] \
-			!= '/' && root_value[i] != '.' && root_value[i] != '_')
+			throw std::invalid_argument("Error: invalid root path directive:"
+										"please start root with /" +
+										root_value);
+		if (!isdigit(root_value[i]) && !isalpha(root_value[i]) && root_value[i] != '/' && root_value[i] != '.' && root_value[i] != '_')
 			throw std::invalid_argument("Error: invalid root path directive");
 	}
-	root_value.erase(0, 1); //hi antonio im removing leading root / for correct filepathing :)
+	root_value.erase(0, 1);
 	return (root_value);
 }
 
-bool		Config::validateAutoindex()
+bool Config::validateAutoindex()
 {
 	std::string _autoIndex;
 	std::string _autoIndex_value;
@@ -316,17 +341,13 @@ bool		Config::validateAutoindex()
 		return (true);
 	else if (_autoIndex_value.compare("off") == 0)
 		return (false);
-	else 
+	else
 		throw std::invalid_argument("Error: invalid character in autoindex directive");
-	
+
 	return (true);
 }
-/**
- * @brief A simple check to see if none of the server blocks are trying to listen on the same port
- *
- * @param configs vector of config objects to check
- */
-void	checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs)
+
+void checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs)
 {
 	for (size_t i = 0; i < configs.size(); i++)
 	{
@@ -334,7 +355,7 @@ void	checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs)
 		for (size_t j = i + 1; j < configs.size(); j++)
 		{
 			if (port == configs[j]->getListen())
-				throw (std::invalid_argument("Multiple server blocks listening to the same port!"));
+				throw(std::invalid_argument("Multiple server blocks listening to the same port!"));
 		}
 	}
 }

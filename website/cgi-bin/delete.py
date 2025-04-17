@@ -8,6 +8,9 @@ UPLOAD_DIR = "website/uploads"
 form = cgi.FieldStorage()
 selected_file = form.getvalue("file")
 
+# Get connection type from environment variable
+connection = os.environ.get("CONNECTION", "keep-alive")
+
 # Delete the selected file
 if selected_file:
 	safe_filename = os.path.basename(selected_file)
@@ -67,7 +70,7 @@ body = f"""
 
 # HTTP headers
 headers = f"""HTTP/1.1 {status}\r
-Connection: keep-alive\r
+Connection: {connection}\r
 Content-Type: text/html; charset=utf-8\r
 Content-Length: {len(body.encode('utf-8'))}\r
 """

@@ -23,12 +23,16 @@ const messages = {
 	444: "Connection Closed Without Response",
 	500: "Internal Server Error",
 	501: "Not Implemented"
-  };
+};
+
 
 // Get status code from environment variable
 const code = process.env.STATUS_CODE || "403";
 const message = messages[code] || "Unknown Error";
 const image = `/images/${code}.jpg`;
+
+// Get connection type from environment variable or default to "keep-alive"
+const connection = code == 413 ? "close" : process.env.CONNECTION || "keep-alive";
 
 // Generate HTML response
 const body = `<!DOCTYPE html>
@@ -59,7 +63,7 @@ const body = `<!DOCTYPE html>
 
 //HTTP headers
 const headers = `HTTP/1.1 ${code} ${message}
-Connection: close
+Connection: ${connection}
 Content-Type: text/html; charset=utf-8
 Content-Length: ${body.length}
 

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   config_obj_utils.cpp                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/17 16:06:32 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   config_obj_utils.cpp                               :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/11/06 19:35:05 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/04/17 11:47:30 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,44 +17,67 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Config::Config(void) //default constructor 
+Config::Config(void)
 {
-	_listen = "8080"; //idk if this works 
-	_serverName = "localhost"; //"funny-server";
+	_listen = "8080";
+	_serverName = "localhost";
 	_host = "127.0.0.1";
 	_maxConnects = 1;
 	_timeout = 50000;
 	_rootDir = "website/";
-	_autoIndexFilePath = _rootDir + "index.html"; //do i need slash?
+	_autoIndexFilePath = _rootDir + "index.html";
 	
 
 	std::cout << GREEN << "Config: Default constructor called" << RESET << std::endl;
 }
 
 Config::Config(const Config &rhs)
+    : _autoindex(rhs._autoindex),
+      _autoIndexFilePath(rhs._autoIndexFilePath),
+      _client_max_body_size(rhs._client_max_body_size),
+	  _client_max_body_size_t(rhs._client_max_body_size_t),
+      _errorPage(rhs._errorPage),
+      _host(rhs._host),
+      _index(rhs._index),
+      _locationName(rhs._locationName),
+      _listen(rhs._listen),
+      _rootDir(rhs._rootDir),
+      _serverName(rhs._serverName),
+      _maxConnects(rhs._maxConnects),
+      _timeout(rhs._timeout),
+      _locations(rhs._locations),
+      _locNames(rhs._locNames),
+      _rulemap(rhs._rulemap)
 {
-	std::cout << GREEN << "Config: Copy constructor called" << RESET << std::endl;
-
-	*this = rhs;
 }
 
-Config &
-Config::operator=(const Config &rhs)
+Config &Config::operator=(const Config &rhs)
 {
-	std::cout << GREEN << "Config: Assignment operator called" << RESET << std::endl;
-
 	if (this != &rhs)
 	{
-		// _serverPort = rhs._serverPort;
 		_listen = rhs._listen;
 		_serverName = rhs._serverName;
 		_maxConnects = rhs._maxConnects;
 		_timeout = rhs._timeout;
 		_rootDir = rhs._rootDir;
 		_autoIndexFilePath = rhs._autoIndexFilePath;
+		_client_max_body_size = rhs._client_max_body_size;
+		_client_max_body_size_t = rhs._client_max_body_size_t;
+		_host = rhs._host;
+		_locationName = rhs._locationName;
+		_autoindex = rhs._autoindex;
+		_index = rhs._index;
+		_errorPage = rhs._errorPage;
+		_rulemap = rhs._rulemap;
+		_locNames = rhs._locNames;
+		_locations.clear();
+		for (const auto &loc : rhs._locations)
+		{
+			_locations.push_back(loc);
+		}
 	}
 
-	return (*this);
+	return *this;
 }
 
 Config::~Config(void)
@@ -67,7 +90,8 @@ Config::~Config(void)
 //								Get and setters								  //
 // ************************************************************************** //
 
-std::string &location::getName(){ //location cpp?
+std::string &location::getName()
+{
     return _name;
 }
 
@@ -112,12 +136,12 @@ void	Config::setHost(const std::string &host)
 	this->_host = host;
 }
 
-std::multimap<std::string, std::string>	Config::getErrorPage()
+std::unordered_map<std::string, std::string>	Config::getErrorPage()
 {
 	return(this->_errorPage);
 }
 
-void	Config::setErrorPage(const std::multimap<std::string, std::string> &errorPageMap)
+void	Config::setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap)
 {
 	this->_errorPage = errorPageMap;
 }
@@ -132,7 +156,17 @@ void	Config::setMaxBodySize(const std::string &maxBodySize)
 	this->_client_max_body_size = maxBodySize;
 }
 
-std::vector<std::string>	Config::getIndex()
+size_t	Config::getMaxBodySizeT()
+{
+	return(this->_client_max_body_size_t);
+}
+
+void	Config::setMaxBodySizeT(const long &MaxBodySizeT)
+{
+	this->_client_max_body_size_t = MaxBodySizeT;
+}
+
+std::vector<std::string>	&Config::getIndex()
 {
 	return(this->_index);
 }

@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/03 12:15:24 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/17 11:47:10 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,41 +15,28 @@
 
 Request::Request(Config *config, int clientFD): _config(config), \
 	reading_mode(NOT_STARTED), body_bytes_read(0), _rnrnFound(false), 
-	_dataIsChunked(false), _headerAreParsed(false), _hasBody(false), \
-	_root(config->_rootDir), _clientFD(clientFD), _method_type(NOT_PARSED_YET), \
-	_keepOpen(true), _doneReading(false), _statusStr("0 Not started yet"), _statusCode(0) \
+	_dataIsChunked(false), _headerAreParsed(false), _hasBody(false), _max_body_size(config->getMaxBodySizeT()), \
+	_root(config->_rootDir), _clientFD(clientFD), _method_type(Http_method::NOT_PARSED_YET), \
+	_keepOpen(true), _doneReading(false), _statusStr("0 Not started yet"), _statusCode(0), \
+	_dirListing(false), _aliasUsed(false), _cgiRequired(false)
 {
 	fcntl(_clientFD, F_SETFL, O_NONBLOCK);
 	_rawRequestData.reserve(100);
-	_timeoutTime = setTimeout(30); //normal secs
+	_timeoutTime = setTimeout(30);
 	_startTime = getStartTime();
 }
 
 Request::Request(const Request &rhs)
 {
-	std::cout << GREEN << "Http_request: Copy constructor called" << RESET << std::endl;
 	*this = rhs;
 }
 
 Request &
 Request::operator=(const Request &rhs)
 {
-	// std::cout << GREEN << "Request: Assignment operator called" << RESET << std::endl;
-
 	if (this != &rhs)
 	{
-		// _clientFD = rhs._clientFD;
-		// _URI = rhs._URI;
-		// _method_type = rhs._method_type;
-		// _http_version = rhs._http_version;
-		// _headers = rhs._headers;
-		// _rawRequestData = rhs._rawRequestData;
-		// _unsortedHeaders = rhs._unsortedHeaders;
-		// _rnrnFound = rhs._rnrnFound;
-		// body_bytes_read = rhs.body_bytes_read;
-		// reading_mode = rhs.reading_mode;
-		// _hasBody = rhs._hasBody;
-		   _config = rhs._config;
+		_config = rhs._config;
 		_reqBody = rhs._reqBody;
 		_unsortedHeaders = rhs._unsortedHeaders;
 		reading_mode = rhs.reading_mode;
@@ -64,7 +51,7 @@ Request::operator=(const Request &rhs)
 		_startTime = rhs._startTime;
 		_clientFD = rhs._clientFD;
 		_root = rhs._root;
-		// _max_body_size = rhs._max_body_size;
+		_max_body_size = rhs._max_body_size;
 		_rawRequestData = rhs._rawRequestData;
 		_method_type = rhs._method_type;
 		_headers = rhs._headers;
@@ -77,8 +64,9 @@ Request::operator=(const Request &rhs)
 		_doneReading = rhs._doneReading;
 		_statusStr = rhs._statusStr;
 		_statusCode = rhs._statusCode;
-		// _CGIRequired = rhs._CGIRequired;
-		// _customConf = std::make_unique<CustomConfig>(*rhs._customConf);
+		_dirListing = rhs._dirListing;
+		_aliasUsed = rhs._aliasUsed;
+		_cgiRequired = rhs._cgiRequired;
 	}
 
 	return (*this);
@@ -86,7 +74,6 @@ Request::operator=(const Request &rhs)
 
 Request::~Request(void)
 {
-	// std::cout << RED << "http_request: Destructor called" << RESET << std::endl;
 }
 
 

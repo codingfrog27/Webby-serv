@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Config.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
-/*   Updated: 2025/01/13 13:33:40 by mde-cloe         ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   Config.hpp                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/09/18 15:09:44 by mde-cloe      #+#    #+#                 */
+/*   Updated: 2025/04/17 11:48:44 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,22 +44,21 @@ class Config
 		bool 		_autoindex;
 		std::string _autoIndexFilePath;
 		std::string _client_max_body_size;
-		std::multimap<std::string, std::string> _errorPage;
+		size_t		_client_max_body_size_t;
+		std::unordered_map<std::string, std::string> _errorPage;
 		std::string _host;
 		std::vector<std::string> _index;
 		std::string	_locationName;
 		std::string _listen;
 		std::string _rootDir;
 		std::string _serverName;
-		std::string _serverPort;
 		size_t		_maxConnects;
-		size_t		_timeout; //general _timeout waiting for request/respond sending
+		size_t		_timeout;
 		
 		std::vector<location> _locations;
 		std::vector<std::string> _locNames;
 		std::unordered_map<std::string, std::string> _rulemap;
 
-		// Constructors and Destructors
 		Config(void);
 		Config(std::ifstream &file, std::string &line);
 		Config(const Config &rhs);
@@ -67,37 +66,14 @@ class Config
 		~Config(void);
 		std::string	toString() const;
 
-	
-	// std::map<std::string, std::string> _configMap;
-
-	//these are all REQUIRED
-	// size_t i = 0;
-	// size_t		_serverPort;
-	// std::vector<std::string> _locationName;
-	// std::vector<location> _location;
-	// std::vector <location> _locations;
-	// std::vector <Socket> _server;
-	// std::string	error_log_file;
-	// std::string	access_log_file;
-
-			
-	// size_t		keep_alive_timeout; //spefically how long to keep an idle connection open before closing
-	// bool		directory_listing; //aka autoindex: wether to display list of pages when requested dir isnt found
-	// std::string	cgi_script_directory;
-	// // not required but expected
-
-	// size_t		max_keep_alive_requests;
-	// std::unordered_map<std::string, std::string> custom_error_pages;
-	// std::unordered_map<std::string, std::string> access_control;
-	
-	// location findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	
 	bool		getAutoindex();
-	std::multimap<std::string, std::string> getErrorPage();
+	std::unordered_map<std::string, std::string> getErrorPage();
 	std::string	getMaxBodySize();
+	size_t		getMaxBodySizeT();
 	std::string	getHost();
-	std::vector<std::string> getIndex();
+	std::vector<std::string> &getIndex();
 	std::string	getListen();
 	std::string	getRoot();
 	size_t		getTimeout();
@@ -111,20 +87,18 @@ class Config
 		const char		*what() const noexcept override;
 	};
 
-	//these are all REQUIRED
-	
-	
 	private:
 	size_t i = 0;
 	void		readBlock(std::ifstream &file, std::string &line);
 	location	findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void		parseRule(const std::string &line);
 	void		setAutoindex(const bool& autoIndex);
-	void		setErrorPage(const std::multimap<std::string, std::string> &errorPageMap);
+	void		setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap);
 	void		setHost(const std::string &host);
 	void		setIndex(const std::vector<std::string> &index_vector);
 	void		setListen(const std::string &listen);
 	void		setMaxBodySize(const std::string &maxBodySize);
+	void		setMaxBodySizeT(const long &MaxBodySizeT);
 	void		setRoot(const std::string &root);
 	void		setTimeout(const size_t& timeout);
 	void		setServerName(const std::string &serverName);
@@ -133,11 +107,12 @@ class Config
 	int			initializeServer();
 	int			mapToMembers();
 	bool		validateAutoindex();
-	std::multimap<std::string, std::string> validateErrorPage();
+	std::unordered_map<std::string, std::string> validateErrorPage();
 	std::string validateHost();
 	std::vector<std::string> ValidateIndex();
 	std::string	validateListen();
 	std::string validateMaxBodySize();
+	size_t		convertMaxBodySize();
 	std::string validateRoot();
 	size_t 		validateTimeout();
 	std::string validateServerName();

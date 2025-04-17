@@ -35,15 +35,12 @@ _isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _ke
 
 Connection::Connection(const Connection &rhs) : _request(rhs._request), _response(rhs._response)
 {
-	std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
-
 	*this = rhs;
 }
 
 Connection &
 Connection::operator=(const Connection &rhs)
 {
-	std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
 
 	if (this != &rhs)
 	{
@@ -64,56 +61,42 @@ Connection::operator=(const Connection &rhs)
 
 Connection::~Connection(void)
 {
-	std::cout << RED << "Connection: Destructor called" << RESET << std::endl;
 }
 
 // ************************************************************************** //
 //								Public methods							  //
 // ************************************************************************** //
 
-	// if (_CStatus == connectStatus::CONNECT_CLOSED)
-	// 	return;
-	//done reading and req error could both just be responding to make things easier
-	// if (_CStatus == connectStatus::DONE_READING || _CStatus == connectStatus::REQ_ERR)
-	// 	_CStatus = connectStatus::RESPONDING;
-	// if (_isClientSocket)
-	// {
-	// 	if (poll.revents & POLLIN)
-	// 		_wantsNewConnect = true;
-	// 	return;
-	// }
+
 void	Connection::connectionAction(const pollfd &poll, Server &server)
 {
 	_CStatus = checkConnectStatus(poll);
 	if (poll.revents & POLLIN && (_CStatus == connectStatus::IDLE || \
-									_CStatus == connectStatus::READING))
+									_CStatus == connectStatus::READING)){
 		_CStatus = _request.readRequest();
+		_CStatus = checkConnectStatus(poll);
+		}
 	if(_CStatus == connectStatus::CGI_REQUIRED){
 		_CStatus = _cgi->CGIHandler(this, server.getCGIPollFDs(), server.getCGIMap());
-		std::cout << MAGENTA "CGI PollFD vector size in connectionAction: " << server.getCGIPollFDs().size() << RESET << std::endl;
+		_CStatus = checkConnectStatus(poll);
 	}
-	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING){
+	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
 		_CStatus = _response.responseHandler(&_request);
-	}
 	if (_CStatus == connectStatus::FINISHED)
 		_CStatus = refreshIfKeepAlive();
 }
 
-//print to info log and or error log file
-	// if (poll.revents & POLLHUP) {
-	// 	std::cout << "Client disconnected (POLLHUP)" << std::endl;
-	// }
 connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 {
 	int error = 0;
 	socklen_t len = sizeof(error);
-	if (poll.revents & POLLERR) {
+	if (poll.revents & POLLERR)
+	{
 		std::cout << "Socket error (POLLERR)" << std::endl;
 		if (getsockopt(poll.fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
 			std::cout << "getsockopt failed" << std::endl;
 		if (error != 0)
 			std::cout << RED "Socket error: " << strerror(error) << RESET << std::endl;
-			// NicePrint::promptEnter();
 		return (connectStatus::CONNECT_CLOSED);
 	}
 	// else if (isTimedOut(_startTime, _IdleTimeout) || poll.revents & POLLHUP)
@@ -121,41 +104,19 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 	return (_CStatus);
 }
 
-// void	Connection::findFDtoRemove(int eraseMe, std::vector<pollfd> &pollFDs)
-// {
-// 	int matchCount = 0;
-// 	for (auto it = pollFDs.begin(); it != pollFDs.end(); ++it)
-// 	{
-// 		if (it->fd == eraseMe) {
-// 			close(eraseMe);
-// 			it = pollFDs.erase(it);
-// 			return; //rn will look for clones for debugging
-// 			matchCount++;
-// 		}
-// 	}
-// 	if (matchCount == 1)
-// 		return;
-// 	if (matchCount == 0)
-// 		throw std::runtime_error("Error deleting CGI FD, FD NOT FOUND"); //server error runtime_error
-// 	throw std::runtime_error("Found duplicate(s)");
-// }
-
-// void Connection::removeCGIFromEverywhere(Server& server) {
-// 	auto& pollFDs = server.getCGIPollFDs();
-	
-// 	try {
-// 		findFDtoRemove(_cgi->getFdIn(), pollFDs);
-// 		findFDtoRemove(_cgi->getFdOut(), pollFDs);
-// 		findFDtoRemove(_cgi->getFdError(), pollFDs);
-// 	}
-// 	catch (std::runtime_error &e) {
-// 		std::cerr << e.what() << std::endl;
-// 	}
-// 	server.getCGIMap().erase(_cgi->getFdIn());
-// 	server.getCGIMap().erase(_cgi->getFdOut());
-// 	server.getCGIMap().erase(_cgi->getFdError());
-// 	_cgi.reset();
-// }
+bool	Connection::connectIsOkay(int fd)
+{
+	int error = 0;
+	socklen_t len = sizeof(error);
+	if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0) {
+		std::cout << "getsockopt failed" << std::endl;
+		return (false);
+	}
+	if (error == 0)
+		return (true);
+	std::cerr << RED "Socket error: " << strerror(error) << RESET << std::endl;
+	return (false);
+}
 
 void Connection::removeCGIFromEverywhere(Server& server) {
 	auto& pollFDs = server.getCGIPollFDs();
@@ -188,15 +149,14 @@ void Connection::removeCGIFromEverywhere(Server& server) {
 
 connectStatus Connection::refreshIfKeepAlive()
 {
-	// std::cout << "First response FINISHED" << std::endl;
-	// if (!this->_keepOpen)
-			// _keepOpen = true; //move to request
-	if (_request.getHeaderValue("Connection") != "keep-alive")
+	if (_response.getHeader("Connection") == "close")
 	{
 		std::cout << "close meee" << std::endl;
+		// shutdown(_clientFD, SHUT_RD);
+		// shutdown(_clientFD, SHUT_WR);
 		return (connectStatus::FINISHED);
-	} //change to closed check
-	std::cout << "connection keep open activate" << std::endl;
+	}
+	std::cout << CYAN "connection keep open activate on FD: " << YELLOW << this->_clientFD << RESET << std::endl;
 	_request = Request(this->_config, this->_clientFD);
 	_response = Response(this->_config);
 	return (connectStatus::IDLE);

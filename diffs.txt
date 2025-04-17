@@ -1,0 +1,4218 @@
+
+\ No newline at end of file
+diff --git a/include/ClientErrorExcept.hpp b/include/ClientErrorExcept.hpp
+index 97a93e7..20da1a1 100644
+--- a/include/ClientErrorExcept.hpp
++++ b/include/ClientErrorExcept.hpp
+@@ -6,13 +6,16 @@
+ /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+ /*                                                +#+#+#+#+#+   +#+           */
+ /*   Created: 2024/11/08 15:13:39 by mde-cloe          #+#    #+#             */
+-/*   Updated: 2024/12/11 15:51:39 by mde-cloe         ###   ########.fr       */
++/*   Updated: 2025/02/01 15:51:58 by mde-cloe         ###   ########.fr       */
+ /*                                                                            */
+ /* ************************************************************************** */
+ 
++#pragma once
++
+ #include <exception>
+ #include <iostream>
+ 
++//put in request?
+ class ClientErrorExcept : std::exception
+ {
+ 	private:
+diff --git a/include/Colors.hpp b/include/Colors.hpp
+index a4cf827..b3d4c09 100644
+--- a/include/Colors.hpp
++++ b/include/Colors.hpp
+@@ -17,11 +17,12 @@
+ #define GREEN "\033[32m"
+ #define RED "\033[31m"
+ #define MAGENTA "\033[35m"
++#define CYAN	"\033[36m"
++#define YELLOW	"\033[33m"
+ #define	LILAC "\33[38;5;141m"
+ 
+ #define	BOLD "\33[1m"
+ #define ITALIC "\33[3m"
+ #define	UNDERLINE "\33[4m"
+ 
+-#define RESET "\033[0m"
+-// #define LINE "-----------------------------\n"
++#define RESET	"\033[0m"
+diff --git a/include/Config.hpp b/include/Config.hpp
+index fd24d6c..725861d 100644
+--- a/include/Config.hpp
++++ b/include/Config.hpp
+@@ -6,58 +6,33 @@
+ /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+ /*                                                +#+#+#+#+#+   +#+           */
+ /*   Created: 2024/09/18 15:09:44 by mde-cloe          #+#    #+#             */
+-/*   Updated: 2025/01/13 13:33:40 by mde-cloe         ###   ########.fr       */
++/*   Updated: 2025/02/05 18:47:04 by mde-cloe         ###   ########.fr       */
+ /*                                                                            */
+ /* ************************************************************************** */
+ 
+ #pragma once
+ 
+-#include <algorithm>
+-#include <exception>
+-#include <unordered_map>
+-#include <map>
+-#include <iostream>
+-#include <fstream>
+-#include <string>
+-#include <vector>
+-#include <ctype.h>
+-#include <memory>
++#include "external.hpp"
+ #include "location.hpp"
+ #include "Colors.hpp"
+ 
+-enum ServerRules
+-{
+-	LISTEN,
+-	MAX_BODY_SIZE,
+-	ERROR_PAGE,
+-	HOST,
+-	INDEX,
+-	ROOT,
+-	SERVER_NAME,
+-	EMPTY
+-};
+ #define MAX_TIMEOUT 60000
+ 
+ class Config
+ {
+ 	public:
+-		bool 		_autoindex;
+-		std::string _autoIndexFilePath;
+-		std::string _client_max_body_size;
++		bool 									_autoindex;
++		std::string 							_autoIndexFilePath;
++		std::string 							_client_max_body_size;
+ 		std::multimap<std::string, std::string> _errorPage;
+-		std::string _host;
+-		std::vector<std::string> _index;
+-		std::string	_locationName;
+-		std::string _listen;
+-		std::string _rootDir;
+-		std::string _serverName;
+-		std::string _serverPort;
+-		size_t		_maxConnects;
+-		size_t		_timeout; //general _timeout waiting for request/respond sending
+-		
+-		std::vector<location> _locations;
+-		std::vector<std::string> _locNames;
+-		std::unordered_map<std::string, std::string> _rulemap;
++		std::string 							_host;
++		std::string 							_listen;
++		std::string 							_rootDir;
++		std::string 							_serverName;
++		std::string 							_serverPort;
++		size_t									_timeout; 
++		std::vector<std::string> 				_index;
++		std::vector<location> 					_locations;
+ 
+ 		// Constructors and Destructors
+ 		Config(void);
+@@ -65,43 +40,17 @@ class Config
+ 		Config(const Config &rhs);
+ 		Config &operator=(const Config &rhs);
+ 		~Config(void);
+-		std::string	toString() const;
+ 
+-	
+-	// std::map<std::string, std::string> _configMap;
+-
+-	//these are all REQUIRED
+-	// size_t i = 0;
+-	// size_t		_serverPort;
+-	// std::vector<std::string> _locationName;
+-	// std::vector<location> _location;
+-	// std::vector <location> _locations;
+-	// std::vector <Socket> _server;
+-	// std::string	error_log_file;
+-	// std::string	access_log_file;
+-
+-			
+-	// size_t		keep_alive_timeout; //spefically how long to keep an idle connection open before closing
+-	// bool		directory_listing; //aka autoindex: wether to display list of pages when requested dir isnt found
+-	// std::string	cgi_script_directory;
+-	// // not required but expected
+-
+-	// size_t		max_keep_alive_requests;
+-	// std::unordered_map<std::string, std::string> custom_error_pages;
+-	// std::unordered_map<std::string, std::string> access_control;
+-	
+-	// location findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
+-	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
+-	
+-	bool		getAutoindex();
+-	std::multimap<std::string, std::string> getErrorPage();
+-	std::string	getMaxBodySize();
+-	std::string	getHost();
+-	std::vector<std::string> getIndex();
+-	std::string	getListen();
+-	std::string	getRoot();
+-	size_t		getTimeout();
+-	std::string	getServerName();
++		//getters and setters
++		bool		getAutoindex();
++		std::multimap<std::string, std::string> getErrorPage();
++		std::string	getMaxBodySize();
++		std::string	getHost();
++		std::vector<std::string> getIndex();
++		std::string	getListen();
++		std::string	getRoot();
++		size_t		getTimeout();
++		std::string	getServerName();
+ 
+ 	class NoBlockFound : public std::exception
+ 	{
+@@ -116,6 +65,7 @@ class Config
+ 	
+ 	private:
+ 	size_t i = 0;
++		std::unordered_map<std::string, std::string> _rulemap;
+ 	void		readBlock(std::ifstream &file, std::string &line);
+ 	location	findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
+ 	void		parseRule(const std::string &line);
+@@ -131,7 +81,7 @@ class Config
+ 	void		setServer(const int rule);
+ 
+ 	int			initializeServer();
+-	int			mapToMembers();
++	void			mapToMembers();
+ 	bool		validateAutoindex();
+ 	std::multimap<std::string, std::string> validateErrorPage();
+ 	std::string validateHost();
+diff --git a/include/Connection.hpp b/include/Connection.hpp
+index e19d9d8..ba21e86 100644
+--- a/include/Connection.hpp
++++ b/include/Connection.hpp
+@@ -64,8 +64,6 @@ class Connection
+ 		// void	resetRequest(Config* config, int clientFD);
+ 		// void	resetResponse();
+ 		connectStatus	refreshIfKeepAlive();
+-		void			connectionAction(const pollfd &poll, Server &server);
+-		void			findFDtoRemove(int eraseMe, std::vector<pollfd> &pollFDs);
+-		void			removeCGIFromEverywhere(Server& server);
++		void			connAction(const pollfd &poll, Server &server);
+ 		connectStatus	checkConnectStatus(const pollfd &poll);
+ } ;
+diff --git a/include/Request.hpp b/include/Request.hpp
+index 3f20341..749a68f 100644
+--- a/include/Request.hpp
++++ b/include/Request.hpp
+@@ -50,7 +50,7 @@ enum reading_status
+ 	FINISHED
+ };
+ 
+-enum Http_method
++enum class Http_method
+ {
+ 	INVALID = -1,
+ 	GET,
+@@ -68,7 +68,7 @@ class Request
+ 		reading_status			reading_mode;
+ 		std::string				_boundary;
+ 		size_t					body_bytes_read;
+-		bool					_rnrnFound;
++		bool					_headerEndFound;
+ 		bool					_dataIsChunked;
+ 		bool					_headerAreParsed;
+ 		bool					_hasBody;
+@@ -96,10 +96,11 @@ class Request
+ 		void					parseUrlEncoded();
+ 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
+ 		void					resolveFilePath();
+-		void					locationHandler();
++		void					RouteRuleHandler();
+ 		location				*findLocationMatch(std::vector<location> &locs, size_t &matchCount);
+-		void					setLocRules(location &loc, location &ruleblock);
++		void					setLocRules(location &ruleblock, location &loc);
+ 		size_t					countPathMatch(std::string &reqpath, std::string &locpath);
++		void  					checkRules(location &rules);
+ 
+ 
+ 	public:
+@@ -118,6 +119,7 @@ class Request
+ 		bool						_doneReading;
+ 		std::string					_statusStr;
+ 		int							_statusCode;
++		bool						_dirListing;
+ 		// bool						_error_occured;
+ 		// Constructors and Destructors
+ 						Request(void) = delete;
+@@ -128,8 +130,7 @@ class Request
+ 
+ 
+ 		//get and setters
+-		const std::string	&getBody();
+-
++		const std::string &getBody();
+ 		//public methods
+ 		connectStatus	readRequest();
+ 		std::string		getHeaderValue(std::string key);
+diff --git a/include/Response.hpp b/include/Response.hpp
+index 44f6a15..17b2bfa 100644
+--- a/include/Response.hpp
++++ b/include/Response.hpp
+@@ -29,9 +29,8 @@ enum class connectStatus;
+ 
+ class Response{
+ 	public:
+-		Response() = delete;
+-		Response(Config *config);
+-		Response(const Response &obj);
++		Response();
++		Response(const Response &obj) = delete;
+ 		~Response();
+ 
+ 		Response &										operator=(const Response& obj);
+diff --git a/include/Server.hpp b/include/Server.hpp
+index a4a418a..504a05c 100644
+--- a/include/Server.hpp
++++ b/include/Server.hpp
+@@ -16,6 +16,7 @@
+ #include "Connection.hpp"
+ #include "Request.hpp"
+ #include "everything.hpp"
++#include "Colors.hpp"
+ 
+ class CGI;
+ 
+@@ -43,7 +44,7 @@ class Server
+ 					~Server(void);
+ 		Server		&operator=(const Server &rhs) = delete;
+ 		void		main_server_loop();
+-		void		connectionAction(Connection &connect, pollfd &poll);
++		void		connAction(Connection &connect, pollfd &poll);
+ 		void		PrintConnectionStatusses(size_t size);
+ 
+ 		std::vector<pollfd>								&getCGIPollFDs(void);
+diff --git a/include/external.hpp b/include/external.hpp
+new file mode 100644
+index 0000000..6783f21
+--- /dev/null
++++ b/include/external.hpp
+@@ -0,0 +1,35 @@
++/* ************************************************************************** */
++/*                                                                            */
++/*                                                        :::      ::::::::   */
++/*   external.hpp                                       :+:      :+:    :+:   */
++/*                                                    +:+ +:+         +:+     */
++/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
++/*                                                +#+#+#+#+#+   +#+           */
++/*   Created: 2025/02/01 15:47:38 by mde-cloe          #+#    #+#             */
++/*   Updated: 2025/02/01 15:57:15 by mde-cloe         ###   ########.fr       */
++/*                                                                            */
++/* ************************************************************************** */
++
++#pragma once
++
++#include <iostream>
++#include <sstream>
++#include <fstream>
++#include <exception>
++#include <string>
++#include <unordered_map>
++#include <map>
++#include <algorithm>
++#include <vector>
++#include <memory>
++
++
++
++
++#include <fcntl.h>
++#include <unistd.h>
++#include <ctype.h>
++#include <sys/socket.h>
++#include <sys/poll.h>
++#include <sys/types.h>
++#include <sys/socket.h>
+diff --git a/include/location.hpp b/include/location.hpp
+index 3074449..8a60b5f 100644
+--- a/include/location.hpp
++++ b/include/location.hpp
+@@ -17,15 +17,19 @@
+ #include <unordered_map>
+ #include <vector>
+ 
++enum class Http_method;
+ class location
+ {
+ 	private:
+-		// std::string _locationName;
++		std::string	findLocationName(std::string locationLine);
++		std::string	validateLocationName(std::string line);
++		
++
+ 
+ 
+ 	public:
+ 		std::string				 	_alias;
+-		std::vector<std::string>	_allow_methods;
++		std::vector<Http_method> 	_allow_methods;
+ 		bool						_autoindex;
+ 		std::vector<std::string>	_cgi_extension;
+ 		std::vector<std::string>	_cgi_path; 
+@@ -49,7 +53,7 @@ class location
+ 		std::string &getName();
+ 
+ 		std::string	getAlias();
+-		std::vector<std::string>	getAllowMethods();
++		std::vector<Http_method>	getAllowMethods();
+ 		bool		getAutoindex();
+ 		std::vector<std::string>	getCgiExtension();
+ 		std::vector<std::string>	getCgiPath();
+@@ -57,7 +61,7 @@ class location
+ 		std::string	getReturn();
+ 		std::string	getRoot();
+ 		void	setAlias(const std::string &alias);
+-		void	setAllowMethods(const std::vector<std::string> &allow_methods);
++		void	setAllowMethods(const std::vector<Http_method> &allow_methods);
+ 		void	setAutoindex(const bool &autoindex);
+ 		void	setCgiExtension(const std::vector<std::string> &cgi_extension);
+ 		void	setCgiPath(const std::vector<std::string> &cgi_path);
+@@ -70,7 +74,7 @@ class location
+ 
+ 		std::string toString() const;
+ 		std::string validateAlias();
+-		std::vector<std::string> validateAllowMethods();
++		std::vector<Http_method> validateAllowMethods();
+ 		bool validateAutoindex();
+ 		std::vector<std::string> validateIndex();
+ 		std::string validateReturn();
+@@ -83,4 +87,4 @@ class location
+ bool	locationFound(std::string &line);
+ bool	checkCaracter(const std::string &line, const char &c);
+ std::string	normalize_space_location(std::string& str);
+-
++std::ostream& operator<<(std::ostream& os, const location& loc);
+diff --git a/include/socket.hpp b/include/socket.hpp
+index 9bb158a..7a36de9 100644
+--- a/include/socket.hpp
++++ b/include/socket.hpp
+@@ -32,15 +32,6 @@
+ 
+ #include "Config.hpp"
+ 
+-#define CYAN	"\033[36m"
+-#define GREEN	"\033[32m"
+-#define MAGENTA "\033[35m"
+-#define RED	 	"\033[31m"
+-#define YELLOW	"\033[33m"
+-#define RESET	"\033[0m"
+-
+-#define PORT 8080 // common used port for web servers
+-
+ class Socket
+ {
+ 	private:
+diff --git a/notes.txt b/notes.txt
+deleted file mode 100644
+index 85bea62..0000000
+--- a/notes.txt
++++ /dev/null
+@@ -1,26 +0,0 @@
+-nov 7
+-
+-can rad multiple chunks
+-
+-typical read size 4kb but i can do less for headers
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-By using the AI_PASSIVE flag, I’m telling the program to bind to the IP of the host it’s running on. If you want to bind to a specific local IP address, drop the AI_PASSIVE and put an IP address in for the first argument to getaddrinfo().
+-
+-
+-bind
+-
+-
+diff --git a/sources/CGI/CGI.cpp b/sources/CGI/CGI.cpp
+index 0d33131..6a75f4d 100644
+--- a/sources/CGI/CGI.cpp
++++ b/sources/CGI/CGI.cpp
+@@ -39,7 +39,7 @@ CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(co
+ 		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdError");
+ 		return ;
+ 	}
+-	if (connection->_request._method_type == POST){
++	if (connection->_request._method_type == Http_method::POST){
+ 		CGIPollFDs.emplace_back(pollfd{_fdIn[1], POLLOUT, 0});
+ 	}
+ 	else {
+@@ -54,7 +54,6 @@ CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(co
+ }
+ 
+ CGI::~CGI(){
+-	std::cout << RED "CGI destructor called" RESET << std::endl;
+ 	for (char* str : _envp)
+ 		free(str);
+ 	return ;
+@@ -75,7 +74,7 @@ void	CGI::invokeCGI(Request* request, Response* response){
+ 		return ;	// }
+ 	}
+ 	if (_PID == 0){ //child
+-		if (request->_method_type == POST){
++		if (request->_method_type == Http_method::POST){
+ 			dup2(_fdIn[0], STDIN_FILENO);
+ 		}
+ 		dup2(_fdOut[1], STDOUT_FILENO);
+@@ -318,14 +317,14 @@ void CGI::closePipes(){
+ }
+ 
+ void CGI::setupCGIEnvironment(Request* request) {
+-	if (request->_method_type == GET) {
++	if (request->_method_type == Http_method::GET) {
+ 		CGI::addToEnvp("REQUEST_METHOD", "GET");
+ 		if (request->_URI.find("?") != std::string::npos) {
+ 			CGI::addToEnvp("QUERY_STRING", request->_URI.substr(request->_URI.find("?") + 1));
+ 			std::cout << LILAC "QUERY_STRING: " << request->_URI.substr(request->_URI.find("?") + 1) << RESET << std::endl;
+ 		}
+ 	}
+-	else if (request->_method_type == POST) {
++	else if (request->_method_type == Http_method::POST) {
+ 		CGI::addToEnvp("REQUEST_METHOD", "POST");
+ 		CGI::addToEnvp("CONTENT_TYPE", request->_headers["Content-Type"]);
+ 		CGI::addToEnvp("CONTENT_LENGTH", request->_headers["Content-Length"]);
+diff --git a/sources/CGI/CGIHandler.cpp b/sources/CGI/CGIHandler.cpp
+index 0c75a24..0ea96b1 100644
+--- a/sources/CGI/CGIHandler.cpp
++++ b/sources/CGI/CGIHandler.cpp
+@@ -11,10 +11,8 @@ connectStatus	CGI::CGIHandler(Connection* connection, std::vector<pollfd> &CGIPo
+ 	Response* response = &connection->_response;
+ 	Request* request = &connection->_request;
+ 
+-	if (connection->_cgi != 0)
+-		std::cout << RED "connection has cgi object" RESET << std::endl;
+ 	if (connection->_cgi == 0 && connection->_CStatus == connectStatus::CGI_REQUIRED){
+-		if (request->_method_type != GET && request->_method_type != POST){
++		if (request->_method_type != Http_method::GET && request->_method_type != Http_method::POST){
+ 			response->autoFillResponse("405 Method Not Allowed");
+ 			response->setHeaders("Allow", "GET, POST");
+ 			return connectStatus::RESPONDING;
+diff --git a/sources/ClientErrorExcept.cpp b/sources/Request/ClientErrorExcept.cpp
+similarity index 100%
+rename from sources/ClientErrorExcept.cpp
+rename to sources/Request/ClientErrorExcept.cpp
+diff --git a/sources/ConnectionClosedExcep.cpp b/sources/Request/ConnectionClosedExcep.cpp
+similarity index 100%
+rename from sources/ConnectionClosedExcep.cpp
+rename to sources/Request/ConnectionClosedExcep.cpp
+diff --git a/sources/Request/Request.cpp b/sources/Request/Request.cpp
+index 4626c69..0831120 100644
+--- a/sources/Request/Request.cpp
++++ b/sources/Request/Request.cpp
+@@ -6,7 +6,7 @@
+ /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+ /*                                                   +#+                      */
+ /*   Created: 2024/10/17 19:39:08 by mde-cloe      #+#    #+#                 */
+-/*   Updated: 2025/03/27 18:34:01 by mstegema      ########   odam.nl         */
++/*   Updated: 2025/03/18 17:09:50 by mde-cloe      ########   odam.nl         */
+ /*                                                                            */
+ /* ************************************************************************** */
+ 
+@@ -14,10 +14,10 @@
+ #include <fcntl.h>
+ 
+ Request::Request(Config *config, int clientFD): _config(config), \
+-	reading_mode(NOT_STARTED), body_bytes_read(0), _rnrnFound(false), 
+-	_dataIsChunked(false), _headerAreParsed(false), _hasBody(false), \
+-	_root(config->_rootDir), _clientFD(clientFD), _method_type(NOT_PARSED_YET), \
+-	_keepOpen(true), _doneReading(false), _statusStr("0 Not started yet")
++	reading_mode(NOT_STARTED), body_bytes_read(0), _headerEndFound(false), \
++	_headerAreParsed(false), _hasBody(false), _root(config->_rootDir), \
++	 _clientFD(clientFD), _method_type(Http_method::NOT_PARSED_YET), _keepOpen(true),\
++	  _doneReading(false), _statusStr("0 Not started yet"), _dirListing(false)
+ {
+ 	fcntl(_clientFD, F_SETFL, O_NONBLOCK);
+ 	_rawRequestData.reserve(100);
+@@ -38,24 +38,13 @@ Request::operator=(const Request &rhs)
+ 
+ 	if (this != &rhs)
+ 	{
+-		// _clientFD = rhs._clientFD;
+-		// _URI = rhs._URI;
+-		// _method_type = rhs._method_type;
+-		// _http_version = rhs._http_version;
+-		// _headers = rhs._headers;
+-		// _rawRequestData = rhs._rawRequestData;
+-		// _unsortedHeaders = rhs._unsortedHeaders;
+-		// _rnrnFound = rhs._rnrnFound;
+-		// body_bytes_read = rhs.body_bytes_read;
+-		// reading_mode = rhs.reading_mode;
+-		// _hasBody = rhs._hasBody;
+-		   _config = rhs._config;
++		_config = rhs._config;
+ 		_reqBody = rhs._reqBody;
+ 		_unsortedHeaders = rhs._unsortedHeaders;
+ 		reading_mode = rhs.reading_mode;
+ 		_boundary = rhs._boundary;
+ 		body_bytes_read = rhs.body_bytes_read;
+-		_rnrnFound = rhs._rnrnFound;
++		_headerEndFound = rhs._headerEndFound;
+ 		_dataIsChunked = rhs._dataIsChunked;
+ 		_headerAreParsed = rhs._headerAreParsed;
+ 		_hasBody = rhs._hasBody;
+@@ -64,7 +53,7 @@ Request::operator=(const Request &rhs)
+ 		_startTime = rhs._startTime;
+ 		_clientFD = rhs._clientFD;
+ 		_root = rhs._root;
+-		// _max_body_size = rhs._max_body_size;
++		// _max_body_size = rhs._max_body_size; //IMPLEMENT ME PLS
+ 		_rawRequestData = rhs._rawRequestData;
+ 		_method_type = rhs._method_type;
+ 		_headers = rhs._headers;
+@@ -78,7 +67,7 @@ Request::operator=(const Request &rhs)
+ 		_statusStr = rhs._statusStr;
+ 		_statusCode = rhs._statusCode;
+ 		// _CGIRequired = rhs._CGIRequired;
+-		// _customConf = std::make_unique<CustomConfig>(*rhs._customConf);
++		_dirListing = rhs._dirListing;
+ 	}
+ 
+ 	return (*this);
+diff --git a/sources/Request/Request_parsing.cpp b/sources/Request/Request_parsing.cpp
+index fe506da..1d40dad 100644
+--- a/sources/Request/Request_parsing.cpp
++++ b/sources/Request/Request_parsing.cpp
+@@ -6,11 +6,12 @@
+ /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+ /*                                                   +#+                      */
+ /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
+-/*   Updated: 2025/04/02 14:14:29 by mstegema      ########   odam.nl         */
++/*   Updated: 2025/03/18 17:09:29 by mde-cloe      ########   odam.nl         */
+ /*                                                                            */
+ /* ************************************************************************** */
+ 
+ #include "Request.hpp"
++#include <array>
+ #define YELLOW "\033[33m"
+ #define RESET "\033[0m"
+ 
+@@ -18,7 +19,6 @@ size_t	Request::parse_req_line(std::string req_line)
+ {
+ 	size_t	line_end, method_end, uri_end;
+ 
+-	std::cout << MAGENTA "req line: " RESET << req_line << std::endl;
+ 	line_end = req_line.find("\r\n");
+ 	if (line_end == 0)
+ 	{
+@@ -32,37 +32,43 @@ size_t	Request::parse_req_line(std::string req_line)
+ 	method_end = req_line.find(' ');
+ 	if (method_end == std::string::npos)
+ 		throw (std::invalid_argument("no space found after method"));
+-	uri_end = req_line.find(' ', method_end + 1); //could check on single space
++	uri_end = req_line.find(' ', method_end + 1);
+ 	if (uri_end == std::string::npos)
+ 		throw (std::invalid_argument("no space found after uri"));
+ 
+ 	_method_type = which_method_type(req_line.substr(0, method_end));
+-	_URI = req_line.substr(method_end + 2, uri_end - method_end - 1); //temp + 2??
++	_URI = req_line.substr(method_end + 1, uri_end - method_end - 1);
+ 	resolveFilePath();
+-	// checkLocations(_filePath);
+ 	_http_version = http_version(&req_line[uri_end + 1]);
+ 	return (line_end + 2);
+ }
+ 
+ void	Request::resolveFilePath()
+ {
+-	std::string resolved = _URI;
+-
+-	if (resolved.find("?") != std::string::npos)
+-		resolved.erase(resolved.find("?"));
+-	else if (resolved.find("#") != std::string::npos)
+-		resolved.erase(resolved.find("#"));
+-	if (resolved.find("https://") != std::string::npos || resolved.find("http://") != std::string::npos) //do we wanna handle https?
+-		resolved.erase(0, resolved.find("//") + 2);
+-	if (resolved.find(_config->_host) != std::string::npos)
+-		resolved.erase(0, _config->_host.length());
+-	if (resolved.find(_config->_listen) != std::string::npos)
+-		resolved.erase(0, _config->_listen.length() + 1);
+-	if (resolved.front() == '/')
+-		resolved.erase(0, 1);
+-	_filePath = trim(resolved);
+-	locationHandler();
++	_filePath = 				_URI;
++	size_t						tokenPos;
++
++	std::cout << "FILEPATH B4 RESOLVE " << _URI << std::endl;
++
++	tokenPos = _filePath.find("?");
++	if (_filePath.find("?") != std::string::npos)
++		_filePath.erase(tokenPos);
++	tokenPos = _filePath.find("#");
++	if (tokenPos != std::string::npos)
++		_filePath.erase(tokenPos);
++	
++	// std::array<std::string, 6>	tokens = {"?", "#", "https://", "http://", _config->_host, _config->_listen};
++	// for (size_t i = 0; i < tokens.size(); i++)
++	// {
++	// 	tokenPos = _filePath.find(tokens[i]);
++	// 	if (tokenPos != std::string::npos)
++	// 		_filePath.erase(0, tokenPos + tokens[i].length());
++	// }
++	
++	_filePath = trim(_filePath);
++	RouteRuleHandler();
+ 	_filePath = trim(_root) + _filePath;
++	std::cout << "FILEPATH AFTER CHECK " << _filePath << std::endl;
+ }
+ 
+ void	Request::parse_headers(std::string header_str)
+@@ -77,7 +83,7 @@ void	Request::parse_headers(std::string header_str)
+ 		if (colon_pos == std::string::npos)
+ 			throw (std::invalid_argument("colon missing in header"));
+ 		key = header_str.substr(start, colon_pos - start);
+-		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2)); //check for empty values?
++		value = header_str.substr(colon_pos + 2, line_end - (colon_pos + 2));
+ 		_headers[key] = value;
+ 		start = line_end + 2;
+ 		line_end = header_str.find("\r\n", start);
+@@ -92,7 +98,7 @@ void	Request::checkHeaders()
+ 		throw(std::invalid_argument("400 bad request: Host missing"));
+ 	if (getHeaderValue("Connection") == "close")
+ 		_keepOpen = false;
+-	if (_method_type == GET)
++	if (_method_type == Http_method::GET)
+ 	{
+ 		_doneReading = true;
+ 		_statusStr = "";
+@@ -113,7 +119,7 @@ void	Request::checkHeaders()
+ void	Request::checkBodyHeaders()
+ {
+ 	_hasBody = true;
+-	if (!headerExists("Content-Type")) //or if type not supported
++	if (!headerExists("Content-Type"))
+ 		throw (std::invalid_argument("415 Bad request. Unsupported Media Type"));
+ 	if (getHeaderValue("Transfer-Encoding") == "chunked")
+ 	{
+@@ -154,11 +160,12 @@ bool	Request::dechunkBody()
+ 	{
+ 		rnPos += 2;
+ 		chunkSize = convertChunkSize(&bodyStr[rnPos], hexStrSize);
+-		if (chunkSize > bodySize - hexStrSize) //means
++		if (chunkSize > bodySize - hexStrSize) //means we havent read the whole chunk yet
+ 			break;
+ 		bytesParsed += rnPos + hexStrSize + chunkSize;
+ 		if (chunkSize == 0){
+ 			_doneReading = true;
++			reading_mode = FINISHED;
+ 			break;
+ 		}
+ 		_reqBody += bodyStr.substr(rnPos + hexStrSize, chunkSize);
+@@ -172,15 +179,11 @@ bool	Request::dechunkBody()
+ void	Request::parseBody()
+ {
+ 	std::string		content_type = getHeaderValue("Content-Type");
+-	std::cout << LILAC "path " << _filePath << std::endl;
++	std::cout << "path " << _filePath << std::endl;
+ 	std::cout << "content type: " << content_type << std::endl;
+-	std::cout << "content length: " << _contentLen << std::endl;
+ 	std::cout << "body: " << _reqBody << std::endl;
+-	std::cout << "raw data: " RESET << std::string(_rawRequestData.begin(), _rawRequestData.end()) << std::endl;
+-	if(content_type.compare(0, 30, "multipart/form-data; boundary=") == 0){
+-		std::cout << RED "is triggered" RESET << std::endl;
++	if(content_type.compare("multipart/form-data; boundary=") == 0)
+ 		parseFormData(content_type);
+-	}
+ 	else if (content_type.compare("application/x-www-form-urlencoded") == 0)
+ 		parseUrlEncoded();
+ 	_reqBody = trim(_reqBody);
+@@ -202,7 +205,7 @@ void	Request::parseUrlEncoded()
+ 	while (std::getline(stream, pair, '&')) {
+ 		size_t pos = pair.find('=');
+ 		if (pos == std::string::npos)
+-			throw (ClientErrorExcept(400, "400 missing = in www-form encoded pairs"));
++			throw (ClientErrorExcept(400, "400, missing = in www-form encoded pairs"));
+ 		_wwwFormEncodedPairs[urlDecode(pair.substr(0, pos))] = urlDecode(pair.substr(pos + 1));
+ 	}
+ }
+@@ -210,12 +213,10 @@ void	Request::parseUrlEncoded()
+ 
+ void	Request::parseFormData(std::string &content_type){
+ 	//assuming its there cause of header check
+-	std::cout << MAGENTA "content type: " RESET << content_type << std::endl;
+ 	size_t nextboundary;
+ 		if (content_type.size() < 31) //meaning multiform without boundery!
+-			throw(ClientErrorExcept(400, "400 Bad Request: empty boundary parameter"));
+-	std::string delimiter = content_type.substr(31) + "--";
+-	std::cout << RED "delimiter: " RESET << delimiter << std::endl;
++			throw(ClientErrorExcept(400, "400, Bad Request, empty boundary parameter"));
++	std::string delimiter = "--" + content_type.substr(31);
+ 	for (size_t i = _reqBody.find(delimiter); i != std::string::npos; i = nextboundary)
+ 	{
+ 		if (_reqBody.compare(i, 2, "--") == 0)
+diff --git a/sources/Request/Request_reading.cpp b/sources/Request/Request_reading.cpp
+index 04131da..562fa30 100644
+--- a/sources/Request/Request_reading.cpp
++++ b/sources/Request/Request_reading.cpp
+@@ -22,16 +22,14 @@ connectStatus	Request::readRequest()
+ 		if (_statusStr.empty() || _statusStr == "0 Not started yet")
+ 			_statusStr = "102 Processing";
+ 		readSocket(0);
+-		std::string temp = std::string(_rawRequestData.begin(), _rawRequestData.end());
+-		// std::cout << MAGENTA "Raw request data" << temp << RESET << std::endl;
+-		if (!_rnrnFound && headerEndFound())
++		if (!_headerEndFound && headerEndFound())
+ 			parse_headers(_unsortedHeaders);
+ 		if (_hasBody && bodyIsRead()) {
+ 			std::cout << "PARSING BODY" << std::endl;
+ 			parseBody();
+ 		}
+ 		if (isTimedOut(this->_startTime, this->_timeoutTime))
+-			throw ClientErrorExcept(408, "408 Request Timeout");
++			throw ClientErrorExcept(408, "Request Timeout");
+ 		if (_doneReading){
+ 			if (isCGIrequired())
+ 				return (connectStatus::CGI_REQUIRED);
+@@ -83,11 +81,9 @@ int	Request::readSocket(int size)
+ 			throw(ConnectionClosedExcep(_clientFD));
+ 		else
+ 			throw (std::ios_base::failure(" reading fail when reading from client socket"));
+-	}
+-	// std::cout << buffer << std::endl;
+-	// NicePrint::promptEnter();
++	};
+ 	_rawRequestData.insert(_rawRequestData.end(), buffer, buffer + bytes_read);
+-	if (_rnrnFound)
++	if (_headerEndFound)
+ 		body_bytes_read += bytes_read;
+ 	return (bytes_read);
+ }
+@@ -101,7 +97,7 @@ bool	Request::headerEndFound()
+ 		reading_mode = READING_HEADERS;
+ 		return (false);
+ 	}
+-	_rnrnFound = true;
++	_headerEndFound = true;
+ 	_unsortedHeaders = std::string(_rawRequestData.begin(), it + 2);
+ 	_rawRequestData.erase(_rawRequestData.begin(), it + 2); //cut out the first CRLF
+ 	body_bytes_read = _rawRequestData.size();
+@@ -112,16 +108,14 @@ bool	Request::bodyIsRead()
+ {
+ 	if (body_bytes_read > _max_body_size)
+ 			throw (ClientErrorExcept(413, "413 Payload too large"));
+-	if (_dataIsChunked && dechunkBody() == true){
+-		std::cout << BOLD "data is chunked in body is read" RESET << std::endl;
++	if (_dataIsChunked && dechunkBody() == true)
+ 		return(true);
+-	}
+ 	else if (body_bytes_read >= _contentLen)
+ 	{
+ 		_doneReading = true;
+ 		reading_mode = FINISHED;
+ 		_reqBody = std::string(_rawRequestData.begin(), (_rawRequestData.begin() + _contentLen + 2));
+-		std::cout << MAGENTA "Request body: " << _reqBody << RESET << std::endl;
++		// std::cout << YELLOW "Request body: " << _reqBody << RESET << std::endl;
+ 		_rawRequestData.erase(_rawRequestData.begin(), _rawRequestData.begin() + _contentLen + 2);
+ 		return (true);
+ 	}
+diff --git a/sources/Request/Request_utils.cpp b/sources/Request/Request_utils.cpp
+index d203234..377a944 100644
+--- a/sources/Request/Request_utils.cpp
++++ b/sources/Request/Request_utils.cpp
+@@ -55,7 +55,7 @@ Http_method Request::which_method_type(std::string str)
+ 		if (str == Methods[i])
+ 			return (static_cast<Http_method>(i));
+ 	}
+-	throw ClientErrorExcept(400, "400 Unsupported HTTP method: " + str);
++	throw ClientErrorExcept(400, "Unsupported HTTP method: " + str);
+ }
+ 
+ std::string Request::http_version(const std::string &version)
+@@ -65,7 +65,7 @@ std::string Request::http_version(const std::string &version)
+ 	else if (!version.compare(0, 6, "HTTP/1"))
+ 		return (version.substr(0, 6));
+ 	else
+-		throw ClientErrorExcept(400, "400 Unsupported HTTP version: " + version);
++		throw ClientErrorExcept(400, "Unsupported HTTP version: " + version);
+ }
+ 
+ int	Request::convertChunkSize(const std::string &hexStr, size_t &hexStrSize)
+@@ -74,10 +74,10 @@ int	Request::convertChunkSize(const std::string &hexStr, size_t &hexStrSize)
+ 	char		*hexEnd;
+ 	chunkSize = std::strtol(hexStr.data(), &hexEnd ,16);
+ 	std::cout << "here :" << chunkSize << *hexEnd << std::endl;
+-	if (*hexEnd != '\r' && chunkSize != 0)
+-			throw ClientErrorExcept(400, "400 bad hex number in chunk");
++	if (*hexEnd != '\r' && chunkSize != 0) //hallo??
++			throw ClientErrorExcept(400, "bad hex number in chunk");
+ 	if (chunkSize + body_bytes_read > _max_body_size)
+-		throw ClientErrorExcept(413, "413 payload too large");
++		throw ClientErrorExcept(413, "payload too large");
+ 	hexStrSize = (hexEnd - hexStr.c_str());
+ 	return (chunkSize);
+ }
+diff --git a/sources/Request/redirect.cpp b/sources/Request/redirect.cpp
+new file mode 100644
+index 0000000..587cdb2
+--- /dev/null
++++ b/sources/Request/redirect.cpp
+@@ -0,0 +1,186 @@
++#include "everything.hpp"
++#include <filesystem>
++#include "socket.hpp"
++
++		std::string generate_directory_listing(const std::string& _filePath) //should become response func 
++{
++	std::ostringstream html;
++
++	html << "<html><head><title>Directory Listing</title></head><body>\n";
++	html << "<h1>Directory listing for " << _filePath << "</h1>\n";
++	html << "<ul>\n";
++
++	if (std::filesystem::exists(_filePath) && std::filesystem::is_directory(_filePath))
++	{
++		for (const auto& it : std::filesystem::directory_iterator(_filePath)) 
++		{
++			std::string entry_name = it.path().filename().string();
++			if (it.is_directory()) 
++				html << "<li><a href='" << entry_name << "/'>" << entry_name << "/</a></li>\n";
++			else 
++				html << "<li><a href='" << entry_name << "'>" << entry_name << "</a></li>\n";
++		}
++	}
++
++	html << "</ul>\n";
++	html << "</body></html>\n";
++
++	return html.str();
++}
++
++std::ofstream file("/home/mde-cloe/PROJECTS/Webby-serv/sources/Request/testing");
++
++
++void	Request::RouteRuleHandler()
++{
++	location	*locPtr;
++	location	reqRules;
++	size_t		matchCount = 0;
++	std::vector<location> *locVec = &this->_config->_locations;
++	if (locVec->empty())
++		return;
++	locPtr = findLocationMatch(*locVec, matchCount);
++	if (locPtr == nullptr)
++		return;
++	reqRules = *locPtr;
++	for (; !locVec->empty(); locVec = &locPtr->_nestedLocations)
++	{
++		locPtr = findLocationMatch(*locVec, matchCount);
++		if (locPtr == nullptr)
++			break;
++		setLocRules(reqRules, *locPtr);
++	}
++	checkRules(reqRules);
++}
++
++location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
++{
++	size_t	newSize;
++	location *ret;
++	bool	matchFound = false;
++	for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
++	{
++		newSize = countPathMatch(_filePath, it->getName());
++		if (newSize > matchCount)
++		{
++			matchCount = newSize;
++			matchFound = true;
++			ret = &(*it);
++			if (newSize == std::string::npos)
++				break;
++		}
++	}
++	if (matchFound)
++		return (ret);
++	return (nullptr);
++}
++
++size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath)
++{
++	size_t	size = 0, matchCount = 0;
++	for (;size < reqpath.size() && size < locpath.size()\
++	 && reqpath[size] == locpath[size]; size++) {
++		if (reqpath[size] == '/')
++			matchCount++;
++	 }
++	if (size == locpath.size() && size == reqpath.size()){
++			file << "returning npos for path " << reqpath << std::endl;
++		return (std::string::npos);
++	}
++	file << "returning " << size << "for path " << reqpath << std::endl;	
++	return (matchCount);
++}
++
++void assignStrIfNonEmpty(std::string &dest, std::string &rhs)
++{
++	if (!rhs.empty())
++		dest = rhs;
++}
++
++void	Request::setLocRules(location &ruleblock, location &loc)
++{
++	// assignStrIfNonEmpty(ruleblock._allow_methods, loc._allow_methods); //change after merge
++	// assignStrIfNonEmpty(ruleblock._index, loc._index);
++	assignStrIfNonEmpty(ruleblock._alias, loc._alias);
++	assignStrIfNonEmpty(ruleblock._name, loc._name);
++	assignStrIfNonEmpty(ruleblock._return, loc._return);
++	assignStrIfNonEmpty(ruleblock._root, loc._root);
++	if (!loc._index.empty())
++		ruleblock._index = loc._index;
++	if (!loc._allow_methods.empty())
++		ruleblock._allow_methods = loc._allow_methods;
++	if (!loc._cgi_extension.empty())
++		ruleblock._cgi_extension = loc._cgi_extension;
++	if (!loc._cgi_path.empty())
++		ruleblock._cgi_path = loc._cgi_path;
++	ruleblock._autoindex = loc._autoindex; //default on extra
++}
++
++void isMethodAllowed(Http_method method, std::vector<Http_method> const &allow_methods)
++{
++	if (allow_methods.empty())
++		return;
++	for (auto i : allow_methods)
++	{
++		if (i == method)
++			return;
++	}
++	throw (ClientErrorExcept(405, "Method not allowed"));
++}
++
++void  Request::checkRules(location &rules)
++{   
++	if (!rules.getReturn().empty())
++	{
++		this->_filePath = rules.getReturn();
++		_statusCode = 301;
++		_statusStr = "301 Moved Permanently";
++		return;
++	}
++	isMethodAllowed(_method_type, rules.getAllowMethods());
++	if (!rules.getRoot().empty())
++	{
++		_filePath.find(_config->_rootDir);
++		_filePath.replace(0, _config->_rootDir.size(), rules.getRoot());
++	}
++	else if (!rules.getAlias().empty()) //wrong, check merlin ss
++		this->_filePath = rules.getAlias();
++	else if (!rules.getIndex().empty())
++	{
++		std::filesystem::path p = _filePath;
++		if (std::filesystem::is_directory(p))
++		{
++			std::vector<std::string> rules_index = rules.getIndex();
++			std::string tmp = this->_filePath;
++
++			for (auto i : rules_index)
++			{
++				tmp += i;
++				if (fileExists(_filePath))
++				{
++					_filePath = tmp;
++					return;
++				}
++				tmp = _filePath;
++				if (rules.getAutoindex())
++					this->_dirListing = true;
++			}
++		}
++	}
++	else if (!rules.getCgiExtension().empty())
++	{
++		std::vector<std::string> cgi_extension = rules.getCgiExtension();
++		size_t pos = _filePath.rfind('.');
++		std::string extension_to_compare = _filePath.substr(pos + 1);
++		std::cout << extension_to_compare << std::endl;
++
++		for (auto i : cgi_extension)
++		{
++			if (i == extension_to_compare)
++				return;
++		}
++		throw (ClientErrorExcept(500, "Internal Server Error"));
++	}
++}
++
++
+diff --git a/sources/Request/testing b/sources/Request/testing
+new file mode 100644
+index 0000000..e69de29
+diff --git a/sources/Response/Response.cpp b/sources/Response/Response.cpp
+index cdd733a..6c5ce8b 100644
+--- a/sources/Response/Response.cpp
++++ b/sources/Response/Response.cpp
+@@ -2,34 +2,26 @@
+ #include "Request.hpp"
+ #include "Connection.hpp"
+ 
+-Response::Response(Config *config) {
++Response::Response(){
+ 	this->_responseHandlerStatus = responseHandlerStatus::NOT_STARTED;
+ 	this->_responseBuffer = "";
+ 	this->_bytesWritten = 0;
+ 	this->_timesWriteFailed = 0;
+-	this->setHTTPVersion("HTTP/1.1");
+-	setHeaders("Root", config->_rootDir);
+ 	return ;
+ }
+ 
+-Response::Response(const Response &obj){
+-	*this = obj;
+-}
+-
+ Response &	Response::operator=(const Response &rhs)
+ {
+ 	std::cout << GREEN << "Response: Assignment operator called" << RESET << std::endl;
+ 
+ 	if (this != &rhs)
+ 	{
+-		_httpVersion = rhs._httpVersion;
+ 		_responseHandlerStatus = rhs._responseHandlerStatus;
++		_responseBuffer = rhs._responseBuffer;
++		_bytesWritten = rhs._bytesWritten;
+ 		_status = rhs._status;
+ 		_headers = rhs._headers;
+ 		_body = rhs._body;
+-		_responseBuffer = rhs._responseBuffer;
+-		_bytesWritten = rhs._bytesWritten;
+-		_timesWriteFailed = rhs._timesWriteFailed;
+ 	}
+ 
+ 	return (*this);
+@@ -41,8 +33,6 @@ Response::~Response(){
+ 
+ void	Response::autoFillResponse(std::string status){
+ 	std::string		path = _headers["Root"] + "/error_pages/" + status.substr(0, 3) + ".html";
+-	// std::cout << YELLOW "Root in autofill: " RESET << _headers["Root"] << std::endl;
+-	// std::cout << YELLOW "path: " RESET << path << std::endl;
+ 	size_t			size = 0;
+ 	std::ifstream	file(path);
+ 
+@@ -50,11 +40,10 @@ void	Response::autoFillResponse(std::string status){
+ 	if (!_body.empty())
+ 		_body.clear();
+ 	if (file.is_open()){
+-		// std::cout << YELLOW "file is open" RESET << std::endl;
+ 		file.seekg(0, std::ios::end);
+ 		size = file.tellg();
+ 		file.seekg(0, std::ios::beg);
+-		std::vector<char> buffer(size + 1);
++		std::vector<char> buffer(size);
+ 		if (file.read(buffer.data(), size)){
+ 			Response::setContentType(path);
+ 			Response::setHeaders("Content-Length", std::to_string(size));
+@@ -65,10 +54,9 @@ void	Response::autoFillResponse(std::string status){
+ 		file.close();
+ 	}
+ 	else{
+-		// std::cout << YELLOW "file is not open" RESET << std::endl;
+-		Response::setHeaders("Content-Type", "text/plain");
+-		Response::setHeaders("Content-Length", std::to_string(status.length()));
+-		Response::setBody(status);
++			Response::setHeaders("Content-Type", "text/plain");
++			Response::setHeaders("Content-Length", std::to_string(status.length()));
++			Response::setBody(status);
+ 	}
+ 	Response::setResponseBuffer(Response::generateResponse());
+ 	_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
+@@ -87,7 +75,6 @@ void	Response::autoFillResponse(std::string status){
+ 
+ std::string	Response::generateResponse() const{
+ 	std::string response = _httpVersion + " " + _status + "\r\n";
+-	// std::cout << YELLOW "HTTP version: " << _httpVersion << "\nStatus: " << _status << RESET << std::endl;
+ 	for (auto it = _headers.begin(); it != _headers.end(); it++){
+ 		response += it->first + ": " + it->second + "\r\n";
+ 	}
+@@ -99,12 +86,12 @@ std::string	Response::generateResponse() const{
+ 
+ connectStatus Response::writeResponse(int FD){
+ 	size_t n =_responseBuffer.size() - _bytesWritten;
+-	// std::cout << YELLOW "\nresponse buffer size: " << _responseBuffer.size() << "\n bytes written: " << _bytesWritten << "\n n: " << n << RESET << std::endl;
++	std::cout << YELLOW "\nresponse buffer size: " << _responseBuffer.size() << "\n bytes written: " << _bytesWritten << "\n n: " << n << RESET << std::endl;
+ 	if (n > BUFFER_SIZE)
+ 		n = BUFFER_SIZE;
+-	// std::cout << "writing " << n << " bytes" << std::endl;
++	std::cout << "writing " << n << " bytes" << std::endl;
+ 	size_t bytes = send(FD, _responseBuffer.c_str() + _bytesWritten, n, 0); 
+-	// write(STDOUT_FILENO, _responseBuffer.c_str() + _bytesWritten, n);
++	write(STDOUT_FILENO, _responseBuffer.c_str() + _bytesWritten, n);
+ 	// std::ofstream outFile("Response written.txt", std::ios::app);
+ 	// outFile << _responseBuffer.substr(_bytesWritten, bytes)  << std::endl;
+ 	_bytesWritten += bytes;
+diff --git a/sources/Response/responseHandler.cpp b/sources/Response/responseHandler.cpp
+index 18b4507..ebaf33b 100644
+--- a/sources/Response/responseHandler.cpp
++++ b/sources/Response/responseHandler.cpp
+@@ -108,12 +108,15 @@ void	Response::deleteMethod(Request* request){
+ connectStatus	Response::responseHandler(Request* request){
+ 	if (_responseHandlerStatus == responseHandlerStatus::NOT_STARTED){
+ 		_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
++		setHTTPVersion(request->_http_version);
+ 		if (request->_headers.find("Connection") != request->_headers.end() && request->_headers["Connection"] == "close")
+ 			setHeaders("Connection", "close");
+ 		else
+ 			setHeaders("Connection", "keep-alive");
+ 	}
+ 	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && !request->getStatusCode().empty()){ //if there was an error in (parsing) the request{}
++		if (request->getStatusCode().compare(0, 1, "3") == 0)
++			setHeaders("Location", request->_filePath);
+ 		autoFillResponse(request->getStatusCode());
+ 		return connectStatus::RESPONDING;
+ 	}
+@@ -125,15 +128,17 @@ connectStatus	Response::responseHandler(Request* request){
+ 	// 	return connectStatus::RESPONDING;
+ 	// }
+ 	else{
+-		if ((request->_method_type == GET && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_GET){
++		if ((request->_method_type == Http_method::GET && this->_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || this->_responseHandlerStatus == responseHandlerStatus::IN_GET){
+ 			getMethod(request);
+ 			return connectStatus::RESPONDING;
+ 		}
+-		else if ((request->_method_type == POST && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_POST){
++		else if ((request->_method_type == Http_method::POST && this->_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || this->_responseHandlerStatus == responseHandlerStatus::IN_POST){
+ 			postMethod(request);
+ 			return connectStatus::RESPONDING;
+ 		}
+-		else if ((request->_method_type == DELETE && _responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || _responseHandlerStatus == responseHandlerStatus::IN_DELETE) {
++		else if ((request->_method_type == Http_method::DELETE && \
++		 this->_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS) || \
++		  this->_responseHandlerStatus == responseHandlerStatus::IN_DELETE) {
+ 			deleteMethod(request);
+ 			return connectStatus::RESPONDING;
+ 		 }
+diff --git a/sources/Config.cpp b/sources/config/Config.cpp
+similarity index 79%
+rename from sources/Config.cpp
+rename to sources/config/Config.cpp
+index cd58a56..2b8154a 100644
+--- a/sources/Config.cpp
++++ b/sources/config/Config.cpp
+@@ -6,7 +6,7 @@
+ /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+ /*                                                +#+#+#+#+#+   +#+           */
+ /*   Created: 2024/10/03 18:10:04 by mde-cloe          #+#    #+#             */
+-/*   Updated: 2025/01/14 13:39:57 by mde-cloe         ###   ########.fr       */
++/*   Updated: 2025/02/05 18:51:43 by mde-cloe         ###   ########.fr       */
+ /*                                                                            */
+ /* ************************************************************************** */
+ 
+@@ -29,9 +29,14 @@ void	parseConfig(int argc, char ** argv, std::vector<Config> &configs)
+ 	}
+ 	catch(const Config::NoBlockFound &e) //general config error
+ 	{
+-		std::cout << e.what() << "\n running with default config values" << std::endl;
++		std::cerr << e.what() << "\n running with default config values" << std::endl;
+ 		configs.emplace_back();
+ 	}
++	catch (const std::exception &e)
++	{
++		std::cerr << RED "Config error found: " << e.what() << " \n\nclosing server" RESET << std::endl;
++		exit(1);
++	}
+ }
+ 
+ 
+@@ -78,7 +83,7 @@ std::string	extractLocationName(std::string line)
+             endPos = location.length();
+     location_name = location.substr(startPos, endPos - startPos);
+ 	}
+-	std::cout << location_name << std::endl;
++	// std::cout << location_name << std::endl;
+ 	return (location_name);
+ }
+ 
+@@ -105,10 +110,8 @@ void	Config::readBlock(std::ifstream &file, std::string &line)
+ 	throw std::invalid_argument("no closing brace in server block!");
+ }
+ 
+-int Config::mapToMembers()
++void Config::mapToMembers()
+ {
+-	try 
+-	{
+ 		std::vector<std::string> serverBlock {"autoindex", "client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
+ 		std::set<std::string> uniqueKeys;
+ 		
+@@ -119,48 +122,21 @@ int Config::mapToMembers()
+ 		
+ 		std::sort(keys.begin(), keys.end());
+ 		serverBlock.erase(std::unique(serverBlock.begin(), serverBlock.end()), serverBlock.end());
++		//check if keys match the expected serverBlock configuration
+ 		if (keys == serverBlock)
+ 		{
+-			try
+-			{
+-				setAutoindex(validateAutoindex()); 
+-				setListen(validateListen()); 
+-				setMaxBodySize(validateMaxBodySize()); 
+-				setErrorPage(validateErrorPage());
+-				setHost(validateHost());
+-				setIndex(ValidateIndex());
+-				setRoot(validateRoot());
+-				setTimeout(validateTimeout()); 
+-				setServerName(validateServerName()); 
+-			}
+-			catch(const std::exception& e)
+-			{
+-				std::cout << e.what() << '\n';
+-			}
++			_autoindex = validateAutoindex(); 
++			_listen = validateListen(); 
++			_client_max_body_size = validateMaxBodySize(); 
++			_errorPage = validateErrorPage();
++			_host = validateHost();
++			_index = ValidateIndex();
++			_rootDir = validateRoot();
++			_timeout = validateTimeout(); 
++			_serverName = validateServerName(); 
+ 		}
+ 		else
+-		{
+-			std::cout << "Keys do not match the expected serverBlock configuration" << std::endl;
+-			return (0);
+-		}
+-	}
+-	catch (const std::exception& e)
+-	{
+-		std::cout << "Unexpected error in mapToMembers: " << e.what() << std::endl;
+-		return (-8);
+-	}
+-
+-	return (1);
+-}
+-
+-std::string Config::toString() const {
+-    std::ostringstream oss;
+-    oss << "Server Name: " << _serverName << "\n";
+-	oss << "Root: " << _rootDir << "\n";
+-	oss << "Listen: " << _listen << "\n";
+-	oss << "Host: " << _host << "\n";
+-	oss << "Max Body Size: " << _client_max_body_size << "\n";
+-    return oss.str();
++			throw std::invalid_argument("Keys do not match the expected serverBlock configuration");
+ }
+ 
+ void	Config::parseRule(const std::string &line)
+diff --git a/sources/Location.cpp b/sources/config/Location.cpp
+similarity index 82%
+rename from sources/Location.cpp
+rename to sources/config/Location.cpp
+index 426585a..46c86da 100644
+--- a/sources/Location.cpp
++++ b/sources/config/Location.cpp
+@@ -21,12 +21,13 @@
+ 
+ location::location(void)
+ {
+-	std::cout << GREEN << "location: Default constructor called" << RESET << std::endl;
++	// std::cout << GREEN << "location: Default constructor called" << RESET << std::endl;
+ }
+ 
+ location::location(std::ifstream &file, std::string &line)
+ {
+ 	size_t i = 0;
++	setName(validateLocationName(line));
+ 	while (std::getline(file, line))
+ 	{
+ 		if (line.empty() || line[i] == '#')
+@@ -46,7 +47,7 @@ location::location(std::ifstream &file, std::string &line)
+ 
+ location::location(const location &rhs)
+ {
+-	std::cout << GREEN << "location: Copy constructor called" RESET << std::endl;
++	// std::cout << GREEN << "location: Copy constructor called" RESET << std::endl;
+ 	*this = rhs;
+ }
+ 
+@@ -75,7 +76,7 @@ location::operator=(const location &rhs)
+ 
+ location::~location(void)
+ {
+-	std::cout << RED << "location: Destructor called" << RESET << std::endl;
++	// std::cout << RED << "location: Destructor called" << RESET << std::endl;
+ }
+ 
+ // ************************************************************************** //
+@@ -107,16 +108,17 @@ void	location::setAlias(const std::string &alias)
+ 	this->_alias = alias;
+ }
+ 
+-std::vector<std::string>	location::getAllowMethods()
++std::vector<Http_method>	location::getAllowMethods()
+ {
+ 	return(this->_allow_methods);
+ }
+ 
+-void	location::setAllowMethods(const std::vector<std::string> &allow_methods)
++void	location::setAllowMethods(const std::vector<Http_method>  &allow_methods)
+ {
+ 	this->_allow_methods = allow_methods;
+ }
+ 
++
+ bool	location::getAutoindex()
+ {
+ 	return(this->_autoindex);
+@@ -183,9 +185,6 @@ std::string location::toString() const
+ 
+ void	location::initializeLocation()
+ {
+-	static int	count;
+-	if (!count)
+-		setName("loc1");
+ 	setAlias(validateAlias());
+ 	setAllowMethods(validateAllowMethods());
+ 	setAutoindex(validateAutoindex());
+@@ -220,4 +219,31 @@ void   location::parseRule(const std::string &line)
+ 		throw std::invalid_argument("Error: Missing semicolon.");
+ 	std::string tmp_value(value_begin, value_end);	
+ 	_rulemap.emplace(tmp_key, tmp_value);
++}
++
++std::ostream& operator<<(std::ostream& os, const location& loc)
++{
++	os << "Alias: " << loc._alias << "\n";
++	os << "Autoindex: " << loc._autoindex << "\n";
++	os << "Return: " << loc._return << "\n";
++	os << "Root: " << loc._root << "\n";
++	std::cout << "Allow Methods:";
++	for (const auto &method : loc._allow_methods) {
++		std::cout << (int)method << ' ';
++	}
++	std::cout << "CGI Extensions: ";
++	for (const auto &extension : loc._cgi_extension) {
++		std::cout << extension << ' ';
++	}
++	std::cout << std::endl;
++	std::cout << "CGI Paths: ";
++	for (const auto &path : loc._cgi_path) {
++		std::cout << path << ' ';
++	}
++	std::cout << "Index: ";
++	for (const auto &idx : loc._index) {
++		std::cout << idx << ' ';
++	}
++	std::cout << std::endl;
++    return os;
+ }
+\ No newline at end of file
+diff --git a/sources/config_error_checking.cpp b/sources/config/config_error_checking.cpp
+similarity index 99%
+rename from sources/config_error_checking.cpp
+rename to sources/config/config_error_checking.cpp
+index 97787a5..32ba4bd 100644
+--- a/sources/config_error_checking.cpp
++++ b/sources/config/config_error_checking.cpp
+@@ -6,7 +6,7 @@
+ /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+ /*                                                +#+#+#+#+#+   +#+           */
+ /*   Created: 2024/11/06 19:41:53 by mde-cloe          #+#    #+#             */
+-/*   Updated: 2024/12/19 15:09:38 by mde-cloe         ###   ########.fr       */
++/*   Updated: 2025/02/04 14:23:07 by mde-cloe         ###   ########.fr       */
+ /*                                                                            */
+ /* ************************************************************************** */
+ 
+@@ -223,7 +223,7 @@ std::string Config::validateHost()
+ 	}
+ 	if (dotCount != 3)
+ 		throw std::invalid_argument("Error: invalid host directive");
+-	return (host_rule);
++	return (host_value);
+ }
+ 
+ size_t Config::validateTimeout()
+diff --git a/sources/config_obj_utils.cpp b/sources/config/config_obj_utils.cpp
+similarity index 89%
+rename from sources/config_obj_utils.cpp
+rename to sources/config/config_obj_utils.cpp
+index 76e76cc..33c1494 100644
+--- a/sources/config_obj_utils.cpp
++++ b/sources/config/config_obj_utils.cpp
+@@ -6,7 +6,7 @@
+ /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+ /*                                                +#+#+#+#+#+   +#+           */
+ /*   Created: 2024/11/06 19:35:05 by mde-cloe          #+#    #+#             */
+-/*   Updated: 2025/01/17 16:06:32 by mde-cloe         ###   ########.fr       */
++/*   Updated: 2025/02/05 18:28:43 by mde-cloe         ###   ########.fr       */
+ /*                                                                            */
+ /* ************************************************************************** */
+ 
+@@ -22,10 +22,10 @@ Config::Config(void) //default constructor
+ 	_listen = "8080"; //idk if this works 
+ 	_serverName = "localhost"; //"funny-server";
+ 	_host = "127.0.0.1";
+-	_maxConnects = 1;
+ 	_timeout = 50000;
+ 	_rootDir = "website/";
+-	_autoIndexFilePath = _rootDir + "index.html"; //do i need slash?
++	_autoIndexFilePath = _rootDir + "index.html";
++	_autoindex = true;
+ 	
+ 
+ 	std::cout << GREEN << "Config: Default constructor called" << RESET << std::endl;
+@@ -45,13 +45,22 @@ Config::operator=(const Config &rhs)
+ 
+ 	if (this != &rhs)
+ 	{
+-		// _serverPort = rhs._serverPort;
++		_host = rhs._host;
++		_autoIndexFilePath = rhs._autoIndexFilePath;
++		_errorPage = rhs._errorPage;
++		_client_max_body_size = rhs._client_max_body_size;
++		_index = rhs._index;
+ 		_listen = rhs._listen;
+ 		_serverName = rhs._serverName;
+-		_maxConnects = rhs._maxConnects;
+ 		_timeout = rhs._timeout;
+ 		_rootDir = rhs._rootDir;
++		_autoindex = rhs._autoindex;
+ 		_autoIndexFilePath = rhs._autoIndexFilePath;
++		_errorPage = rhs._errorPage;
++		_locations = rhs._locations;
++		// _locationName = rhs._locationName;
++
++
+ 	}
+ 
+ 	return (*this);
+diff --git a/sources/config/config_utils.cpp b/sources/config/config_utils.cpp
+new file mode 100644
+index 0000000..2555bdd
+--- /dev/null
++++ b/sources/config/config_utils.cpp
+@@ -0,0 +1,107 @@
++/* ************************************************************************** */
++/*                                                                            */
++/*                                                        :::      ::::::::   */
++/*   config_utils.cpp                                   :+:      :+:    :+:   */
++/*                                                    +:+ +:+         +:+     */
++/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
++/*                                                +#+#+#+#+#+   +#+           */
++/*   Created: 2024/11/06 19:27:26 by mde-cloe          #+#    #+#             */
++/*   Updated: 2025/02/03 20:05:59 by mde-cloe         ###   ########.fr       */
++/*                                                                            */
++/* ************************************************************************** */
++
++#include "Config.hpp"
++#include "NicePrint.hpp"
++
++std::ostream& operator<<(std::ostream& os, const Config& config)
++{
++	os << "Server Name: " << config._serverName << std::endl;
++	os << "Root: " << config._rootDir << std::endl;
++	os << "Listen: " << config._listen << std::endl;
++	os << "Host: " << config._host << std::endl;
++	os << "Max Body Size: " << config._client_max_body_size << std::endl;
++	os << "Server Index: ";
++	for (const std::string &idx : config._index) {
++		std::cout << idx << ' ';
++	}
++	os << "Server ErrorPage: ";
++	for (const auto &idx : config._errorPage) {
++		os << idx.first << " " << idx.second;
++	}
++	// os << "Error Page: " << config._errorPage << std::endl;
++	// os << "Index: " << config._index << std::endl;
++    return os;
++}
++
++
++// ************************************************************************** //
++//								GETTER & SETTER								  //
++// ************************************************************************** //
++
++
++bool	checkCaracter(const std::string &line, const char &c)
++{
++	if (line.find(c) != std::string::npos)
++		return (true);
++	return (false);
++}
++
++bool	checkstr(const std::string &line, const std::string &str)
++{
++	if (line.find(str) != std::string::npos)
++		return (true);
++	return (false);
++}
++
++bool	locationFound(std::string &line)
++{
++	if (checkstr(line, "location") && checkCaracter(line, '{'))	
++		return (true);
++	return (false);
++}
++
++void	print_map(const std::unordered_map<std::string, std::string> map)
++{
++	for(auto i : map)
++	{
++		// for (auto x : i.second)
++		std::cout << "Key: " << i.first << "\t" << "Value: " << i.second << std::endl;
++	}
++}
++
++std::string	normalize_space(std::string& str)
++{
++	int is_space = 0;
++	for (size_t i = 0; i < str.length(); i++)
++	{
++		if (isspace(str[i]))
++			is_space++;
++		else
++		{
++			if (is_space > 1)
++			{
++				str.erase(i - is_space, is_space - 1);
++				i -= (is_space -1);
++			}
++			is_space = 0;
++		}
++	}
++	return (str);
++}
++
++void printConfigs(std::vector<Config> &configs)
++{
++	for (size_t i = 0; i < configs.size(); i++) {
++		std::cout << YELLOW LINE "\nServer block: " << i + 1 << configs[i] << RESET << std::endl;
++
++		for (size_t j = 0; j < configs[i]._locations.size(); j++) {
++			std::cout << MAGENTA LINE_S "Location block:\n" << configs[i]._locations[j];
++			std::cout <<  LINE_S RESET << std::endl;
++			for (size_t k = 0; k < configs[i]._locations[j]._nestedLocations.size(); k++) {
++				std::cout << CYAN LINE_S "NESTED location block: " << configs[i]._locations[j]._nestedLocations[k] << std::endl;
++				std::cout <<  LINE RESET << std::endl;
++			}
++		}
++		std::cout << YELLOW LINE << std::endl;
++	}
++}
+diff --git a/sources/location_error_checking.cpp b/sources/config/location_error_checking.cpp
+similarity index 84%
+rename from sources/location_error_checking.cpp
+rename to sources/config/location_error_checking.cpp
+index d87b802..29cb4fe 100644
+--- a/sources/location_error_checking.cpp
++++ b/sources/config/location_error_checking.cpp
+@@ -41,12 +41,13 @@ std::string	normalize_space_location(std::string& str)
+ 	return (str);
+ }
+ 
+-std::vector<std::string> location::validateAllowMethods()
++std::vector<Http_method> location::validateAllowMethods()
+ {
+ 	std::string allow_methods_rule;
+     std::string allow_methods_value;
+ 	std::string tmp_value;
+-	std::vector<std::string>  tmp_vector;
++	std::vector<Http_method>  tmp_vector;
++	std::vector<std::string>  methods = {"POST", "GET", "DELETE"};
+ 	
+ 	static int space = 0;
+ 
+@@ -72,9 +73,12 @@ std::vector<std::string> location::validateAllowMethods()
+ 	if (space == 0)
+ 	{
+ 		tmp_value = allow_methods_value.substr(0, allow_methods_value.length());
+-		if (tmp_value == "POST" || tmp_value == "GET" || tmp_value == "DELETE") //|| isspace(tmp_value[space]) == 0)
+-			tmp_vector.push_back(tmp_value);
+-		else
++		for (size_t i = 0; i < methods.size(); i++)
++		{
++			if (tmp_value == methods[i])
++				tmp_vector.push_back((Http_method)i);
++		}
++		if (tmp_vector.empty())
+ 		 	throw std::invalid_argument("Error: invalid ruleeeee in allow_methods directive");
+ 	}
+ 	else
+@@ -91,15 +95,18 @@ std::vector<std::string> location::validateAllowMethods()
+ 			if (start < i)
+ 			{
+ 				tmp_value = allow_methods_value.substr(start, i - start);
+-				if (tmp_value == "POST" || tmp_value == "GET" || tmp_value == "DELETE")
+-					tmp_vector.push_back(tmp_value);
+-				else
++				for (size_t i = 0; i < methods.size(); i++)
++				{
++					if (tmp_value == methods[i])
++						tmp_vector.push_back((Http_method)i);
++				}
++				if (tmp_vector.empty())
+ 					throw std::invalid_argument("Error: invalid rule in autoindex directive");
+ 			}
+ 		}
+ 	}
+ 	return (tmp_vector);
+-}	
++}
+ 
+ bool location::validateAutoindex()
+ {
+@@ -146,6 +153,40 @@ std::string location::validateAlias()
+ 	return (alias_value);
+ }
+ 
++std::string	location::findLocationName(std::string locationLine)
++{
++	size_t end = locationLine.rfind('{');
++	std::string locationName = locationLine.substr(10, end - 11);
++	return (locationName);
++}
++
++std::string location::validateLocationName(std::string line)
++{
++	std::string location_name_rule;
++	std::string location_name_value;
++
++	if (!line.empty())
++	{
++		location_name_rule = normalize_space_location(line);
++		location_name_value = findLocationName(location_name_rule);
++	}
++	size_t size = location_name_value.size();
++	if (location_name_value[0] == '/' && location_name_value[size - 1] == '/')
++	{
++		for (size_t i = 0; i < size; i++)
++		{
++			if (!isalpha(location_name_value[i]) && !isdigit(location_name_value[i]) && location_name_value[i] != '-' && location_name_value[i] != '/')
++				throw std::invalid_argument("Error: invalid character in location name");
++			if (location_name_value[i] == '/' && location_name_value[i + 1] == '/')
++				throw std::invalid_argument("Error: invalid character in location name");
++		}
++	}
++	else
++		throw std::invalid_argument("Error: invalid character in location name");
++	return (location_name_value);
++}
++
++
+ std::vector<std::string>		location::validateIndex()
+ {
+ 	std::string index_rule;
+diff --git a/sources/config_utils.cpp b/sources/config_utils.cpp
+deleted file mode 100644
+index bda21d5..0000000
+--- a/sources/config_utils.cpp
++++ /dev/null
+@@ -1,144 +0,0 @@
+-/* ************************************************************************** */
+-/*                                                                            */
+-/*                                                        :::      ::::::::   */
+-/*   config_utils.cpp                                   :+:      :+:    :+:   */
+-/*                                                    +:+ +:+         +:+     */
+-/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+-/*                                                +#+#+#+#+#+   +#+           */
+-/*   Created: 2024/11/06 19:27:26 by mde-cloe          #+#    #+#             */
+-/*   Updated: 2025/01/13 13:32:45 by mde-cloe         ###   ########.fr       */
+-/*                                                                            */
+-/* ************************************************************************** */
+-
+-#include "Config.hpp"
+-#include "NicePrint.hpp"
+-
+-std::ostream& operator<<(std::ostream& os, const Config& config)
+-{
+-	os << "Server Name: " << config._serverName << "\n";
+-	os << "Root: " << config._rootDir << "\n";
+-	os << "Listen: " << config._listen << "\n";
+-	os << "Host: " << config._host << "\n";
+-	// os << "Error Page: " << config._errorPage << "\n";
+-	os << "Max Body Size: " << config._client_max_body_size << "\n";
+-	// os << "Index: " << config._index << "\n";
+-    return os;
+-}
+-
+-
+-// ************************************************************************** //
+-//								GETTER & SETTER								  //
+-// ************************************************************************** //
+-
+-
+-bool	checkCaracter(const std::string &line, const char &c)
+-{
+-	if (line.find(c) != std::string::npos)
+-		return (true);
+-	return (false);
+-}
+-
+-bool	checkstr(const std::string &line, const std::string &str)
+-{
+-	if (line.find(str) != std::string::npos)
+-		return (true);
+-	return (false);
+-}
+-
+-bool	locationFound(std::string &line)
+-{
+-	if (checkstr(line, "location") && checkCaracter(line, '{'))	
+-		return (true);
+-	return (false);
+-}
+-
+-void	print_map(const std::unordered_map<std::string, std::string> map)
+-{
+-	for(auto i : map)
+-	{
+-		// for (auto x : i.second)
+-		std::cout << "Key: " << i.first << "\t" << "Value: " << i.second << std::endl;
+-	}
+-}
+-
+-std::string	normalize_space(std::string& str)
+-{
+-	int is_space = 0;
+-	for (size_t i = 0; i < str.length(); i++)
+-	{
+-		if (isspace(str[i]))
+-			is_space++;
+-		else
+-		{
+-			if (is_space > 1)
+-			{
+-				str.erase(i - is_space, is_space - 1);
+-				i -= (is_space -1);
+-			}
+-			is_space = 0;
+-		}
+-	}
+-	return (str);
+-}
+-
+-void printConfigs(std::vector<Config> &configs)
+-{
+-    for (size_t i = 0; i < configs.size(); i++) {
+-        std::cout << "Server block:\n" << configs[i].toString();
+-		
+-		std::vector<std::string> serverIndex = configs[i].getIndex();
+-        std::cout << "Server Index: ";
+-        for (const auto &idx : serverIndex) {
+-            std::cout << idx << ' ';
+-        }
+-		std::cout << std::endl;
+-
+-		std::multimap<std::string, std::string> errorPage = configs[i].getErrorPage();
+-        std::cout << "Server ErrorPage: ";
+-        for (const auto &idx : errorPage) {
+-            std::cout << idx.first << " " << idx.second;
+-        }
+-		std::cout << std::endl;
+-		std::cout << LINE << std::endl;
+-
+-        for (size_t j = 0; j < configs[i]._locations.size(); j++) {
+-            std::cout << "Location block:\n" << configs[i]._locations[j].toString();
+-
+-            std::vector<std::string> locationAllowMethods = configs[i]._locations[j].getAllowMethods();
+-            std::cout << "Allow Methods:";
+-            for (const auto &method : locationAllowMethods) {
+-                std::cout << method << ' ';
+-            }
+-			std::cout << std::endl;
+-
+-            std::vector<std::string> locationCgiExtensions = configs[i]._locations[j].getCgiExtension();
+-            std::cout << "CGI Extensions: ";
+-            for (const auto &extension : locationCgiExtensions) {
+-                std::cout << extension << ' ';
+-            }
+-			std::cout << std::endl;
+-
+-            std::vector<std::string> locationCgiPaths = configs[i]._locations[j].getCgiPath();
+-            std::cout << "CGI Paths: ";
+-            for (const auto &path : locationCgiPaths) {
+-                std::cout << path << ' ';
+-            }
+-			std::cout << std::endl;
+-
+-            std::vector<std::string> locationIndex = configs[i]._locations[j].getIndex();
+-            std::cout << "Index: ";
+-            for (const auto &idx : locationIndex) {
+-                std::cout << idx << ' ';
+-            }
+-			std::cout << std::endl;
+-			
+-			std::cout<< LINE << std::endl;
+-			// std::cout << "This is the nestedLocations size: " << configs[i]._locations[j]._nestedLocations.size() << std::endl;
+-            for (size_t k = 0; k < configs[i]._locations[j]._nestedLocations.size(); k++) {
+-                std::cout << "NESTED location block: " 
+-                          << configs[i]._locations[j]._nestedLocations[k].toString() << std::endl;
+-			std::cout<< LINE << std::endl;
+-            }
+-        }
+-    }
+-}
+diff --git a/sources/NicePrint.cpp b/sources/misc/NicePrint.cpp
+similarity index 100%
+rename from sources/NicePrint.cpp
+rename to sources/misc/NicePrint.cpp
+diff --git a/sources/misc/testing_utils.cpp b/sources/misc/testing_utils.cpp
+new file mode 100644
+index 0000000..d6d09b5
+--- /dev/null
++++ b/sources/misc/testing_utils.cpp
+@@ -0,0 +1,45 @@
++/* ************************************************************************** */
++/*                                                                            */
++/*                                                        :::      ::::::::   */
++/*   testing_utils.cpp                                  :+:      :+:    :+:   */
++/*                                                    +:+ +:+         +:+     */
++/*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
++/*                                                +#+#+#+#+#+   +#+           */
++/*   Created: 2025/02/01 15:46:41 by mde-cloe          #+#    #+#             */
++/*   Updated: 2025/02/01 15:56:01 by mde-cloe         ###   ########.fr       */
++/*                                                                            */
++/* ************************************************************************** */
++
++#include "external.hpp"
++#include "Colors.hpp"
++
++void sendHTMLPage(int client_socket, const std::string& file_path) 
++{
++	//Open the HTML file
++	std::ifstream file(file_path);
++	if (!file) 
++	{
++		std::cout << RED << "Error opening file: " << file_path << RESET << std::endl;
++		return;
++	}
++
++	//Read the file content, store it in buffer and covert it into a string
++	std::stringstream buffer;
++	buffer << file.rdbuf();
++	std::string html_content = buffer.str();
++
++	//HTTP Response Headers
++	std::string http_response = "HTTP/1.1 200 OK\r\n";
++	http_response += "Content-Type: text/html\r\n";
++	http_response += "Content-Length: " + std::to_string(html_content.size()) + "\r\n";
++	http_response += "Connection: close\r\n";
++	http_response += "\r\n";
++
++	//Send the HTTP header
++	send(client_socket, http_response.c_str(), http_response.size(), 0);
++	//Send the client file content	  /// add html_content to http_response!!!!!!!
++	send(client_socket, html_content.c_str(), html_content.size(), 0);
++	std::cout << YELLOW << "--------- HTML message sent ----------" << RESET << std::endl;
++
++	file.close();
++}
+\ No newline at end of file
+diff --git a/sources/timeout.cpp b/sources/misc/timeout.cpp
+similarity index 100%
+rename from sources/timeout.cpp
+rename to sources/misc/timeout.cpp
+diff --git a/sources/redirect.cpp b/sources/redirect.cpp
+deleted file mode 100644
+index 10ed818..0000000
+--- a/sources/redirect.cpp
++++ /dev/null
+@@ -1,168 +0,0 @@
+-#include "everything.hpp"
+-#include <filesystem>
+-#include "socket.hpp"
+-
+-		std::string generate_directory_listing(const std::string& _filePath) //should become response func 
+-{
+-	std::ostringstream html;
+-
+-	html << "<html><head><title>Directory Listing</title></head><body>\n";
+-	html << "<h1>Directory listing for " << _filePath << "</h1>\n";
+-	html << "<ul>\n";
+-
+-	if (std::filesystem::exists(_filePath) && std::filesystem::is_directory(_filePath))
+-	{
+-		for (const auto& it : std::filesystem::directory_iterator(_filePath)) 
+-		{
+-			std::string entry_name = it.path().filename().string();
+-			if (it.is_directory()) 
+-				html << "<li><a href='" << entry_name << "/'>" << entry_name << "/</a></li>\n";
+-			else 
+-				html << "<li><a href='" << entry_name << "'>" << entry_name << "</a></li>\n";
+-		}
+-	}
+-
+-	html << "</ul>\n";
+-	html << "</body></html>\n";
+-
+-	return html.str();
+-}
+-
+-// void	create_directory_listing_page(std::string html_page)
+-// {
+-// 	std::fstream	File;
+-
+-// 	File.open("directory_listing.html", std::ios::out);
+-// 	File << html_page;
+-// 	File.close();
+-// }
+-
+-void sendHTMLPage(int client_socket, const std::string& file_path) 
+-{
+-	//Open the HTML file
+-	std::ifstream file(file_path);
+-	if (!file) 
+-	{
+-		std::cout << RED << "Error opening file: " << file_path << RESET << std::endl;
+-		return;
+-	}
+-
+-	//Read the file content, store it in buffer and covert it into a string
+-	std::stringstream buffer;
+-	buffer << file.rdbuf();
+-	std::string html_content = buffer.str();
+-
+-	//HTTP Response Headers
+-	std::string http_response = "HTTP/1.1 200 OK\r\n";
+-	http_response += "Content-Type: text/html\r\n";
+-	http_response += "Content-Length: " + std::to_string(html_content.size()) + "\r\n";
+-	http_response += "Connection: close\r\n";
+-	http_response += "\r\n";
+-
+-	//Send the HTTP header
+-	send(client_socket, http_response.c_str(), http_response.size(), 0);
+-	//Send the client file content	  /// add html_content to http_response!!!!!!!
+-	send(client_socket, html_content.c_str(), html_content.size(), 0);
+-	std::cout << YELLOW << "--------- HTML message sent ----------" << RESET << std::endl;
+-
+-	file.close();
+-}
+-
+-void	Request::locationHandler()
+-{
+-	location	*reqRules;
+-	location	*nestRules;
+-	size_t		matchCount = 0;
+-	std::vector<location> &locVec = this->_config->_locations;
+-	// std::cout << "current req _filePath == (b4 loc-check) " << _filePath << std::endl \
+-	// << "FD == " << _clientFD << std::endl;
+-	if (locVec.empty())
+-		return;
+-	reqRules = findLocationMatch(locVec, matchCount);
+-	if (reqRules == nullptr)
+-		return;
+-	locVec = reqRules->_nestedLocations;
+-	while (!locVec.empty())
+-	{
+-		nestRules = findLocationMatch(locVec, matchCount);
+-		if (nestRules == nullptr)
+-			break;
+-		setLocRules(*reqRules, *nestRules);
+-		locVec = nestRules->_nestedLocations;
+-	}
+-	//antonio set rules
+-	// _filePath = _root + _filePath;
+-}
+-
+-location	*Request::findLocationMatch(std::vector<location> &locs, size_t &matchCount)
+-{
+-	size_t	newSize;
+-	location *ret;
+-	for (std::vector<location>::iterator it = locs.begin(); it != locs.end(); ++it)
+-	{
+-		newSize = countPathMatch(_filePath, it->getName());
+-		// std::cout << YELLOW "locname ==" RESET << it->getName() << "04& size =" <	Az< newSize << std::endl;
+-		if (newSize > matchCount) //?
+-		{
+-			matchCount = newSize;
+-			ret = &(*it);
+-			if (newSize == std::string::npos)
+-				break;
+-		}
+-	}
+-	if (matchCount == 0)
+-		return (nullptr);
+-	return (ret);
+-}
+-
+-size_t	Request::countPathMatch(std::string &reqpath, std::string &locpath)
+-{
+-	size_t	size = 0;
+-	// while (locpath.at(size) == reqpath.at(size))
+-	for (;size < reqpath.size() && size < locpath.size()\
+-	 && reqpath[size] == locpath[size]; size++)
+-	if (size == reqpath.size())
+-		return (std::string::npos);
+-		
+-	return (size);
+-}
+-
+-void assignStrIfNonEmpty(std::string &dest, std::string &rhs)
+-{
+-	if (!rhs.empty())
+-		dest = rhs;
+-}
+-
+-void	Request::setLocRules(location &loc, location &ruleblock)
+-{
+-	// assignStrIfNonEmpty(ruleblock._allow_methods, loc._allow_methods); //change after merge
+-	// assignStrIfNonEmpty(ruleblock._index, loc._index);
+-	assignStrIfNonEmpty(ruleblock._alias, loc._alias);
+-	assignStrIfNonEmpty(ruleblock._return, loc._return);
+-	assignStrIfNonEmpty(ruleblock._root, loc._root);
+-	if (!loc._index.empty())
+-		ruleblock._index = loc._index;
+-	if (!loc._cgi_extension.empty())
+-		ruleblock._cgi_extension = loc._cgi_extension;
+-	if (!loc._cgi_path.empty())
+-		ruleblock._cgi_path = loc._cgi_path;
+-}
+-
+-
+-// checkLocRules(location &ruleblock)
+-// {
+-
+-// }
+-
+-// void checkRules(location &rules)
+-// {	//loop through allowed methods to check if is allowed
+-// 	for (size_t i = 0; i < count; i++)
+-// 	{
+-// 		/* code */
+-// 	}
+-// 	//if redirect change path to redirect path
+-// 	//if autoindex && filepath == folder change path to index
+-// 	//alias?? maybe cgi??
+-// }
+-
+-
+diff --git a/sources/Connection.cpp b/sources/server_core/Connection.cpp
+similarity index 59%
+rename from sources/Connection.cpp
+rename to sources/server_core/Connection.cpp
+index 0f0c365..9c2f2f9 100644
+--- a/sources/Connection.cpp
++++ b/sources/server_core/Connection.cpp
+@@ -20,8 +20,8 @@
+ // ************************************************************************** //
+ 
+ Connection::Connection(Config *config, int clientFD, bool isServerside): \
+-_config(config), _request(config, clientFD), _response(config), _cgi(0), \
+-_isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
++_config(config), _request(config, clientFD), _cgi(0), _isClientSocket(isServerside), \
++_wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
+ {
+ 	_startTime = getStartTime();
+ 	_IdleTimeout = setTimeout(2);
+@@ -33,9 +33,9 @@ _isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _ke
+ }
+ 
+ 
+-Connection::Connection(const Connection &rhs) : _request(rhs._request), _response(rhs._response)
++Connection::Connection(const Connection &rhs) : _request(rhs._request)
+ {
+-	std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
++	// std::cout << GREEN << "Connection: Copy constructor called" << RESET << std::endl;
+ 
+ 	*this = rhs;
+ }
+@@ -43,7 +43,7 @@ Connection::Connection(const Connection &rhs) : _request(rhs._request), _respons
+ Connection &
+ Connection::operator=(const Connection &rhs)
+ {
+-	std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
++	// std::cout << GREEN << "Connection: Assignment operator called" << RESET << std::endl;
+ 
+ 	if (this != &rhs)
+ 	{
+@@ -64,7 +64,7 @@ Connection::operator=(const Connection &rhs)
+ 
+ Connection::~Connection(void)
+ {
+-	std::cout << RED << "Connection: Destructor called" << RESET << std::endl;
++	// std::cout << RED << "Connection: Destructor called" << RESET << std::endl;
+ }
+ 
+ // ************************************************************************** //
+@@ -82,7 +82,7 @@ Connection::~Connection(void)
+ 	// 		_wantsNewConnect = true;
+ 	// 	return;
+ 	// }
+-void	Connection::connectionAction(const pollfd &poll, Server &server)
++void	Connection::connAction(const pollfd &poll, Server &server)
+ {
+ 	_CStatus = checkConnectStatus(poll);
+ 	if (poll.revents & POLLIN && (_CStatus == connectStatus::IDLE || \
+@@ -92,9 +92,9 @@ void	Connection::connectionAction(const pollfd &poll, Server &server)
+ 		_CStatus = _cgi->CGIHandler(this, server.getCGIPollFDs(), server.getCGIMap());
+ 		std::cout << MAGENTA "CGI PollFD vector size in connectionAction: " << server.getCGIPollFDs().size() << RESET << std::endl;
+ 	}
+-	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING){
++	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
+ 		_CStatus = _response.responseHandler(&_request);
+-	}
++
+ 	if (_CStatus == connectStatus::FINISHED)
+ 		_CStatus = refreshIfKeepAlive();
+ }
+@@ -121,70 +121,6 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
+ 	return (_CStatus);
+ }
+ 
+-// void	Connection::findFDtoRemove(int eraseMe, std::vector<pollfd> &pollFDs)
+-// {
+-// 	int matchCount = 0;
+-// 	for (auto it = pollFDs.begin(); it != pollFDs.end(); ++it)
+-// 	{
+-// 		if (it->fd == eraseMe) {
+-// 			close(eraseMe);
+-// 			it = pollFDs.erase(it);
+-// 			return; //rn will look for clones for debugging
+-// 			matchCount++;
+-// 		}
+-// 	}
+-// 	if (matchCount == 1)
+-// 		return;
+-// 	if (matchCount == 0)
+-// 		throw std::runtime_error("Error deleting CGI FD, FD NOT FOUND"); //server error runtime_error
+-// 	throw std::runtime_error("Found duplicate(s)");
+-// }
+-
+-// void Connection::removeCGIFromEverywhere(Server& server) {
+-// 	auto& pollFDs = server.getCGIPollFDs();
+-	
+-// 	try {
+-// 		findFDtoRemove(_cgi->getFdIn(), pollFDs);
+-// 		findFDtoRemove(_cgi->getFdOut(), pollFDs);
+-// 		findFDtoRemove(_cgi->getFdError(), pollFDs);
+-// 	}
+-// 	catch (std::runtime_error &e) {
+-// 		std::cerr << e.what() << std::endl;
+-// 	}
+-// 	server.getCGIMap().erase(_cgi->getFdIn());
+-// 	server.getCGIMap().erase(_cgi->getFdOut());
+-// 	server.getCGIMap().erase(_cgi->getFdError());
+-// 	_cgi.reset();
+-// }
+-
+-void Connection::removeCGIFromEverywhere(Server& server) {
+-	auto& pollFDs = server.getCGIPollFDs();
+-	auto it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
+-		return fd.fd == _cgi->getFdIn(); // Match the fd value
+-	});
+-	if (it != pollFDs.end()) {
+-		close(_cgi->getFdIn());
+-		pollFDs.erase(it); // Erase the found element
+-	}
+-	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
+-		return fd.fd == _cgi->getFdOut(); // Match the fd value
+-	});
+-	if (it != pollFDs.end()) {
+-		close(_cgi->getFdOut());
+-		pollFDs.erase(it); // Erase the found element
+-	}
+-	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
+-		return fd.fd == _cgi->getFdError(); // Match the fd value
+-	});
+-	if (it != pollFDs.end()) {
+-		close(_cgi->getFdError());
+-		pollFDs.erase(it); // Erase the found element
+-	}
+-	server.getCGIMap().erase(_cgi->getFdIn());
+-	server.getCGIMap().erase(_cgi->getFdOut());
+-	server.getCGIMap().erase(_cgi->getFdError());
+-	_cgi.reset();
+-}
+ 
+ connectStatus Connection::refreshIfKeepAlive()
+ {
+@@ -192,12 +128,9 @@ connectStatus Connection::refreshIfKeepAlive()
+ 	// if (!this->_keepOpen)
+ 			// _keepOpen = true; //move to request
+ 	if (_request.getHeaderValue("Connection") != "keep-alive")
+-	{
+-		std::cout << "close meee" << std::endl;
+ 		return (connectStatus::FINISHED);
+-	} //change to closed check
+-	std::cout << "connection keep open activate" << std::endl;
++	std::cout << "connection stays open" << std::endl;
+ 	_request = Request(this->_config, this->_clientFD);
+-	_response = Response(this->_config);
++	_response = Response();
+ 	return (connectStatus::IDLE);
+ }
+diff --git a/sources/Server.cpp b/sources/server_core/Server.cpp
+similarity index 92%
+rename from sources/Server.cpp
+rename to sources/server_core/Server.cpp
+index bcb40e3..83e4d1e 100644
+--- a/sources/Server.cpp
++++ b/sources/server_core/Server.cpp
+@@ -38,6 +38,7 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
+ 	{
+ 		_Connections.reserve(100);
+ 		int	FD;
++		_serverSockets.reserve(_serverBlocks.size());
+ 		for (size_t i = 0; i < _serverBlocks.size(); ++i)
+  		{
+ 			setupAddrInfo(&_serverBlocks[i]);
+@@ -49,7 +50,8 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
+ 	}
+ 	catch(const std::exception& e)
+ 	{
+-		std::cout << e.what() << '\n';
++		std::cout << e.what() << "\nserver setup failed, shutting down" << std::endl;
++		exit(1);
+ 	}
+ 	std::cout << GREEN << "Server is running :)" << RESET << std::endl;
+ }
+@@ -68,10 +70,17 @@ void	Server::setupAddrInfo(Config *config)
+ 	hints.ai_flags = AI_PASSIVE;
+ 	hints.ai_protocol = IPPROTO_TCP;
+ 
+-	status = getaddrinfo(config->_serverName.c_str(), config->_listen.c_str(), &hints, &_addrInfo);
+-	// std::cout << config->_serverName.c_str() << config->_serverPort.c_str() << std::endl;
+-	if (status != 0)
++	std::cout << "our addr info args ARE\n\nname = " << config->_serverName << \
++	" listen = " << config->_listen.c_str() << "\n\n" << std::endl;
++
++	status = getaddrinfo(config->_serverName.c_str(), config->_listen.c_str(), &hints, &_addrInfo); //can throw??
++	if (status != 0) {
++		std::cout << RED "cant connect " <<  config->_serverName <<  gai_strerror(status) << RESET << std::endl;
++		std::cout << config->_serverName.c_str() << config->_serverPort.c_str() << std::endl;
+ 		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
++	}
++	else
++		std::cout << GREEN "Server block " << config->_serverName << "opened!" RESET << std::endl;
+ 
+ }
+ 
+@@ -88,10 +97,7 @@ Server::~Server(void)
+ 
+ 	// signal(SIGPIPE, SIG_IGN);
+ 
+-	//refactor -> close connect loop 1 function, and for loops
+-		//if poll timeout-> get current time
+-		// std::cout << "This is start size: "<< size << std::endl;
+-		// PrintConnectionStatusses(size);
++
+ void	Server::main_server_loop()
+ {
+ 	size_t	size;
+@@ -105,7 +111,7 @@ void	Server::main_server_loop()
+ 			Connection &current = _Connections.at(_pollFDs[i].fd);
+ 			//should be find to check for nonexisting connects (though also shouldnt happen)
+ 			if (current._isClientSocket)
+-				current.connectionAction(_pollFDs[i], *this);
++				current.connAction(_pollFDs[i], *this);
+ 			else if (_pollFDs[i].revents & POLLIN)
+ 					current._wantsNewConnect = true;
+ 			
+@@ -124,6 +130,7 @@ void	Server::main_server_loop()
+ 				i++;
+ 		}
+ 		handleCGIPollEvents();
++
+ 	}
+ }
+ 
+@@ -139,8 +146,6 @@ void	Server::main_server_loop()
+ void	Server::close_connect(int fd)
+ {
+ 	std::vector<pollfd>::iterator it = _pollFDs.begin();
+-	if (_pollFDs.size() != _Connections.size())
+-		std::cout << RED "VECTOR SIZE MISMAtCH BRO" RESET << std::endl;
+ 	while (it != _pollFDs.end())
+ 	{
+ 		if (it->fd == fd)
+@@ -206,7 +211,6 @@ void Server::handleCGIPollEvents() {
+ 				if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED){
+ 					connection._CStatus = connectStatus::RESPONDING;
+ 					connection._response.setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
+-					connection.removeCGIFromEverywhere(*this);
+ 				}
+ 				continue;
+ 			}
+@@ -247,8 +251,8 @@ void Server::acceptNewConnects(size_t size)
+ 			clientFD = accept(_pollFDs[i].fd, nullptr, nullptr);
+ 			if (clientFD <= 0)
+ 			{
+-				std::cout << "NOT ACCEPTED" << clientFD << std::endl;
+-				NicePrint::promptEnter();
++				std::cerr << RED "Couldn't accept connection on socket FD " << _pollFDs[i].fd \
++				<< " error == " << strerror(errno) << std::endl;
+ 				break;
+ 			}
+ 			else {
+diff --git a/sources/CGI/Socket.cpp b/sources/server_core/Socket.cpp
+similarity index 78%
+rename from sources/CGI/Socket.cpp
+rename to sources/server_core/Socket.cpp
+index 9bae97c..fa605a8 100644
+--- a/sources/CGI/Socket.cpp
++++ b/sources/server_core/Socket.cpp
+@@ -11,6 +11,7 @@
+ /* ************************************************************************** */
+ 
+ #include "socket.hpp"
++#include "Colors.hpp"
+ 
+ Socket::Socket(Config *config, const struct addrinfo *addressInfo)
+  : _addrInfo(addressInfo),_setYes(1), _hostname(config->_serverName), \
+@@ -24,7 +25,7 @@ Socket::Socket(Config *config, const struct addrinfo *addressInfo)
+ 	{
+ 		if(_socketFd)
+ 			close(_socketFd);
+-		std::cout << e.what() << '\n';
++		std::cout << e.what() << "\nserver setup failed, shutting down" << std::endl;
+ 		exit(1); //think we can exit cause  server socket creation kinda vital?
+ 	}
+ 	
+@@ -39,14 +40,24 @@ Socket::~Socket()
+ void	Socket::openSocket()
+ {
+ 	_socketFd = socket(_addrInfo->ai_family, _addrInfo->ai_socktype, _addrInfo->ai_protocol);
++	std::cout << YELLOW "FD ==" << _socketFd << RESET << std::endl;
+ 	if (fcntl(_socketFd, F_SETFL, O_NONBLOCK) < 0)
+ 		throw std::runtime_error("Failed to set Socket to noblocking");
+-	if (setsockopt(_socketFd, SOL_SOCKET, SO_KEEPALIVE, &_setYes, sizeof(_setYes)) == -1 || \
+-		 setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR ,&_setYes, sizeof(_setYes)) == -1)
++	if (setsockopt(_socketFd, SOL_SOCKET, SO_KEEPALIVE, &_setYes, sizeof(_setYes)) < 0 || \
++		 setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR ,&_setYes, sizeof(_setYes)) < 0)
+ 		throw std::runtime_error(std::string("setsockopt error: ") + strerror(errno));
+-	if (bind(_socketFd, _addrInfo->ai_addr, _addrInfo->ai_addrlen) == -1)
++	if (bind(_socketFd, _addrInfo->ai_addr, _addrInfo->ai_addrlen) < 0)
+ 		throw std::runtime_error(std::string("Bind errorr: ") + strerror(errno));
+-	listen(_socketFd, 20); //SET TO CONFIG VALUE
++	if (listen(_socketFd, 20) < 0) //SET TO CONFIG VALUE
++		throw std::runtime_error(std::string("Listen Error: ") + strerror(errno));
++	int listening = 0;
++	socklen_t len = sizeof(listening);
++	getsockopt(_socketFd, SOL_SOCKET, SO_ACCEPTCONN, &listening, &len);
++	if (!listening) {
++		std::cerr << "ERROR: FD is not a listening socket!" << std::endl;
++	}
++	std::cout << CYAN "socket opened" << std::endl;
++	freeaddrinfo(const_cast<struct addrinfo *>(_addrInfo));
+ }
+ 
+ void *Socket::get_in_addr(struct sockaddr *sa)
+diff --git a/sources/main.cpp b/sources/server_core/main.cpp
+similarity index 89%
+rename from sources/main.cpp
+rename to sources/server_core/main.cpp
+index 3d8007e..c33b7b8 100644
+--- a/sources/main.cpp
++++ b/sources/server_core/main.cpp
+@@ -6,7 +6,7 @@
+ /*   By: mde-cloe <mde-cloe@student.42.fr>          +#+  +:+       +#+        */
+ /*                                                +#+#+#+#+#+   +#+           */
+ /*   Created: 2024/11/06 19:15:55 by mde-cloe          #+#    #+#             */
+-/*   Updated: 2025/01/29 13:16:55 by mde-cloe         ###   ########.fr       */
++/*   Updated: 2025/02/03 17:00:02 by mde-cloe         ###   ########.fr       */
+ /*                                                                            */
+ /* ************************************************************************** */
+ 
+@@ -20,9 +20,12 @@ int main(int argc, char ** argv) {
+ 	try
+ 	{
+ 		parseConfig(argc, argv, configs);
+-		std::cout << "ROOT == " << configs[0]._rootDir << std::endl;
+-		// printConfigs(configs);
++		// for (size_t i = 0; i < configs.size; i++)
++		// {
++		// 	/* code */
++		// }
+ 		Server _webbyserv(configs);
++		
+ 		_webbyserv.main_server_loop();
+ 	}
+ 	catch(const std::exception& e)
+diff --git a/test.txt b/test.txt
+deleted file mode 100644
+index 831a520..0000000
+--- a/test.txt
++++ /dev/null
+@@ -1,10 +0,0 @@
+-POST /submit-form HTTP/1.1
+-Host: www.example.com
+-Content-Type: application/x-www-form-urlencoded
+-Content-Length: 27
+-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3
+-Connection: keep-alive
+-
+-
+-
+-
+diff --git a/website/about.html b/website/about.html
+index eadc544..5f1aa7c 100644
+--- a/website/about.html
++++ b/website/about.html
+@@ -1,82 +1,111 @@
+ <!DOCTYPE html>
+-<html>
+-<head> <!-- head is for meta info (running theme ig xd) -->
+-	<meta charset="UTF-8">
+-	<title>My Website</title>
+-	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+-	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+-	<style>
+-		.container {
+-		display: flex;
+-		justify-content: space-between;
+-		flex-wrap: wrap;
+-		}
++<html lang="en">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <meta name="description" content="About page of our website.">
++    <title>About Us</title>
++    <style>
++        body {
++            font-family: Arial, sans-serif;
++            background-color: #f4f7f6;
++            margin: 0;
++            padding: 0;
++            color: #333;
++        }
+ 
+-		.container .left, .container .right {
+-			flex: 1;
+-			margin: 10px;
+-		}
++        header {
++            background-color: #007bff;
++            color: white;
++            padding: 20px 0;
++            text-align: center;
++        }
+ 
+-		.left img {
+-			max-width: 100%;
+-			border-radius: 8px;
+-		}
++        header h1 {
++            margin: 0;
++            font-size: 2.5rem;
++        }
+ 
+-		.right {
+-			max-width: 600px;
+-		}
+-	</style>
++        section {
++            max-width: 1200px;
++            margin: 20px auto;
++            padding: 20px;
++            background-color: white;
++            border-radius: 8px;
++            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
++        }
++
++        h2 {
++            color: #007bff;
++            font-size: 2rem;
++            margin-bottom: 20px;
++        }
++
++        p {
++            font-size: 1.1rem;
++            line-height: 1.6;
++            margin-bottom: 20px;
++        }
++
++        .container {
++            display: flex;
++            justify-content: space-between;
++            flex-wrap: wrap;
++        }
++
++        .container .left, .container .right {
++            flex: 1;
++            margin: 10px;
++        }
++
++        .left img {
++            max-width: 100%;
++            border-radius: 8px;
++        }
++
++        .right {
++            max-width: 600px;
++        }
++
++        footer {
++            background-color: #007bff;
++            color: white;
++            text-align: center;
++            padding: 10px;
++            position: fixed;
++            width: 100%;
++            bottom: 0;
++        }
++
++        footer p {
++            margin: 0;
++            font-size: 0.9rem;
++        }
++    </style>
+ </head>
+-<body> <!-- all the actual page content -->
+-	<header> <!-- usually used as introduction of page with links or a logo -->
+-		<h1>hey there ;)</h1> <!-- h1 == bigger text -->
+-		<nav> <!-- nav == navigation links -->
+-			<ul> <!-- unorder list -->
+-				<li><a href="/index.html">Home</a></li>
+-				<li><a href="/about.html">About Us</a></li>
+-				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+-				<li><a href="/contact.html">Contact</a></li>
+-			</ul>
+-		</nav>
+-	</header>
++<body>
++
++<header>
++    <h1>About Us</h1>
++</header>
++
++<section>
++    <h2>Welcome to our About page!</h2>
++    <div class="container">
++        <div class="left">
++            <img src="https://via.placeholder.com/600x400" alt="Example image">
++        </div>
++        <div class="right">
++            <p>We are a team of passionate professionals dedicated to providing innovative, high-quality solutions for our clients. Our mission is to improve people's lives through technology by creating products and services that are useful and easy to use.</p>
++            <p>Founded in 2024, our company has grown rapidly, thanks to the passion, commitment, and dedication of every member of our team. We work together to solve complex problems and achieve ambitious goals, with the aim of making a positive impact in our industry and community.</p>
++            <p>We have big plans for the future and are excited to share our journey with you. Thank you for your interest!</p>
++        </div>
++    </div>
++</section>
+ 
+-	<main> <!-- main page content -->
+-		<section>
+-			<h2>Welcome to our About Us page!</h2>
+-			<div class="container">
+-				<div class="left">
+-					<img src="/images/merlin.jpg" alt="Imaginary profile pic ;p">
+-				</div>
+-				<div class="right">
+-					<p>Hi there!I'm Merlin! I love animals (frogs), dancing, games, and good vibes  (◕‿◕✿) ✨ 🌸</p>
+-					<p>Do you like the beatifull webserv we made? :3 I hope so cause there's blood sweat and tears in it 🥵 .</p>
+-					<p>I made the server core and request parsing! As well as helping a bit with the config B)</p>
+-					<p>Hope you like everything! ✨</p>
+-				</div>
+-			</div>
+-			<div class="container">
+-				<div class="left">
+-					<img src="/images/michelle.jpg" alt="Imaginary profile pic ;p">
+-				</div>
+-				<div class="right">
+-					<p>My name is Michelle and i'm part of the 2022 cohort. I like cats, board games, computer games, crafting & traveling/camping </p>
+-					<p>Handling the CGI, responses and scripts were part of my responsibilities for our webserver ✨ </p>
+-				</div>
+-			</div>
+-			<div class="container">
+-				<div class="left">
+-					<img src="/images/antonio.jpg" alt="Imaginary profile pic ;p">
+-				</div>
+-				<div class="right">
+-					<p>Hi! I'm Antonio. I love listening to music, traveling, cooking, taking photos, creating/making cocktails and Muay Thai. </p>
+-					<p>I was in charge of the analysis part of our Webserver. I hope you won't break our schedule 😬 </p>
+-				</div>
+-			</div>
+-		</section>
+-	</main>
++<footer>
++    <p>&copy; 2025 Our Company | All rights reserved</p>
++</footer>
+ 
+-	<footer>
+-		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+-	</footer>
+ </body>
+-</html>
++</html>
+\ No newline at end of file
+diff --git a/website/about_1.html b/website/about_1.html
+deleted file mode 100644
+index 5f1aa7c..0000000
+--- a/website/about_1.html
++++ /dev/null
+@@ -1,111 +0,0 @@
+-<!DOCTYPE html>
+-<html lang="en">
+-<head>
+-    <meta charset="UTF-8">
+-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-    <meta name="description" content="About page of our website.">
+-    <title>About Us</title>
+-    <style>
+-        body {
+-            font-family: Arial, sans-serif;
+-            background-color: #f4f7f6;
+-            margin: 0;
+-            padding: 0;
+-            color: #333;
+-        }
+-
+-        header {
+-            background-color: #007bff;
+-            color: white;
+-            padding: 20px 0;
+-            text-align: center;
+-        }
+-
+-        header h1 {
+-            margin: 0;
+-            font-size: 2.5rem;
+-        }
+-
+-        section {
+-            max-width: 1200px;
+-            margin: 20px auto;
+-            padding: 20px;
+-            background-color: white;
+-            border-radius: 8px;
+-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+-        }
+-
+-        h2 {
+-            color: #007bff;
+-            font-size: 2rem;
+-            margin-bottom: 20px;
+-        }
+-
+-        p {
+-            font-size: 1.1rem;
+-            line-height: 1.6;
+-            margin-bottom: 20px;
+-        }
+-
+-        .container {
+-            display: flex;
+-            justify-content: space-between;
+-            flex-wrap: wrap;
+-        }
+-
+-        .container .left, .container .right {
+-            flex: 1;
+-            margin: 10px;
+-        }
+-
+-        .left img {
+-            max-width: 100%;
+-            border-radius: 8px;
+-        }
+-
+-        .right {
+-            max-width: 600px;
+-        }
+-
+-        footer {
+-            background-color: #007bff;
+-            color: white;
+-            text-align: center;
+-            padding: 10px;
+-            position: fixed;
+-            width: 100%;
+-            bottom: 0;
+-        }
+-
+-        footer p {
+-            margin: 0;
+-            font-size: 0.9rem;
+-        }
+-    </style>
+-</head>
+-<body>
+-
+-<header>
+-    <h1>About Us</h1>
+-</header>
+-
+-<section>
+-    <h2>Welcome to our About page!</h2>
+-    <div class="container">
+-        <div class="left">
+-            <img src="https://via.placeholder.com/600x400" alt="Example image">
+-        </div>
+-        <div class="right">
+-            <p>We are a team of passionate professionals dedicated to providing innovative, high-quality solutions for our clients. Our mission is to improve people's lives through technology by creating products and services that are useful and easy to use.</p>
+-            <p>Founded in 2024, our company has grown rapidly, thanks to the passion, commitment, and dedication of every member of our team. We work together to solve complex problems and achieve ambitious goals, with the aim of making a positive impact in our industry and community.</p>
+-            <p>We have big plans for the future and are excited to share our journey with you. Thank you for your interest!</p>
+-        </div>
+-    </div>
+-</section>
+-
+-<footer>
+-    <p>&copy; 2025 Our Company | All rights reserved</p>
+-</footer>
+-
+-</body>
+-</html>
+\ No newline at end of file
+diff --git a/website/cgi-bin/delete.py b/website/cgi-bin/delete.py
+deleted file mode 100755
+index 770b081..0000000
+--- a/website/cgi-bin/delete.py
++++ /dev/null
+@@ -1,78 +0,0 @@
+-#!/usr/bin/env python3
+-
+-import os, cgi
+-
+-UPLOAD_DIR = "website/uploads"
+-
+-# Parse form data
+-form = cgi.FieldStorage()
+-selected_file = form.getvalue("file")
+-
+-# Delete the selected file
+-if selected_file:
+-	safe_filename = os.path.basename(selected_file)
+-	file_path = os.path.join(UPLOAD_DIR, safe_filename)
+-
+-	if os.path.exists(file_path):
+-		try:
+-			os.remove(file_path)
+-			status = 200
+-			message = f"File '{safe_filename}' deleted successfully! 🗑️"
+-		except Exception as e:
+-			status = 500
+-			message = f"An error occurred: {e}"
+-	else:
+-		status = 404
+-		message = f"File '{safe_filename}' does not exist! ❌"
+-else:
+-	status = 400
+-	message = "No file selected for deletion! ❌"
+-
+-# Generate HTML response
+-body = f"""
+-<!DOCTYPE html>
+-<head>
+-	<title>Delete File - Team Mustache</title>
+-	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+-	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+-</head>
+-<body>
+-	<header>
+-		<h1>hey there ;)</h1>
+-		<nav>
+-			<ul>
+-				<li><a href="/index.html">Home</a></li>
+-				<li><a href="/about.html">About Us</a></li>
+-				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+-				<li><a href="/contact.html">Contact</a></li>
+-			</ul>
+-		</nav>
+-	</header>
+-
+-	<main>
+-		<section>
+-			<h2>Delete Status</h2>
+-			<p style="color:red;">{message}</p>
+-			<p><a href="/cgi-bin/list_files.py">Back to Uploads</a></p>
+-		</section>
+-
+-	</main>
+-
+-	<footer>
+-		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+-	</footer>
+-</body>
+-</html>
+-"""
+-
+-# HTTP headers
+-headers = f"""HTTP/1.1 {status}\r
+-Connection: keep-alive\r
+-Content-Type: text/html; charset=utf-8\r
+-Content-Length: {len(body.encode('utf-8'))}\r
+-"""
+-
+-# Print the headers and HTML body
+-print(headers)
+-print()
+-print(body)
+\ No newline at end of file
+diff --git a/website/cgi-bin/form.py b/website/cgi-bin/form.py
+new file mode 100755
+index 0000000..e002226
+--- /dev/null
++++ b/website/cgi-bin/form.py
+@@ -0,0 +1,17 @@
++#!/usr/bin/env python3
++import cgi
++
++print("HTTP/1.1 200 OK")
++print("Content-Type: text/html")
++print("Connection: keep-alive\r\n")
++
++form = cgi.FieldStorage()
++name = form.getvalue("name")
++
++print("<html><body>")
++print("<h1>Hello, {}!</h1>".format(name if name else "Stranger"))
++print('<form method="POST" action="/cgi-bin/form.py">')
++print('Name: <input type="text" name="name">')
++print('<input type="submit" value="Submit">')
++print("</form>")
++print("</body></html>")
+diff --git a/website/cgi-bin/former_list_uploads.py b/website/cgi-bin/former_list_uploads.py
+new file mode 100755
+index 0000000..7d47806
+--- /dev/null
++++ b/website/cgi-bin/former_list_uploads.py
+@@ -0,0 +1,86 @@
++#!/usr/bin/env python3
++
++import cgi
++import os
++
++# Set the upload directory
++UPLOAD_DIR = "website/uploads"  # Change this path based on your server setup
++
++# Ensure the upload directory exists
++if not os.path.exists(UPLOAD_DIR):
++    os.makedirs(UPLOAD_DIR, exist_ok=True)
++
++# Print HTTP headers
++print("HTTP/1.1 200 OK")
++print("Content-Type: text/html")
++print("Connection: keep-alive\r\n")
++
++# Parse form data
++form = cgi.FieldStorage()
++
++# HTML template function
++def print_html(message=""):
++    print(f"""<!DOCTYPE html>
++<html>
++<head>
++    <title>File Upload - Team Mustache</title>
++    <link rel="stylesheet" type="text/css" href="/css/styles.css">
++    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
++</head>
++<body>
++    <header>
++        <h1>hey there ;)</h1>
++        <nav>
++            <ul>
++                <li><a href="index.html">Home</a></li>
++                <li><a href="about.html">About</a></li>
++                <li><a href="services.html">Services</a></li>
++                <li><a href="contact.html">Contact</a></li>
++            </ul>
++        </nav>
++    </header>
++
++    <main>
++        <section>
++            <h2>Upload a File</h2>
++            <p>here lies Team Mustache's epic file upload zone</p>
++            {f"<p style='color:green;'>{message}</p>" if message else ""}
++            <form action="/cgi-bin/upload.py" method="post" enctype="multipart/form-data">
++                <input type="file" name="file" required>
++                <input type="submit" value="Upload">
++            </form>
++        </section>
++
++        <section>
++            <h2>hello gamerzz</h2>
++            <img src="/images/dancing_froggy.gif" alt="gif no loady :(" width="480" height="480">
++        </section>
++    </main>
++
++    <footer>
++        <p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
++    </footer>
++</body>
++</html>
++    """)
++
++# Check if the user submitted a file
++if "file" in form:
++    file_item = form["file"]
++
++    if file_item.filename:
++        # Get the filename and sanitize it
++        filename = os.path.basename(file_item.filename)
++        filepath = os.path.join(UPLOAD_DIR, filename)
++
++        # Save the file
++        with open(filepath, "wb") as f:
++            f.write(file_item.file.read())
++
++        print_html(f"File '{filename}' uploaded successfully! 🎉")
++    else:
++        print_html("<p style='color:red;'>File upload failed. 😢</p>")
++else:
++    print_html("<p style='color:red;'>No file uploaded. 😬</p>")
++
++print('\0')
+\ No newline at end of file
+diff --git a/website/cgi-bin/list_files.py b/website/cgi-bin/list_files.py
+index e0e94df..5e315a8 100755
+--- a/website/cgi-bin/list_files.py
++++ b/website/cgi-bin/list_files.py
+@@ -10,78 +10,69 @@ if not os.path.exists(UPLOAD_DIR):
+ 	os.makedirs(UPLOAD_DIR, exist_ok=True)
+ 
+ files = os.listdir(UPLOAD_DIR) if os.path.exists(UPLOAD_DIR) else []
+-files_list = ""
++files_html = ""
+ 
+ if files:
+ 	for file in files:
+ 		safe_filename = file.replace('"', '&quot;')
+ 		file_url = f"/uploads/{safe_filename}"
+-		files_list += f'<li><a href="{file_url}" target="_blank">{safe_filename}</a></li>\n'
++		files_html += f'<li><a href="{file_url}" target="_blank">{safe_filename}</a></li>\n'
+ else:
+-	files_list = "<li>No files uploaded yet.</li>"
++	files_html = "<li>No files uploaded yet.</li>"
+ 
+ # Start HTML output
+-body = f"""<!DOCTYPE html>
++body = f"""
++<!DOCTYPE html>
+ <head>
+ 	<title>Uploaded Files - Team Mustache</title>
+ 	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+ 	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+ </head>
+-<style>
+-	.button {{
+-		border: none;
+-		color: white;
+-		padding: 10px 24px;
+-		text-align: center;
+-		text-decoration: none;
+-		display: inline-block;
+-		font-size: 16px;
+-		margin: 4px 2px;
+-		cursor: pointer;
+-		background-color: #88c29f;
+-	}}
+-	.button:hover {{
+-		background-color: #31c16a;
+-	}}
+-</style>
+ <body>
+ 	<header>
+ 		<h1>hey there ;)</h1>
+ 		<nav>
+ 			<ul>
+-				<li><a href="/index.html">Home</a></li>
+-				<li><a href="/about.html">About Us</a></li>
+-				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+-				<li><a href="/contact.html">Contact</a></li>
++				<li><a href="index.html">Home</a></li>
++				<li><a href="about.html">About</a></li>
++				<li><a href="cgi-bin/list_files.py">Uploads</a></li>
++				<li><a href="services.html">Services</a></li>
++				<li><a href="contact.html">Contact</a></li>
+ 			</ul>
+ 		</nav>
+ 	</header>
+ 
+ 	<main>
++		<section>
++			<h2>Upload a File</h2>
++			<form action="/cgi-bin/upload.py" method="post" enctype="multipart/form-data">
++				<input type="file" name="file" required>
++				<input type="submit" value="Upload">
++			</form>
++		</section>
++
+ 		<section>
+ 			<h2>Uploaded Files</h2>
+ 			<ul>
+-				{files_list}
++				{files_html}
+ 			</ul>
+-			<button class="button" onclick="window.location.href='/upload.html'">Upload a File 📤 </button>
+-			<button class="button" onclick="window.location.href='/cgi-bin/list_files_delete.py'">Delete a File 🗑️</button>
+ 		</section>
++
+ 	</main>
+ 
+ 	<footer>
+ 		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+ 	</footer>
+ </body>
+-</html>"""
++</html>
++"""
+ 
+ # HTTP headers
+ headers = f"""HTTP/1.1 200\r
+-Connection: keep-alive\r
++Content-Length: {len(body)}\r
+ Content-Type: text/html; charset=utf-8\r
+-Content-Length: {len(body.encode('utf-8'))}\r
+-"""
++Connection: keep-alive\r\n\r"""
+ 
+ # Print the headers and HTML body
+ print(headers)
+-print()
+ print(body)
+diff --git a/website/cgi-bin/list_files_delete.py b/website/cgi-bin/list_files_delete.py
+deleted file mode 100755
+index 9aa7b82..0000000
+--- a/website/cgi-bin/list_files_delete.py
++++ /dev/null
+@@ -1,71 +0,0 @@
+-#!/usr/bin/env python3
+-
+-import cgi, os, cgitb
+-
+-cgitb.enable(display=1)
+-
+-# Set the upload directory
+-UPLOAD_DIR = "website/uploads"
+-if not os.path.exists(UPLOAD_DIR):
+-	os.makedirs(UPLOAD_DIR, exist_ok=True)
+-
+-files = os.listdir(UPLOAD_DIR) if os.path.exists(UPLOAD_DIR) else []
+-files_delete = ""
+-
+-if files:
+-	for file in files:
+-		safe_filename = file.replace('"', '&quot;')
+-		file_url = f"/uploads/{safe_filename}"
+-		files_delete += f'<option value="{file}">{safe_filename}</option>\n'
+-else:
+-	files_delete = '<option disabled>No files available</option>'
+-
+-# Start HTML output
+-body = f"""<!DOCTYPE html>
+-<head> <!-- head is for meta info (running theme ig xd) -->
+-	<title>Delete file - Team Mustache</title>
+-	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+-	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+-</head>
+-<body> <!-- all the actual page content -->
+-	<header> <!-- usually used as introduction of page with links or a logo -->
+-		<h1>hey there ;)</h1> <!-- h1 == bigger text -->
+-		<nav> <!-- nav == navigation links -->
+-			<ul> <!-- unorder list -->
+-				<li><a href="index.html">Home</a></li> <!-- li == list item, A is for links -->
+-				<li><a href="about.html">About Us</a></li>
+-				<li><a href="cgi-bin/list_files.py">Uploads</a></li>
+-				<li><a href="contact.html">Contact</a></li>
+-			</ul>
+-		</nav>
+-	</header>
+-
+-	<main> <!-- main page content -->
+-		<section>
+-			<h2>Delete a file</h2>
+-			<form action="/cgi-bin/delete.py" method="post">
+-				<select id="file" name="file" size="1">
+-					{files_delete}
+-				</select>
+-				<input type="submit" value="Delete">
+-			</form>
+-		</section>
+-	</main>
+-	<footer>
+-		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+-	</footer>
+-</body>
+-</html>
+-"""
+-
+-# HTTP headers
+-headers = f"""HTTP/1.1 200\r
+-Connection: keep-alive\r
+-Content-Type: text/html; charset=utf-8\r
+-Content-Length: {len(body.encode('utf-8'))}\r
+-"""
+-
+-# Print the headers and HTML body
+-print(headers)
+-print()
+-print(body)
+diff --git a/website/cgi-bin/newer_list_uploads.py b/website/cgi-bin/newer_list_uploads.py
+new file mode 100755
+index 0000000..117aadf
+--- /dev/null
++++ b/website/cgi-bin/newer_list_uploads.py
+@@ -0,0 +1,108 @@
++#!/usr/bin/env python3
++
++import cgi, os, cgitb
++
++# Enable error reporting in browser
++cgitb.enable(display=1)
++
++# Set the upload directory
++UPLOAD_DIR = "website/uploads"
++if not os.path.exists(UPLOAD_DIR):
++    os.makedirs(UPLOAD_DIR, exist_ok=True)
++
++# Parse form data
++form = cgi.FieldStorage()
++
++# Get the filename and sanitize it
++def generateFilename(filePath) -> str:
++    fileBaseName = os.path.basename(filePath)
++    fileName = os.path.splitext(fileBaseName)[0]
++    fileExtension = os.path.splitext(fileBaseName)[1]
++    index = 0
++    while os.path.exists(filePath):
++        index += 1
++        filePath = f"{UPLOAD_DIR}/{fileName}({index}){fileExtension}"
++    return filePath
++
++# Check if the user submitted a file
++if "file" in form:
++    file_item = form["file"]
++
++    if file_item.filename:
++        # Get the filename and sanitize it
++        filename = os.path.basename(file_item.filename)
++        filepath = os.path.join(UPLOAD_DIR, filename)
++        if os.path.exists(filepath):
++            filepath = generateFilename(filepath)
++
++        # Save the file
++        try:
++            with open(filepath, "wb") as f:
++                f.write(file_item.file.read())
++            status = 200
++            message = f"File '{filename}' uploaded successfully! 🎉"
++        except Exception as e:
++            status = 500
++            message = f"An error occurred: {e}"
++    else:
++        status = 400
++        message = "File upload failed. 😢"
++else:
++    status = 200
++    message = "No file uploaded. 😬"
++
++# Get the HTTP status code and message
++
++# HTML template function
++body = f"""<!DOCTYPE html>
++<html>
++<head>
++    <title>File Upload - Team Mustache</title>
++    <link rel="stylesheet" type="text/css" href="/css/styles.css">
++    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
++</head>
++<body>
++    <header>
++        <h1>hey there ;)</h1>
++        <nav>
++            <ul>
++                <li><a href="index.html">Home</a></li>
++                <li><a href="about.html">About</a></li>
++                <li><a href="services.html">Services</a></li>
++                <li><a href="contact.html">Contact</a></li>
++            </ul>
++        </nav>
++    </header>
++
++    <main>
++        <section>
++            <h2>Upload a File</h2>
++            <p>here lies Team Mustache's epic file upload zone</p>
++            {f"<p style='color:green;'>{message}</p>" if message else ""}
++            <form action="/cgi-bin/list_uploads.py" method="post" enctype="multipart/form-data">
++                <input type="file" name="file" required>
++                <input type="submit" value="Upload">
++            </form>
++        </section>
++
++        <section>
++            <h2>hello gamerzz</h2>
++        </section>
++    </main>
++
++    <footer>
++        <p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
++    </footer>
++</body>
++</html>"""
++
++# HTTP headers
++headers = f"""HTTP/1.1 {status}\r
++Content-Length: {len(body)}\r
++Content-Type: text/html; charset=utf-8\r
++Connection: keep-alive\r\n\r"""
++
++# Print the headers and HTML body
++print(headers)
++print(body)
++print("\0")
+diff --git a/website/cgi-bin/python.py b/website/cgi-bin/python.py
+new file mode 100755
+index 0000000..a3781bf
+--- /dev/null
++++ b/website/cgi-bin/python.py
+@@ -0,0 +1,22 @@
++#!/usr/bin/env python3
++import cgi
++
++print("HTTP/1.1 200 OK")
++print("Content-Type: text/html")
++print("Connection: keep-alive\r\n")
++
++form = cgi.FieldStorage()
++name = form.getvalue("name")
++
++print("<html>")
++print("<head>")
++print("<title>Success Page</title>")
++print("</head>")
++print("<body>")
++
++print("<p><strong><span style='font-size: 20px;'>{}</span></strong> Congratulations !!</p>".format(name))
++
++print("<p>You have successfully sent data from an HTML form to a CGI Python script.</p>")
++
++print("</body>")
++print("</html>")
+diff --git a/website/cgi-bin/send_email.py b/website/cgi-bin/send_email.py
+deleted file mode 100755
+index bfae186..0000000
+--- a/website/cgi-bin/send_email.py
++++ /dev/null
+@@ -1,98 +0,0 @@
+-#!/usr/bin/env python3
+-
+-import cgi, os, smtplib
+-from email.message import EmailMessage
+-
+-# Parse form data
+-form = cgi.FieldStorage()
+-name = form.getvalue("name").strip()
+-email = form.getvalue("email").strip()
+-subject = form.getvalue("subject").strip()
+-message = form.getvalue("message").strip()
+-
+-if not name or not email or not subject or not message:
+-	status = 400
+-	message = "Missing required fields! 😢"
+-
+-else:
+-	SMTP_SERVER = "smtp.mail.me.com"
+-	SMTP_PORT = 587
+-	EMAIL_ADDRESS = "m.stegeman@me.com"
+-	EMAIL_PASSWORD = "ilnt-lthl-pdrc-rxee"
+-
+-	# Generate email messages
+-	msg = EmailMessage()
+-	msg["From"] = EMAIL_ADDRESS
+-	msg["To"] = EMAIL_ADDRESS
+-	msg["Subject"] = "Contact Form Submission: " + subject
+-	msg.set_content(f"""
+-	Name: {name}
+-	Email: {email}
+-	Subject: {subject}
+-
+-	Message: {message}
+-	""")
+-
+-	# Send email
+-	try:
+-		server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+-		server.starttls()
+-		server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+-		server.send_message(msg)
+-		server.quit()
+-
+-		status = 200
+-		message = "Message sent successfully! 🎉"
+-
+-	except Exception as e:
+-		status = 500
+-		message = f"An error occurred: {e}"
+-
+-body = f"""<!DOCTYPE html>
+-<head>
+-	<title>Contact Success - Team Mustache</title>
+-	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+-	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+-</head>
+-<body>
+-	<header>
+-		<h1>hey there ;)</h1>
+-		<nav>
+-			<ul>
+-				<li><a href="/index.html">Home</a></li>
+-				<li><a href="/about.html">About Us</a></li>
+-				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+-				<li><a href="/contact.html">Contact</a></li>
+-			</ul>
+-		</nav>
+-	</header>
+-
+-	<main>
+-		<section>
+-			<h2>Upload Status</h2>
+-			<p style='color:green;'>{message}</p>
+-			<p><a href="/contact.html">Back to Contact Form</a></p>
+-		</section>
+-
+-		<section>
+-			<img src="/images/dancing_froggy.gif" alt="gif no loady :(" width="480" height="480">
+-		</section>
+-	</main>
+-
+-	<footer>
+-		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+-	</footer>
+-</body>
+-</html>"""
+-
+-# HTTP headers
+-headers = f"""HTTP/1.1 {status}\r
+-Connection: keep-alive\r
+-Content-Type: text/html; charset=utf-8\r
+-Content-Length: {len(body.encode('utf-8'))}\r
+-"""
+-
+-# Print the headers and HTML body
+-print(headers)
+-print()
+-print(body)
+\ No newline at end of file
+diff --git a/website/cgi-bin/upload.py b/website/cgi-bin/upload.py
+index 8b4583d..53db584 100755
+--- a/website/cgi-bin/upload.py
++++ b/website/cgi-bin/upload.py
+@@ -50,8 +50,11 @@ else:
+ 	status = 200
+ 	message = "No file uploaded. 😬"
+ 
++# Get the HTTP status code and message
++
+ # HTML template function
+-body = f"""<!DOCTYPE html>
++body = f"""
++<!DOCTYPE html>
+ <head>
+ 	<title>Upload Success - Team Mustache</title>
+ 	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+@@ -62,10 +65,11 @@ body = f"""<!DOCTYPE html>
+ 		<h1>hey there ;)</h1>
+ 		<nav>
+ 			<ul>
+-				<li><a href="/index.html">Home</a></li>
+-				<li><a href="/about.html">About Us</a></li>
+-				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+-				<li><a href="/contact.html">Contact</a></li>
++				<li><a href="index.html">Home</a></li>
++				<li><a href="about.html">About</a></li>
++				<li><a href="cgi-bin/list_files.py">Uploads</a></li>
++				<li><a href="services.html">Services</a></li>
++				<li><a href="contact.html">Contact</a></li>
+ 			</ul>
+ 		</nav>
+ 	</header>
+@@ -74,25 +78,26 @@ body = f"""<!DOCTYPE html>
+ 		<section>
+ 			<h2>Upload Status</h2>
+ 			<p style='color:green;'>{message}</p>
+-			<p><a href="/cgi-bin/list_files.py">Back to Uploads</a></p>
+ 		</section>
+ 
++		<section>
++			<img src="/images/dancing_froggy.gif" alt="gif no loady :(" width="480" height="480">
++		</section>
+ 	</main>
+ 
+ 	<footer>
+ 		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+ 	</footer>
+ </body>
+-</html>"""
++</html>
++"""
+ 
+ # HTTP headers
+ headers = f"""HTTP/1.1 {status}\r
+-Connection: keep-alive\r
++Content-Length: {len(body)}\r
+ Content-Type: text/html; charset=utf-8\r
+-Content-Length: {len(body.encode('utf-8'))}\r
+-"""
++Connection: keep-alive\r\n\r"""
+ 
+ # Print the headers and HTML body
+ print(headers)
+-print()
+ print(body)
+diff --git a/website/contact.html b/website/contact.html
+index 0d30239..c57292d 100644
+--- a/website/contact.html
++++ b/website/contact.html
+@@ -1,88 +1,139 @@
+ <!DOCTYPE html>
+-<html>
+-<head> <!-- head is for meta info (running theme ig xd) -->
+-	<title>My Website</title>
+-	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+-	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+-	<style>
+-		.contact-form {
+-			display: grid;
+-			gap: 20px;
+-			grid-template-columns: 1fr 1fr;
+-		}
+-
+-		.contact-form input, .contact-form textarea {
+-			padding: 12px;
+-			border: 1px solid #ddd;
+-			border-radius: 5px;
+-			font-size: 1rem;
+-			width: 100%;
+-			box-sizing: border-box;
+-		}
+-
+-		.contact-form input[type="submit"] {
+-			background-color: #31c16a;
+-			color: white;
+-			cursor: pointer;
+-			border: none;
+-			padding: 14px;
+-			font-size: 1.2rem;
+-			transition: background-color 0.3s;
+-		}
+-
+-		.contact-form input[type="submit"]:hover {
+-			background-color: #31c16a;
+-		}
+-
+-		@media (max-width: 768px) {
+-			.contact-form {
+-				grid-template-columns: 1fr;
+-			}
+-		}
+-	</style>
++<html lang="en">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <meta name="description" content="Contact page for our website.">
++    <title>Contact Us</title>
++    <style>
++        body {
++            font-family: Arial, sans-serif;
++            background-color: #f4f7f6;
++            margin: 0;
++            padding: 0;
++            color: #333;
++        }
++
++        header {
++            background-color: #007bff;
++            color: white;
++            padding: 20px 0;
++            text-align: center;
++        }
++
++        header h1 {
++            margin: 0;
++            font-size: 2.5rem;
++        }
++
++        section {
++            max-width: 1200px;
++            margin: 20px auto;
++            padding: 20px;
++            background-color: white;
++            border-radius: 8px;
++            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
++        }
++
++        h2 {
++            color: #007bff;
++            font-size: 2rem;
++            margin-bottom: 20px;
++        }
++
++        p {
++            font-size: 1.1rem;
++            line-height: 1.6;
++            margin-bottom: 20px;
++        }
++
++        .contact-form {
++            display: grid;
++            gap: 20px;
++            grid-template-columns: 1fr 1fr;
++        }
++
++        .contact-form input, .contact-form textarea {
++            padding: 12px;
++            border: 1px solid #ddd;
++            border-radius: 5px;
++            font-size: 1rem;
++            width: 100%;
++            box-sizing: border-box;
++        }
++
++        .contact-form input[type="submit"] {
++            background-color: #007bff;
++            color: white;
++            cursor: pointer;
++            border: none;
++            padding: 14px;
++            font-size: 1.2rem;
++            transition: background-color 0.3s;
++        }
++
++        .contact-form input[type="submit"]:hover {
++            background-color: #0056b3;
++        }
++
++        footer {
++            background-color: #007bff;
++            color: white;
++            text-align: center;
++            padding: 10px;
++            position: fixed;
++            width: 100%;
++            bottom: 0;
++        }
++
++        footer p {
++            margin: 0;
++            font-size: 0.9rem;
++        }
++
++        @media (max-width: 768px) {
++            .contact-form {
++                grid-template-columns: 1fr;
++            }
++        }
++    </style>
+ </head>
+-<body> <!-- all the actual page content -->
+-	<header> <!-- usually used as introduction of page with links or a logo -->
+-		<h1>hey there ;)</h1> <!-- h1 == bigger text -->
+-		<nav> <!-- nav == navigation links -->
+-			<ul> <!-- unorder list -->
+-				<li><a href="/index.html">Home</a></li>
+-				<li><a href="/about.html">About Us</a></li>
+-				<li><a href="/cgi-bin/list_files.py">Uploads</a></li>
+-				<li><a href="/contact.html">Contact</a></li>
+-			</ul>
+-		</nav>
+-	</header>
+-	<main> <!-- main page content -->
+-		<section>
+-			<h2>We'd love to hear from you!</h2>
+-			<p>If you have any questions or would like to get in touch with us, please fill out the form below, and we'll get back to you as soon as possible.</p>
+-			
+-			<form action="/cgi-bin/send_email.py" method="post" enctype="x-www-form-urlencoded" class="contact-form">
+-				<div>
+-					<label for="name">Full Name</label>
+-					<input type="text" id="name" name="name" required placeholder="Your full name">
+-				</div>
+-				<div>
+-					<label for="email">Email Address</label>
+-					<input type="email" id="email" name="email" required placeholder="Your email address">
+-				</div>
+-				<div>
+-					<label for="subject">Subject</label>
+-					<input type="text" id="subject" name="subject" required placeholder="Subject of your message">
+-				</div>
+-				<div>
+-					<label for="message">Your Message</label>
+-					<textarea id="message" name="message" rows="6" required placeholder="Your message here"></textarea>
+-				</div>
+-				<div>
+-					<input type="submit" value="Send Message">
+-				</div>
+-			</form>
+-		</section>
+-	</main>
+-	<footer>
+-		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+-	</footer>
++<body>
++
++<header>
++    <h1>Contact Us</h1>
++</header>
++
++<section>
++    <h2>We'd love to hear from you!</h2>
++    <p>If you have any questions or would like to get in touch with us, please fill out the form below, and we'll get back to you as soon as possible.</p>
++    
++    <form action="#" method="post" class="contact-form">
++        <div>
++            <label for="name">Full Name</label>
++            <input type="text" id="name" name="name" required placeholder="Your full name">
++        </div>
++        <div>
++            <label for="email">Email Address</label>
++            <input type="email" id="email" name="email" required placeholder="Your email address">
++        </div>
++        <div>
++            <label for="subject">Subject</label>
++            <input type="text" id="subject" name="subject" required placeholder="Subject of your message">
++        </div>
++        <div>
++            <label for="message">Your Message</label>
++            <textarea id="message" name="message" rows="6" required placeholder="Your message here"></textarea>
++        </div>
++        <div>
++            <input type="submit" value="Send Message">
++        </div>
++    </form>
++</section>
++
++<footer>
++    <p>&copy; 2025 Our Company | All rights reserved</p>
++</footer>
++
+ </body>
+-</html>
++</html>
+\ No newline at end of file
+diff --git a/website/contact_1.html b/website/contact_1.html
+deleted file mode 100644
+index c57292d..0000000
+--- a/website/contact_1.html
++++ /dev/null
+@@ -1,139 +0,0 @@
+-<!DOCTYPE html>
+-<html lang="en">
+-<head>
+-    <meta charset="UTF-8">
+-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-    <meta name="description" content="Contact page for our website.">
+-    <title>Contact Us</title>
+-    <style>
+-        body {
+-            font-family: Arial, sans-serif;
+-            background-color: #f4f7f6;
+-            margin: 0;
+-            padding: 0;
+-            color: #333;
+-        }
+-
+-        header {
+-            background-color: #007bff;
+-            color: white;
+-            padding: 20px 0;
+-            text-align: center;
+-        }
+-
+-        header h1 {
+-            margin: 0;
+-            font-size: 2.5rem;
+-        }
+-
+-        section {
+-            max-width: 1200px;
+-            margin: 20px auto;
+-            padding: 20px;
+-            background-color: white;
+-            border-radius: 8px;
+-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+-        }
+-
+-        h2 {
+-            color: #007bff;
+-            font-size: 2rem;
+-            margin-bottom: 20px;
+-        }
+-
+-        p {
+-            font-size: 1.1rem;
+-            line-height: 1.6;
+-            margin-bottom: 20px;
+-        }
+-
+-        .contact-form {
+-            display: grid;
+-            gap: 20px;
+-            grid-template-columns: 1fr 1fr;
+-        }
+-
+-        .contact-form input, .contact-form textarea {
+-            padding: 12px;
+-            border: 1px solid #ddd;
+-            border-radius: 5px;
+-            font-size: 1rem;
+-            width: 100%;
+-            box-sizing: border-box;
+-        }
+-
+-        .contact-form input[type="submit"] {
+-            background-color: #007bff;
+-            color: white;
+-            cursor: pointer;
+-            border: none;
+-            padding: 14px;
+-            font-size: 1.2rem;
+-            transition: background-color 0.3s;
+-        }
+-
+-        .contact-form input[type="submit"]:hover {
+-            background-color: #0056b3;
+-        }
+-
+-        footer {
+-            background-color: #007bff;
+-            color: white;
+-            text-align: center;
+-            padding: 10px;
+-            position: fixed;
+-            width: 100%;
+-            bottom: 0;
+-        }
+-
+-        footer p {
+-            margin: 0;
+-            font-size: 0.9rem;
+-        }
+-
+-        @media (max-width: 768px) {
+-            .contact-form {
+-                grid-template-columns: 1fr;
+-            }
+-        }
+-    </style>
+-</head>
+-<body>
+-
+-<header>
+-    <h1>Contact Us</h1>
+-</header>
+-
+-<section>
+-    <h2>We'd love to hear from you!</h2>
+-    <p>If you have any questions or would like to get in touch with us, please fill out the form below, and we'll get back to you as soon as possible.</p>
+-    
+-    <form action="#" method="post" class="contact-form">
+-        <div>
+-            <label for="name">Full Name</label>
+-            <input type="text" id="name" name="name" required placeholder="Your full name">
+-        </div>
+-        <div>
+-            <label for="email">Email Address</label>
+-            <input type="email" id="email" name="email" required placeholder="Your email address">
+-        </div>
+-        <div>
+-            <label for="subject">Subject</label>
+-            <input type="text" id="subject" name="subject" required placeholder="Subject of your message">
+-        </div>
+-        <div>
+-            <label for="message">Your Message</label>
+-            <textarea id="message" name="message" rows="6" required placeholder="Your message here"></textarea>
+-        </div>
+-        <div>
+-            <input type="submit" value="Send Message">
+-        </div>
+-    </form>
+-</section>
+-
+-<footer>
+-    <p>&copy; 2025 Our Company | All rights reserved</p>
+-</footer>
+-
+-</body>
+-</html>
+\ No newline at end of file
+diff --git a/website/css/styles.css b/website/css/styles.css
+index 03b08fe..687a9a2 100644
+--- a/website/css/styles.css
++++ b/website/css/styles.css
+@@ -31,10 +31,6 @@ main {
+ 	padding: 20px;
+ }
+ 
+-p {
+-	margin-bottom: 20px;
+-}
+-
+ footer {
+ 	background-color: #333;
+ 	color: #fff;
+diff --git a/website/error_pages/403.html b/website/error_pages/403.html
+deleted file mode 100644
+index 71ddb31..0000000
+--- a/website/error_pages/403.html
++++ /dev/null
+@@ -1,33 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+-<head> <!-- head is for meta info (running theme ig xd) -->
+-	<title>My Website</title>
+-	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+-</head>
+-<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+-<body> <!-- all the actual page content -->
+-	<header> <!-- usually used as introduction of page with links or a logo -->
+-		<h1>hey there ;)</h1> <!-- h1 == bigger text -->
+-		<nav> <!-- nav == navigation links -->
+-			<ul> <!-- unorder list -->
+-				<li><a href="index.html">Home</a></li> <!-- li == list item, A is for links -->
+-				<li><a href="about.html">About</a></li>
+-				<li><a href="cgi-bin/list_files.py">Uploads</a></li>
+-				<li><a href="services.html">Services</a></li>
+-				<li><a href="contact.html">Contact</a></li>
+-			</ul>
+-		</nav>
+-	</header>
+-	<main> <!-- main page content -->
+-		<section>
+-			<h2>Oh no!</h2>
+-			<img src="/images/403.jpg" alt="403 Forbidden" width="480" height="auto">
+-		</section>
+-	</main>
+-	<footer>
+-		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+-	</footer>
+-</body>
+-</html>
+-
+-
+diff --git a/website/error_pages/404.html b/website/error_pages/404.html
+deleted file mode 100644
+index 3295213..0000000
+--- a/website/error_pages/404.html
++++ /dev/null
+@@ -1,33 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+-<head> <!-- head is for meta info (running theme ig xd) -->
+-	<title>My Website</title>
+-	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+-</head>
+-<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+-<body> <!-- all the actual page content -->
+-	<header> <!-- usually used as introduction of page with links or a logo -->
+-		<h1>hey there ;)</h1> <!-- h1 == bigger text -->
+-		<nav> <!-- nav == navigation links -->
+-			<ul> <!-- unorder list -->
+-				<li><a href="index.html">Home</a></li> <!-- li == list item, A is for links -->
+-				<li><a href="about.html">About</a></li>
+-				<li><a href="cgi-bin/list_files.py">Uploads</a></li>
+-				<li><a href="services.html">Services</a></li>
+-				<li><a href="contact.html">Contact</a></li>
+-			</ul>
+-		</nav>
+-	</header>
+-	<main> <!-- main page content -->
+-		<section>
+-			<h2>Oh no!</h2>
+-			<img src="/images/404.jpg" alt="404 not found" width="480" height="auto">
+-		</section>
+-	</main>
+-	<footer>
+-		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+-	</footer>
+-</body>
+-</html>
+-
+-
+diff --git a/website/form.html b/website/form.html
+index fb310d6..6a4fb41 100644
+--- a/website/form.html
++++ b/website/form.html
+@@ -14,7 +14,7 @@
+     <form action="cgi-bin/python.py" method="post">
+         Name: <input type="text" name="name" >
+ 
+-        <input type="submit" value="Submit">
++        <input type="submit" name="Submit">
+     </form>
+ </body>
+ </html>
+diff --git a/html/hello_message.html b/website/html/hello_message.html
+similarity index 100%
+rename from html/hello_message.html
+rename to website/html/hello_message.html
+diff --git a/website/images/300.jpg b/website/images/300.jpg
+deleted file mode 100644
+index d39f0d5..0000000
+Binary files a/website/images/300.jpg and /dev/null differ
+diff --git a/website/images/301.jpg b/website/images/301.jpg
+deleted file mode 100644
+index 4383cb9..0000000
+Binary files a/website/images/301.jpg and /dev/null differ
+diff --git a/website/images/302.jpg b/website/images/302.jpg
+deleted file mode 100644
+index 23373c4..0000000
+Binary files a/website/images/302.jpg and /dev/null differ
+diff --git a/website/images/303.jpg b/website/images/303.jpg
+deleted file mode 100644
+index e4b8797..0000000
+Binary files a/website/images/303.jpg and /dev/null differ
+diff --git a/website/images/307.jpg b/website/images/307.jpg
+deleted file mode 100644
+index 8018681..0000000
+Binary files a/website/images/307.jpg and /dev/null differ
+diff --git a/website/images/308.jpg b/website/images/308.jpg
+deleted file mode 100644
+index 060892c..0000000
+Binary files a/website/images/308.jpg and /dev/null differ
+diff --git a/website/images/400.jpg b/website/images/400.jpg
+deleted file mode 100644
+index 668f415..0000000
+Binary files a/website/images/400.jpg and /dev/null differ
+diff --git a/website/images/401.jpg b/website/images/401.jpg
+deleted file mode 100644
+index e0c7ff6..0000000
+Binary files a/website/images/401.jpg and /dev/null differ
+diff --git a/website/images/402.jpg b/website/images/402.jpg
+deleted file mode 100644
+index a3085eb..0000000
+Binary files a/website/images/402.jpg and /dev/null differ
+diff --git a/website/images/403.jpg b/website/images/403.jpg
+deleted file mode 100644
+index 9946e5b..0000000
+Binary files a/website/images/403.jpg and /dev/null differ
+diff --git a/website/images/404.jpg b/website/images/404.jpg
+deleted file mode 100644
+index ca86718..0000000
+Binary files a/website/images/404.jpg and /dev/null differ
+diff --git a/website/images/405.jpg b/website/images/405.jpg
+deleted file mode 100644
+index 5bbc476..0000000
+Binary files a/website/images/405.jpg and /dev/null differ
+diff --git a/website/images/408.jpg b/website/images/408.jpg
+deleted file mode 100644
+index 967f6d5..0000000
+Binary files a/website/images/408.jpg and /dev/null differ
+diff --git a/website/images/409.jpg b/website/images/409.jpg
+deleted file mode 100644
+index fcfc254..0000000
+Binary files a/website/images/409.jpg and /dev/null differ
+diff --git a/website/images/410.jpg b/website/images/410.jpg
+deleted file mode 100644
+index aaabd1a..0000000
+Binary files a/website/images/410.jpg and /dev/null differ
+diff --git a/website/images/411.jpg b/website/images/411.jpg
+deleted file mode 100644
+index cccbf20..0000000
+Binary files a/website/images/411.jpg and /dev/null differ
+diff --git a/website/images/412.jpg b/website/images/412.jpg
+deleted file mode 100644
+index adfee89..0000000
+Binary files a/website/images/412.jpg and /dev/null differ
+diff --git a/website/images/413.jpg b/website/images/413.jpg
+deleted file mode 100644
+index af95baf..0000000
+Binary files a/website/images/413.jpg and /dev/null differ
+diff --git a/website/images/444.jpg b/website/images/444.jpg
+deleted file mode 100644
+index bcbce47..0000000
+Binary files a/website/images/444.jpg and /dev/null differ
+diff --git a/website/images/500.jpg b/website/images/500.jpg
+deleted file mode 100644
+index 633100e..0000000
+Binary files a/website/images/500.jpg and /dev/null differ
+diff --git a/website/images/501.jpg b/website/images/501.jpg
+deleted file mode 100644
+index 942dce1..0000000
+Binary files a/website/images/501.jpg and /dev/null differ
+diff --git a/website/images/antonio.jpg b/website/images/antonio.jpg
+deleted file mode 100644
+index 8337688..0000000
+Binary files a/website/images/antonio.jpg and /dev/null differ
+diff --git a/website/images/merlin.jpg b/website/images/merlin.jpg
+deleted file mode 100644
+index d6fe81c..0000000
+Binary files a/website/images/merlin.jpg and /dev/null differ
+diff --git a/website/images/michelle.jpg b/website/images/michelle.jpg
+deleted file mode 100644
+index 7131c47..0000000
+Binary files a/website/images/michelle.jpg and /dev/null differ
+diff --git a/website/index.html b/website/index.html
+index d1ab6ad..613006b 100644
+--- a/website/index.html
++++ b/website/index.html
+@@ -3,16 +3,17 @@
+ <head> <!-- head is for meta info (running theme ig xd) -->
+ 	<title>My Website</title>
+ 	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+-	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+ </head>
++<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+ <body> <!-- all the actual page content -->
+ 	<header> <!-- usually used as introduction of page with links or a logo -->
+ 		<h1>hey there ;)</h1> <!-- h1 == bigger text -->
+ 		<nav> <!-- nav == navigation links -->
+ 			<ul> <!-- unorder list -->
+ 				<li><a href="index.html">Home</a></li> <!-- li == list item, A is for links -->
+-				<li><a href="about.html">About Us</a></li>
++				<li><a href="about.html">About</a></li>
+ 				<li><a href="cgi-bin/list_files.py">Uploads</a></li>
++				<li><a href="services.html">Services</a></li>
+ 				<li><a href="contact.html">Contact</a></li>
+ 			</ul>
+ 		</nav>
+diff --git a/website/loc1/index.html b/website/loc1/index.html
+index 3f9fab2..b3687fa 100644
+--- a/website/loc1/index.html
++++ b/website/loc1/index.html
+@@ -12,6 +12,7 @@
+ 			<ul> <!-- unorder list -->
+ 				<li><a href="index.html">Home</a></li> <!-- li == list item, A is for links -->
+ 				<li><a href="about.html">About</a></li>
++				<li><a href="services.html">Services</a></li>
+ 				<li><a href="contact.html">Contact</a></li>
+ 			</ul>
+ 		</nav>
+diff --git a/website/redirect/test.html b/website/redirect/test.html
+new file mode 100644
+index 0000000..6092a42
+--- /dev/null
++++ b/website/redirect/test.html
+@@ -0,0 +1,31 @@
++<!DOCTYPE html>
++<html>
++<head> <!-- head is for meta info (running theme ig xd) -->
++	<title>REDIRECT </title>
++	<!-- all the actual page content -->
++	<header> <!-- usually used as introduction of page with links or a logo -->
++		<h1>you have been REDIRECTED</h1> <!-- h1 == bigger text -->
++		<nav> <!-- nav == navigation links -->
++			<ul> <!-- unorder list -->
++				<li><a href="/index.html">Home</a></li> <!-- li == list item, A is for links -->
++				<li><a href="/about.html">About</a></li>
++				<li><a href="/services.html">Services</a></li>
++				<li><a href="/contact.html">Contact</a></li>
++			</ul>
++		</nav>
++	</header>
++	<main> <!-- main page content -->
++		<section>
++			<h2>Introduction</h2>
++			<p>here lies Team mustache's epic WIP webserv homepage</p>
++		</section>
++		<section>
++			<h2>Hello gamerzz</h2>
++			<img src="/images/dancing_froggy.gif" alt="gif no loady :(" width="480" height="480">
++		</section>
++	</main>
++	<footer>
++		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
++	</footer>
++</body>
++</html>
+diff --git a/website/upload.html b/website/upload.html
+deleted file mode 100644
+index b260d1d..0000000
+--- a/website/upload.html
++++ /dev/null
+@@ -1,34 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+-<head> <!-- head is for meta info (running theme ig xd) -->
+-	<title>Upload file - Team Mustache</title>
+-	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+-	<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+-</head>
+-<body> <!-- all the actual page content -->
+-	<header> <!-- usually used as introduction of page with links or a logo -->
+-		<h1>hey there ;)</h1> <!-- h1 == bigger text -->
+-		<nav> <!-- nav == navigation links -->
+-			<ul> <!-- unorder list -->
+-				<li><a href="index.html">Home</a></li> <!-- li == list item, A is for links -->
+-				<li><a href="about.html">About Us</a></li>
+-				<li><a href="cgi-bin/list_files.py">Uploads</a></li>
+-				<li><a href="contact.html">Contact</a></li>
+-			</ul>
+-		</nav>
+-	</header>
+-
+-	<main> <!-- main page content -->
+-		<section>
+-			<h2>Upload a File</h2>
+-			<form action="/cgi-bin/upload.py" method="post" enctype="multipart/form-data">
+-				<input type="file" name="file" required>
+-				<input type="submit" value="Upload">
+-			</form>
+-		</section>
+-	</main>
+-	<footer>
+-		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
+-	</footer>
+-</body>
+-</html>
+diff --git a/website/uploads.html b/website/uploads.html
+new file mode 100644
+index 0000000..c60aa2b
+--- /dev/null
++++ b/website/uploads.html
+@@ -0,0 +1,55 @@
++<!DOCTYPE html>
++<html>
++<head>
++	<title>Uploads - Team Mustache</title>
++	<link rel="stylesheet" type="text/css" href="/css/styles.css">
++	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
++</head>
++<body>
++	<header>
++		<h1>hey there ;)</h1>
++		<nav>
++			<ul>
++				<li><a href="index.html">Home</a></li>
++				<li><a href="about.html">About</a></li>
++				<li><a href="uploads.html">Uploads</a></li>
++				<li><a href="services.html">Services</a></li>
++				<li><a href="contact.html">Contact</a></li>
++			</ul>
++		</nav>
++	</header>
++
++	<main>
++		<section>
++			<h2>Upload a File</h2>
++			<form action="/cgi-bin/upload.py" method="post" enctype="multipart/form-data">
++				<input type="file" name="file" required>
++				<input type="submit" value="Upload">
++			</form>
++		</section>
++
++		<section>
++			<h2>Uploaded Files</h2>
++			<p>here lies Team Mustache's legendary file collection</p>
++			<ul id="file-list">
++				<!-- The Python script will dynamically generate file links -->
++				<script>
++					fetch('/cgi-bin/list_files.py')
++						.then(response => response.text())
++						.then(html => document.getElementById('file-list').innerHTML = html)
++						.catch(error => console.error('Error loading file list:', error));
++				</script>
++			</ul>
++		</section>
++
++		<section>
++			<h2>Hello gamerzz</h2>
++			<img src="/images/dancing_froggy.gif" alt="gif no loady :(" width="480" height="480">
++		</section>
++	</main>
++
++	<footer>
++		<p>&copy; 2024 epic awesomesauce inc. All rights reserved.</p>
++	</footer>
++</body>
++</html>

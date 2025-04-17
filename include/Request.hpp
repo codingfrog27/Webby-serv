@@ -36,8 +36,6 @@
 #define BUFFER_SIZE 1024
 #define PLACEHOLDER_MAX_SIZE 1000000
 
-
-//unsigned char vector iterator
 typedef std::vector<unsigned char>::iterator t_ucit;
 enum class connectStatus;
 
@@ -50,7 +48,7 @@ enum reading_status
 	FINISHED
 };
 
-enum Http_method
+enum class Http_method
 {
 	INVALID = -1,
 	GET,
@@ -72,8 +70,8 @@ class Request
 		bool					_dataIsChunked;
 		bool					_headerAreParsed;
 		bool					_hasBody;
-		size_t					_contentLen; //need to put in init list
-		const size_t			_max_body_size = PLACEHOLDER_MAX_SIZE; //PLACEHOLDER
+		size_t					_contentLen;
+		size_t					_max_body_size;
 		t_secs					_timeoutTime;
 		t_time					_startTime;
 		std::string				_root;
@@ -92,15 +90,14 @@ class Request
 		void					checkHeaders();
 		void					checkBodyHeaders();
 		void					parseBody();
-		void					parseFormData(std::string &content_type);
 		void					parseUrlEncoded();
 		int						convertChunkSize(const std::string &hexStr, size_t &bytesRead);
 		void					resolveFilePath();
-		void					locationHandler();
+		bool					RouteRuleHandler();
 		location				*findLocationMatch(std::vector<location> &locs, size_t &matchCount);
 		void					setLocRules(location &loc, location &ruleblock);
 		size_t					countPathMatch(std::string &reqpath, std::string &locpath);
-
+		void  					checkRules(location &rules);
 
 	public:
 		int							_clientFD;
@@ -118,19 +115,18 @@ class Request
 		bool						_doneReading;
 		std::string					_statusStr;
 		int							_statusCode;
-		// bool						_error_occured;
-		// Constructors and Destructors
+		bool						_dirListing;
+		bool						_aliasUsed;
+		bool						_cgiRequired;
+
 						Request(void) = delete;
 						Request(Config *config, int _clientFD);
 						Request(const Request &rhs);
 		Request 		&operator=(const Request &rhs);
 						~Request(void);
 
-
-		//get and setters
 		const std::string	&getBody();
 
-		//public methods
 		connectStatus	readRequest();
 		std::string		getHeaderValue(std::string key);
 		bool			headerExists(std::string key);
@@ -138,7 +134,7 @@ class Request
 		void			printHeaders();
 
 		Config*			getConfig();
+		void			checkIndex(std::vector<std::string> &indexPages, bool	autoindex);
 };
 
 std::string trim(const std::string& str);
-//bleb
