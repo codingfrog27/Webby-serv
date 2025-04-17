@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/17 11:47:10 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/17 14:39:52 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ std::vector<Config>	readConfigFile(const std::string fileName)
 
 Config::Config(std::ifstream &file, std::string &line)
 {
-	std::cout << GREEN << "config filestream constructor called" \
-	<< RESET << std::endl;
 	readBlock(file, line);
 }
 
@@ -116,8 +114,6 @@ int Config::mapToMembers()
 		serverBlock.erase(std::unique(serverBlock.begin(), serverBlock.end()), serverBlock.end());
 		if (keys == serverBlock)
 		{
-			try
-			{
 				setAutoindex(validateAutoindex()); 
 				setListen(validateListen()); 
 				setMaxBodySize(validateMaxBodySize()); 
@@ -128,11 +124,6 @@ int Config::mapToMembers()
 				setRoot(validateRoot());
 				setTimeout(validateTimeout()); 
 				setServerName(validateServerName()); 
-			}
-			catch(const std::exception& e)
-			{
-				std::cout << e.what() << '\n';
-			}
 		}
 		else
 		{
@@ -142,8 +133,8 @@ int Config::mapToMembers()
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << "Unexpected error in mapToMembers: " << e.what() << std::endl;
-		return (-8);
+		std::cout << RED "Unexpected error in mapToMembers: " << e.what() << RESET "\n\nClosing server" << std::endl;
+		exit(1);
 	}
 
 	return (1);
