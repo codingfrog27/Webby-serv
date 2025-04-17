@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/16 18:46:52 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/17 13:56:54 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,17 +58,14 @@ void	Request::resolveFilePath()
 
 
 	//might remove the trims cause idk if they do anything?
-	_filePath = trim(resolved);
+	_filePath = resolved;
+	// _filePath = trim(resolved);
 
-	std::cerr << "path == " << _filePath << std::endl;
-
-	if (RouteRuleHandler() == false) {
-		std::cout << "yahoo" << std::endl;
+	if (RouteRuleHandler() == false)
 		checkIndex(_config->getIndex(), _config->getAutoindex());
-	}
 	if (_aliasUsed == false)
-		_filePath = trim(_root) + _filePath;
-	std::cout << YELLOW "AFTER ROUTEHANDLER  " << _filePath << RESET << std::endl;
+		_filePath = _root + _filePath;
+		// _filePath = trim(_root) + _filePath;
 }
 
 void	Request::parse_headers(std::string header_str)

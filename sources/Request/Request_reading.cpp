@@ -42,7 +42,6 @@ connectStatus	Request::readRequest()
 	{
 		std::cerr << RED "Client error: " << e.what() << RESET << std::endl;
 		std::cerr << "path was: " << _filePath << std::endl;
-		// shutdown(_clientFD, SHUT_RD);
 		_statusStr = e._errorMsg;
 		_statusCode = e._statusCode;
 		return (connectStatus::RESPONDING);
@@ -64,7 +63,7 @@ connectStatus	Request::readRequest()
 		std::cout << e.what() << std::endl;
 		_statusCode = 400;
 		_statusStr = std::to_string(_statusCode) + e.what();
-		return (connectStatus::REQ_ERR);
+		return (connectStatus::RESPONDING);
 	}
 }
 
@@ -73,6 +72,8 @@ int	Request::readSocket(int size)
 	if (!size)
 		size = BUFFER_SIZE;
 	char buffer[size];
+	if (!Connection::connectIsOkay(_clientFD))
+		throw (ConnectionClosedExcep(_clientFD));
 	int	bytes_read = recv(_clientFD, buffer, size, MSG_DONTWAIT);
 	if (bytes_read <= 0)
 	{

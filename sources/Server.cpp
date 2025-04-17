@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #include "everything.hpp"
-
 #include <iostream>
+#include <signal.h>
 
 void writeClientFD(int clientFD, int i);
 
@@ -33,6 +33,7 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 {
 	try
 	{
+		signal(SIGPIPE, SIG_IGN);
 		int	FD;
 		_Connections.reserve(100);
 		_serverSockets.reserve(_serverBlocks.size());

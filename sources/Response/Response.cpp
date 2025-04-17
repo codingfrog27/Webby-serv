@@ -88,8 +88,8 @@ connectStatus Response::writeResponse(int FD){
 	size_t n =_responseBuffer.size() - _bytesWritten;
 	if (n > BUFFER_SIZE)
 		n = BUFFER_SIZE;
-	size_t bytes = send(FD, _responseBuffer.c_str() + _bytesWritten, n, 0);
-	_bytesWritten += bytes;
+	size_t bytes = send(FD, _responseBuffer.c_str() + _bytesWritten, n, MSG_NOSIGNAL);
+	_bytesWritten += bytes; //MSG_NOSIGNAL in send
 	if (_bytesWritten >= _responseBuffer.size()){
 		setResponseHandlerStatus(responseHandlerStatus::FINISHED);
 		return connectStatus::FINISHED;
