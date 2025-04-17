@@ -40,8 +40,7 @@ connectStatus	Request::readRequest()
 	}
 	catch(ClientErrorExcept &e)
 	{
-		std::cerr << RED "Client error: " << e.what() << RESET << std::endl;
-		std::cerr << "path was: " << _filePath << std::endl;
+		// std::cerr << RED "Client error: " << e.what() << RESET << std::endl;
 		_statusStr = e._errorMsg;
 		_statusCode = e._statusCode;
 		return (connectStatus::RESPONDING);

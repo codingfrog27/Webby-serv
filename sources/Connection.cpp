@@ -149,14 +149,10 @@ void Connection::removeCGIFromEverywhere(Server& server) {
 
 connectStatus Connection::refreshIfKeepAlive()
 {
-	if (_response.getHeader("Connection") == "close")
+	if (_response.getHeader("Connection") != "keep-open")
 	{
-		std::cout << "close meee" << std::endl;
-		// shutdown(_clientFD, SHUT_RD);
-		// shutdown(_clientFD, SHUT_WR);
 		return (connectStatus::FINISHED);
 	}
-	std::cout << CYAN "connection keep open activate on FD: " << YELLOW << this->_clientFD << RESET << std::endl;
 	_request = Request(this->_config, this->_clientFD);
 	_response = Response(this->_config);
 	return (connectStatus::IDLE);

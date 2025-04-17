@@ -21,7 +21,6 @@
 
 location::location(void)
 {
-	std::cout << GREEN << "location: Default constructor called" << RESET << std::endl;
 }
 
 location::location(std::ifstream &file, std::string &line)
