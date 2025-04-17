@@ -79,12 +79,9 @@ void	Connection::connectionAction(const pollfd &poll, Server &server)
 	if(_CStatus == connectStatus::CGI_REQUIRED){
 		_CStatus = _cgi->CGIHandler(this, server.getCGIPollFDs(), server.getCGIMap());
 		_CStatus = checkConnectStatus(poll);
-		std::cout << MAGENTA "CGI PollFD vector size in connectionAction: " << server.getCGIPollFDs().size() << RESET << std::endl;
 	}
-	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING){
+	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
 		_CStatus = _response.responseHandler(&_request);
-		_CStatus = checkConnectStatus(poll);
-	}
 	if (_CStatus == connectStatus::FINISHED)
 		_CStatus = refreshIfKeepAlive();
 }

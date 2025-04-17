@@ -116,7 +116,6 @@ bool	Request::bodyIsRead()
 		_doneReading = true;
 		reading_mode = FINISHED;
 		_reqBody = std::string(_rawRequestData.begin(), (_rawRequestData.begin() + _contentLen + 2));
-		// std::cout << MAGENTA "Request body: " << _reqBody << RESET << std::endl;
 		_rawRequestData.erase(_rawRequestData.begin(), _rawRequestData.begin() + _contentLen + 2);
 		return (true);
 	}

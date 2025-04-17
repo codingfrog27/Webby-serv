@@ -133,7 +133,6 @@ connectStatus	Response::responseHandler(Request* request){
 			setHeaders("Connection", "keep-alive");
 	}
 	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && request->_statusCode != 0){ //if there was an error in (parsing) the request{}
-		std::cout << MAGENTA "Error in request: " << request->_statusCode << RESET << std::endl;
 		if (request->getConfig()->_errorPage.find(std::to_string(request->_statusCode)) != request->getConfig()->_errorPage.end()){
 			request->_filePath = request->getConfig()->_errorPage[std::to_string(request->_statusCode)];
 			if (request->_filePath == "default"){
@@ -142,7 +141,6 @@ connectStatus	Response::responseHandler(Request* request){
 				return connectStatus::CGI_REQUIRED;
 			}
 			else{
-				std::cout << MAGENTA "Gets triggered"<< RESET << std::endl;
 				autoFillResponse(request->_statusStr, request->_filePath);
 				return connectStatus::RESPONDING;
 			}

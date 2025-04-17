@@ -153,29 +153,23 @@ void Server::handleCGIPollEvents() {
 	for (size_t i = 0; i < size; i++){
 		CGI *cgi = _CGIMap[_CGIPollFDs[i].fd].get();
 		if (cgi == nullptr){
-			std::cout << "CGI is nullptr" << std::endl;
 			continue;
 		}
 		Connection &connection = _Connections.at(cgi->getClientFD());
 
 		if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT){
-			// std::cout << "fdin is pollout" << std::endl;
 			cgi->writeToCGI(&connection._request, &connection._response);
 		}
 		else if (cgi->getChildIsRunningStatus() == false || !cgi->childIsRunning(&connection._response))
 		{
 			if (_CGIPollFDs[i].fd == cgi->getFdOut() && _CGIPollFDs[i].revents & POLLIN){
-				// std::cout << "fdout is pollin" << std::endl;
 				cgi->readFromCGI(&connection._response);
 			}
 			else if (_CGIPollFDs[i].fd == cgi->getFdError() && _CGIPollFDs[i].revents & POLLIN){
-				// std::cout << "error fd is pollin" << std::endl;
 				cgi->readErrorFromCGI(&connection._response);
 			}
 			if (_CGIPollFDs[i].revents & POLLHUP || (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED && !(_CGIPollFDs[i].revents & POLLIN)))
 			{
-				std::cout << YELLOW << "CGIHandlerStatus: " << (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED ? "FINISHED" : "NOT FINISHED") << RESET << std::endl;
-				std::cout << YELLOW << "revents: " << (_CGIPollFDs[i].revents & POLLHUP ? "POLLHUP" : "NOT POLLHUP") << RESET << std::endl;
 				if (_CGIPollFDs[i].revents & POLLHUP)
 					close(_CGIPollFDs[i].fd );
 				_CGIMap.erase(_CGIPollFDs[i].fd);
