@@ -94,8 +94,6 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 			std::cout << RED "Socket error: " << strerror(error) << RESET << std::endl;
 		return (connectStatus::CONNECT_CLOSED);
 	}
-	// else if (isTimedOut(_startTime, _IdleTimeout) || poll.revents & POLLHUP)
-	// 	return (connectStatus::CONNECT_CLOSED);
 	return (_CStatus);
 }
 

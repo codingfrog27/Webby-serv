@@ -226,6 +226,20 @@ void   location::parseRule(const std::string &line)
 	 	value_end++;
 	if (value_end == directive.end())
 		throw std::invalid_argument("Error: Missing semicolon.");
-	std::string tmp_value(value_begin, value_end);	
+	std::string tmp_value(value_begin, value_end);
+		if (!ruleExists(tmp_key))
+		throw std::invalid_argument("Error: Rule doesn't exist.");
 	_rulemap.emplace(tmp_key, tmp_value);
+}
+
+bool location::ruleExists(std::string &key)
+{
+	std::vector<std::string> rules \
+	{"autoindex", "index", "root", "alias", "allow_methods", "return", "cgi_ext"};
+	for (auto rule : rules)
+	{
+		if (key == rule)
+			return (true);
+	}
+	return (false);
 }

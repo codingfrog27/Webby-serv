@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/17 14:39:52 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/22 17:12:14 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,6 +172,7 @@ void	Config::parseRule(const std::string &line)
 	 	value_end++;
 	if (value_end == directive.end())
 		throw std::invalid_argument("Error: Missing semicolon.");
-	std::string tmp_value(value_begin, value_end);	
+	std::string tmp_value(value_begin, value_end);
 	_rulemap.emplace(tmp_key, tmp_value);
 }
+

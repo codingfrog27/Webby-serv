@@ -78,6 +78,7 @@ class location
 		std::vector<std::string> validateIndex();
 		std::string validateReturn();
 		std::string validateRoot();
+		bool 		ruleExists(std::string &key);
 
 		std::vector<std::string> validateCgiExt();
 		std::vector<std::string> validateCgiPath();
