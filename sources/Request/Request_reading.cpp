@@ -31,6 +31,7 @@ connectStatus	Request::readRequest()
 			parseBody();
 		if (_doneReading)
 		{
+			std::cout << "filepath ==" << _filePath << std::endl;
 			if (_cgiRequired == true || isCGIrequired() == true)
 				return (connectStatus::CGI_REQUIRED);
 			return (connectStatus::RESPONDING);

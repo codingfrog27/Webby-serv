@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/17 11:47:30 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/22 14:42:31 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ Config &Config::operator=(const Config &rhs)
 
 Config::~Config(void)
 {
-	std::cout << RED << "Config: Destructor called" << RESET << std::endl;
+	// std::cout << RED << "Config: Destructor called" << RESET << std::endl;
 }
 
 

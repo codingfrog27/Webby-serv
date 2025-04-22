@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/22 12:46:54 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/22 15:34:43 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,9 @@ void	Request::resolveFilePath()
 		resolved.erase(0, _config->_listen.length() + 1);
 	
 	_filePath = resolved;
-	if (RouteRuleHandler() == false)
+	if (RouteRuleHandler() == false && _statusCode != 302)
 		checkIndex(_config->getIndex(), _config->getAutoindex());
-	if (_aliasUsed == false)
+	if (_rootless == false)
 		_filePath = _root + _filePath;
 }
 

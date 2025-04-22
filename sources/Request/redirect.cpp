@@ -116,13 +116,15 @@ void  Request::checkRules(location &rules)
 	if (!rules.getReturn().empty())
 	{
 		_filePath = rules.getReturn();
-		_statusCode = 301;
-		_statusStr = "301 Moved Permanently";
+		_rootless = true;
+		_statusCode = 302;
+		_statusStr = "302 Found";
+		std::cout << "redirect return triggered" << std::endl;
 		return;
 	}
 	isMethodAllowed(_method_type , rules.getAllowMethods());
 	if (!rules.getAlias().empty()) {
-		_aliasUsed = true;
+		_rootless = true;
 		_filePath = rules.getAlias();
 	}
 	else if (!rules.getRoot().empty())
@@ -152,7 +154,7 @@ void	Request::checkIndex(std::vector<std::string> &indexPages, bool	autoindex)
 {
 	std::string indexPath, dirPath;
 	
-	if (this->_aliasUsed == false)
+	if (this->_rootless == false)
 		dirPath = this->_root;
 	dirPath += this->_filePath;
 	

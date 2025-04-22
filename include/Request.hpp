@@ -116,7 +116,7 @@ class Request
 		std::string					_statusStr;
 		int							_statusCode;
 		bool						_dirListing;
-		bool						_aliasUsed;
+		bool						_rootless;
 		bool						_cgiRequired;
 
 						Request(void) = delete;
