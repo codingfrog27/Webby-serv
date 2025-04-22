@@ -134,6 +134,11 @@ connectStatus	Response::responseHandler(Request* request){
 	}
 	if (_responseHandlerStatus == responseHandlerStatus::IN_PROGRESS && request->_statusCode != 0) //if there was an error in (parsing) the request{}
 	{ 
+		if (request->_statusCode == 301 || request->_statusCode == 302){
+			setHeaders("Location", request->_filePath);
+			autoFillResponse(request->_statusStr, "");
+			return connectStatus::RESPONDING;
+		}
 		if (request->getConfig()->_errorPage.find(std::to_string(request->_statusCode)) != request->getConfig()->_errorPage.end())
 		{
 			request->_filePath = request->getConfig()->_errorPage[std::to_string(request->_statusCode)];

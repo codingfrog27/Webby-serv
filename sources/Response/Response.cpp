@@ -4,11 +4,14 @@
 
 Response::Response(Config *config) {
 	this->_responseHandlerStatus = responseHandlerStatus::NOT_STARTED;
+	this->setHTTPVersion("HTTP/1.1");
+	this->_root = config->_rootDir;
+	this->_status = "";
+	// this->_redirectPath = "";
+	this->_body = "";
 	this->_responseBuffer = "";
 	this->_bytesWritten = 0;
 	this->_timesWriteFailed = 0;
-	this->setHTTPVersion("HTTP/1.1");
-	this->_root = config->_rootDir;
 	return ;
 }
 
@@ -20,9 +23,9 @@ Response &	Response::operator=(const Response &rhs)
 {
 	if (this != &rhs)
 	{
+		_responseHandlerStatus = rhs._responseHandlerStatus;
 		_httpVersion = rhs._httpVersion;
 		_root = rhs._root;
-		_responseHandlerStatus = rhs._responseHandlerStatus;
 		_status = rhs._status;
 		_headers = rhs._headers;
 		_body = rhs._body;
@@ -48,7 +51,7 @@ void	Response::autoFillResponse(std::string status, std::string path){
 	size_t			size = 0;
 	std::ifstream	file(path);
 
-	Response::setStatus(status);
+	setStatus(status);
 	if (!_body.empty())
 		_body.clear();
 	if (file.is_open()){
@@ -57,22 +60,22 @@ void	Response::autoFillResponse(std::string status, std::string path){
 		file.seekg(0, std::ios::beg);
 		std::vector<char> buffer(size + 1);
 		if (file.read(buffer.data(), size)){
-			Response::setContentType(path);
-			Response::setHeaders("Content-Length", std::to_string(size));
-			Response::setBody(buffer.data());
+			setContentType(path);
+			setHeaders("Content-Length", std::to_string(size));
+			setBody(buffer.data());
 		}
 		else
-			Response::autoFillResponse("500 Internal Server Error", "");
+			autoFillResponse("500 Internal Server Error", "");
 		file.close();
 	}
 	else{
-		Response::setHeaders("Content-Type", "text/plain");
-		Response::setHeaders("Content-Length", std::to_string(status.length()));
-		Response::setBody(status);
+		setHeaders("Content-Type", "text/plain");
+		setHeaders("Content-Length", std::to_string(status.length()));
+		setBody(status);
 	}
 	if (statusCode == "413")
-		Response::setHeaders("Connection", "close");
-	Response::setResponseBuffer(Response::generateResponse());
+		setHeaders("Connection", "close");
+	setResponseBuffer(generateResponse());
 	_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 	return ;
 }
