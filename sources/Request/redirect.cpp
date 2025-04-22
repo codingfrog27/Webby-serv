@@ -16,10 +16,11 @@ bool	Request::RouteRuleHandler()
 	reqRules = *locPtr;
 	if (!locPtr->_nestedLocations.empty()) 
 	{
+		locVec = &locPtr->_nestedLocations;
 		for (; !locVec->empty(); locVec = &locPtr->_nestedLocations)
 		{
 			locPtr = findLocationMatch(*locVec, matchCount);
-			if (locPtr == nullptr)
+			if (locPtr == nullptr) 
 				break;
 			setLocRules(reqRules, *locPtr);
 		}
@@ -115,11 +116,10 @@ void  Request::checkRules(location &rules)
 {   
 	if (!rules.getReturn().empty())
 	{
+		_statusStr = "302 Found";
 		_filePath = rules.getReturn();
 		_rootless = true;
 		_statusCode = 302;
-		_statusStr = "302 Found";
-		std::cout << "redirect return triggered" << std::endl;
 		return;
 	}
 	isMethodAllowed(_method_type , rules.getAllowMethods());

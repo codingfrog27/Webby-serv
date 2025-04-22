@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/22 15:34:43 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/22 16:08:00 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,8 @@ void	Request::checkHeaders()
 	if (_method_type ==  Http_method::GET || _method_type == Http_method::DELETE)
 	{
 		_doneReading = true;
-		_statusStr = "";
+		if (_statusCode != 302)
+			_statusStr = "";
 	}
 	else
 		checkBodyHeaders();
@@ -166,7 +167,8 @@ void	Request::parseBody()
 		parseUrlEncoded();
 	_reqBody = trim(_reqBody);
 	_doneReading = true;
-	_statusStr = "";
+	if (_statusCode != 302)
+			_statusStr = "";
 }
 
 std::string	urlDecode(const std::string &encoded);
