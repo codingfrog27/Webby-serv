@@ -20,6 +20,7 @@ const messages = {
 	411: "Length Required",
 	412: "Precondition Failed",
 	413: "Payload Too Large",
+	415: "Unsupported Media Type",
 	444: "Connection Closed Without Response",
 	500: "Internal Server Error",
 	501: "Not Implemented"
