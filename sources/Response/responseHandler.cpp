@@ -39,7 +39,7 @@ void	Response::getMethod(Request* request){
 		size = getInFile().tellg();
 		if (size == 0){
 			getInFile().close();
-			autoFillResponse("204 No Content", NULL);
+			autoFillResponse("204 No Content", "");
 			return ;
 		}
 		getInFile().seekg(0, std::ios::beg);
@@ -90,7 +90,7 @@ void	Response::postMethod(Request* request){
 		setBytesWritten(BUFFER_SIZE);
 		if (getBytesWritten() >= request->getBody().size()){
 			getOutFile().close();
-			autoFillResponse("201 Created", NULL);
+			autoFillResponse("201 Created", "");
 			setBytesWritten(0);
 			_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 		}
@@ -109,7 +109,7 @@ void	Response::deleteMethod(Request* request){
 		_responseHandlerStatus = responseHandlerStatus::IN_DELETE;
 	if (fileExists(request->_filePath)){
 		if (std::remove(request->_filePath.c_str()) == 0)
-			autoFillResponse("200 OK", NULL);
+			autoFillResponse("200 OK", "");
 		else{
 			request->_statusCode = 500;
 			request->_statusStr = "500 Internal Server Error";
