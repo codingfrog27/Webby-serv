@@ -14,17 +14,6 @@
 #include <iostream>
 #include <signal.h>
 
-void writeClientFD(int clientFD, int i);
-
-void writeClientFD(int clientFD, int i)
-{
-	std::ofstream outFile("clientFD_log.txt", std::ios::app);
-		outFile << "Accepted new connection with clientFD: " << clientFD <<\
-		" on index" << i << std::endl;
-		outFile.close();
-}
-
-
 // ************************************************************************** //
 //						Constructors and Destructors						//
 // ************************************************************************** //
@@ -202,13 +191,12 @@ void Server::acceptNewConnects(size_t size)
 				break;
 			}
 			else {
-				std::cout << GREEN "new connection!" RESET << clientFD <<  std::endl;
+				std::cout << GREEN "new connection " RESET << "FD == " << clientFD <<  std::endl;
 				current._wantsNewConnect = false;
 				_pollFDs.emplace_back(\
 						pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
 				_Connections.emplace(clientFD, \
 					Connection{current._config, clientFD, true});
-				writeClientFD(clientFD, i);
 			}
 		}
 	}
