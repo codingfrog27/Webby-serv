@@ -1,6 +1,7 @@
 #include "location.hpp"
 #include <sstream>
 #include <filesystem>
+#include <string.h>
 
 std::string	find_value_location(std::string& directive)
 {
@@ -99,13 +100,23 @@ std::vector<Http_method> location::validateAllowMethods()
 			if (start < i)
 			{
 				tmp_value = allow_methods_value.substr(start, i - start);
+				bool valid = false;
 				for (size_t i = 0; i < methods.size(); i++)
 				{
 					if (tmp_value == methods[i])
+					{
 						tmp_vector.push_back((Http_method)i);
+						valid = true;
+						break;
+					}
 				}
 				if (tmp_vector.empty())
-					throw std::invalid_argument("Error: invalid rule in autoindex directive");
+					throw std::invalid_argument("Error: invalid rule in allow_methods directive");
+				else if (!valid)
+				{
+					std::cerr << "Invalid method: " << tmp_value << std::endl;
+					throw std::invalid_argument("Error: invalid rule in allow_methods directive");
+				}
 			}
 		}
 	}
