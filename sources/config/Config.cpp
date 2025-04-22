@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/22 17:12:14 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/22 17:20:04 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ std::vector<Config>	readConfigFile(const std::string fileName)
 	std::ifstream		file(fileName);
 
 	if (!file.is_open())
-		throw std::invalid_argument("Error: Unable to open file" );
+		throw std::invalid_argument(" Unable to open file" );
 	while (std::getline(file, line))
 	{
 		if (line.empty() || checkCaracter(line, '#'))
@@ -171,7 +171,7 @@ void	Config::parseRule(const std::string &line)
 	while(value_end != directive.end() and *value_end != ';')
 	 	value_end++;
 	if (value_end == directive.end())
-		throw std::invalid_argument("Error: Missing semicolon.");
+		throw std::invalid_argument(" Missing semicolon.");
 	std::string tmp_value(value_begin, value_end);
 	_rulemap.emplace(tmp_key, tmp_value);
 }

@@ -31,6 +31,8 @@ void	Response::getMethod(Request* request){
 			}
 		}
 		else{
+			std::cout << "couldnt find file" << request->_filePath << std::endl;
+			NicePrint::promptEnter();
 			request->_statusCode = 404;
 			request ->_statusStr = "404 Not Found";
 			return ;

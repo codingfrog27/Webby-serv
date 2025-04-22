@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:15:55 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/22 17:14:09 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/22 17:20:32 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int main(int argc, char ** argv) {
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << RED "Error found in config file 😔 --> " << e.what() << \
+		std::cerr << RED "Error found in config file 😔: " << e.what() << \
 				 BOLD "\n\nshutting down server\n" RESET << std::endl;
 	}
 	return 0;

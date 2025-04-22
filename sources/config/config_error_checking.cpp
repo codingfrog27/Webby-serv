@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/17 14:16:46 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/22 17:20:04 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ std::string find_value(std::string &directive)
 	std::string value;
 
 	if (directive.length() == 0)
-		throw std::invalid_argument("Error: directive is empty");
+		throw std::invalid_argument(" directive is empty");
 
 	int i = 0;
 
@@ -33,7 +33,7 @@ std::string find_value(std::string &directive)
 		i++;
 	}
 	if (value.length() == 0)
-		throw std::invalid_argument("Error: directive is empty");
+		throw std::invalid_argument(" directive is empty");
 	return (value);
 }
 
@@ -80,7 +80,7 @@ std::unordered_map<std::string, std::string> Config::validateErrorPage()
 				for (char c : errorPage)
 				{
 					if (!isdigit(c) && !isalpha(c) && c != '/' && c != '.' && c != '_')
-						throw std::invalid_argument("Error: invalid character in error_page directive");
+						throw std::invalid_argument(" invalid character in error_page directive");
 				}
 				for (const auto &code : errorCodes)
 					tmpErrorPageMap[code] = errorPage;
@@ -108,7 +108,7 @@ std::vector<std::string> Config::ValidateIndex()
 	{
 		if (!std::isalnum(c) && c != '-' && c != '.' && !std::isspace(c))
 		{
-			throw std::invalid_argument("Error: invalid character in index directive");
+			throw std::invalid_argument(" invalid character in index directive");
 		}
 	}
 
@@ -133,12 +133,14 @@ std::string Config::validateListen()
 		listen_value = find_value(listen_rule);
 	}
 	else
-		throw std::invalid_argument("Error: listen directive not found");
+		throw std::invalid_argument(" listen directive not found");
 	for (size_t i = 0; i < listen_value.length(); i++)
 	{
 		if (!isdigit(listen_value[i]))
-			throw std::invalid_argument("Error: invalid character in listen directive");
+			throw std::invalid_argument(" invalid character in listen directive");
 	}
+	if (std::stoi(listen_value) > 65535 || std::stoi(listen_value) < 1)
+		throw std::invalid_argument(" port value invalid");
 	return (listen_value);
 }
 
@@ -154,17 +156,17 @@ std::string Config::validateMaxBodySize()
 		maxBodySize_value = find_value(maxBodySize_rule);
 	}
 	else
-		throw std::invalid_argument("Error: client_max_body_size directive not found");
+		throw std::invalid_argument(" client_max_body_size directive not found");
 	char lastChar = maxBodySize_value.back();
 	if (lastChar == 'k' || lastChar == 'K' || lastChar == 'm' || lastChar == 'M' || lastChar == 'g' || lastChar == 'G' || std::isdigit(lastChar))
 		maxBodySize_value.pop_back();
 	else
-		throw std::invalid_argument("Error: invalid character in client_max_body_size directive");
+		throw std::invalid_argument(" invalid character in client_max_body_size directive");
 
 	for (size_t i = 0; i < maxBodySize_value.size(); i++)
 	{
 		if (!isdigit(maxBodySize_value[i]))
-			throw std::invalid_argument("Error: invalid character in client_max_body_size directive");
+			throw std::invalid_argument(" invalid character in client_max_body_size directive");
 	}
 
 	return (maxBodySize_value + lastChar);
@@ -193,15 +195,15 @@ size_t Config::convertMaxBodySize()
 	}
 	catch (const std::out_of_range &e)
 	{
-		throw std::invalid_argument("Error: client_max_body_size value is too large");
+		throw std::invalid_argument(" client_max_body_size value is too large");
 	}
 	catch (const std::invalid_argument &e)
 	{
-		throw std::invalid_argument("Error: invalid client_max_body_size value");
+		throw std::invalid_argument(" invalid client_max_body_size value");
 	}
 
 	if (result > std::numeric_limits<size_t>::max())
-		throw std::invalid_argument("Error: client_max_body_size value is too large");
+		throw std::invalid_argument(" client_max_body_size value is too large");
 
 	return result;
 }
@@ -217,7 +219,7 @@ std::string Config::validateHost()
 		host_value = find_value(host_rule);
 	}
 	else
-		throw std::invalid_argument("Error: host directive not found");
+		throw std::invalid_argument(" host directive not found");
 
 	std::vector<std::string> octets;
 	std::stringstream ss(host_value);
@@ -232,22 +234,22 @@ std::string Config::validateHost()
 
 	if (dotCount != 4)
 	{
-		throw std::invalid_argument("Error: invalid host directive (incorrect number of octets)");
+		throw std::invalid_argument(" invalid host directive (incorrect number of octets)");
 	}
 
 	for (const std::string &octet : octets)
 	{
 		if (octet.empty() || octet.length() > 3)
-			throw std::invalid_argument("Error: invalid octet in host directive");
+			throw std::invalid_argument(" invalid octet in host directive");
 		for (char c : octet)
 		{
 			if (!isdigit(c))
-				throw std::invalid_argument("Error: invalid character in host directive");
+				throw std::invalid_argument(" invalid character in host directive");
 		}
 
 		int num = std::stoi(octet);
 		if (num < 0 || num > 255)
-			throw std::invalid_argument("Error: invalid IP range in host directive");
+			throw std::invalid_argument(" invalid IP range in host directive");
 	}
 	return host_value;
 }
@@ -270,7 +272,7 @@ size_t Config::validateTimeout()
 	timeout_size_t = stoi(timeout_value);
 
 	if (timeout_size_t > MAX_TIMEOUT || timeout_size_t < 3000)
-		throw std::invalid_argument("Error: invalid parameter in timeout directive");
+		throw std::invalid_argument(" invalid parameter in timeout directive");
 
 	return (timeout_size_t);
 }
@@ -292,7 +294,7 @@ std::string Config::validateServerName()
 	{
 		if (!isalpha(serverName_value[i]) && !isdigit(serverName_value[i]) &&
 			serverName_value[i] != '-' && serverName_value[i] != '.' && serverName_value[i] != '_')
-			throw std::invalid_argument("Error: invalid character in server_name directive");
+			throw std::invalid_argument(" invalid character in server_name directive");
 	}
 
 	return (serverName_value);
@@ -311,31 +313,31 @@ std::string Config::validateRoot()
 		root_value = find_value(root_rule);
 	}
 	else 
-		throw std::invalid_argument("Error: root directive not found");
+		throw std::invalid_argument(" root directive not found");
 
 	size_t root_value_lenght = root_value.length();
 	if (root_value_lenght == 1)
-		throw std::invalid_argument("Error: invalid root path in root directive");
+		throw std::invalid_argument(" invalid root path in root directive");
 
 	for (size_t i = 0; i < root_value_lenght; i++)
 	{
 		if (root_value[0] == '.')
 			dot++;
 		else if (root_value[0] != '/' || root_value[root_value_lenght - 1] == '/')
-			throw std::invalid_argument("Error: invalid root path directive:" \
+			throw std::invalid_argument(" invalid root path directive:" \
 			"please start root with '/' "  + root_value + " or it doesn't have to finish wiht a /");
 
 		if (!isalpha(root_value[i]) && !isdigit(root_value[i]) && root_value[i] != '/' && root_value[i] != '_' && root_value[i] != '-' && dot > 1)
-			throw std::invalid_argument("Error: invalid character in root directive");
+			throw std::invalid_argument(" invalid character in root directive");
 	}
 	std::filesystem::path rootPath(root_value);
 
 	if (!rootPath.is_absolute())
 	    rootPath = std::filesystem::current_path() / rootPath;
 	if (!std::filesystem::exists(rootPath))
-	    throw std::invalid_argument("Error: root path does not exist! (" + rootPath.string() + ")");
+	    throw std::invalid_argument(" root path does not exist! (" + rootPath.string() + ")");
 	if (!std::filesystem::is_directory(rootPath))
-	    throw std::invalid_argument("Error: root path is not a directory! (" + rootPath.string() + ")");
+	    throw std::invalid_argument(" root path is not a directory! (" + rootPath.string() + ")");
 
 	if (root_value[0] == '/')
 		root_value.erase(0 , 1);
@@ -363,7 +365,7 @@ bool Config::validateAutoindex()
 	else if (_autoIndex_value.compare("off") == 0)
 		return (false);
 	else
-		throw std::invalid_argument("Error: invalid character in autoindex directive");
+		throw std::invalid_argument(" invalid character in autoindex directive");
 
 	return (true);
 }

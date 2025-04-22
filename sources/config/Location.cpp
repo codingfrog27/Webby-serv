@@ -225,10 +225,10 @@ void   location::parseRule(const std::string &line)
 	while(value_end != directive.end() and *value_end != ';')
 	 	value_end++;
 	if (value_end == directive.end())
-		throw std::invalid_argument("Error: Missing semicolon.");
+		throw std::invalid_argument(" Missing semicolon.");
 	std::string tmp_value(value_begin, value_end);
 		if (!ruleExists(tmp_key))
-		throw std::invalid_argument("Error: Rule doesn't exist.");
+		throw std::invalid_argument("rule " + tmp_key + " Rule doesn't exist.");
 	_rulemap.emplace(tmp_key, tmp_value);
 }
 
