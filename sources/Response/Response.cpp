@@ -62,7 +62,7 @@ void	Response::autoFillResponse(std::string status, std::string path){
 			Response::setBody(buffer.data());
 		}
 		else
-			Response::autoFillResponse("500 Internal Server Error", NULL);
+			Response::autoFillResponse("500 Internal Server Error", "");
 		file.close();
 	}
 	else{
