@@ -158,7 +158,7 @@ void Connection::removeCGIFromEverywhere(Server& server) {
 
 connectStatus Connection::refreshIfKeepAlive()
 {
-	if (_response.getHeader("Connection") != "keep-alive")
+	if (_response.getHeader("Connection") != "keep-alive" && _response.getHeader("Connection") != "Keep-Alive")
 	{
 		return (connectStatus::FINISHED);
 	}

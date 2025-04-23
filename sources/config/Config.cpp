@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   Config.cpp                                         :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/23 16:22:44 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/23 16:30:20 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ void	Config::readBlock(std::ifstream &file, std::string &line)
 
 int Config::mapToMembers()
 {
-	std::vector<std::string> serverBlock {"autoindex", "client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
+	std::vector<std::string> serverBlock {"allow_methods", "autoindex", "client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
 	std::set<std::string> uniqueKeys;
 	
 	for (const auto& [key, value] : _rulemap)
@@ -112,6 +112,7 @@ int Config::mapToMembers()
 	serverBlock.erase(std::unique(serverBlock.begin(), serverBlock.end()), serverBlock.end());
 	if (keys == serverBlock)
 	{
+			setAllowMethods(validateAllowMethods());
 			setAutoindex(validateAutoindex()); 
 			setListen(validateListen()); 
 			setMaxBodySize(validateMaxBodySize()); 

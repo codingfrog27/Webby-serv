@@ -3,16 +3,17 @@
 /*                                                        ::::::::            */
 /*   config_error_checking.cpp                          :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/23 12:02:37 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/23 16:26:25 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
 #include <filesystem>
 #include <limits>
+#include <sstream>
 
 std::string find_value(std::string &directive)
 {
@@ -381,4 +382,81 @@ void checkPortUniqueness(const std::vector<std::unique_ptr<Config>> &configs)
 				throw(std::invalid_argument("Multiple server blocks listening to the same port!"));
 		}
 	}
+}
+
+std::vector<Http_method> Config::validateAllowMethods()
+{
+	std::string allow_methods_rule;
+    std::string allow_methods_value;
+	std::string tmp_value;
+	std::vector<Http_method>  tmp_vector;
+	std::vector<std::string>  methods = {"POST", "GET", "DELETE"};
+	
+	static int space = 0;
+
+    if (_rulemap.contains("allow_methods"))
+	{
+    	allow_methods_rule = normalize_space(_rulemap.at("allow_methods"));
+		allow_methods_value = find_value(allow_methods_rule);
+	}
+	else 
+		return (tmp_vector);
+	for (size_t i = 0; i < allow_methods_value.length(); i++)
+	{
+		if (isspace(allow_methods_value[i]))
+			i++;
+		if (!isalpha(allow_methods_value[i]))
+			throw std::invalid_argument(" invalid character in allow_methods directive");
+	}
+	for (size_t i = 0; i < allow_methods_value.length(); i++)
+	{
+		if (isspace(allow_methods_value[i]))
+			space++;
+	}
+	if (space == 0)
+	{
+		tmp_value = allow_methods_value.substr(0, allow_methods_value.length());
+		for (size_t i = 0; i < methods.size(); i++)
+		{
+			if (tmp_value == methods[i])
+				tmp_vector.push_back((Http_method)i);
+		}
+		if (tmp_vector.empty())
+		 	throw std::invalid_argument(" invalid ruleeeee in allow_methods directive");
+	}
+	else
+	{
+		for (size_t i = 0; i < allow_methods_value.length();)
+		{
+			while (i < allow_methods_value.length() && isspace(allow_methods_value[i]))
+				i++;
+
+			size_t start = i;
+			while (i < allow_methods_value.length() && !isspace(allow_methods_value[i]))
+				i++;
+
+			if (start < i)
+			{
+				tmp_value = allow_methods_value.substr(start, i - start);
+				bool valid = false;
+				for (size_t i = 0; i < methods.size(); i++)
+				{
+					if (tmp_value == methods[i])
+					{
+						tmp_vector.push_back((Http_method)i);
+						valid = true;
+						break;
+					}
+				}
+				if (tmp_vector.empty())
+					throw std::invalid_argument(" invalid rule in allow_methods directive");
+				else if (!valid)
+				{
+					std::cerr << "Invalid method: " << tmp_value << std::endl;
+					throw std::invalid_argument(" invalid rule in allow_methods directive");
+				}
+			}
+		}
+	}
+	return (tmp_vector);
 }
