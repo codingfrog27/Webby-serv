@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/22 17:20:04 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/23 11:53:55 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,11 +125,10 @@ int Config::mapToMembers()
 				setTimeout(validateTimeout()); 
 				setServerName(validateServerName()); 
 		}
-		else
-		{
-			std::cout << "Keys do not match the expected serverBlock configuration" << std::endl;
-			return (0);
-		}
+	}
+	catch (const std::invalid_argument& e){
+		std::cout << RED "Invalid argument in mapToMembers: " << e.what() << RESET "\n\nClosing server" << std::endl;
+		exit(1);
 	}
 	catch (const std::exception& e)
 	{
