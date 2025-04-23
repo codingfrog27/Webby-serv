@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/22 16:08:00 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/23 11:40:01 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	Request::checkHeaders()
 	if (!headerExists("Host"))
 		throw(ClientErrorExcept(400, "400 bad request: Host missing"));
 	if (getHeaderValue("Connection") == "close")
-		_keepOpen = false;
+		_keepAlive = false;
 	if (_method_type ==  Http_method::GET || _method_type == Http_method::DELETE)
 	{
 		_doneReading = true;

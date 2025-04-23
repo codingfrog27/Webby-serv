@@ -21,7 +21,7 @@
 
 Connection::Connection(Config *config, int clientFD, bool isServerside): \
 _config(config), _request(config, clientFD), _response(config), _cgi(0), \
-_isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
+_isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _keepAlive(false)
 {
 	_startTime = getStartTime();
 	_IdleTimeout = setTimeout(2);
@@ -47,7 +47,7 @@ Connection::operator=(const Connection &rhs)
 		_isClientSocket = rhs._isClientSocket;
 		_config = rhs._config;
 		_clientFD = rhs._clientFD;
-		_keepOpen = rhs._keepOpen;
+		_keepAlive = rhs._keepAlive;
 		_CStatus = rhs._CStatus;
 		_request = rhs._request;
 		_response = rhs._response;
@@ -142,7 +142,7 @@ void Connection::removeCGIFromEverywhere(Server& server) {
 
 connectStatus Connection::refreshIfKeepAlive()
 {
-	if (_response.getHeader("Connection") != "keep-open")
+	if (_response.getHeader("Connection") != "keep-alive")
 	{
 		return (connectStatus::FINISHED);
 	}

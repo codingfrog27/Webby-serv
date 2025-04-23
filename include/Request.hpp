@@ -111,7 +111,7 @@ class Request
 		std::string					request_line;
 		std::string 				_URI;
 		std::string					_filePath;
-		bool						_keepOpen;
+		bool						_keepAlive;
 		bool						_doneReading;
 		std::string					_statusStr;
 		int							_statusCode;

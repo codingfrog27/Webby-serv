@@ -49,7 +49,7 @@ class Connection
 		bool							_isClientSocket;
 		bool							_wantsNewConnect;
 		int								_clientFD;
-		bool							_keepOpen;
+		bool							_keepAlive;
 		t_time							_startTime;
 		t_secs							_IdleTimeout;
 		// bool							_doneReading;
