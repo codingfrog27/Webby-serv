@@ -104,7 +104,6 @@ bool	Response::responseIsValid(){
 	std::string statusLine;
 	std::getline(iss, statusLine);
 	statusLine.erase(std::remove(statusLine.begin(), statusLine.end(), '\r'), statusLine.end());
-	std::cout << "Status line: " << statusLine << std::endl;
 	std::regex statusLineRegex(R"(HTTP\/1\.1\s[1-5]\d{2}(?:\s.*)?)");
 	if (!std::regex_match(statusLine, statusLineRegex))
 		return false;
