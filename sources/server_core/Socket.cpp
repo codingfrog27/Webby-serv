@@ -46,7 +46,7 @@ void	Socket::openSocket()
 		throw std::runtime_error(std::string("setsockopt error: ") + strerror(errno));
 	if (bind(_socketFd, _addrInfo->ai_addr, _addrInfo->ai_addrlen) == -1)
 		throw std::runtime_error(std::string("Bind errorr: ") + strerror(errno));
-	if (listen(_socketFd, 20) < 0)
+	if (listen(_socketFd, 255) < 0)
 		throw std::runtime_error(std::string("Listen Error: ") + strerror(errno));
 	int listening = 0;
 	socklen_t len = sizeof(listening);
