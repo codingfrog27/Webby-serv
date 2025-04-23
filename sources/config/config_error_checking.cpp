@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   config_error_checking.cpp                          :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/23 14:34:48 by antoniosimo   ########   odam.nl         */
+/*   Updated: 2025/04/23 17:20:56 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -361,9 +361,9 @@ bool Config::validateAutoindex()
 	else
 		return (true);
 
-	if (_autoIndex_value.compare("on") == 0)
+	if (_autoIndex_value == "on")
 		return (true);
-	else if (_autoIndex_value.compare("off") == 0)
+	else if (_autoIndex_value == "off")
 		return (false);
 	else
 		throw std::invalid_argument(" invalid character in autoindex directive");
@@ -390,7 +390,7 @@ std::vector<Http_method> Config::validateAllowMethods()
     std::string allow_methods_value;
 	std::string tmp_value;
 	std::vector<Http_method>  tmp_vector;
-	std::vector<std::string>  methods = {"POST", "GET", "DELETE"};
+	std::vector<std::string>  methods = {"GET", "POST", "DELETE"};
 	
 	static int space = 0;
 

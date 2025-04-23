@@ -39,7 +39,7 @@ void	Response::getMethod(Request* request){
 		size = getInFile().tellg();
 		if (size == 0){
 			getInFile().close();
-			autoFillResponse("204 No Content", "");
+			autoFillResponse("204 No Content", "", "");
 			return ;
 		}
 		getInFile().seekg(0, std::ios::beg);
@@ -90,7 +90,7 @@ void	Response::postMethod(Request* request){
 		setBytesWritten(BUFFER_SIZE);
 		if (getBytesWritten() >= request->getBody().size()){
 			getOutFile().close();
-			autoFillResponse("201 Created", "");
+			autoFillResponse("201 Created", "", "");
 			setBytesWritten(0);
 			_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
 		}
@@ -109,7 +109,7 @@ void	Response::deleteMethod(Request* request){
 		_responseHandlerStatus = responseHandlerStatus::IN_DELETE;
 	if (fileExists(request->_filePath)){
 		if (std::remove(request->_filePath.c_str()) == 0)
-			autoFillResponse("200 OK", "");
+			autoFillResponse("200 OK", "", "");
 		else{
 			request->_statusCode = 500;
 			request->_statusStr = "500 Internal Server Error";
@@ -136,7 +136,7 @@ connectStatus	Response::responseHandler(Request* request){
 	{ 
 		if (request->_statusCode == 301 || request->_statusCode == 302){
 			setHeaders("Location", request->_filePath);
-			autoFillResponse(request->_statusStr, "");
+			autoFillResponse(request->_statusStr, "", "");
 			return connectStatus::RESPONDING;
 		}
 		if (request->getConfig()->_errorPage.find(std::to_string(request->_statusCode)) != request->getConfig()->_errorPage.end())
@@ -149,7 +149,7 @@ connectStatus	Response::responseHandler(Request* request){
 				return connectStatus::CGI_REQUIRED;
 			}
 			else{
-				autoFillResponse(request->_statusStr, request->_filePath);
+				autoFillResponse(request->_statusStr, request->_filePath, "");
 				return connectStatus::RESPONDING;
 			}
 		}
@@ -174,9 +174,18 @@ connectStatus	Response::responseHandler(Request* request){
 			return connectStatus::RESPONDING;
 		 }
 	}
-	if (_responseHandlerStatus == responseHandlerStatus::READY_TO_WRITE || _responseHandlerStatus == responseHandlerStatus::WRITING) {
-		_responseHandlerStatus = responseHandlerStatus::WRITING;
-		return (writeResponse(request->_clientFD));
+	if (_responseHandlerStatus == responseHandlerStatus::READY_TO_WRITE) {
+		if (responseIsValid() == false){
+			_responseBuffer.clear();
+			request->_statusCode = 500;
+			request->_statusStr = "500 Internal Server Error";
+			_responseHandlerStatus = responseHandlerStatus::IN_PROGRESS;
+			return connectStatus::RESPONDING;
+		}
+		else
+			_responseHandlerStatus = responseHandlerStatus::WRITING;
 	}
+	if (_responseHandlerStatus == responseHandlerStatus::WRITING)
+		return (writeResponse(request->_clientFD));
 	return connectStatus::RESPONDING;
 }

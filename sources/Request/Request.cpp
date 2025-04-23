@@ -6,18 +6,18 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/17 19:39:08 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/22 15:34:43 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/23 16:51:22 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include <fcntl.h>
 
-Request::Request(Config *config, int clientFD): _config(config), \
-	reading_mode(NOT_STARTED), body_bytes_read(0), _rnrnFound(false), 
-	_dataIsChunked(false), _headerAreParsed(false), _hasBody(false), _max_body_size(config->getMaxBodySizeT()), \
+Request::Request(Config *config, int clientFD): _config(config), _allowedMethods(config->_allow_methods), \
+	reading_mode(NOT_STARTED), body_bytes_read(0), _rnrnFound(false), _dataIsChunked(false), \
+	_headerAreParsed(false), _hasBody(false), _max_body_size(config->getMaxBodySizeT()), \
 	_root(config->_rootDir), _clientFD(clientFD), _method_type(Http_method::NOT_PARSED_YET), \
-	_keepOpen(true), _doneReading(false), _statusStr("0 Not started yet"), _statusCode(0), \
+	_keepAlive(true), _doneReading(false), _statusStr("0 Not started yet"), _statusCode(0), \
 	_dirListing(false), _rootless(false), _cgiRequired(false)
 {
 	fcntl(_clientFD, F_SETFL, O_NONBLOCK);
@@ -36,6 +36,7 @@ Request::operator=(const Request &rhs)
 {
 	if (this != &rhs)
 	{
+		_allowedMethods = rhs._allowedMethods;
 		_config = rhs._config;
 		_reqBody = rhs._reqBody;
 		_unsortedHeaders = rhs._unsortedHeaders;
@@ -60,7 +61,7 @@ Request::operator=(const Request &rhs)
 		request_line = rhs.request_line;
 		_URI = rhs._URI;
 		_filePath = rhs._filePath;
-		_keepOpen = rhs._keepOpen;
+		_keepAlive = rhs._keepAlive;
 		_doneReading = rhs._doneReading;
 		_statusStr = rhs._statusStr;
 		_statusCode = rhs._statusCode;

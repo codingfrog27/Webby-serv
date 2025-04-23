@@ -41,16 +41,16 @@ if "file" in form:
 		try:
 			with open(filepath, "wb") as f:
 				f.write(file_item.file.read())
-			status = 200
+			status = "200 OK"
 			message = f"File '{filename}' uploaded successfully! 🎉"
 		except Exception as e:
-			status = 500
+			status = "500 Internal Server Error"
 			message = f"An error occurred: {e}"
 	else:
-		status = 400
+		status = "400 Bad Request"
 		message = "File upload failed. 😢"
 else:
-	status = 200
+	status = "200 OK"
 	message = "No file uploaded. 😬"
 
 # HTML template function

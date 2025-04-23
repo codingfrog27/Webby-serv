@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import cgi, os, cgitb
+import os, cgitb
 
 cgitb.enable(display=1)
 
@@ -47,7 +47,7 @@ body = f"""<!DOCTYPE html>
 		<section>
 			<h2>Delete a file</h2>
 			<form action="/cgi-bin/delete.py" method="post">
-				<select id="file" name="file" size="1">
+				<select id="file" name="file" size="1" required>
 					{files_delete}
 				</select>
 				<input type="submit" value="Delete">
@@ -62,7 +62,7 @@ body = f"""<!DOCTYPE html>
 """
 
 # HTTP headers
-headers = f"""HTTP/1.1 200\r
+headers = f"""HTTP/1.1 200 OK\r
 Connection: {connection}\r
 Content-Type: text/html; charset=utf-8\r
 Content-Length: {len(body.encode('utf-8'))}\r

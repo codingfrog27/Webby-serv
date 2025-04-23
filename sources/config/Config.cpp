@@ -6,7 +6,7 @@
 /*   By: antoniosimone <antoniosimone@student.42      +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/23 14:39:49 by antoniosimo   ########   odam.nl         */
+/*   Updated: 2025/04/23 16:30:20 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,22 +100,19 @@ void	Config::readBlock(std::ifstream &file, std::string &line)
 
 int Config::mapToMembers()
 {
-	try 
+	std::vector<std::string> serverBlock {"allow_methods", "autoindex", "client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
+	std::set<std::string> uniqueKeys;
+	
+	for (const auto& [key, value] : _rulemap)
+		uniqueKeys.insert(key);
+	
+	std::vector<std::string> keys(uniqueKeys.begin(), uniqueKeys.end());
+	
+	std::sort(keys.begin(), keys.end());
+	serverBlock.erase(std::unique(serverBlock.begin(), serverBlock.end()), serverBlock.end());
+	if (keys == serverBlock)
 	{
-		std::vector<std::string> serverBlock {"allow_methods", "autoindex", "client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
-		std::set<std::string> uniqueKeys;
-		
-		for (const auto& [key, value] : _rulemap)
-			uniqueKeys.insert(key);
-		
-		std::vector<std::string> keys(uniqueKeys.begin(), uniqueKeys.end());
-		
-		std::sort(keys.begin(), keys.end());
-		serverBlock.erase(std::unique(serverBlock.begin(), serverBlock.end()), serverBlock.end());
-		if (keys == serverBlock)
-		{
 			setAllowMethods(validateAllowMethods());
-			setAutoindex(validateAutoindex());
 			setAutoindex(validateAutoindex()); 
 			setListen(validateListen()); 
 			setMaxBodySize(validateMaxBodySize()); 
@@ -126,16 +123,9 @@ int Config::mapToMembers()
 			setRoot(validateRoot());
 			setTimeout(validateTimeout()); 
 			setServerName(validateServerName()); 
-		}
-		else
-			throw std::runtime_error("Keys do not match the expected serverBlock configuration");
 	}
-	catch (const std::exception& e)
-	{
-		std::cout << RED "Unexpected error in mapToMembers: " << e.what() << RESET "\n\nClosing server" << std::endl;
-		exit(1);
-	}
-
+	else
+		throw std::invalid_argument("Invalid or missing rule in server block");
 	return (1);
 }
 

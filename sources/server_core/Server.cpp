@@ -57,8 +57,10 @@ void	Server::setupAddrInfo(Config *config)
 	hints.ai_protocol = IPPROTO_TCP;
 
 	status = getaddrinfo(config->_host.c_str(), config->_listen.c_str(), &hints, &_addrInfo);
-	if (status != 0)
-		throw std::runtime_error(std::string("getaddrinfo error: ") + gai_strerror(status));
+	if (status != 0){
+		std::cerr << RED "getaddrinfo error: " << gai_strerror(status) << RESET "\n\nClosing server" << std::endl;
+		exit(1);
+	}
 
 }
 

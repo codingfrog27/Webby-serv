@@ -60,7 +60,8 @@ enum class Http_method
 class Request
 {
 	private:
-		Config					*_config;
+		Config						*_config;
+		std::vector<Http_method>	_allowedMethods;
 		std::string				_reqBody;
 		std::string				_unsortedHeaders;
 		reading_status			reading_mode;
@@ -111,7 +112,7 @@ class Request
 		std::string					request_line;
 		std::string 				_URI;
 		std::string					_filePath;
-		bool						_keepOpen;
+		bool						_keepAlive;
 		bool						_doneReading;
 		std::string					_statusStr;
 		int							_statusCode;

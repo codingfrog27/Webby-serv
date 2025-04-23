@@ -21,7 +21,7 @@
 
 Connection::Connection(Config *config, int clientFD, bool isServerside): \
 _config(config), _request(config, clientFD), _response(config), _cgi(0), \
-_isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _keepOpen(false)
+_isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _keepAlive(false)
 {
 	_startTime = getStartTime();
 	_IdleTimeout = setTimeout(2);
@@ -47,7 +47,7 @@ Connection::operator=(const Connection &rhs)
 		_isClientSocket = rhs._isClientSocket;
 		_config = rhs._config;
 		_clientFD = rhs._clientFD;
-		_keepOpen = rhs._keepOpen;
+		_keepAlive = rhs._keepAlive;
 		_CStatus = rhs._CStatus;
 		_request = rhs._request;
 		_response = rhs._response;
@@ -77,8 +77,8 @@ void	Connection::connectionAction(const pollfd &poll, Server &server)
 		_CStatus = _cgi->CGIHandler(this, server.getCGIPollFDs(), server.getCGIMap());
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
 		_CStatus = _response.responseHandler(&_request);
-	if (_CStatus == connectStatus::FINISHED)
-		_CStatus = refreshIfKeepAlive();
+	if (_CStatus == connectStatus::CGI)
+		_CStatus = checkCGITimeout(server);
 }
 
 connectStatus	Connection::checkConnectStatus(const pollfd &poll)
@@ -111,42 +111,45 @@ bool	Connection::connectIsOkay(int fd)
 	return (false);
 }
 
+connectStatus	Connection::checkCGITimeout(Server &server)
+{
+	if (_cgi->CGIisTimedOut())
+	{
+		if (_cgi){
+			_cgi->killChild();
+			removeCGIFromEverywhere(server);
+		}
+		_response.autoFillResponse("504 Gateway Timeout", "", "");
+		return (connectStatus::RESPONDING);
+	}
+	return (connectStatus::CGI);
+}
+
 void Connection::removeCGIFromEverywhere(Server& server) {
 	auto& pollFDs = server.getCGIPollFDs();
 	auto it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdIn(); // Match the fd value
 	});
 	if (it != pollFDs.end()) {
-		close(_cgi->getFdIn());
+		_cgi->closeFdIn();
 		pollFDs.erase(it); // Erase the found element
 	}
 	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdOut(); // Match the fd value
 	});
 	if (it != pollFDs.end()) {
-		close(_cgi->getFdOut());
+		_cgi->closeFdOut();
 		pollFDs.erase(it); // Erase the found element
 	}
 	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdError(); // Match the fd value
 	});
 	if (it != pollFDs.end()) {
-		close(_cgi->getFdError());
+		_cgi->closeFdError();
 		pollFDs.erase(it); // Erase the found element
 	}
 	server.getCGIMap().erase(_cgi->getFdIn());
 	server.getCGIMap().erase(_cgi->getFdOut());
 	server.getCGIMap().erase(_cgi->getFdError());
 	_cgi.reset();
-}
-
-connectStatus Connection::refreshIfKeepAlive()
-{
-	if (_response.getHeader("Connection") != "Keep-Alive")
-	{
-		return (connectStatus::FINISHED);
-	}
-	_request = Request(this->_config, this->_clientFD);
-	_response = Response(this->_config);
-	return (connectStatus::IDLE);
 }
