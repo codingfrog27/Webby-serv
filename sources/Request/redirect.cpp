@@ -145,7 +145,7 @@ void  Request::checkRules(location &rules)
 				return;
 			}	
 		}
-		throw (ClientErrorExcept(403, "403 Forbidden"));
+		throw (ClientErrorExcept(404, "404 Not Found"));
 	}
 }
 
@@ -179,5 +179,5 @@ void	Request::checkIndex(std::vector<std::string> &indexPages, bool	autoindex)
 		this->_dirListing = true;
 		return;
 	}
-	throw ClientErrorExcept(403, "403 Forbidden");
+	throw ClientErrorExcept(404, "404 Not Found");
 }
