@@ -78,7 +78,7 @@ body = f"""<!DOCTYPE html>
 </html>"""
 
 # HTTP headers
-headers = f"""HTTP/1.1 200\r
+headers = f"""HTTP/1.1 200 OK\r
 Connection: {connection}\r
 Content-Type: text/html; charset=utf-8\r
 Content-Length: {len(body.encode('utf-8'))}\r

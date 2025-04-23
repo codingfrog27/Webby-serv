@@ -19,16 +19,16 @@ if selected_file:
 	if os.path.exists(file_path):
 		try:
 			os.remove(file_path)
-			status = 200
+			status = "200 OK"
 			message = f"File '{safe_filename}' deleted successfully! 🗑️"
 		except Exception as e:
-			status = 500
+			status = "500 Internal Server Error"
 			message = f"An error occurred: {e}"
 	else:
-		status = 404
+		status = "404 Not Found"
 		message = f"File '{safe_filename}' does not exist! ❌"
 else:
-	status = 400
+	status = "400 Bad Request"
 	message = "No file selected for deletion! ❌"
 
 # Generate HTML response

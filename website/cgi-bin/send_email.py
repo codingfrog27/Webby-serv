@@ -14,7 +14,7 @@ subject = form.getvalue("subject").strip()
 message = form.getvalue("message").strip()
 
 if not name or not email or not subject or not message:
-	status = 400
+	status = "400 Bad Request"
 	message = "Missing required fields! 😢"
 
 else:
@@ -44,11 +44,11 @@ else:
 		server.send_message(msg)
 		server.quit()
 
-		status = 200
+		status = "200 OK"
 		message = "Message sent successfully! 🎉"
 
 	except Exception as e:
-		status = 500
+		status = "500 Internal Server Error"
 		message = f"An error occurred: {e}"
 
 body = f"""<!DOCTYPE html>
