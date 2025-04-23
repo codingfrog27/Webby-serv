@@ -68,5 +68,6 @@ class Connection
 		void			findFDtoRemove(int eraseMe, std::vector<pollfd> &pollFDs);
 		void			removeCGIFromEverywhere(Server& server);
 		connectStatus	checkConnectStatus(const pollfd &poll);
+		connectStatus	checkCGITimeout(Server &server);
 		static bool		connectIsOkay(int fd);
 } ;

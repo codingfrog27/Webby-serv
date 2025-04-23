@@ -77,6 +77,8 @@ void	Connection::connectionAction(const pollfd &poll, Server &server)
 		_CStatus = _cgi->CGIHandler(this, server.getCGIPollFDs(), server.getCGIMap());
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
 		_CStatus = _response.responseHandler(&_request);
+	if (_CStatus == connectStatus::CGI)
+		_CStatus = checkCGITimeout(server);
 	if (_CStatus == connectStatus::FINISHED)
 		_CStatus = refreshIfKeepAlive();
 }
@@ -109,6 +111,20 @@ bool	Connection::connectIsOkay(int fd)
 		return (true);
 	std::cerr << RED "Client closed socket mid load, closing connection" RESET << std::endl;
 	return (false);
+}
+
+connectStatus	Connection::checkCGITimeout(Server &server)
+{
+	if (_cgi->CGIisTimedOut())
+	{
+		if (_cgi){
+			_cgi->killChild();
+			removeCGIFromEverywhere(server);
+		}
+		_response.autoFillResponse("504 Gateway Timeout", "", "");
+		return (connectStatus::RESPONDING);
+	}
+	return (connectStatus::CGI);
 }
 
 void Connection::removeCGIFromEverywhere(Server& server) {

@@ -34,6 +34,7 @@ CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(co
 	CGIPollFDs.emplace_back(pollfd{_fdOut[0], POLLIN, 0});
 	CGIPollFDs.emplace_back(pollfd{_fdError[0], POLLIN, 0});
 	setupCGIEnvironment(&connection->_request);
+	_maxDuration = setTimeout(connection->_config->getTimeout()/1000);
 	return ;
 }
 
@@ -45,6 +46,7 @@ CGI::~CGI(){
 
 /*	Member functions	*/
 void	CGI::invokeCGI(Request* request, Response* response){
+	_startTime = getStartTime();
 	_PID = fork();
 	if (_PID == -1){
 		closePipes();
@@ -151,6 +153,21 @@ void CGI::readErrorFromCGI(Response* response) {
 		_CGIHandlerStatus = CGIHandlerStatus::FINISHED;
 	}
 	return ;
+}
+
+bool	CGI::CGIisTimedOut(void){
+	if (isTimedOut(_startTime, _maxDuration)) {
+		return true;
+	}
+	return false;
+}
+
+void CGI::killChild(void) {
+	if (_PID != -1) {
+		kill(_PID, SIGKILL);
+		_PID = -1;
+	}
+	closePipes();
 }
 
 bool CGI::childIsRunning(Response* response) {

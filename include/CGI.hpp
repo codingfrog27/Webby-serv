@@ -4,6 +4,7 @@
 #include <poll.h>
 #include <unordered_map>
 #include <memory>
+#include "timeout.hpp"
 
 class Request;
 class Response;
@@ -32,6 +33,8 @@ class CGI{
 		connectStatus		CGIHandler(Connection* connection, std::vector<pollfd> &CGIPollFDs, std::unordered_map<int, std::shared_ptr<CGI>> &CGIMap);
 		void				closePipes(void);
 		bool				childIsRunning(Response* response);
+		bool				CGIisTimedOut(void);
+		void				killChild(void);
 
 		void				writeToCGI(Request* request, Response* response);
 		void				readFromCGI(Response* response);
@@ -50,15 +53,14 @@ class CGI{
 		int					_fdIn[2];
 		int					_fdOut[2];
 		int					_fdError[2];
-		// pollfd				_pollFdIn;
-		// pollfd				_pollFdOut;
-		// pollfd				_pollFdError;
 		int					_clientFD;
 		CGIHandlerStatus	_CGIHandlerStatus;
 		int					_PID;
 		size_t				_bytesWrittenToChild;
 		std::string			_scriptError;
 		bool				_childIsRunningStatus;
+		t_time				_startTime;
+		t_secs				_maxDuration;
 
 		void				invokeCGI(Request* request, Response* response);
 		void				executeScript(Request* request, Response* response);

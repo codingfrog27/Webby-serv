@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/12/09 16:34:41 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/01/31 15:36:59 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/23 15:47:28 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ bool isTimedOut(t_time startTime, t_secs maxDuration)
 	t_secs timePassed =  std::chrono::duration_cast<std::chrono::\
 							seconds>(now - startTime);
 	if (timePassed > maxDuration){
-		std::cout << MAGENTA "timed out" RESET << std::endl;
 		return (true);
 	}
 	return (false);
