@@ -259,6 +259,18 @@ int	CGI::getFdError(void){
 	return _fdError[0];
 }
 
+void CGI::closeFdIn(void){
+	close(_fdIn[1]);
+}
+
+void CGI::closeFdOut(void){
+	close(_fdOut[0]);
+}
+
+void CGI::closeFdError(void){
+	close(_fdError[0]);
+}
+
 int	CGI::getClientFD(void){
 	return _clientFD;
 }

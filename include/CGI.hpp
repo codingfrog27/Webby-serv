@@ -48,6 +48,10 @@ class CGI{
 		int					getFdError(void);
 		int					getClientFD(void);
 
+		void				closeFdIn(void);
+		void				closeFdOut(void);
+		void				closeFdError(void);
+
 	private:
 		std::vector<char*>	_envp;
 		int					_fdIn[2];
