@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/23 11:53:55 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/23 16:22:44 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,42 +100,31 @@ void	Config::readBlock(std::ifstream &file, std::string &line)
 
 int Config::mapToMembers()
 {
-	try 
+	std::vector<std::string> serverBlock {"autoindex", "client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
+	std::set<std::string> uniqueKeys;
+	
+	for (const auto& [key, value] : _rulemap)
+		uniqueKeys.insert(key);
+	
+	std::vector<std::string> keys(uniqueKeys.begin(), uniqueKeys.end());
+	
+	std::sort(keys.begin(), keys.end());
+	serverBlock.erase(std::unique(serverBlock.begin(), serverBlock.end()), serverBlock.end());
+	if (keys == serverBlock)
 	{
-		std::vector<std::string> serverBlock {"autoindex", "client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
-		std::set<std::string> uniqueKeys;
-		
-		for (const auto& [key, value] : _rulemap)
-			uniqueKeys.insert(key);
-		
-		std::vector<std::string> keys(uniqueKeys.begin(), uniqueKeys.end());
-		
-		std::sort(keys.begin(), keys.end());
-		serverBlock.erase(std::unique(serverBlock.begin(), serverBlock.end()), serverBlock.end());
-		if (keys == serverBlock)
-		{
-				setAutoindex(validateAutoindex()); 
-				setListen(validateListen()); 
-				setMaxBodySize(validateMaxBodySize()); 
-				setMaxBodySizeT(convertMaxBodySize());
-				setErrorPage(validateErrorPage());
-				setHost(validateHost());
-				setIndex(ValidateIndex());
-				setRoot(validateRoot());
-				setTimeout(validateTimeout()); 
-				setServerName(validateServerName()); 
-		}
+			setAutoindex(validateAutoindex()); 
+			setListen(validateListen()); 
+			setMaxBodySize(validateMaxBodySize()); 
+			setMaxBodySizeT(convertMaxBodySize());
+			setErrorPage(validateErrorPage());
+			setHost(validateHost());
+			setIndex(ValidateIndex());
+			setRoot(validateRoot());
+			setTimeout(validateTimeout()); 
+			setServerName(validateServerName()); 
 	}
-	catch (const std::invalid_argument& e){
-		std::cout << RED "Invalid argument in mapToMembers: " << e.what() << RESET "\n\nClosing server" << std::endl;
-		exit(1);
-	}
-	catch (const std::exception& e)
-	{
-		std::cout << RED "Unexpected error in mapToMembers: " << e.what() << RESET "\n\nClosing server" << std::endl;
-		exit(1);
-	}
-
+	else
+		throw std::invalid_argument("Invalid or missing rule in server block");
 	return (1);
 }
 

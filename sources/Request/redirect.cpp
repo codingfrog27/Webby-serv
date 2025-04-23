@@ -145,7 +145,7 @@ void  Request::checkRules(location &rules)
 				return;
 			}	
 		}
-		throw (ClientErrorExcept(404, "404 Not Found"));
+		throw (ClientErrorExcept(403, "403 Forbidden"));
 	}
 }
 
