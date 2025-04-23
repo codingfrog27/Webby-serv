@@ -1,6 +1,7 @@
 #include "Response.hpp"
 #include "Request.hpp"
 #include "Connection.hpp"
+#include <regex>
 
 Response::Response(Config *config) {
 	this->_responseHandlerStatus = responseHandlerStatus::NOT_STARTED;
@@ -41,7 +42,7 @@ Response::~Response(){
 	return ;
 }
 
-void	Response::autoFillResponse(std::string status, std::string path){
+void	Response::autoFillResponse(std::string status, std::string path, std::string stdErrorOuput){
 	std::string	statusCode = status.substr(0, 3);
 	
 	if (path.empty())
@@ -54,7 +55,12 @@ void	Response::autoFillResponse(std::string status, std::string path){
 	setStatus(status);
 	if (!_body.empty())
 		_body.clear();
-	if (file.is_open()){
+	if (!stdErrorOuput.empty()){
+		setHeaders("Content-Length", std::to_string(stdErrorOuput.length()));
+		setHeaders("Content-Type", "text/plain");
+		setBody(stdErrorOuput);
+	}
+	else if (file.is_open()){
 		file.seekg(0, std::ios::end);
 		size = file.tellg();
 		file.seekg(0, std::ios::beg);
@@ -65,7 +71,7 @@ void	Response::autoFillResponse(std::string status, std::string path){
 			setBody(buffer.data());
 		}
 		else
-			autoFillResponse("500 Internal Server Error", "");
+			autoFillResponse("500 Internal Server Error", "", "");
 		file.close();
 	}
 	else{
@@ -91,6 +97,20 @@ std::string	Response::generateResponse() const{
 	return response;
 }
 
+bool	Response::responseIsValid(){
+	if (_responseBuffer.empty())
+		return false;
+	std::istringstream iss(_responseBuffer);
+	std::string statusLine;
+	std::getline(iss, statusLine);
+	statusLine.erase(std::remove(statusLine.begin(), statusLine.end(), '\r'), statusLine.end());
+	std::cout << "Status line: " << statusLine << std::endl;
+	std::regex statusLineRegex(R"(HTTP\/1\.1\s[1-5]\d{2}(?:\s.*)?)");
+	if (!std::regex_match(statusLine, statusLineRegex))
+		return false;
+	return true;
+}
+
 connectStatus Response::writeResponse(int FD){
 	if (!Connection::connectIsOkay(FD))
 		return connectStatus::CONNECT_CLOSED;
@@ -108,7 +128,7 @@ connectStatus Response::writeResponse(int FD){
 			setResponseHandlerStatus(responseHandlerStatus::FINISHED);
 			return connectStatus::FINISHED;
 		}
-		autoFillResponse("500 Internal Server Error: write", NULL);
+		autoFillResponse("500 Internal Server Error: write", "", "");
 		_timesWriteFailed++;
 		return connectStatus::RESPONDING;
 	}

@@ -37,7 +37,7 @@ class Response{
 		Response &										operator=(const Response& obj);
 
 		connectStatus									responseHandler(Request* request);
-		void											autoFillResponse(std::string status, std::string path);
+		void											autoFillResponse(std::string status, std::string path, std::string stdErrorOuput = "");
 		std::string										generateResponse() const;
 
 		void											setHTTPVersion(std::string HTTPversion);
@@ -59,8 +59,9 @@ class Response{
 		readingMode										getReadingModeFromResponse() const;
 		std::string										getResponseBuffer() const;
 		size_t											getBytesWritten() const;
-		connectStatus									writeResponse(int FD);
 
+		bool											responseIsValid();
+		connectStatus									writeResponse(int FD);
 		std::string										generateDirectoryListing(const std::string& _filePath);
 
 	private:
