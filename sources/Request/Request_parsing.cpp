@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/23 11:40:01 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/23 12:03:03 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ bool	Request::dechunkBody()
 void	Request::parseBody()
 {
 	std::string		content_type = getHeaderValue("Content-Type");
-	if (content_type.compare("application/x-www-form-urlencoded") == 0)
+	if (content_type == "application/x-www-form-urlencoded")
 		parseUrlEncoded();
 	_reqBody = trim(_reqBody);
 	_doneReading = true;

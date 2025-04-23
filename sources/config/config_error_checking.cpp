@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:41:53 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/22 17:20:04 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/23 12:02:37 by mstegema      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -360,9 +360,9 @@ bool Config::validateAutoindex()
 	else
 		return (true);
 
-	if (_autoIndex_value.compare("on") == 0)
+	if (_autoIndex_value == "on")
 		return (true);
-	else if (_autoIndex_value.compare("off") == 0)
+	else if (_autoIndex_value == "off")
 		return (false);
 	else
 		throw std::invalid_argument(" invalid character in autoindex directive");
