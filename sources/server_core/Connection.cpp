@@ -79,8 +79,6 @@ void	Connection::connectionAction(const pollfd &poll, Server &server)
 		_CStatus = _response.responseHandler(&_request);
 	if (_CStatus == connectStatus::CGI)
 		_CStatus = checkCGITimeout(server);
-	if (_CStatus == connectStatus::FINISHED)
-		_CStatus = refreshIfKeepAlive();
 }
 
 connectStatus	Connection::checkConnectStatus(const pollfd &poll)
@@ -154,15 +152,4 @@ void Connection::removeCGIFromEverywhere(Server& server) {
 	server.getCGIMap().erase(_cgi->getFdOut());
 	server.getCGIMap().erase(_cgi->getFdError());
 	_cgi.reset();
-}
-
-connectStatus Connection::refreshIfKeepAlive()
-{
-	if (_response.getHeader("Connection") != "keep-alive" && _response.getHeader("Connection") != "Keep-Alive")
-	{
-		return (connectStatus::FINISHED);
-	}
-	_request = Request(this->_config, this->_clientFD);
-	_response = Response(this->_config);
-	return (connectStatus::IDLE);
 }

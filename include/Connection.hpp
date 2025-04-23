@@ -52,7 +52,6 @@ class Connection
 		bool							_keepAlive;
 		t_time							_startTime;
 		t_secs							_IdleTimeout;
-		// bool							_doneReading;
 		
 		// Constructors and Destructors
 		Connection(Config *config, int clientFD, bool isServerside);
@@ -60,10 +59,6 @@ class Connection
 		Connection &operator=(const Connection &rhs);
 		~Connection();
 
-		// Public Methods
-		// void	resetRequest(Config* config, int clientFD);
-		// void	resetResponse();
-		connectStatus	refreshIfKeepAlive();
 		void			connectionAction(const pollfd &poll, Server &server);
 		void			findFDtoRemove(int eraseMe, std::vector<pollfd> &pollFDs);
 		void			removeCGIFromEverywhere(Server& server);
