@@ -6,8 +6,8 @@ VERSION_FLAG = -std=c++20
 
 INCLUDE_FLAGS = -I include/ -I libft/include
 LIBFT_A			:=	./libft/libft.a
-Wflags = -Wall -Wextra -Werror 
-# Wflags += -g -fsanitize=address
+Wflags = -Wall -Wextra -Werror
+# Wflags +=  -fsanitize=address
 
 INCLDIR := include/
 SRCDIR = sources

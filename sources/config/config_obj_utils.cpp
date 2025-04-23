@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   config_obj_utils.cpp                               :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
+/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/23 14:30:55 by antoniosimo   ########   odam.nl         */
+/*   Updated: 2025/04/23 16:51:39 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ Config::Config(void)
 }
 
 Config::Config(const Config &rhs)
-    : _autoindex(rhs._autoindex),
+    : _allow_methods(rhs._allow_methods),
+	 _autoindex(rhs._autoindex),
       _autoIndexFilePath(rhs._autoIndexFilePath),
       _client_max_body_size(rhs._client_max_body_size),
 	  _client_max_body_size_t(rhs._client_max_body_size_t),
@@ -55,6 +56,7 @@ Config &Config::operator=(const Config &rhs)
 {
 	if (this != &rhs)
 	{
+		_allow_methods = rhs._allow_methods;
 		_listen = rhs._listen;
 		_serverName = rhs._serverName;
 		_maxConnects = rhs._maxConnects;

@@ -50,10 +50,18 @@ void	Request::printHeaders()
 Http_method Request::which_method_type(std::string str)
 {
 	const char *Methods[] = {"GET", "POST", "DELETE"};
-	for (size_t i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		if (str == Methods[i])
-			return (static_cast<Http_method>(i));
+		{
+			_method_type = static_cast<Http_method>(i);
+			for (auto allowed : _allowedMethods)
+			{
+				if (allowed == _method_type)
+					return (_method_type);
+			}
+			throw ClientErrorExcept(405, "405 Method Not Allowed");
+		}
 	}
 	throw ClientErrorExcept(400, "400 Unsupported HTTP method: " + str);
 }
@@ -80,25 +88,6 @@ int	Request::convertChunkSize(const std::string &hexStr, size_t &hexStrSize)
 		throw ClientErrorExcept(413, "413 payload too large");
 	hexStrSize = (hexEnd - hexStr.c_str());
 	return (chunkSize);
-}
-
-std::string	urlDecode(const std::string &encoded)
-{
-	std::string decodedStr;
-	char ch;
-
-	for (size_t i = 0; encoded[i]; i++)
-	{
-		ch = encoded[i];
-		 if (encoded[i] == '%') {
-			ch = static_cast<char>(std::stoi(encoded.substr(i + 1, 2), nullptr, 16));
-			i += 2;
-		 }
-		 else if (encoded[i] == '+')
-		 	ch = ' ';
-		decodedStr += ch;
-	}
-	return (decodedStr);
 }
 
 const std::string &Request::getBody()

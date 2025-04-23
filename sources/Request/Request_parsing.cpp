@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/23 12:03:03 by mstegema      ########   odam.nl         */
+/*   Updated: 2025/04/23 17:38:42 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,30 +162,8 @@ bool	Request::dechunkBody()
 
 void	Request::parseBody()
 {
-	std::string		content_type = getHeaderValue("Content-Type");
-	if (content_type == "application/x-www-form-urlencoded")
-		parseUrlEncoded();
 	_reqBody = trim(_reqBody);
 	_doneReading = true;
 	if (_statusCode != 302)
 			_statusStr = "";
-}
-
-std::string	urlDecode(const std::string &encoded);
-
-void	Request::parseUrlEncoded()
-{
-	if (_reqBody.size() < 2) {
-		std::cout << "url decode without body???" << std::endl;
-		return;
-	}
-	std::istringstream stream(_reqBody.substr(2));
-	std::string pair;
-
-	while (std::getline(stream, pair, '&')) {
-		size_t pos = pair.find('=');
-		if (pos == std::string::npos)
-			throw (ClientErrorExcept(400, "400 missing = in www-form encoded pairs"));
-		_wwwFormEncodedPairs[urlDecode(pair.substr(0, pos))] = urlDecode(pair.substr(pos + 1));
-	}
 }

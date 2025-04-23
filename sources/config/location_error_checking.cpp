@@ -52,7 +52,7 @@ std::vector<Http_method> location::validateAllowMethods()
     std::string allow_methods_value;
 	std::string tmp_value;
 	std::vector<Http_method>  tmp_vector;
-	std::vector<std::string>  methods = {"POST", "GET", "DELETE"};
+	std::vector<std::string>  methods = {"GET", "POST", "DELETE"};
 	
 	static int space = 0;
 

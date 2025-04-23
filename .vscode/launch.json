@@ -11,7 +11,7 @@
 			"program": "${workspaceFolder}/webserv",
 			"args": ["${workspaceFolder}/example_config.conf"],
 			"stopAtEntry": false,
-			"cwd": "${fileDirname}",
+			"cwd": "${workspaceFolder}",
 			"environment": [],
 			"externalConsole": false,
 			"MIMode": "gdb",
