@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   Config.cpp                                         :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/03 18:10:04 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/22 17:20:04 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/23 14:39:49 by antoniosimo   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ int Config::mapToMembers()
 {
 	try 
 	{
-		std::vector<std::string> serverBlock {"autoindex", "client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
+		std::vector<std::string> serverBlock {"allow_methods", "autoindex", "client_max_body_size", "error_page", "host", "index", "listen", "root", "server_name", "timeout"};
 		std::set<std::string> uniqueKeys;
 		
 		for (const auto& [key, value] : _rulemap)
@@ -114,22 +114,21 @@ int Config::mapToMembers()
 		serverBlock.erase(std::unique(serverBlock.begin(), serverBlock.end()), serverBlock.end());
 		if (keys == serverBlock)
 		{
-				setAutoindex(validateAutoindex()); 
-				setListen(validateListen()); 
-				setMaxBodySize(validateMaxBodySize()); 
-				setMaxBodySizeT(convertMaxBodySize());
-				setErrorPage(validateErrorPage());
-				setHost(validateHost());
-				setIndex(ValidateIndex());
-				setRoot(validateRoot());
-				setTimeout(validateTimeout()); 
-				setServerName(validateServerName()); 
+			setAllowMethods(validateAllowMethods());
+			setAutoindex(validateAutoindex());
+			setAutoindex(validateAutoindex()); 
+			setListen(validateListen()); 
+			setMaxBodySize(validateMaxBodySize()); 
+			setMaxBodySizeT(convertMaxBodySize());
+			setErrorPage(validateErrorPage());
+			setHost(validateHost());
+			setIndex(ValidateIndex());
+			setRoot(validateRoot());
+			setTimeout(validateTimeout()); 
+			setServerName(validateServerName()); 
 		}
 		else
-		{
-			std::cout << "Keys do not match the expected serverBlock configuration" << std::endl;
-			return (0);
-		}
+			throw std::runtime_error("Keys do not match the expected serverBlock configuration");
 	}
 	catch (const std::exception& e)
 	{

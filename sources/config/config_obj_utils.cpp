@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   config_obj_utils.cpp                               :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/06 19:35:05 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/22 14:42:31 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/23 14:30:55 by antoniosimo   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,16 @@ bool		Config::getAutoindex()
 void Config::setAutoindex(const bool& autoIndex)
 {
 	this->_autoindex = autoIndex;
+}
+
+std::vector<Http_method>	Config::getAllowMethods()
+{
+	return(this->_allow_methods);
+}
+
+void	Config::setAllowMethods(const std::vector<Http_method> &allow_methods)
+{
+	this->_allow_methods = allow_methods;
 }
 
 Config::NoBlockFound::NoBlockFound(std::string errMsg) : _errMsg(errMsg)

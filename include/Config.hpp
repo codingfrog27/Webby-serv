@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   Config.hpp                                         :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
+/*   By: antoniosimone <antoniosimone@student.42      +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/09/18 15:09:44 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/17 16:52:26 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/04/23 14:32:46 by antoniosimo   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 class Config
 {
 	public:
+		std::vector<Http_method>	_allow_methods;
 		bool 		_autoindex;
 		std::string _autoIndexFilePath;
 		std::string _client_max_body_size;
@@ -57,6 +58,7 @@ class Config
 
 	void	printBlockValue(const std::multimap<std::string, std::string> &configFile);
 	
+	std::vector<Http_method>	getAllowMethods();
 	bool		getAutoindex();
 	std::unordered_map<std::string, std::string> getErrorPage();
 	std::string	getMaxBodySize();
@@ -81,6 +83,7 @@ class Config
 	void		readBlock(std::ifstream &file, std::string &line);
 	location	findLocation (const std::multimap<std::string, location> & locations, const std::string& locationName);
 	void		parseRule(const std::string &line);
+	void		setAllowMethods(const std::vector<Http_method> &allow_methods);
 	void		setAutoindex(const bool& autoIndex);
 	void		setErrorPage(const std::unordered_map<std::string, std::string> &errorPageMap);
 	void		setHost(const std::string &host);
@@ -95,6 +98,7 @@ class Config
 
 	int			initializeServer();
 	int			mapToMembers();
+	std::vector<Http_method> validateAllowMethods();
 	bool		validateAutoindex();
 	std::unordered_map<std::string, std::string> validateErrorPage();
 	std::string validateHost();
