@@ -67,8 +67,8 @@ void	Server::setupAddrInfo(Config *config)
 
 Server::~Server(void)
 {
-	freeaddrinfo(_addrInfo);
 	std::cout << RED << "Server: Destructor called" << RESET << std::endl;
+	killAllCGIProcesses();
 }
 
 // ************************************************************************** //
@@ -201,6 +201,14 @@ void Server::acceptNewConnects(size_t size)
 					Connection{current._config, clientFD, true});
 			}
 		}
+	}
+}
+
+void Server::killAllCGIProcesses()
+{
+	for (auto &cgi : _CGIMap)
+	{
+		cgi.second->killChild();
 	}
 }
 

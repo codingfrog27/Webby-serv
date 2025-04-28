@@ -43,6 +43,7 @@ class Server
 		void		main_server_loop();
 		void		connectionAction(Connection &connect, pollfd &poll);
 		void		PrintConnectionStatusses(size_t size);
+		void		killAllCGIProcesses();
 
 		std::vector<pollfd>								&getCGIPollFDs(void);
 		std::unordered_map<int, std::shared_ptr<CGI>>	&getCGIMap(void);

@@ -10,6 +10,7 @@
 CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(connection->_clientFD){
 	_CGIHandlerStatus = CGIHandlerStatus::NOT_STARTED;
 	_bytesWrittenToChild = 0;
+	_PID = -1;
 
 	if (pipe(_fdIn) == -1) {
 		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdIn", "", "");
