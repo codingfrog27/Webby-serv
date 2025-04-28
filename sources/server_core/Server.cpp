@@ -56,6 +56,12 @@ void	Server::setupAddrInfo(Config *config)
 	hints.ai_flags = AI_PASSIVE;
 	hints.ai_protocol = IPPROTO_TCP;
 
+	if (_addrInfo)
+	{
+		freeaddrinfo(_addrInfo);
+		_addrInfo = nullptr;
+	}
+
 	status = getaddrinfo(config->_host.c_str(), config->_listen.c_str(), &hints, &_addrInfo);
 	if (status != 0){
 		std::cerr << RED "getaddrinfo error: " << gai_strerror(status) << RESET "\n\nClosing server" << std::endl;
@@ -67,7 +73,6 @@ void	Server::setupAddrInfo(Config *config)
 
 Server::~Server(void)
 {
-	freeaddrinfo(_addrInfo);
 	std::cout << RED << "Server: Destructor called" << RESET << std::endl;
 }
 
@@ -85,25 +90,40 @@ void	Server::main_server_loop()
 			continue;
 		for (size_t i = 0; i < size; i++)
 		{
-			Connection &current = _Connections.at(_pollFDs[i].fd);
-			if (current._isClientSocket)
-				current.connectionAction(_pollFDs[i], *this);
-			else if (_pollFDs[i].revents & POLLIN)
-					current._wantsNewConnect = true;
-			
+			auto it = _Connections.find(_pollFDs[i].fd);
+			if (it != _Connections.end()) 
+			{
+			    Connection &current = it->second;
+				if (current._isClientSocket)
+					current.connectionAction(_pollFDs[i], *this);
+				else if (_pollFDs[i].revents & POLLIN)
+						current._wantsNewConnect = true;
+			} 
+			else 
+			    continue;
 		}
 		acceptNewConnects(size);
 		for (size_t i = 0; i < size;)
 		{
-			Connection &current = _Connections.at(_pollFDs[i].fd);
-			if (current._CStatus == connectStatus::CONNECT_CLOSED || \
-				current._CStatus == connectStatus::FINISHED)
-				{
-					close_connect(current._clientFD);
-					size--;
-				}
-			else
-				i++;
+			auto it = _Connections.find(_pollFDs[i].fd);
+			if (it != _Connections.end()) 
+			{
+			    Connection &current = it->second;
+				if (current._CStatus == connectStatus::CONNECT_CLOSED || \
+					current._CStatus == connectStatus::FINISHED)
+					{
+						close_connect(current._clientFD);
+						size--;
+					}
+				else
+					i++;
+			}
+			else 
+			{
+				_pollFDs.erase(_pollFDs.begin() + i);
+				size--;
+			    continue;
+			}
 		}
 		handleCGIPollEvents();
 	}
@@ -142,9 +162,8 @@ void Server::handleCGIPollEvents() {
 		return ;
 	for (size_t i = 0; i < size; i++){
 		CGI *cgi = _CGIMap[_CGIPollFDs[i].fd].get();
-		if (cgi == nullptr){
+		if (cgi == nullptr)
 			continue;
-		}
 		Connection &connection = _Connections.at(cgi->getClientFD());
 
 		if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT){
@@ -182,25 +201,31 @@ void Server::acceptNewConnects(size_t size)
 	int clientFD = 0;
 	for (size_t i = 0; i < size; i++)
 	{
-		Connection &current = _Connections.at(_pollFDs[i].fd);
-		if (current._wantsNewConnect == true)
+		auto it = _Connections.find(_pollFDs[i].fd);
+		if (it != _Connections.end()) 
 		{
-			clientFD = accept(_pollFDs[i].fd, nullptr, nullptr);
-			if (clientFD <= 0)
+		    Connection &current = it->second;
+			if (current._wantsNewConnect == true)
 			{
-				std::cout << "NOT ACCEPTED" << clientFD << std::endl;
-				NicePrint::promptEnter();
-				break;
+				clientFD = accept(_pollFDs[i].fd, nullptr, nullptr);
+				if (clientFD <= 0)
+				{
+					std::cout << "NOT ACCEPTED" << clientFD << std::endl;
+					NicePrint::promptEnter();
+					break;
+				}
+				else {
+					std::cout << GREEN "new connection " RESET << "FD == " << clientFD <<  std::endl;
+					current._wantsNewConnect = false;
+					_pollFDs.emplace_back(\
+							pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
+					_Connections.emplace(clientFD, \
+						Connection{current._config, clientFD, true});
+				}
 			}
-			else {
-				std::cout << GREEN "new connection " RESET << "FD == " << clientFD <<  std::endl;
-				current._wantsNewConnect = false;
-				_pollFDs.emplace_back(\
-						pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
-				_Connections.emplace(clientFD, \
-					Connection{current._config, clientFD, true});
-			}
-		}
+		} 
+		else 
+		    continue;
 	}
 }
 

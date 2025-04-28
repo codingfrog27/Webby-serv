@@ -2,6 +2,9 @@
 
 import os, cgitb
 
+while True:
+	continue
+
 cgitb.enable(display=1)
 
 # Get connection type from environment variable
