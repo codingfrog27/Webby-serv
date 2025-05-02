@@ -166,6 +166,7 @@ bool	CGI::CGIisTimedOut(void){
 void CGI::killChild(void) {
 	if (_PID != -1) {
 		kill(_PID, SIGKILL);
+		waitpid(_PID, NULL, 0); // Kill the zombies
 		_PID = -1;
 	}
 	closePipes();
