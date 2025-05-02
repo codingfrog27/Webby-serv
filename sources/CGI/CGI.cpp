@@ -202,9 +202,19 @@ void	CGI::executeScript(Request* request, Response* response){
 
 void CGI::closePipes(){
 	for (int i = 0; i < 2; i++){
-		if (_fdIn[i] != -1) close(_fdIn[i]);
-		if (_fdOut[i] != -1) close(_fdOut[i]);
-		if (_fdError[i] != -1) close(_fdError[i]);
+		if (_fdIn[i] != -1) {
+			close(_fdIn[i]);
+			_fdIn[i] = -1;
+		}
+		if (_fdOut[i] != -1) {
+			close(_fdOut[i]);
+			_fdOut[i] = -1;
+		}
+		if (_fdError[i] != -1) {
+			close(_fdError[i]);
+			_fdError[i] = -1;
+		}
+		
 	}
 }
 
@@ -263,14 +273,17 @@ int	CGI::getFdError(void){
 
 void CGI::closeFdIn(void){
 	close(_fdIn[1]);
+	_fdIn[1] = -1;
 }
 
 void CGI::closeFdOut(void){
 	close(_fdOut[0]);
+	_fdOut[0] = -1;
 }
 
 void CGI::closeFdError(void){
 	close(_fdError[0]);
+	_fdError[0] = -1;
 }
 
 int	CGI::getClientFD(void){
