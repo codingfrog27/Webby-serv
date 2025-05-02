@@ -115,10 +115,7 @@ connectStatus	Connection::checkCGITimeout(Server &server)
 {
 	if (_cgi->CGIisTimedOut())
 	{
-		if (_cgi){
-			_cgi->killChild();
-			removeCGIFromEverywhere(server);
-		}
+		removeCGIFromEverywhere(server);
 		_response.autoFillResponse("504 Gateway Timeout", "", "");
 		return (connectStatus::RESPONDING);
 	}
@@ -130,26 +127,21 @@ void Connection::removeCGIFromEverywhere(Server& server) {
 	auto it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdIn(); // Match the fd value
 	});
-	if (it != pollFDs.end()) {
-		_cgi->closeFdIn();
+	if (it != pollFDs.end()) 
 		pollFDs.erase(it); // Erase the found element
-	}
 	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdOut(); // Match the fd value
 	});
-	if (it != pollFDs.end()) {
-		_cgi->closeFdOut();
+	if (it != pollFDs.end())
 		pollFDs.erase(it); // Erase the found element
-	}
 	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdError(); // Match the fd value
 	});
-	if (it != pollFDs.end()) {
-		_cgi->closeFdError();
+	if (it != pollFDs.end())
 		pollFDs.erase(it); // Erase the found element
-	}
 	server.getCGIMap().erase(_cgi->getFdIn());
 	server.getCGIMap().erase(_cgi->getFdOut());
 	server.getCGIMap().erase(_cgi->getFdError());
+	_cgi->killChild();
 	_cgi.reset();
 }
