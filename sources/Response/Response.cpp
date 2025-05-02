@@ -79,7 +79,7 @@ void	Response::autoFillResponse(std::string status, std::string path, std::strin
 		setHeaders("Content-Length", std::to_string(status.length()));
 		setBody(status);
 	}
-	if (statusCode == "413")
+	if (statusCode == "413" || statusCode == "504")
 		setHeaders("Connection", "close");
 	setResponseBuffer(generateResponse());
 	_responseHandlerStatus = responseHandlerStatus::READY_TO_WRITE;
