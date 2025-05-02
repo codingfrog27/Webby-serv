@@ -165,8 +165,11 @@ void Server::handleCGIPollEvents() {
 		CGI *cgi = _CGIMap[_CGIPollFDs[i].fd].get();
 		if (cgi == nullptr)
 			continue;
-		Connection &connection = _Connections.at(cgi->getClientFD());
 
+		auto it = _Connections.find(cgi->getClientFD());
+		if (it == _Connections.end())
+			continue;
+		Connection &connection = it->second;
 		if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT){
 			cgi->writeToCGI(&connection._request, &connection._response);
 		}
