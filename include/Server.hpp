@@ -34,7 +34,6 @@ class Server
 		void		handleCGIPollEvents();
 		void		acceptNewConnects(size_t size);
 		void		close_connect(int i);
-		void		closeCGIConnects();
 	public:
 					Server(std::vector<Config>& vec);
 					Server(Server &rhs) = delete;
