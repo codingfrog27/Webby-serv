@@ -89,7 +89,7 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 	{
 		std::cout << "POLLERR flagged! " << std::endl;
 		if (getsockopt(poll.fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
-			std::cerr << "getsockopt failed" << std::endl;
+			std::cerr << "getsockopt failed??" << std::endl;
 		if (error != 0)
 			std::cerr << RED "Client closed socket mid load, closing connection" RESET << std::endl;
 		return (connectStatus::CONNECT_CLOSED);
@@ -102,7 +102,7 @@ bool	Connection::connectIsOkay(int fd)
 	int error = 0;
 	socklen_t len = sizeof(error);
 	if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0) {
-		std::cerr << "getsockopt failed" << std::endl;
+		std::cerr << "getsockopt failed!!" << std::endl;
 		return (false);
 	}
 	if (error == 0)

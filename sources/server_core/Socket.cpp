@@ -55,7 +55,7 @@ void	Socket::openSocket()
 		std::cerr << "ERROR: FD is not a listening socket!" << std::endl;
 	}
 	std::cout << CYAN "server socket opened, listening on port: " << _port << std::endl;
-	freeaddrinfo(const_cast<struct addrinfo *>(_addrInfo));
+	// freeaddrinfo(const_cast<struct addrinfo *>(_addrInfo));
 }
 
 void *Socket::get_in_addr(struct sockaddr *sa)
