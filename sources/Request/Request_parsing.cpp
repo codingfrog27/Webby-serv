@@ -6,7 +6,7 @@
 /*   By: mde-cloe <mde-cloe@student.42.fr>            +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/11/12 19:31:50 by mde-cloe      #+#    #+#                 */
-/*   Updated: 2025/04/23 17:38:42 by mde-cloe      ########   odam.nl         */
+/*   Updated: 2025/05/07 14:18:50 by mde-cloe      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,17 @@ void	Request::parse_headers(std::string header_str)
 
 void	Request::checkHeaders()
 {
-	
 	if (!headerExists("Host"))
 		throw(ClientErrorExcept(400, "400 bad request: Host missing"));
+		
+	std::string hostName = getHeaderValue("Host");
+	size_t		colonpos = hostName.find(":");
+	if (colonpos != std::string::npos)
+		hostName = hostName.substr(0, colonpos);
+	if (hostName != _config->getServerName())
+		throw(ClientErrorExcept(400, "400 bad request: incorrect Host"));
+
+
 	if (getHeaderValue("Connection") == "close")
 		_keepAlive = false;
 	if (_method_type ==  Http_method::GET || _method_type == Http_method::DELETE)
