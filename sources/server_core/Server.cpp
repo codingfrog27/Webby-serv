@@ -23,7 +23,7 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 	try
 	{
 		signal(SIGPIPE, SIG_IGN);
-		int	FD;
+		int	FD = -1;
 		_Connections.reserve(100);
 		_serverSockets.reserve(_serverBlocks.size());
 		for (size_t i = 0; i < _serverBlocks.size(); ++i)
@@ -49,7 +49,7 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 // IPPROTO_TCP == Specifies the protocol
 void	Server::setupAddrInfo(Config *config)
 {
-	addrinfo hints;
+	addrinfo hints = {};
 	int status;
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
@@ -156,8 +156,7 @@ void	Server::close_connect(int fd)
 
 
 void Server::handleCGIPollEvents() {
-	size_t	size;
-	size = _CGIPollFDs.size();
+	size_t	size = _CGIPollFDs.size();
 	if (poll(_CGIPollFDs.data(), size, 0) == 0)
 		return ;
 	for (size_t i = 0; i < size; i++){

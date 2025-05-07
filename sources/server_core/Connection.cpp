@@ -38,22 +38,21 @@ Connection::Connection(const Connection &rhs) :  _server(rhs._server), _request(
 Connection &
 Connection::operator=(const Connection &rhs)
 {
-
 	if (this != &rhs)
 	{
 		_isClientSocket = rhs._isClientSocket;
 		_config = rhs._config;
 		_clientFD = rhs._clientFD;
-		_keepAlive = rhs._keepAlive;
 		_CStatus = rhs._CStatus;
 		_request = rhs._request;
 		_response = rhs._response;
+		_cgi = rhs._cgi;
+		_wantsNewConnect = rhs._wantsNewConnect;
+		_keepAlive = rhs._keepAlive;
 		_startTime = rhs._startTime;
 		_IdleTimeout = rhs._IdleTimeout;
-		_wantsNewConnect = rhs._wantsNewConnect;
 	}
-
-	return (*this);
+	return *this;
 }
 
 Connection::~Connection(void)
