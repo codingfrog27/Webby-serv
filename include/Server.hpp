@@ -38,7 +38,7 @@ class Server
 					Server(std::vector<Config>& vec);
 					Server(Server &rhs) = delete;
 					~Server(void);
-		Server		&operator=(const Server &rhs) = delete;
+		Server		&operator=(const Server &rhs);
 		void		main_server_loop();
 		void		connectionAction(Connection &connect, pollfd &poll);
 		void		PrintConnectionStatusses(size_t size);

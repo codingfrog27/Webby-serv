@@ -32,7 +32,7 @@ Server::Server(std::vector<Config>& vec) : _serverBlocks(vec), _addrInfo{0}
 			_serverSockets.emplace_back(&_serverBlocks[i], _addrInfo);
 			FD = _serverSockets[i]._socketFd;
 			_pollFDs.emplace_back(pollfd{FD, POLLIN | POLLERR,  0});
-			_Connections.emplace(FD, Connection{&_serverBlocks[i], FD, false});
+			_Connections.emplace(FD, Connection{&_serverBlocks[i], *this, FD, false});
 		}
 	}
 	catch(const std::exception& e)
@@ -69,7 +69,6 @@ void	Server::setupAddrInfo(Config *config)
 	}
 
 }
-
 
 Server::~Server(void)
 {
@@ -192,7 +191,7 @@ void Server::handleCGIPollEvents() {
 				if (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED){
 					connection._CStatus = connectStatus::RESPONDING;
 					connection._response.setResponseHandlerStatus(responseHandlerStatus::READY_TO_WRITE);
-					connection.removeCGIFromEverywhere(*this);
+					connection.removeCGIFromEverywhere();
 				}
 				continue;
 			}
@@ -224,7 +223,7 @@ void Server::acceptNewConnects(size_t size)
 					_pollFDs.emplace_back(\
 							pollfd{clientFD, POLLIN | POLLOUT | POLLERR | POLLHUP, 0});
 					_Connections.emplace(clientFD, \
-						Connection{current._config, clientFD, true});
+						Connection{current._config, *this, clientFD, true});
 				}
 			}
 		} 

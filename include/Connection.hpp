@@ -43,6 +43,7 @@ class Connection
 	public:
 		connectStatus					_CStatus;
 		Config							*_config;
+		Server							&_server;
 		Request							_request;
 		Response						_response;
 		std::shared_ptr<CGI>			_cgi;
@@ -54,15 +55,15 @@ class Connection
 		t_secs							_IdleTimeout;
 		
 		// Constructors and Destructors
-		Connection(Config *config, int clientFD, bool isServerside);
+		Connection(Config *config, Server &server, int clientFD, bool isServerside);
 		Connection(const Connection &rhs);
 		Connection &operator=(const Connection &rhs);
 		~Connection();
 
 		void			connectionAction(const pollfd &poll, Server &server);
 		void			findFDtoRemove(int eraseMe, std::vector<pollfd> &pollFDs);
-		void			removeCGIFromEverywhere(Server& server);
+		void			removeCGIFromEverywhere();
 		connectStatus	checkConnectStatus(const pollfd &poll);
-		connectStatus	checkCGITimeout(Server &server);
+		connectStatus	checkCGITimeout();
 		static bool		connectIsOkay(int fd);
 } ;

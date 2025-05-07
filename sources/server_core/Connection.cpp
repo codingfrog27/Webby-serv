@@ -19,21 +19,18 @@
 //						Constructors and Destructors						//
 // ************************************************************************** //
 
-Connection::Connection(Config *config, int clientFD, bool isServerside): \
-_config(config), _request(config, clientFD), _response(config), _cgi(0), \
-_isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _keepAlive(false)
+Connection::Connection(Config *config, Server &server, int clientFD, bool isServerside)
+	: _config(config), _server(server), _request(config, clientFD), _response(config), _cgi(0),
+	  _isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _keepAlive(false),
+	  _startTime(getStartTime()), _IdleTimeout(setTimeout(2))
 {
-	_startTime = getStartTime();
-	_IdleTimeout = setTimeout(2);
-	// _IdleTimeout = setTimeout(config->_timeout);
 	if (_isClientSocket)
 		_CStatus = connectStatus::IDLE;
 	else
 		_CStatus = connectStatus::SERV_SOCKET;
 }
 
-
-Connection::Connection(const Connection &rhs) : _request(rhs._request), _response(rhs._response)
+Connection::Connection(const Connection &rhs) :  _server(rhs._server), _request(rhs._request), _response(rhs._response)
 {
 	*this = rhs;
 }
@@ -61,6 +58,7 @@ Connection::operator=(const Connection &rhs)
 
 Connection::~Connection(void)
 {
+	removeCGIFromEverywhere();
 }
 
 // ************************************************************************** //
@@ -78,7 +76,7 @@ void	Connection::connectionAction(const pollfd &poll, Server &server)
 	if ((poll.revents & POLLOUT) && _CStatus == connectStatus::RESPONDING)
 		_CStatus = _response.responseHandler(&_request);
 	if (_CStatus == connectStatus::CGI)
-		_CStatus = checkCGITimeout(server);
+		_CStatus = checkCGITimeout();
 }
 
 connectStatus	Connection::checkConnectStatus(const pollfd &poll)
@@ -111,37 +109,47 @@ bool	Connection::connectIsOkay(int fd)
 	return (false);
 }
 
-connectStatus	Connection::checkCGITimeout(Server &server)
+connectStatus	Connection::checkCGITimeout()
 {
 	if (_cgi->CGIisTimedOut())
 	{
-		removeCGIFromEverywhere(server);
+		removeCGIFromEverywhere();
 		_response.autoFillResponse("504 Gateway Timeout", "", "");
 		return (connectStatus::RESPONDING);
 	}
 	return (connectStatus::CGI);
 }
 
-void Connection::removeCGIFromEverywhere(Server& server) {
-	auto& pollFDs = server.getCGIPollFDs();
+void Connection::removeCGIFromEverywhere() {
+	if (_cgi.use_count() == 0)
+		return; // No need to remove if the shared_ptr is already empty
+
+	auto& pollFDs = _server.getCGIPollFDs();
+	
 	auto it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdIn(); // Match the fd value
 	});
-	if (it != pollFDs.end()) 
+	if (it != pollFDs.end()) {
+		close(_cgi->getFdIn());
 		pollFDs.erase(it); // Erase the found element
+	}
 	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdOut(); // Match the fd value
 	});
-	if (it != pollFDs.end())
+	if (it != pollFDs.end()){
+		close(_cgi->getFdOut());
 		pollFDs.erase(it); // Erase the found element
+	}
 	it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdError(); // Match the fd value
 	});
-	if (it != pollFDs.end())
+	if (it != pollFDs.end()){
+		close(_cgi->getFdError());
 		pollFDs.erase(it); // Erase the found element
-	server.getCGIMap().erase(_cgi->getFdIn());
-	server.getCGIMap().erase(_cgi->getFdOut());
-	server.getCGIMap().erase(_cgi->getFdError());
+	}
+	_server.getCGIMap().erase(_cgi->getFdIn());
+	_server.getCGIMap().erase(_cgi->getFdOut());
+	_server.getCGIMap().erase(_cgi->getFdError());
 	_cgi->killChild();
 	_cgi.reset();
 }
