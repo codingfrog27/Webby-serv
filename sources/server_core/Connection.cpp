@@ -122,7 +122,12 @@ connectStatus	Connection::checkCGITimeout(Server &server)
 	return (connectStatus::CGI);
 }
 
-void Connection::removeCGIFromEverywhere(Server& server) {
+void Connection::removeCGIFromEverywhere(Server& server)
+{
+	if (_cgi.use_count() == 0)
+		return;
+
+		
 	auto& pollFDs = server.getCGIPollFDs();
 	auto it = std::find_if(pollFDs.begin(), pollFDs.end(), [&](const pollfd& fd) {
 		return fd.fd == _cgi->getFdIn(); // Match the fd value
