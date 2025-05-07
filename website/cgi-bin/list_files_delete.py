@@ -4,6 +4,9 @@ import os, cgitb
 
 cgitb.enable(display=1)
 
+while True:
+	continue
+
 # Get connection type from environment variable
 connection = os.environ.get("CONNECTION", "keep-alive")
 
