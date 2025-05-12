@@ -3,6 +3,9 @@
 #include "Connection.hpp"
 #include <regex>
 
+const size_t MAX_BODY_SIZE = 1 * 1024 * 1024;
+const size_t MAX_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
+
 Response::Response(Config *config) {
 	this->_responseHandlerStatus = responseHandlerStatus::NOT_STARTED;
 	this->setHTTPVersion("HTTP/1.1");
@@ -179,25 +182,54 @@ void	Response::setHeaders(std::string key, std::string value){
 	return ;
 }
 
-void	Response::setBody(std::string body){
-	if (_body.empty())
-		_body = body;
-	else
-		_body += body;
+void	Response::setBody(std::string body_content){
+	if (_body.empty()) {
+		if (body_content.length() > MAX_BODY_SIZE)
+			_body.assign(body_content.begin(), body_content.begin() + MAX_BODY_SIZE);
+		else
+			_body = body_content;
+	} 
+	else {
+		if (_body.length() >= MAX_BODY_SIZE)
+			return;
+		size_t available_space = MAX_BODY_SIZE - _body.length();
+		size_t length_to_add = body_content.length();
+		if (length_to_add <= available_space)
+			_body += body_content;
+		else 
+			_body.append(body_content.c_str(), available_space);
+	}
 	return ;
 }
-
-void	Response::setBody(std::vector<char> body){
-	if (_body.empty())
-		_body.assign(body.begin(), body.end());
-	else
-		_body.insert(_body.end(), body.begin(), body.end());
+void	Response::setBody(std::vector<char> body_content_vec){
+	if (_body.empty()) {
+		if (body_content_vec.size() > MAX_BODY_SIZE)
+			_body.assign(body_content_vec.begin(), body_content_vec.begin() + MAX_BODY_SIZE);
+		else 
+			_body.assign(body_content_vec.begin(), body_content_vec.end());
+	} 
+	else {
+		if (_body.length() >= MAX_BODY_SIZE) 
+			return;
+		size_t available_space = MAX_BODY_SIZE - _body.length();
+		size_t size_to_add = body_content_vec.size();
+		if (size_to_add <= available_space)
+			_body.insert(_body.end(), body_content_vec.begin(), body_content_vec.end());
+		else
+			_body.insert(_body.end(), body_content_vec.begin(), body_content_vec.begin() + available_space);
+	}
 	return ;
 }
-
-void	Response::setResponseBuffer(std::string buffer){
-	_responseBuffer += buffer;
-	return ;
+void	Response::setResponseBuffer(std::string buffer_content){
+	if (_responseBuffer.length() >= MAX_RESPONSE_BUFFER_SIZE)
+		return;
+	size_t available_space = MAX_RESPONSE_BUFFER_SIZE - _responseBuffer.length();
+	size_t length_to_add = buffer_content.length();
+	if (length_to_add <= available_space)
+		_responseBuffer += buffer_content;
+	else
+		_responseBuffer.append(buffer_content.c_str(), available_space);
+	return;
 }
 
 void	Response::setBytesWritten(size_t bytesWritten){
