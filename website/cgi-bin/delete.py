@@ -2,6 +2,9 @@
 
 import os, cgi
 
+while True:
+	continue
+
 UPLOAD_DIR = "website/uploads"
 
 # Parse form data
