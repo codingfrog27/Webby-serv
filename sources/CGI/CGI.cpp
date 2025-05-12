@@ -7,11 +7,11 @@
 
 /*	Constructors & destructors	*/
 
-CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(connection->_clientFD){
-	_CGIHandlerStatus = CGIHandlerStatus::NOT_STARTED;
-	_bytesWrittenToChild = 0;
-	_PID = -1;
-
+CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : 
+	_fdIn{-1, -1}, _fdOut{-1, -1}, _fdError{-1, -1}, _clientFD(connection->_clientFD),
+	_CGIHandlerStatus(CGIHandlerStatus::NOT_STARTED), _PID(-1), _bytesWrittenToChild(0), 
+	_scriptError(""), _childIsRunningStatus(false), _startTime(getStartTime()), _maxDuration(0) 
+	{
 	if (pipe(_fdIn) == -1) {
 		connection->_response.autoFillResponse("500 Internal Server Error: pipe fdIn", "", "");
 		return ;
@@ -31,6 +31,7 @@ CGI::CGI(Connection* connection, std::vector<pollfd> &CGIPollFDs) : _clientFD(co
 	}
 	else {
 		close(_fdIn[1]);
+		_fdIn[1] = -1;
 	}
 	CGIPollFDs.emplace_back(pollfd{_fdOut[0], POLLIN, 0});
 	CGIPollFDs.emplace_back(pollfd{_fdError[0], POLLIN, 0});
