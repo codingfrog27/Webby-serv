@@ -20,7 +20,7 @@
 // ************************************************************************** //
 
 Connection::Connection(Config *config, Server &server, int clientFD, bool isServerside)
-	: _config(config), _server(server), _request(config, clientFD), _response(config), _cgi(0),
+	: _config(config), _server(server), _request(config, clientFD), _response(config), _cgi(nullptr),
 	  _isClientSocket(isServerside), _wantsNewConnect(false), _clientFD(clientFD), _keepAlive(false),
 	  _startTime(getStartTime()), _IdleTimeout(setTimeout(2))
 {

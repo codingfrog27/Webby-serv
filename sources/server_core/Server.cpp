@@ -93,14 +93,14 @@ void	Server::main_server_loop()
 			auto it = _Connections.find(_pollFDs[i].fd);
 			if (it != _Connections.end()) 
 			{
-			    Connection &current = it->second;
+				Connection &current = it->second;
 				if (current._isClientSocket)
 					current.connectionAction(_pollFDs[i], *this);
 				else if (_pollFDs[i].revents & POLLIN)
 						current._wantsNewConnect = true;
 			} 
 			else 
-			    continue;
+				continue;
 		}
 		acceptNewConnects(size);
 		for (size_t i = 0; i < size;)
@@ -108,7 +108,7 @@ void	Server::main_server_loop()
 			auto it = _Connections.find(_pollFDs[i].fd);
 			if (it != _Connections.end()) 
 			{
-			    Connection &current = it->second;
+				Connection &current = it->second;
 				if (current._CStatus == connectStatus::CONNECT_CLOSED || \
 					current._CStatus == connectStatus::FINISHED)
 					{
@@ -122,7 +122,7 @@ void	Server::main_server_loop()
 			{
 				_pollFDs.erase(_pollFDs.begin() + i);
 				size--;
-			    continue;
+				continue;
 			}
 		}
 		handleCGIPollEvents();
@@ -139,8 +139,18 @@ void	Server::close_connect(int fd)
 		{
 			close(fd);
 			_pollFDs.erase(it);
-			if (_Connections.at(fd)._clientFD != fd)
+			// if (_Connections.at(fd)._clientFD != fd)
+			auto it = _Connections.find(fd);
+			if (it == _Connections.end())
+			{
+				std::cerr << RED "couldn't find connection to close" RESET << std::endl;
+				return;
+			}
+			if (it->second._clientFD != fd)
+			{
 				std::cerr << RED "connection and pollfd misallignment" RESET << std::endl;
+				return;
+			}
 			else 
 			{
 				_Connections.erase(fd);
@@ -160,14 +170,19 @@ void Server::handleCGIPollEvents() {
 	if (poll(_CGIPollFDs.data(), size, 0) == 0)
 		return ;
 	for (size_t i = 0; i < size; i++){
-		CGI *cgi = _CGIMap[_CGIPollFDs[i].fd].get();
+		pollfd &pollfd = _CGIPollFDs[i];
+		auto itCGIMap = _CGIMap.find(pollfd.fd);
+		if (itCGIMap == _CGIMap.end() || !itCGIMap->second)
+			continue;
+		CGI *cgi = itCGIMap->second.get();
 		if (cgi == nullptr)
 			continue;
-
-		auto it = _Connections.find(cgi->getClientFD());
-		if (it == _Connections.end())
+		auto itConnections = _Connections.find(cgi->getClientFD());
+		if (itConnections == _Connections.end())
 			continue;
-		Connection &connection = it->second;
+		Connection &connection = itConnections->second;
+		if (!Connection::connectIsOkay(cgi->getClientFD()))
+			connection._CStatus = connectStatus::CONNECT_CLOSED;
 		if (_CGIPollFDs[i].fd == cgi->getFdIn() && _CGIPollFDs[i].revents & POLLOUT){
 			cgi->writeToCGI(&connection._request, &connection._response);
 		}
@@ -200,16 +215,15 @@ void Server::handleCGIPollEvents() {
 
 void Server::acceptNewConnects(size_t size)
 {
-	int clientFD = 0;
 	for (size_t i = 0; i < size; i++)
 	{
 		auto it = _Connections.find(_pollFDs[i].fd);
 		if (it != _Connections.end()) 
 		{
-		    Connection &current = it->second;
+			Connection &current = it->second;
 			if (current._wantsNewConnect == true)
 			{
-				clientFD = accept(_pollFDs[i].fd, nullptr, nullptr);
+				int clientFD = accept(_pollFDs[i].fd, nullptr, nullptr);
 				if (clientFD <= 0)
 				{
 					std::cout << "NOT ACCEPTED" << clientFD << std::endl;
@@ -235,6 +249,7 @@ void Server::killAllCGIProcesses()
 {
 	for (auto &cgi : _CGIMap)
 	{
+		if (cgi.second->getChildIsRunningStatus())
 		cgi.second->killChild();
 	}
 }
