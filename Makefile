@@ -4,8 +4,7 @@ CC = c++
 Wflags = -Wall -Wextra
 VERSION_FLAG = -std=c++20
 
-INCLUDE_FLAGS = -I include/ -I libft/include
-LIBFT_A			:=	./libft/libft.a
+INCLUDE_FLAGS = -I include/
 Wflags = -Wall -Wextra -Werror
 # Wflags += -fsanitize=address -g
 
@@ -15,9 +14,6 @@ OBJDIR = objects
 HEADERS := $(shell find $(INCLDIR) -name '*.hpp')
 SOURCES := $(shell find $(SRCDIR) -name '*.cpp')
 OBJECTS := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
-
-# ifneq (,$(filter debug strict,$(MAKECMDGOALS)))
-# endif
 
 
 #-----colours----
@@ -41,8 +37,6 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.cpp $(HEADERS) | $(OBJDIR)
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)
 
-$(LIBFT_A):
-	@$(MAKE) -C libft
 
 re: fclean $(NAME)
 

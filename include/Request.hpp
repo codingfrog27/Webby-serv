@@ -23,8 +23,6 @@
 #include <sys/socket.h>
 #include "location.hpp"
 
-
-#include "libft.h"
 #include "ClientErrorExcept.hpp"
 #include "ConnectionClosedExcep.hpp"
 #include "Config.hpp"

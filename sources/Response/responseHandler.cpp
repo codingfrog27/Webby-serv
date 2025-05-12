@@ -1,7 +1,6 @@
 #include "Response.hpp"
 #include "Request.hpp"
 #include "CGI.hpp"
-#include "libft.h"
 #include "Connection.hpp"
 
 void	Response::getMethod(Request* request){
