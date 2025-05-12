@@ -181,7 +181,7 @@ void Server::handleCGIPollEvents() {
 			else if (_CGIPollFDs[i].fd == cgi->getFdError() && _CGIPollFDs[i].revents & POLLIN){
 				cgi->readErrorFromCGI(&connection._response);
 			}
-			if (_CGIPollFDs[i].revents & POLLHUP || (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED && !(_CGIPollFDs[i].revents & POLLIN)))
+			if (_CGIPollFDs[i].revents & POLLHUP || (cgi->getCGIHandlerStatus() == CGIHandlerStatus::FINISHED && !(_CGIPollFDs[i].revents & POLLIN))) //??
 			{
 				if (_CGIPollFDs[i].revents & POLLHUP)
 					close(_CGIPollFDs[i].fd );
@@ -215,10 +215,19 @@ void Server::acceptNewConnects(size_t size)
 				if (clientFD <= 0)
 				{
 					std::cout << "NOT ACCEPTED" << clientFD << std::endl;
-					NicePrint::promptEnter();
-					break;
+					perror(NULL);
+					return;
 				}
-				else {
+				else 
+				{
+					for (size_t i = 0; i < size; i++)
+					{
+						if (_pollFDs[i].fd == clientFD)
+						{
+							std::cout << "Duplicate FD found!!, not accepting" << std::endl;
+							return;
+						}
+					}
 					std::cout << GREEN "new connection " RESET << "FD == " << clientFD <<  std::endl;
 					current._wantsNewConnect = false;
 					_pollFDs.emplace_back(\
@@ -228,8 +237,10 @@ void Server::acceptNewConnects(size_t size)
 				}
 			}
 		} 
-		else 
+		else {
+			std::cerr << "No connection found at current pollfd!!" << std::endl;
 		    continue;
+		}
 	}
 }
 

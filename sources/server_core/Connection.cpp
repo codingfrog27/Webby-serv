@@ -85,7 +85,7 @@ connectStatus	Connection::checkConnectStatus(const pollfd &poll)
 {
 	int error = 0;
 	socklen_t len = sizeof(error);
-	if (poll.revents & POLLERR)
+	if (poll.revents & POLLERR)// || getsockoption in else if instead of in this if
 	{
 		std::cout << "POLLERR flagged! " << std::endl;
 		if (getsockopt(poll.fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
@@ -102,7 +102,8 @@ bool	Connection::connectIsOkay(int fd)
 	int error = 0;
 	socklen_t len = sizeof(error);
 	if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0) {
-		std::cerr << "getsockopt failed!!" << std::endl;
+		// std::cerr << "getsockopt failed!!" << std::endl;
+		perror("getsockopt failed!!");
 		return (false);
 	}
 	if (error == 0)
